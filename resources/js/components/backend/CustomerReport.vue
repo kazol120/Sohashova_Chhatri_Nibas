@@ -458,41 +458,42 @@ previousPage() {
   </head>
 
   <body>
+    <div style="padding: 20px 30px;">
+      <div class="header">
+      <h2>
+          <img src="/logo/images (3).png"
+               style="height:50px;width:auto;vertical-align:middle;margin-right:10px;">
+          Guest Checkout Receipt
+      </h2>      <p>Printed: ${new Date().toLocaleString()}</p>
+      </div>
+      <div class="section-title">👤 Guest Info</div>
+      <table class="info-table">
+        <tr><td>Name</td><td>${r.full_name || '-'}</td></tr>
+        <tr><td>Booking Date</td><td>${this.formatDateTime(r.created_at)}</td></tr>
+      </table>
 
-    <div class="header">
-    <h2>
-        <img src="/logo/images (3).png"
-             style="height:50px;width:auto;vertical-align:middle;margin-right:10px;">
-        Guest Checkout Receipt
-    </h2>      <p>Printed: ${new Date().toLocaleString()}</p>
-    </div>
-    <div class="section-title">👤 Guest Info</div>
-    <table class="info-table">
-      <tr><td>Name</td><td>${r.full_name || '-'}</td></tr>
-      <tr><td>Booking Date</td><td>${this.formatDateTime(r.created_at)}</td></tr>
-    </table>
+      <div class="section-title">🏠 Room Info</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Floor</th>
+            <th>Room</th>
+            <th>Seat</th>
+            <th>Booking Fee</th>
+          </tr>
+        </thead>
+        <tbody>${roomRows}</tbody>
+      </table>
 
-    <div class="section-title">🏠 Room Info</div>
-    <table>
-      <thead>
-        <tr>
-          <th>Floor</th>
-          <th>Room</th>
-          <th>Seat</th>
-          <th>Booking Fee</th>
+      ${productSection}
+
+      <table>
+        <tr class="grand-total-row">
+          <td style="font-weight:bold;font-size:14px;text-align:right;">💰 Grand Total (Room + Product Distribution):</td>
+          <td style="font-weight:bold;font-size:14px;color:#16a34a;">৳ ${grandTotal}</td>
         </tr>
-      </thead>
-      <tbody>${roomRows}</tbody>
-    </table>
-
-    ${productSection}
-
-    <table>
-      <tr class="grand-total-row">
-        <td style="font-weight:bold;font-size:14px;text-align:right;">💰 Grand Total (Room + Product Distribution):</td>
-        <td style="font-weight:bold;font-size:14px;color:#16a34a;">৳ ${grandTotal}</td>
-      </tr>
-    </table>
+      </table>
+    </div>
 
     <script>
       window.onload = function() {
