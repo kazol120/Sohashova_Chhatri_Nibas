@@ -83,7 +83,7 @@
                       </td>
                       <td>
                         <span class="badge bg-info text-white fw-bold" style="font-size: 11px; padding: 5px 8px;">
-                          {{ (item.roomnumber || '').split('-')[1] || '-' }}
+                          {{ (item.roomnumber || '').split('-').slice(1).join('-') || '-' }}
                         </span>
                       </td>
                     </tr>
@@ -140,7 +140,7 @@
                         </td>
                         <td>
                           <span class="badge bg-info text-white fw-bold" style="font-size: 11px; padding: 5px 8px;">
-                            {{ (item.roomnumber || '').split('-')[1] || '-' }}
+                            {{ (item.roomnumber || '').split('-').slice(1).join('-') || '-' }}
                           </span>
                         </td>
                       </tr>
@@ -375,7 +375,7 @@ previousPage() {
           }
 
           const roomPart = (item.roomnumber || '').split('-')[0];
-          const seatPart = (item.roomnumber || '').split('-')[1] || '-';
+          const seatPart = (item.roomnumber || '').split('-').slice(1).join('-') || '-';
 
           roomRows += `
             <tr>
@@ -469,6 +469,7 @@ previousPage() {
     <div class="section-title">👤 Guest Info</div>
     <table class="info-table">
       <tr><td>Name</td><td>${r.full_name || '-'}</td></tr>
+      <tr><td>Booking Date</td><td>${this.formatDateTime(r.created_at)}</td></tr>
     </table>
 
     <div class="section-title">🏠 Room Info</div>
