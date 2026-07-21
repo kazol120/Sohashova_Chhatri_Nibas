@@ -52,16 +52,14 @@
           <th>Name</th>
           <th>Floor</th>
           <th>Room</th>
-          <th>Room Price</th>
-          <th>Total Days & Amount</th>
+          <th>Seat</th>
+          <th>Booking Fee</th>
           <th>Booking Date & Time</th>
-          <th>Check In</th>
-          <th>Check Out</th>
           <th>Product Name</th>
           <th>Qty</th>
           <th>Single Price</th>
           <th>Total Price</th>
-          <th>Total Room Price + Product Distribution</th>
+          <th>Total Booking Fee + Product Distribution</th>
           <th class="no-print">Action</th>
         </tr>
       </thead>
@@ -81,17 +79,12 @@
                     <tr v-for="(item, i) in r.room_items" :key="i">
                       <td class="text-muted fw-semibold">{{ item.floornumber }}</td>
                       <td>
-                        <span class="room-badge">{{ item.roomnumber }}</span>
+                        <span class="room-badge">{{ (item.roomnumber || '').split('-')[0] }}</span>
                       </td>
-                      <td class="text-end text-success fw-bold">
-                        ৳ {{ Number(item.price || 0).toFixed(2) }}
-                      </td>
-                    </tr>
-
-                    <tr class="room-grand-total-row">
-                      <td colspan="2" class="text-end fw-bold">Grand Total</td>
-                      <td class="text-end text-success fw-bold">
-                        ৳ {{ r.room_items.reduce((total, item) => total + Number(item.price || 0), 0).toFixed(2) }}
+                      <td>
+                        <span class="badge bg-info text-white fw-bold" style="font-size: 11px; padding: 5px 8px;">
+                          {{ (item.roomnumber || '').split('-')[1] || '-' }}
+                        </span>
                       </td>
                     </tr>
                   </tbody>
@@ -101,15 +94,12 @@
             </td>
 
             <td>
-              <div class="fw-semibold">{{ getTotalDays(r.check_in, r.check_out) }} Days</div>
               <div class="text-success fw-bold">
-                ৳ {{ Number(r.daybytotalamount || 0).toFixed(2) }}
+                ৳ {{ Number(r.payment_amount_total || r.daybytotalamount || 0).toFixed(2) }}
               </div>
             </td>
 
             <td>{{ formatDateTime(r.created_at) }}</td>
-            <td>{{ formatDate(r.check_in) }}</td>
-            <td>{{ formatDate(r.check_out) }}</td>
 
             <td colspan="4" class="text-muted">No Product</td>
 
@@ -146,17 +136,12 @@
                       <tr v-for="(item, i) in r.room_items" :key="i">
                         <td class="text-muted fw-semibold">{{ item.floornumber }}</td>
                         <td>
-                          <span class="room-badge">{{ item.roomnumber }}</span>
+                          <span class="room-badge">{{ (item.roomnumber || '').split('-')[0] }}</span>
                         </td>
-                        <td class="text-end text-success fw-bold">
-                          ৳ {{ Number(item.price || 0).toFixed(2) }}
-                        </td>
-                      </tr>
-
-                      <tr class="room-grand-total-row">
-                        <td colspan="2" class="text-end fw-bold">Grand Total</td>
-                        <td class="text-end text-success fw-bold">
-                          ৳ {{ r.room_items.reduce((s, i) => s + Number(i.price || 0), 0).toFixed(2) }}
+                        <td>
+                          <span class="badge bg-info text-white fw-bold" style="font-size: 11px; padding: 5px 8px;">
+                            {{ (item.roomnumber || '').split('-')[1] || '-' }}
+                          </span>
                         </td>
                       </tr>
                     </tbody>
@@ -165,22 +150,13 @@
                 <span v-else>-</span>
               </td>
                 <td v-if="pi === 0" :rowspan="r.products.length + 1">
-                  <div class="fw-semibold">{{ getTotalDays(r.check_in, r.check_out) }} Days</div>
                   <div class="text-success fw-bold">
-                    ৳ {{ Number(r.daybytotalamount || 0).toFixed(2) }}
+                    ৳ {{ Number(r.payment_amount_total || r.daybytotalamount || 0).toFixed(2) }}
                   </div>
                 </td>
 
                 <td v-if="pi === 0" :rowspan="r.products.length + 1">
                   {{ formatDateTime(r.created_at) }}
-                </td>
-
-                <td v-if="pi === 0" :rowspan="r.products.length + 1">
-                  {{ formatDate(r.check_in) }}
-                </td>
-
-                <td v-if="pi === 0" :rowspan="r.products.length + 1">
-                  {{ formatDate(r.check_out) }}
                 </td>
 
                 <td class="fw-semibold">{{ p.product_name }}</td>
@@ -219,13 +195,13 @@
              </tbody>
               <tbody v-else>
               <tr>
-                <td colspan="15" class="text-center py-5 text-muted">
+                <td colspan="13" class="text-center py-5 text-muted">
                   <span v-if="loading">
                     <i class="fa fa-spinner fa-spin me-2"></i> Loading...
                   </span>
                   <span v-else>Click the button to view data</span>
                 </td>
-                    </tr>
+              </tr>
               </tbody>
               </table>
             </div>
@@ -360,11 +336,10 @@ previousPage() {
         this.toast("Failed to activate room", "error");
       }
     },
-    //  Room Total × Days +  Product Total
+    //  Room Total (Booking Fee) +  Product Total
     getTotalAmount(r) {
-      const days = this.getTotalDays(r.check_in, r.check_out);
       const roomTotal = r.room_items
-        ? r.room_items.reduce((s, i) => s + Number(i.price || 0), 0) * days
+        ? r.room_items.reduce((s, i) => s + Number(i.price || 0), 0)
         : 0;
       const productTotal = r.products
         ? r.products.reduce((s, p) => s + Number(p.total_price || 0), 0)
@@ -373,60 +348,54 @@ previousPage() {
     },
 
     printSingleRow(r) {
-  const totalDays = this.getTotalDays(r.check_in, r.check_out);
+      let roomRows = '';
 
-  let roomRows = '';
+      if (r.room_items && r.room_items.length) {
+        let grandRoomTotal = 0;
+        const floorSpanMap = {};
 
-  if (r.room_items && r.room_items.length) {
-    let grandRoomTotal = 0;
-    const roomCount = r.room_items.length;
-    const floorSpanMap = {};
+        r.room_items.forEach((item) => {
+          const floor = item.floornumber || '-';
+          if (floorSpanMap[floor] === undefined) floorSpanMap[floor] = 0;
+          floorSpanMap[floor]++;
+        });
 
-    r.room_items.forEach((item) => {
-      const floor = item.floornumber || '-';
-      if (floorSpanMap[floor] === undefined) floorSpanMap[floor] = 0;
-      floorSpanMap[floor]++;
-    });
+        const floorRendered = {};
 
-    const floorRendered = {};
+        r.room_items.forEach((item, index) => {
+          const fee = Number(item.price || 0);
+          grandRoomTotal += fee;
 
-    r.room_items.forEach((item, index) => {
-      const perNight = Number(item.price || 0);
-      const roomTotal = perNight * totalDays;
-      grandRoomTotal += roomTotal;
+          const floor = item.floornumber || '-';
+          let floorCell = '';
 
-      const floor = item.floornumber || '-';
-      let floorCell = '';
+          if (!floorRendered[floor]) {
+            floorRendered[floor] = true;
+            floorCell = `<td rowspan="${floorSpanMap[floor]}" style="vertical-align:middle;">${floor}</td>`;
+          }
 
-      if (!floorRendered[floor]) {
-        floorRendered[floor] = true;
-        floorCell = `<td rowspan="${floorSpanMap[floor]}" style="vertical-align:middle;">${floor}</td>`;
+          const roomPart = (item.roomnumber || '').split('-')[0];
+          const seatPart = (item.roomnumber || '').split('-')[1] || '-';
+
+          roomRows += `
+            <tr>
+              ${floorCell}
+              <td><strong style="background:#1e293b;color:#fff;padding:2px 10px;border-radius:4px;">${roomPart}</strong></td>
+              <td><strong style="background:#0ea5e9;color:#fff;padding:2px 10px;border-radius:4px;">${seatPart}</strong></td>
+              <td>৳ ${fee.toFixed(2)}</td>
+            </tr>`;
+        });
+
+        roomRows += `
+          <tr style="background:#fff8e1;">
+            <td colspan="3" style="font-weight:bold;text-align:right;">Grand Total:</td>
+            <td style="font-weight:bold;color:#16a34a;">৳ ${grandRoomTotal.toFixed(2)}</td>
+          </tr>`;
+      } else {
+        roomRows = '<tr><td colspan="4" style="text-align:center;color:#888;">-</td></tr>';
       }
 
-      const totalDaysCell = index === 0
-        ? `<td rowspan="${roomCount}" style="vertical-align:middle;font-weight:bold;">${totalDays} Days</td>`
-        : '';
-
-      roomRows += `
-        <tr>
-          ${floorCell}
-          <td><strong style="background:#1e293b;color:#fff;padding:2px 10px;border-radius:4px;">${item.roomnumber || '-'}</strong></td>
-          <td>৳ ${perNight.toFixed(2)}</td>
-          ${totalDaysCell}
-          <td>৳ ${roomTotal.toFixed(2)}</td>
-        </tr>`;
-    });
-
-    roomRows += `
-      <tr style="background:#fff8e1;">
-        <td colspan="4" style="font-weight:bold;text-align:right;">Grand Total (${totalDays} Days × All Rooms):</td>
-        <td style="font-weight:bold;color:#16a34a;">৳ ${grandRoomTotal.toFixed(2)}</td>
-      </tr>`;
-  } else {
-    roomRows = '<tr><td colspan="5" style="text-align:center;color:#888;">-</td></tr>';
-  }
-
-  let productSection = '';
+      let productSection = '';
   let productGrandTotal = 0;
 
   if (r.products && r.products.length > 0) {
@@ -500,9 +469,6 @@ previousPage() {
     <div class="section-title">👤 Guest Info</div>
     <table class="info-table">
       <tr><td>Name</td><td>${r.full_name || '-'}</td></tr>
-      <tr><td>Check In</td><td>${this.formatDate(r.check_in)}</td></tr>
-      <tr><td>Check Out</td><td>${this.formatDate(r.check_out)}</td></tr>
-      <tr><td>Total Days</td><td>${totalDays} Days</td></tr>
     </table>
 
     <div class="section-title">🏠 Room Info</div>
@@ -511,9 +477,8 @@ previousPage() {
         <tr>
           <th>Floor</th>
           <th>Room</th>
-          <th>Per Night Price</th>
-          <th>Total Days</th>
-          <th>Room Total</th>
+          <th>Seat</th>
+          <th>Booking Fee</th>
         </tr>
       </thead>
       <tbody>${roomRows}</tbody>
