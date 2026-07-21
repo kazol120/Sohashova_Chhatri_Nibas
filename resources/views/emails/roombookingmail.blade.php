@@ -24,6 +24,10 @@
                 <div style="margin-bottom:20px;">
                     <h3 style="margin:0 0 10px; font-size:16px; color:#111827; border-left:4px solid #033364; padding-left:10px;">Guest Information</h3>
                     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+                        @php
+                            $isProfessional = isset($user_type) && strtolower($user_type) === 'working professional';
+                            $isStudent = !$isProfessional;
+                        @endphp
                         <tr>
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; width:140px; font-size:13px;"><strong>Full Name</strong></td>
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $full_name ?? '-' }}</td>
@@ -36,6 +40,11 @@
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>Phone</strong></td>
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $phone ?? '-' }}</td>
                         </tr>
+                        <tr>
+                            <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>User Type</strong></td>
+                            <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px; text-transform: capitalize;">{{ $user_type ?? 'Student' }}</td>
+                        </tr>
+                        @if($isStudent)
                         <tr>
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>Father's Name</strong></td>
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $father_name ?? '-' }}</td>
@@ -52,6 +61,13 @@
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>Mother's NID</strong></td>
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $mother_nid ?? '-' }}</td>
                         </tr>
+                        @endif
+                        @if($isProfessional)
+                        <tr>
+                            <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>NID</strong></td>
+                            <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $nid ?? '-' }}</td>
+                        </tr>
+                        @endif
                     </table>
                 </div>
 
@@ -67,32 +83,19 @@
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>Floor</strong></td>
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $floor_name ?? '-' }}</td>
                         </tr>
-                        <tr>
-                            <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>Check In</strong></td>
-                            <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $check_in ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>Check Out</strong></td>
-                            <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $check_out ?? '-' }}</td>
-                        </tr>
                     </table>
                 </div>
+
             <!-- Room Details -->
 				<div style="margin-bottom:20px;">
 				    <h3 style="margin:0 0 10px; font-size:16px; color:#111827; border-left:4px solid #033364; padding-left:10px;">Room Details</h3>
 				    @php
 				        $roomJson = is_array($room_json) ? $room_json : json_decode($room_json ?? '[]', true);
-				        $days = 1;
-				        if (!empty($check_in) && !empty($check_out)) {
-				            $days = max(1, \Carbon\Carbon::parse($check_in)->diffInDays(\Carbon\Carbon::parse($check_out)));
-				        }
 				    @endphp
 
 				    <div style="background:#eef5fc; border:1px solid #bcd8f5; border-radius:10px; padding:14px; margin-bottom:12px; text-align:center;">
-				        <div style="font-size:13px; color:#6b7280; margin-bottom:4px;">Total Days</div>
-				        <div style="font-size:22px; font-weight:800; color:#033364;">{{ $days }} Days</div>
-				        <div style="font-size:13px; color:#6b7280; margin-top:8px; margin-bottom:4px;">Total Amount (Days × Room Price)</div>
-				        <div style="font-size:24px; font-weight:800; color:#033364;">৳ {{ number_format((float)($daybytotalamount ?? 0), 2) }}</div>
+				        <div style="font-size:13px; color:#6b7280; margin-bottom:4px;">Booking Fee</div>
+				        <div style="font-size:24px; font-weight:800; color:#033364;">৳ {{ number_format((float)($total_amount ?? 0), 2) }}</div>
 				    </div>
 
 				    <!-- Room Table -->
@@ -101,7 +104,7 @@
 				            <tr style="background:#f3f4f6;">
 				                <th style="padding:9px 10px; border-bottom:2px solid #e5e7eb; text-align:left; font-size:12px; color:#6b7280; text-transform:uppercase;">Floor</th>
 				                <th style="padding:9px 10px; border-bottom:2px solid #e5e7eb; text-align:left; font-size:12px; color:#6b7280; text-transform:uppercase;">Room</th>
-				                <th style="padding:9px 10px; border-bottom:2px solid #e5e7eb; text-align:right; font-size:12px; color:#6b7280; text-transform:uppercase;">Price</th>
+				                <th style="padding:9px 10px; border-bottom:2px solid #e5e7eb; text-align:right; font-size:12px; color:#6b7280; text-transform:uppercase;">Booking Fee</th>
 				            </tr>
 
 				            @foreach($roomJson as $index => $room)
