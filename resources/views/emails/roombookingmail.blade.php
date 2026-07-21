@@ -24,10 +24,6 @@
                 <div style="margin-bottom:20px;">
                     <h3 style="margin:0 0 10px; font-size:16px; color:#111827; border-left:4px solid #033364; padding-left:10px;">Guest Information</h3>
                     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
-                        @php
-                            $isProfessional = isset($user_type) && strtolower($user_type) === 'working professional';
-                            $isStudent = !$isProfessional;
-                        @endphp
                         <tr>
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; width:140px; font-size:13px;"><strong>Full Name</strong></td>
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $full_name ?? '-' }}</td>
@@ -40,11 +36,6 @@
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>Phone</strong></td>
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $phone ?? '-' }}</td>
                         </tr>
-                        <tr>
-                            <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>User Type</strong></td>
-                            <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px; text-transform: capitalize;">{{ $user_type ?? 'Student' }}</td>
-                        </tr>
-                        @if($isStudent)
                         <tr>
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>Father's Name</strong></td>
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $father_name ?? '-' }}</td>
@@ -61,13 +52,6 @@
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>Mother's NID</strong></td>
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $mother_nid ?? '-' }}</td>
                         </tr>
-                        @endif
-                        @if($isProfessional)
-                        <tr>
-                            <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>NID</strong></td>
-                            <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $nid ?? '-' }}</td>
-                        </tr>
-                        @endif
                     </table>
                 </div>
 
