@@ -34,10 +34,10 @@ class DashboardController extends Controller
         $data['roomcount'] = Room::count();
         $user = Auth::user();
        if ($user->hasRole('admin')) {
-        $data['roombookingcount'] = RoomBookingHistory::count();
+        $data['roombookingcount'] = RoomBookingHistory::where('status', 0)->count();
         } else {
             $cleanPhone = preg_replace('/[^0-9]/', '', $user->phone ?? '');
-            $data['roombookingcount'] = RoomBookingHistory::where(function ($q) use ($user, $cleanPhone) {
+            $data['roombookingcount'] = RoomBookingHistory::where('status', 0)->where(function ($q) use ($user, $cleanPhone) {
                 if (!empty($user->email)) {
                     $q->orWhere('email', $user->email);
                 }
@@ -46,7 +46,7 @@ class DashboardController extends Controller
                 }
             })->count();
         }
-        $data['todayacheackin'] = RoomBookingHistory::whereDate('check_in', today())->count();
+        $data['todayacheackin'] = RoomBookingHistory::where('status', 0)->whereDate('check_in', today())->count();
         $data['todaycheackout'] = RoomBookingHistory::whereDate('today_check_out', today())->count();
          if ($user->hasRole('admin')) {
             $data['staffscount'] = Staffs::count();

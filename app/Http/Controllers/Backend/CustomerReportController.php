@@ -107,7 +107,7 @@ public function activeRoom(Request $request)
         foreach ($rawItems as $item) {
             $rn = $item['roomnumber'] ?? $item['room_number'] ?? null;
             if ($rn) {
-                $parts = explode('-', $rn);
+                $parts = explode('-', $rn, 2);
                 $roomNo = $parts[0] ?? '';
                 $seatNo = $parts[1] ?? '';
 

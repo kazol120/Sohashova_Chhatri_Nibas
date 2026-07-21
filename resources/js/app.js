@@ -26,6 +26,8 @@ import Report from './components/backend/Report.vue';
 import CustomerReport from './components/backend/CustomerReport.vue';
 import Management from './components/backend/Management.vue';
 import MonthlyPaymentList from './components/backend/MonthlyPayment.vue';
+import ResidentReleaseManager from './components/backend/ResidentReleaseManager.vue';
+import ResidentReleaseHistory from './components/backend/ResidentReleaseHistory.vue';
 
 const app = createApp({
     components:{
@@ -51,6 +53,8 @@ const app = createApp({
         CustomerReport,
         Management,
         MonthlyPaymentList,
+        ResidentReleaseManager,
+        ResidentReleaseHistory,
     }
 });
 

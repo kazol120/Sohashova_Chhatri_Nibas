@@ -547,7 +547,7 @@ public function getbookinghistory(Request $request)
 
     if ($user->hasRole('admin')) {
 
-        $query = RoomBookingHistory::with(['division', 'district', 'thana']);
+        $query = RoomBookingHistory::with(['division', 'district', 'thana'])->where('status', 0);
 
        if ($search !== '') {
     $query->where(function ($q) use ($search) {
@@ -705,6 +705,206 @@ public function getNameguet()
     ]);
 }
     
+    public function releaseManagerIndex()
+    {
+        return view('backend.room.release');
+    }
 
+    public function getActiveBookings(Request $request)
+    {
+        $perPage       = (int) $request->get('per_page', 10);
+        $page          = (int) $request->get('page', 1);
+        $search        = trim($request->get('search', ''));
+        $filter        = $request->get('filter', 'all'); // all, staying, leaving
+
+        $query = RoomBookingHistory::where('status', 0);
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        if ($filter === 'staying') {
+            $query->where('will_leave', 0);
+        } elseif ($filter === 'leaving') {
+            $query->where('will_leave', 1);
+        }
+
+        $mapped = $query->orderByDesc('id')->get()->map(function ($row) {
+            $items = is_string($row->floor_number_room_number_roomprice)
+                ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
+                : ($row->floor_number_room_number_roomprice ?? []);
+
+            $c = collect($items);
+
+            return array_merge($row->only([
+                'id',
+                'image',
+                'full_name',
+                'father_name',
+                'mother_name',
+                'email',
+                'phone',
+                'nid',
+                'mother_nid',
+                'father_nid',
+                'room_number',
+                'payment_amount_total',
+                'check_in',
+                'check_out',
+                'status',
+                'created_at',
+                'pay_cash_in',
+                'pay_online',
+                'daybytotalamount',
+                'user_type',
+                'will_leave'
+            ]), [
+                'group_key'     => 'booking_' . $row->id,
+                'floornumber'   => $c->pluck('floornumber')->filter()->unique()->implode(', '),
+                'roomnumber'    => $c->pluck('roomnumber')->filter()->implode(', '),
+                'price'         => $c->pluck('price')->filter()->implode(', '),
+                'room_items'    => $items,
+            ]);
+        })->values();
+
+        $paginator = new LengthAwarePaginator(
+            $mapped->slice(($page - 1) * $perPage, $perPage)->values(),
+            $mapped->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return response()->json($paginator);
+    }
+
+    public function scheduleLeave($id)
+    {
+        try {
+            $booking = RoomBookingHistory::findOrFail($id);
+            $booking->update(['will_leave' => 1]);
+            return response()->json(['success' => true, 'message' => 'Successfully scheduled to leave next month.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function cancelLeave($id)
+    {
+        try {
+            $booking = RoomBookingHistory::findOrFail($id);
+            $booking->update(['will_leave' => 0]);
+            return response()->json(['success' => true, 'message' => 'Leaving schedule cancelled successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function instantRelease($id)
+    {
+        DB::beginTransaction();
+        try {
+            $booking = RoomBookingHistory::findOrFail($id);
+            $rawItems = $booking->floor_number_room_number_roomprice ?? [];
+            foreach ($rawItems as $item) {
+                $rn = $item['roomnumber'] ?? $item['room_number'] ?? null;
+                if ($rn) {
+                    $parts = explode('-', $rn, 2);
+                    $roomNo = $parts[0] ?? '';
+                    $seatNo = $parts[1] ?? '';
+
+                    $room = Room::where('room_no', $roomNo)->first();
+                    if ($room) {
+                        RoomSeat::where('room_id', $room->id)->where('seat_no', $seatNo)->update(['status' => 0]);
+                        Room::syncRoomStatus($room->id);
+                    } else {
+                        Room::where('room_no', $rn)->update(['status' => 0]);
+                    }
+                }
+            }
+
+            $booking->status = 1;
+            $booking->will_leave = 0;
+            $booking->today_check_out = now();
+            $booking->save();
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Resident checked out and seat released successfully.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function releaseHistoryIndex()
+    {
+        return view('backend.room.release_history');
+    }
+
+    public function getReleaseHistory(Request $request)
+    {
+        $perPage = (int) $request->get('per_page', 10);
+        $page    = (int) $request->get('page', 1);
+        $search  = trim($request->get('search', ''));
+
+        // status = 1 represents checked-out residents
+        $query = RoomBookingHistory::where('status', 1);
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        $mapped = $query->orderByDesc('today_check_out')->get()->map(function ($row) {
+            $items = is_string($row->floor_number_room_number_roomprice)
+                ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
+                : ($row->floor_number_room_number_roomprice ?? []);
+
+            $c = collect($items);
+
+            // Dynamically calculate the outstanding due from monthly payments
+            $dueAmount = \App\Models\Backend\MonthlyPayment::where('room_booking_history_id', $row->id)->sum('due_amount');
+
+            return array_merge($row->only([
+                'id',
+                'image',
+                'full_name',
+                'father_name',
+                'mother_name',
+                'email',
+                'phone',
+                'nid',
+                'room_number',
+                'payment_amount_total',
+                'check_in',
+                'check_out',
+                'today_check_out',
+                'status',
+                'created_at',
+                'user_type'
+            ]), [
+                'floornumber'   => $c->pluck('floornumber')->filter()->unique()->implode(', '),
+                'roomnumber'    => $c->pluck('roomnumber')->filter()->implode(', '),
+                'price'         => $c->pluck('price')->filter()->implode(', '),
+                'room_items'    => $items,
+                'due_amount'    => (float) $dueAmount,
+            ]);
+        })->values();
+
+        $paginator = new LengthAwarePaginator(
+            $mapped->slice(($page - 1) * $perPage, $perPage)->values(),
+            $mapped->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return response()->json($paginator);
+    }
 
 }

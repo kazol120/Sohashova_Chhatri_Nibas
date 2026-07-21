@@ -232,6 +232,15 @@
     Route::get('get-productdistribution', [CustomerReportController::class, 'getproductdistributton']);
     Route::post('/admin/rooms/active', [CustomerReportController::class, 'activeRoom']);
 
+    // room release manager routes
+    Route::get('admin/rooms/release-manager', [RoomBookingHistoryController::class, 'releaseManagerIndex'])->name('room-release.index');
+    Route::get('admin/active-bookings', [RoomBookingHistoryController::class, 'getActiveBookings']);
+    Route::post('admin/bookings/{id}/schedule-leave', [RoomBookingHistoryController::class, 'scheduleLeave']);
+    Route::post('admin/bookings/{id}/cancel-leave', [RoomBookingHistoryController::class, 'cancelLeave']);
+    Route::post('admin/bookings/{id}/instant-release', [RoomBookingHistoryController::class, 'instantRelease']);
+    Route::get('admin/rooms/release-history', [RoomBookingHistoryController::class, 'releaseHistoryIndex'])->name('room-release.history');
+    Route::get('admin/released-bookings', [RoomBookingHistoryController::class, 'getReleaseHistory']);
+
     // monthly payment controller //
     Route::get('monthly-payments', [MonthlyPaymentController::class, 'index'])->name('monthly-payments.index');
     Route::get('monthly-payments/get', [MonthlyPaymentController::class, 'getPayments']);

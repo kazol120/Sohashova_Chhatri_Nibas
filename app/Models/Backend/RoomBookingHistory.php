@@ -37,7 +37,8 @@ class RoomBookingHistory extends Model
         'daybytotalamount',
         'password',
         'floor_number_room_number_roomprice',
-        'today_check_out'
+        'today_check_out',
+        'will_leave'
     ];
 
 
