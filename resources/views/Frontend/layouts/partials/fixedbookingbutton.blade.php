@@ -1,0 +1,1 @@
+{{-- Empty file - logic moved to booking-offcanvas.blade.php --}}

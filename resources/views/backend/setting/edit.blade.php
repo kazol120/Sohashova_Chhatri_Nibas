@@ -1,0 +1,118 @@
+@extends('backend.layouts.app')
+@section("title") | {{$page_title}} @endsection
+
+@push('style')
+    <link rel="stylesheet" href="{{asset('backend')}}/vendor/libs/select2/select2.css" />
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+@endpush
+@section('content')
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <!-- Basic Layout -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <!-- Title -->
+                        <h5 class="card-title mb-0 text-capitalize">{{$page_title}}</h5>
+                        <!-- Button Group -->
+                        <div class="dt-action-buttons">
+                            <div class="dt-buttons btn-group">
+                                <!-- Create Button -->
+                                <a href="{{ url()->previous() }}" class="btn btn-primary create-new waves-effect waves-light">
+                                    <span>
+                                        <i class="ti ti-arrow-left me-1"></i>
+                                        <span class="d-none d-sm-inline-block">Back</span>
+
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <form action="{{route('setting.store')}}" method="post" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="slug" value="{{$slug}}">
+                        <div class="card-body">
+                            @if ($errors->any())
+                                @foreach ($errors->all() as $error)
+                                    <div class="alert alert-warning" role="alert">{{ $error }}</div>
+                                @endforeach
+                            @endif
+                            
+                       @foreach($fields as $key => $filed)
+    <div class="mb-3">
+        <label for="{{$key}}" class="form-label text-capitalize">
+            {{ \Illuminate\Support\Str::of($key)->replace('_', ' ') }}
+            <code>{{ !empty($filed['required']) ? "*" : "" }}</code>
+        </label>
+
+        @if($filed['type'] == 'file')
+
+            @if(!empty($editData->$key))
+                <div class="mb-2">
+                    <img src="{{ asset($editData->$key) }}"
+                         alt="{{$key}}"
+                         style="max-width:160px; max-height:100px; border:1px solid #ddd; padding:5px; border-radius:6px;">
+                </div>
+            @endif
+
+            <input
+                type="file"
+                name="{{$key}}"
+                class="form-control @error($key) is-invalid @enderror"
+                id="{{$key}}"
+                accept="image/*"
+                {{ !empty($filed['required']) ? 'required' : '' }}
+            >
+
+        @else
+
+            <input
+                type="{{$filed['type']}}"
+                name="{{$key}}"
+                value="{{ old($key, $editData->$key ?? '') }}"
+                class="form-control @error($key) is-invalid @enderror"
+                id="{{$key}}"
+                placeholder="{{$filed['placeholder'] ?? ''}}"
+                {{ !empty($filed['required']) ? 'required' : '' }}
+            >
+
+        @endif
+
+        @error($key)
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+@endforeach
+
+                            <div class="row mt-3">
+                                <div class="d-grid gap-2 col-lg-4 mx-auto">
+                                    <button class="btn btn-primary btn-lg waves-effect waves-light" type="submit">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@endsection
+@push('script')
+    <script src="{{asset('backend')}}/vendor/libs/select2/select2.js"></script>
+    <script src="{{asset('backend')}}/js/forms-selects.js"></script>
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#rolesSelect').select2({
+                placeholder: 'Select a role',
+                allowClear: true
+            });
+
+            $('#permissionsSelect').select2({
+                placeholder: 'Select permissions',
+                allowClear: true
+            });
+        });
+
+    </script>
+@endpush

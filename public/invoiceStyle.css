@@ -1,0 +1,1685 @@
+*{
+	color: black;
+}
+
+
+
+/* test report css*/
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-pointer:hover {
+  background-color: #f8f9fa;
+}
+
+.card-header {
+  padding: 1rem 1.5rem;
+}
+
+/* Ensure proper spacing */
+.form-label {
+  margin-bottom: 0.25rem;
+}
+
+/* Remove extra spacing on inline checkboxes */
+.form-check-inline {
+  margin-right: 1rem;
+}
+
+
+
+
+.main-container {
+  font-family: 'Inter', sans-serif;
+}
+
+input:focus, select:focus {
+  outline: none;
+}
+
+/* Additional styling to enhance the look of the form */
+.inputhight {
+  height: 38px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+
+/* doctorsetap css */
+.doctornametype{
+  width: 135px;
+  position: relative;
+  left: 41px !important;
+}
+.doctortype{
+  width: 334px !important;
+}
+
+
+/* order entry invoice */
+
+
+
+/* report details */
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(13, auto); 
+    gap: 5px; 
+    align-items: center;
+}
+.item {
+    text-align: center;
+    padding: 5px;
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+}
+.selectoptionpririty{
+    height: 30px;
+    width: 50px;
+    position: absolute;
+    left: 343px;
+}
+.selectdepartment{
+    height: 30px;
+    width: 132px;
+    position: absolute;
+    left: 603px;
+}
+.selectbranch{
+    height: 30px;
+    width: 142px;
+    position: absolute;
+    left: 808px;
+}
+.selectform{
+    height: 30px;
+    width: 154px;
+    position: absolute;
+    left: 1019px;
+}
+.selectto{
+    height: 30px;
+    width: 128px;
+    position: absolute;
+    left: 1224px;
+}
+
+
+/* invoicereporttest */
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 10px 0;
+}
+
+.btn {
+
+  padding: 5px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.select{
+   width: 249px;
+    padding: 4px 10px;
+
+}
+
+
+.btn:hover {
+  background-color: gray;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 10px 0;
+}
+
+.filters span {
+  margin-right: 15px;
+}
+
+.filters input {
+  margin-right: 5px;
+}
+
+.contnets {
+  margin-top: 20px;
+    display: flex;
+   flex-direction: column;
+    gap: 4px; 
+    padding-bottom: 20px;
+  }
+
+
+
+/* invoice report */
+
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 10px 0;
+}
+
+.btn {
+
+  padding: 5px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.select{
+   width: 249px;
+    padding: 4px 10px;
+
+}
+
+
+.btn:hover {
+  background-color: gray;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 10px 0;
+}
+
+.filters span {
+  margin-right: 15px;
+}
+
+
+.filters input {
+  margin-right: 5px;
+}
+/* Professional Filter Row Styling */
+
+/* Base container */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e3e6f0;
+  flex-wrap: wrap;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Tabs styling */
+.tabs {
+  display: flex;
+  margin-right: 20px;
+}
+
+.tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5a5c69;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: #4e73df;
+}
+
+.tab.active {
+  color: #4e73df;
+  border-bottom: 2px solid #4e73df;
+}
+
+/* Filter groups */
+.filter-group {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.filter-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  margin-right: 8px;
+}
+
+/* Select boxes */
+select {
+  padding: 6px 8px;
+  border: 1px solid #d1d3e2;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #6e707e;
+  background-color: white;
+  min-width: 120px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+select:focus {
+  border-color: #a2b9ff;
+  box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.1);
+}
+
+/* Button styling */
+.btn {
+  background-color: #4e73df;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn:hover {
+  background-color: #3756c5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-group {
+    margin-bottom: 8px;
+    width: 100%;
+  }
+  
+  .tabs {
+    margin-bottom: 12px;
+    width: 100%;
+  }
+}/* Professional Filter Row Styling */
+
+/* Base container */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e3e6f0;
+  flex-wrap: wrap;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Tabs styling */
+.tabs {
+  display: flex;
+  margin-right: 20px;
+}
+
+.tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5a5c69;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: #4e73df;
+}
+
+.tab.active {
+  color: #4e73df;
+  border-bottom: 2px solid #4e73df;
+}
+
+/* Filter groups */
+.filter-group {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.filter-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  margin-right: 8px;
+}
+
+/* Select boxes */
+select {
+  padding: 6px 8px;
+  border: 1px solid #d1d3e2;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #6e707e;
+  background-color: white;
+  min-width: 120px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+select:focus {
+  border-color: #a2b9ff;
+  box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.1);
+}
+
+/* Button styling */
+.btn {
+  background-color: #4e73df;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn:hover {
+  background-color: #3756c5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-group {
+    margin-bottom: 8px;
+    width: 100%;
+  }
+  
+  .tabs {
+    margin-bottom: 12px;
+    width: 100%;
+  }
+}/* Professional Filter Row Styling */
+
+
+
+
+
+/* Base container */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e3e6f0;
+  flex-wrap: wrap;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Tabs styling */
+.tabs {
+  display: flex;
+  margin-right: 20px;
+}
+
+.tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5a5c69;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: #4e73df;
+}
+
+.tab.active {
+  color: #4e73df;
+  border-bottom: 2px solid #4e73df;
+}
+
+/* Filter groups */
+.filter-group {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.filter-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  margin-right: 8px;
+}
+
+/* Select boxes */
+select {
+  padding: 6px 8px;
+  border: 1px solid #d1d3e2;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #6e707e;
+  background-color: white;
+  min-width: 120px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+select:focus {
+  border-color: #a2b9ff;
+  box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.1);
+}
+
+/* Button styling */
+.btn {
+  background-color: #4e73df;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn:hover {
+  background-color: #3756c5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-group {
+    margin-bottom: 8px;
+    width: 100%;
+  }
+  
+  .tabs {
+    margin-bottom: 12px;
+    width: 100%;
+  }
+}/* Professional Filter Row Styling */
+
+/* Base container */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e3e6f0;
+  flex-wrap: wrap;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Tabs styling */
+.tabs {
+  display: flex;
+  margin-right: 20px;
+}
+
+.tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5a5c69;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: #4e73df;
+}
+
+.tab.active {
+  color: #4e73df;
+  border-bottom: 2px solid #4e73df;
+}
+
+/* Filter groups */
+.filter-group {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.filter-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  margin-right: 8px;
+}
+
+/* Select boxes */
+select {
+  padding: 6px 8px;
+  border: 1px solid #d1d3e2;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #6e707e;
+  background-color: white;
+  min-width: 120px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+select:focus {
+  border-color: #a2b9ff;
+  box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.1);
+}
+
+/* Button styling */
+.btn {
+  background-color: #4e73df;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn:hover {
+  background-color: #3756c5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-group {
+    margin-bottom: 8px;
+    width: 100%;
+  }
+  
+  .tabs {
+    margin-bottom: 12px;
+    width: 100%;
+  }
+}/* Professional Filter Row Styling */
+
+/* Base container */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e3e6f0;
+  flex-wrap: wrap;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Tabs styling */
+.tabs {
+  display: flex;
+  margin-right: 20px;
+}
+
+.tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5a5c69;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: #4e73df;
+}
+
+.tab.active {
+  color: #4e73df;
+  border-bottom: 2px solid #4e73df;
+}
+
+/* Filter groups */
+.filter-group {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.filter-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  margin-right: 8px;
+}
+
+/* Select boxes */
+select {
+  padding: 6px 8px;
+  border: 1px solid #d1d3e2;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #6e707e;
+  background-color: white;
+  min-width: 120px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+select:focus {
+  border-color: #a2b9ff;
+  box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.1);
+}
+
+/* Button styling */
+.btn {
+  background-color: #4e73df;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn:hover {
+  background-color: #3756c5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-group {
+    margin-bottom: 8px;
+    width: 100%;
+  }
+  
+  .tabs {
+    margin-bottom: 12px;
+    width: 100%;
+  }
+}/* Professional Filter Row Styling */
+
+/* Base container */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e3e6f0;
+  flex-wrap: wrap;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Tabs styling */
+.tabs {
+  display: flex;
+  margin-right: 20px;
+}
+
+.tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5a5c69;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: #4e73df;
+}
+
+.tab.active {
+  color: #4e73df;
+  border-bottom: 2px solid #4e73df;
+}
+
+/* Filter groups */
+.filter-group {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.filter-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  margin-right: 8px;
+}
+
+/* Select boxes */
+select {
+  padding: 6px 8px;
+  border: 1px solid #d1d3e2;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #6e707e;
+  background-color: white;
+  min-width: 120px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+select:focus {
+  border-color: #a2b9ff;
+  box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.1);
+}
+
+/* Button styling */
+.btn {
+  background-color: #4e73df;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn:hover {
+  background-color: #3756c5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-group {
+    margin-bottom: 8px;
+    width: 100%;
+  }
+  
+  .tabs {
+    margin-bottom: 12px;
+    width: 100%;
+  }
+}/* Professional Filter Row Styling */
+
+/* Base container */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e3e6f0;
+  flex-wrap: wrap;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Tabs styling */
+.tabs {
+  display: flex;
+  margin-right: 20px;
+}
+
+.tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5a5c69;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: #4e73df;
+}
+
+.tab.active {
+  color: #4e73df;
+  border-bottom: 2px solid #4e73df;
+}
+
+/* Filter groups */
+.filter-group {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.filter-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  margin-right: 8px;
+}
+
+/* Select boxes */
+select {
+  padding: 6px 8px;
+  border: 1px solid #d1d3e2;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #6e707e;
+  background-color: white;
+  min-width: 120px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+select:focus {
+  border-color: #a2b9ff;
+  box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.1);
+}
+
+/* Button styling */
+.btn {
+  background-color: #4e73df;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn:hover {
+  background-color: #3756c5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-group {
+    margin-bottom: 8px;
+    width: 100%;
+  }
+  
+  .tabs {
+    margin-bottom: 12px;
+    width: 100%;
+  }
+}/* Professional Filter Row Styling */
+
+/* Base container */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e3e6f0;
+  flex-wrap: wrap;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Tabs styling */
+.tabs {
+  display: flex;
+  margin-right: 20px;
+}
+
+.tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5a5c69;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: #4e73df;
+}
+
+.tab.active {
+  color: #4e73df;
+  border-bottom: 2px solid #4e73df;
+}
+
+/* Filter groups */
+.filter-group {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.filter-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  margin-right: 8px;
+}
+
+/* Select boxes */
+select {
+  padding: 6px 8px;
+  border: 1px solid #d1d3e2;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #6e707e;
+  background-color: white;
+  min-width: 120px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+select:focus {
+  border-color: #a2b9ff;
+  box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.1);
+}
+
+/* Button styling */
+.btn {
+  background-color: #4e73df;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn:hover {
+  background-color: #3756c5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-group {
+    margin-bottom: 8px;
+    width: 100%;
+  }
+  
+  .tabs {
+    margin-bottom: 12px;
+    width: 100%;
+  }
+}/* Professional Filter Row Styling */
+
+/* Base container */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e3e6f0;
+  flex-wrap: wrap;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Tabs styling */
+.tabs {
+  display: flex;
+  margin-right: 20px;
+}
+
+.tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5a5c69;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: #4e73df;
+}
+
+.tab.active {
+  color: #4e73df;
+  border-bottom: 2px solid #4e73df;
+}
+
+/* Filter groups */
+.filter-group {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.filter-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  margin-right: 8px;
+}
+
+/* Select boxes */
+select {
+  padding: 6px 8px;
+  border: 1px solid #d1d3e2;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #6e707e;
+  background-color: white;
+  min-width: 120px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+select:focus {
+  border-color: #a2b9ff;
+  box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.1);
+}
+
+/* Button styling */
+.btn {
+  background-color: #4e73df;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn:hover {
+  background-color: #3756c5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-group {
+    margin-bottom: 8px;
+    width: 100%;
+  }
+  
+  .tabs {
+    margin-bottom: 12px;
+    width: 100%;
+  }
+}/* Professional Filter Row Styling */
+
+/* Base container */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e3e6f0;
+  flex-wrap: wrap;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Tabs styling */
+.tabs {
+  display: flex;
+  margin-right: 20px;
+}
+
+.tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5a5c69;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: #4e73df;
+}
+
+.tab.active {
+  color: #4e73df;
+  border-bottom: 2px solid #4e73df;
+}
+
+/* Filter groups */
+.filter-group {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.filter-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  margin-right: 8px;
+}
+
+/* Select boxes */
+select {
+  padding: 6px 8px;
+  border: 1px solid #d1d3e2;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #6e707e;
+  background-color: white;
+  min-width: 120px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+select:focus {
+  border-color: #a2b9ff;
+  box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.1);
+}
+
+/* Button styling */
+.btn {
+  background-color: #4e73df;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn:hover {
+  background-color: #3756c5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-group {
+    margin-bottom: 8px;
+    width: 100%;
+  }
+  
+  .tabs {
+    margin-bottom: 12px;
+    width: 100%;
+  }
+}
+
+.contnets {
+  margin-top: 20px;
+    display: flex;
+   flex-direction: column;
+    gap: 4px; 
+    padding-bottom: 20px;
+}
+
+
+/*doctor working setap */
+
+.doctor_information .qualification{
+ position: relative;
+ left: 250px;
+  
+}
+.doctor_information .degree{
+ position: relative;
+ left: 650px;
+  
+}
+
+.leftborder{
+  border-right: 2px solid black;
+  position: relative;
+  left: 40px;
+
+}
+.borderbottom{
+  position: relative;
+  border-bottom: 2px solid black;
+}
+
+.px-5px {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+ .borderworking{
+  border: 2px solid black;
+  position: relative;
+ } 
+
+
+ .self_commission{
+     position: relative;
+    left: 115px;
+  
+}
+ .others_commission{
+ position: relative;
+ left: 205px;
+  
+}
+.selte_doctor_type{
+  position: relative;
+  padding: 5px 0px;
+  width: 180px;
+}
+.discount_by{
+ position: relative;
+  padding: 4px 0px;
+  width: 557px;
+}
+.given{
+  position: relative;
+  width: 90% !important;
+}
+.Remarks{
+  position: relative;
+  padding: 4px 0px;
+  width: 680px;
+}
+.date_time{
+  
+}
+.seletedtype_doctor_setap{
+  width: 49px;
+  height: 29px;
+}
+
+
+/* Professional Filter Row Styling */
+
+/* Base container */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e3e6f0;
+  flex-wrap: wrap;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Tabs styling */
+.tabs {
+  display: flex;
+  margin-right: 20px;
+}
+
+.tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5a5c69;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: #4e73df;
+}
+
+.tab.active {
+  color: #4e73df;
+  border-bottom: 2px solid #4e73df;
+}
+
+/* Filter groups */
+.filter-group {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.filter-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  margin-right: 8px;
+}
+
+/* Select boxes */
+select {
+  padding: 6px 8px;
+  border: 1px solid #d1d3e2;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #6e707e;
+  background-color: white;
+  min-width: 120px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+select:focus {
+  border-color: #a2b9ff;
+  box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.1);
+}
+
+/* Button styling */
+.btn {
+  background-color: #4e73df;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn:hover {
+  background-color: #3756c5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-group {
+    margin-bottom: 8px;
+    width: 100%;
+  }
+  
+  .tabs {
+    margin-bottom: 12px;
+    width: 100%;
+  }
+}
+
+
+
+
+/* Custom styles */
+.patient-info {
+  font-size: 0.9rem;
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.table thead th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.table td {
+  font-size: 0.85rem;
+  vertical-align: middle;
+}
+
+/* Add Bootstrap 5 utility classes for padding and margins */
+.py-4 {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.me-2 {
+  margin-right: 0.5rem;
+}
+
+.me-1 {
+  margin-right: 0.25rem;
+}
+
+.mt-3 {
+  margin-top: 1rem;
+}
+
+/* Card shadows and borders */
+.card {
+  border-radius: 0.375rem;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.shadow-sm {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Form control styles */
+.form-control-sm, .form-select-sm {
+  height: calc(1.5em + 0.5rem + 2px);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.2rem;
+}
+
+
+
+/* order endtry */
+.card {
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.btn {
+  transition: all 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.table td, .table th {
+  vertical-align: middle;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Custom styles */
+.bg-primary {
+  background-color: #4e73df !important;
+}
+
+.btn-outline-primary {
+  color: #4e73df;
+  border-color: #4e73df;
+}
+
+.btn-outline-primary:hover {
+  background-color: #4e73df;
+  color: white;
+}
+
+.btn-success {
+  background-color: #1cc88a;
+  border-color: #1cc88a;
+}
+
+.btn-primary {
+  background-color: #4e73df;
+  border-color: #4e73df;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #5a5c69;
+}
+.btns{
+  font-size: 14px;
+  width: 150px;
+  height: 50px;
+}
+
+
+.client-info-container {
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.section-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.section-header {
+  background-color: #f0f2f5;
+  padding: 10px 15px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.section-body {
+  padding: 15px;
+}
+
+.card {
+  border: none;
+  border-radius: 10px;
+}
+
+.card-header {
+  border-radius: 10px 10px 0 0 !important;
+}
+
+.input-group-text {
+  background-color: #f0f2f5 !important;
+  border-right: none;
+  width: 130px;
+  justify-content: end;
+  font-size: 0.80rem !important;
+}
+
+.form-control {
+  border-left: none;
+  font-size: 0.9rem;
+}
+
+.form-control:focus {
+  box-shadow: none;
+  border-color: #ced4da;
+}
+
+.address-header {
+  background-color: #f0f2f5;
+  padding: 5px 15px;
+  border-radius: 4px 4px 0 0;
+  font-size: 0.85rem;
+}
+
+.address-body {
+  border: 1px solid #ced4da;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+}
+
+.client-list-item, .department-item, .relation-item {
+  border-bottom: 1px solid #f0f2f5;
+  padding: 5px 0;
+}
+
+.client-list-item:last-child, .department-item:last-child, .relation-item:last-child {
+  border-bottom: none;
+}
+
+.form-check-input {
+  cursor: pointer;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+
+
+
