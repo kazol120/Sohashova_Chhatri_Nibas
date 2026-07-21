@@ -5,7 +5,7 @@
         <div class="card mb-4 shadow-sm">
           <div class="card-header d-flex flex-wrap gap-2 justify-content-between align-items-center py-3">
             <div>
-              <h5 class="card-title mb-0">Room Booking History</h5>
+              <h5 class="card-title mb-0">Room Booking History </h5>
             </div>
           </div>
           <div class="card-header d-flex flex-wrap gap-2 justify-content-between align-items-center py-3">
@@ -89,19 +89,18 @@
                     <th style="width: 70px">Sl</th>
                     <th style="width: 130px">Image</th>
                     <th style="width: 160px">Name</th>
+                    <th style="width: 130px">User Type</th>
                     <th style="width: 180px">Floor</th>
                     <th style="width: 180px">Rooms</th>
                     <th style="width: 180px">Room Price</th>
                     <th style="width: 140px">Total Amount</th>
-                    <th style="width: 180px">Total Days & Amount</th>
                     <th style="width: 180px">Booking Date & Time</th>
-                    <th style="width: 140px">Check In</th>
-                    <th style="width: 140px">Check Out</th>
                     <th style="width: 180px">Email</th>
-                    <th style="width: 150px">Father Name</th>
-                    <th style="width: 150px">Mother Name</th>
-                    <th style="width: 140px">Father NID</th>
-                    <th style="width: 140px">Mother NID</th>
+                    <th v-if="showFamilyColumns" style="width: 150px">Father Name</th>
+                    <th v-if="showFamilyColumns" style="width: 150px">Mother Name</th>
+                    <th v-if="showFamilyColumns" style="width: 140px">Father NID</th>
+                    <th v-if="showFamilyColumns" style="width: 140px">NID / Mother NID</th>
+                    <th v-if="showNidColumn" style="width: 140px">NID</th>
                     <th style="width: 140px">Phone</th>
                     <th style="width: 120px">Division</th>
                     <th style="width: 120px">District</th>
@@ -126,6 +125,10 @@
 
                     <td>
                       <div class="fw-semibold">{{ r.full_name || "-" }}</div>
+                    </td>
+
+                    <td>
+                      <span class="badge bg-label-secondary fw-semibold">{{ r.user_type || 'Student' }}</span>
                     </td>
 
                     <td colspan="4">
@@ -157,45 +160,31 @@
                     </td>
 
                     <td>
-                      <div class="fw-semibold">
-                        {{ getTotalDays(r.check_in, r.check_out) }} Days
-                      </div>
-
-                      <div class="fw-semibold text-success">
-                        ৳ {{ Number(r.daybytotalamount || 0).toFixed(2) }}
-                      </div>
-                    </td>
-
-                    <td>
                       <span class="fw-semibold">{{ formatDateTime(r.created_at) }}</span>
-                    </td>
-
-                    <td>
-                      <span class="fw-semibold">{{ formatDate(r.check_in) }}</span>
-                    </td>
-
-                    <td>
-                      <span class="fw-semibold">{{ formatDate(r.check_out) }}</span>
                     </td>
 
                     <td>
                       <span class="fw-semibold">{{ r.email || "-" }}</span>
                     </td>
 
-                    <td>
-                      <span class="fw-semibold">{{ r.father_name || "-" }}</span>
+                    <td v-if="showFamilyColumns">
+                      <span class="fw-semibold">{{ isStudent(r) ? (r.father_name || '-') : '—' }}</span>
                     </td>
 
-                    <td>
-                      <span class="fw-semibold">{{ r.mother_name || "-" }}</span>
+                    <td v-if="showFamilyColumns">
+                      <span class="fw-semibold">{{ isStudent(r) ? (r.mother_name || '-') : '—' }}</span>
                     </td>
 
-                    <td>
-                      <span class="fw-semibold">{{ r.father_nid || "-" }}</span>
+                    <td v-if="showFamilyColumns">
+                      <span class="fw-semibold">{{ isStudent(r) ? (r.father_nid || '-') : '—' }}</span>
                     </td>
 
-                    <td>
-                      <span class="fw-semibold">{{ r.mother_nid || "-" }}</span>
+                    <td v-if="showFamilyColumns">
+                      <span class="fw-semibold">{{ isStudent(r) ? (r.mother_nid || '-') : '—' }}</span>
+                    </td>
+
+                    <td v-if="showNidColumn">
+                      <span class="fw-semibold">{{ isProfessional(r) ? (r.nid || "-") : "—" }}</span>
                     </td>
 
                     <td>
@@ -228,7 +217,7 @@
 
                 <tbody v-else>
                   <tr>
-                    <td colspan="18" class="text-center py-4 text-muted">
+                    <td :colspan="totalColumns" class="text-center py-4 text-muted">
                       <span v-if="loading">
                         <i class="fa fa-spinner fa-spin me-2"></i> Loading...
                       </span>
@@ -307,6 +296,20 @@ export default {
     url() {
       return this.$store.state.url;
     },
+    showNidColumn() {
+      if (this.isAdmin) return true;
+      return this.rooms.some(r => this.isProfessional(r));
+    },
+    showFamilyColumns() {
+      if (this.isAdmin) return true;
+      return !this.rooms.some(r => this.isProfessional(r));
+    },
+    totalColumns() {
+      let count = 15; // base columns
+      if (this.showFamilyColumns) count += 4;
+      if (this.showNidColumn) count += 1;
+      return count;
+    },
   },
 
   mounted() {
@@ -332,6 +335,16 @@ watch: {
   },
 
   methods: {
+    isStudent(r) {
+      if (!r || !r.user_type) return true;
+      return r.user_type.toLowerCase() === 'student';
+    },
+
+    isProfessional(r) {
+      if (!r || !r.user_type) return false;
+      return r.user_type.toLowerCase() === 'working professional';
+    },
+
     async loadGuestNames() {
       try {
         const res = await axios.get(this.endpoint("get-select-guet"));
