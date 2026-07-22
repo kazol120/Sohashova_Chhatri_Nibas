@@ -46,6 +46,18 @@
                         </tr>
                         @if($isStudent)
                         <tr>
+                            <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>Institution Name</strong></td>
+                            <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $institution_name ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>Education System</strong></td>
+                            <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $education_level ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>Class / Semester</strong></td>
+                            <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $education_class ?? '-' }}</td>
+                        </tr>
+                        <tr>
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>Father's Name</strong></td>
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $father_name ?? '-' }}</td>
                         </tr>
@@ -63,6 +75,10 @@
                         </tr>
                         @endif
                         @if($isProfessional)
+                        <tr>
+                            <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>Workplace Name</strong></td>
+                            <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $workplace_name ?? '-' }}</td>
+                        </tr>
                         <tr>
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; background:#f9fafb; font-size:13px;"><strong>NID</strong></td>
                             <td style="padding:9px 10px; border:1px solid #e5e7eb; font-size:13px;">{{ $nid ?? '-' }}</td>

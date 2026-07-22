@@ -535,15 +535,46 @@
             </select>
           </div>
 
-          <!-- Passenger NID/Passport (Hidden by default) -->
-          <div class="col-12" id="passenger_nid_div" style="display:none;">
-            <label class="form-label">NID / Passport <span class="req">*</span></label>
-            <input type="text" class="form-control" id="nid" name="nid" placeholder="Enter NID or Passport number">
+          <!-- Passenger NID/Passport & Workplace (Working Professional) -->
+          <div class="col-12 p-0 m-0" id="passenger_nid_div" style="display:none;">
+            <div class="row g-3 p-0 m-0">
+              <div class="col-12">
+                <label class="form-label">Workplace Name (কর্মক্ষেত্রের নাম) <span class="req">*</span></label>
+                <input type="text" class="form-control" id="workplace_name" name="workplace_name" placeholder="Enter Workplace Name">
+              </div>
+              <div class="col-12">
+                <label class="form-label">NID / Passport <span class="req">*</span></label>
+                <input type="text" class="form-control" id="nid" name="nid" placeholder="Enter NID or Passport number">
+              </div>
+            </div>
           </div>
 
-          <!-- Student Guardian Details -->
+          <!-- Student Guardian & Education Details -->
           <div class="col-12 p-0 m-0" id="student_fields">
             <div class="row g-3 p-0 m-0">
+              <div class="col-12">
+                <label class="form-label">Institution Name (শিক্ষা প্রতিষ্ঠানের নাম) <span class="req">*</span></label>
+                <input type="text" class="form-control" id="institution_name" name="institution_name" placeholder="Enter Institution Name" required>
+              </div>
+
+              <div class="col-6">
+                <label class="form-label">Education System (শিক্ষা ব্যবস্থা) <span class="req">*</span></label>
+                <select class="form-select" id="education_level" name="education_level" required>
+                  <option value="">Select System</option>
+                  <option value="School">School (স্কুল)</option>
+                  <option value="College">College (কলেজ)</option>
+                  <option value="University">University (বিশ্ববিদ্যালয়)</option>
+                  <option value="Diploma / Polytechnic">Diploma / Polytechnic (ডিপ্লোমা)</option>
+                </select>
+              </div>
+
+              <div class="col-6">
+                <label class="form-label">Class / Semester <span class="req">*</span></label>
+                <select class="form-select" id="education_class" name="education_class" required>
+                  <option value="">Select Class / Semester</option>
+                </select>
+              </div>
+
               <div class="col-6">
                 <label class="form-label">Father's Name <span class="req">*</span></label>
                 <input type="text" class="form-control" id="father_name" name="father_name" placeholder="Father's Name" required>
@@ -953,10 +984,47 @@ function showSuccessAlert(message, redirectUrl) {
         }
     }
 
+    const educationClassOptions = {
+        'School': [
+            'Play Group', 'Nursery', 'KG', 'Class 1', 'Class 2', 'Class 3', 'Class 4', 
+            'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'
+        ],
+        'College': [
+            '1st Year (একাদশ)', '2nd Year (দ্বাদশ)'
+        ],
+        'University': [
+            '1st Semester', '2nd Semester', '3rd Semester', '4th Semester', 
+            '5th Semester', '6th Semester', '7th Semester', '8th Semester'
+        ],
+        'Diploma / Polytechnic': [
+            '1st Semester', '2nd Semester', '3rd Semester', '4th Semester', 
+            '5th Semester', '6th Semester', '7th Semester', '8th Semester'
+        ]
+    };
+
+    function updateEducationClassOptions(selectedLevel, selectedClass = null) {
+        const classSelect = document.getElementById('education_class');
+        if (!classSelect) return;
+
+        classSelect.innerHTML = '<option value="">Select Class / Semester</option>';
+        if (!selectedLevel || !educationClassOptions[selectedLevel]) return;
+
+        educationClassOptions[selectedLevel].forEach(cls => {
+            const opt = document.createElement('option');
+            opt.value = cls;
+            opt.textContent = cls;
+            if (selectedClass && selectedClass === cls) {
+                opt.selected = true;
+            }
+            classSelect.appendChild(opt);
+        });
+    }
+
     function bindUserTypeToggle() {
         const userTypeEl = document.getElementById('user_type');
         const studentFields = document.getElementById('student_fields');
         const passengerNidDiv = document.getElementById('passenger_nid_div');
+        const eduLevelEl = document.getElementById('education_level');
 
         if (!userTypeEl) return;
 
@@ -967,26 +1035,34 @@ function showSuccessAlert(message, redirectUrl) {
                 if (passengerNidDiv) passengerNidDiv.style.display = 'none';
 
                 // set required attributes for student fields
-                document.querySelectorAll('#student_fields input').forEach(input => {
+                document.querySelectorAll('#student_fields input, #student_fields select').forEach(input => {
                     input.setAttribute('required', 'required');
                 });
-                // remove required attribute for passenger nid field
-                document.getElementById('nid')?.removeAttribute('required');
+                // remove required attribute for passenger nid & workplace fields
+                document.querySelectorAll('#passenger_nid_div input').forEach(input => {
+                    input.removeAttribute('required');
+                });
             } else {
                 if (studentFields) studentFields.style.display = 'none';
                 if (passengerNidDiv) passengerNidDiv.style.display = 'block';
 
                 // remove required attributes for student fields
-                document.querySelectorAll('#student_fields input').forEach(input => {
+                document.querySelectorAll('#student_fields input, #student_fields select').forEach(input => {
                     input.removeAttribute('required');
                 });
-                // set required attribute for passenger nid field
-                document.getElementById('nid')?.setAttribute('required', 'required');
+                // set required attribute for working professional fields
+                document.querySelectorAll('#passenger_nid_div input').forEach(input => {
+                    input.setAttribute('required', 'required');
+                });
             }
         }
 
         userTypeEl.addEventListener('change', toggleFields);
         toggleFields(); // run once on init
+
+        eduLevelEl?.addEventListener('change', function () {
+            updateEducationClassOptions(this.value);
+        });
     }
 
     async function loadDivisions(selectedDivisionId = null) {
@@ -1132,10 +1208,24 @@ function showSuccessAlert(message, redirectUrl) {
 
                         setVal('fullname', data.full_name);
                         setVal('guestEmail', data.email);
+                        setVal('nid', data.nid);
                         setVal('mother_nid', data.mother_nid);
                         setVal('father_nid', data.father_nid);
                         setVal('father_name', data.father_name);
                         setVal('mother_name', data.mother_name);
+                        setVal('institution_name', data.institution_name);
+                        setVal('workplace_name', data.workplace_name);
+
+                        if (data.user_type) {
+                            setVal('user_type', data.user_type);
+                            const userTypeEl = document.getElementById('user_type');
+                            if (userTypeEl) userTypeEl.dispatchEvent(new Event('change'));
+                        }
+
+                        if (data.education_level) {
+                            setVal('education_level', data.education_level);
+                            updateEducationClassOptions(data.education_level, data.education_class);
+                        }
 
                         if (data.image_url && data.image_name) {
                             existingImageUrl = data.image_url;
@@ -1226,23 +1316,29 @@ function showSuccessAlert(message, redirectUrl) {
 
         const userTypeVal = document.getElementById('user_type')?.value || 'student';
         if (userTypeVal === 'student') {
-            // FAMILY FIELDS CHECK
+            // STUDENT & FAMILY FIELDS CHECK
+            const instName   = document.getElementById('institution_name')?.value.trim();
+            const eduLevel   = document.getElementById('education_level')?.value;
+            const eduClass   = document.getElementById('education_class')?.value;
             const fatherName = document.getElementById('father_name')?.value.trim();
             const motherName = document.getElementById('mother_name')?.value.trim();
             const fatherNid  = document.getElementById('father_nid')?.value.trim();
             const motherNid  = document.getElementById('mother_nid')?.value.trim();
 
-            if (!fatherName || !motherName || !fatherNid || !motherNid) {
+            if (!instName || !eduLevel || !eduClass || !fatherName || !motherName || !fatherNid || !motherNid) {
                 const missing = [];
+                if (!instName)   missing.push("Institution Name");
+                if (!eduLevel)   missing.push("Education System");
+                if (!eduClass)   missing.push("Class / Semester");
                 if (!fatherName) missing.push("Father's Name");
                 if (!motherName) missing.push("Mother's Name");
                 if (!fatherNid)  missing.push("Father's NID");
                 if (!motherNid)  missing.push("Mother's NID");
                 showMsg('warning', `
                     <div style="display:flex; gap:12px; align-items:flex-start;">
-                        <div style="font-size:22px; line-height:1;">👨‍👩‍👧</div>
+                        <div style="font-size:22px; line-height:1;">🎓</div>
                         <div>
-                            <div style="font-size:15px; font-weight:700; margin-bottom:6px;">Family Information Required</div>
+                            <div style="font-size:15px; font-weight:700; margin-bottom:6px;">Student Information Required</div>
                             <div style="font-size:13px; line-height:1.6;">
                                 Please fill in the following required field(s):<br>
                                 <strong>${missing.join(', ')}</strong>
@@ -1254,15 +1350,22 @@ function showSuccessAlert(message, redirectUrl) {
                 return;
             }
         } else {
-            // PASSENGER NID CHECK
-            const nid = document.getElementById('nid')?.value.trim();
-            if (!nid) {
+            // WORKING PROFESSIONAL FIELDS CHECK
+            const workplaceName = document.getElementById('workplace_name')?.value.trim();
+            const nid           = document.getElementById('nid')?.value.trim();
+            if (!workplaceName || !nid) {
+                const missing = [];
+                if (!workplaceName) missing.push("Workplace Name");
+                if (!nid)           missing.push("NID / Passport");
                 showMsg('warning', `
                     <div style="display:flex; gap:12px; align-items:flex-start;">
-                        <div style="font-size:22px; line-height:1;">🪪</div>
+                        <div style="font-size:22px; line-height:1;">💼</div>
                         <div>
-                            <div style="font-size:15px; font-weight:700; margin-bottom:6px;">NID / Passport Required</div>
-                            <div style="font-size:13px; line-height:1.6;">Please enter your NID or Passport number.</div>
+                            <div style="font-size:15px; font-weight:700; margin-bottom:6px;">Professional Details Required</div>
+                            <div style="font-size:13px; line-height:1.6;">
+                                Please fill in the following required field(s):<br>
+                                <strong>${missing.join(', ')}</strong>
+                            </div>
                         </div>
                     </div>
                 `);

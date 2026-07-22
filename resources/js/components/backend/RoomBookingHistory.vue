@@ -96,10 +96,14 @@
                     <th style="width: 140px">Total Amount</th>
                     <th style="width: 180px">Booking Date & Time</th>
                     <th style="width: 180px">Email</th>
+                    <th v-if="showFamilyColumns" style="width: 160px">Institution Name</th>
+                    <th v-if="showFamilyColumns" style="width: 140px">Education System</th>
+                    <th v-if="showFamilyColumns" style="width: 140px">Class / Semester</th>
                     <th v-if="showFamilyColumns" style="width: 150px">Father Name</th>
                     <th v-if="showFamilyColumns" style="width: 150px">Mother Name</th>
                     <th v-if="showFamilyColumns" style="width: 140px">Father NID</th>
                     <th v-if="showFamilyColumns" style="width: 140px">NID / Mother NID</th>
+                    <th v-if="showNidColumn" style="width: 160px">Workplace Name</th>
                     <th v-if="showNidColumn" style="width: 140px">NID</th>
                     <th style="width: 140px">Phone</th>
                     <th style="width: 120px">Division</th>
@@ -168,6 +172,18 @@
                     </td>
 
                     <td v-if="showFamilyColumns">
+                      <span class="fw-semibold">{{ isStudent(r) ? (r.institution_name || '-') : '—' }}</span>
+                    </td>
+
+                    <td v-if="showFamilyColumns">
+                      <span class="fw-semibold">{{ isStudent(r) ? (r.education_level || '-') : '—' }}</span>
+                    </td>
+
+                    <td v-if="showFamilyColumns">
+                      <span class="fw-semibold">{{ isStudent(r) ? (r.education_class || '-') : '—' }}</span>
+                    </td>
+
+                    <td v-if="showFamilyColumns">
                       <span class="fw-semibold">{{ isStudent(r) ? (r.father_name || '-') : '—' }}</span>
                     </td>
 
@@ -181,6 +197,10 @@
 
                     <td v-if="showFamilyColumns">
                       <span class="fw-semibold">{{ isStudent(r) ? (r.mother_nid || '-') : '—' }}</span>
+                    </td>
+
+                    <td v-if="showNidColumn">
+                      <span class="fw-semibold">{{ isProfessional(r) ? (r.workplace_name || "-") : "—" }}</span>
                     </td>
 
                     <td v-if="showNidColumn">
@@ -306,8 +326,8 @@ export default {
     },
     totalColumns() {
       let count = 15; // base columns
-      if (this.showFamilyColumns) count += 4;
-      if (this.showNidColumn) count += 1;
+      if (this.showFamilyColumns) count += 7;
+      if (this.showNidColumn) count += 2;
       return count;
     },
   },
