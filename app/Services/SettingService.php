@@ -82,4 +82,32 @@ class SettingService{
         }
 
     }
+    public static function getSettingContentBySlug($slug, $key = null)
+    {
+        $setting = Setting::where('slug', $slug)->first();
+        if (!$setting) {
+            if ($slug === 'meal_setting') {
+                $setting = Setting::create([
+                    'title' => 'Meal Setting',
+                    'slug' => 'meal_setting',
+                    'contents' => json_encode([
+                        'half' => '35',
+                        'full' => '65',
+                        'day_rice' => '200',
+                        'night_rice' => '200',
+                        'morning_rice' => '100',
+                        'Chef_take_meal_number' => '1',
+                        'meal_change_time' => '08:00',
+                        'seat_rent' => '2000'
+                    ])
+                ]);
+            } else {
+                return null;
+            }
+        }
+
+        $contents = json_decode($setting->contents, true);
+
+        return $key ? ($contents[$key] ?? null) : $contents;
+    }
 }

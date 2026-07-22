@@ -38,7 +38,7 @@ Route::middleware(['auth','checkUserStatus'])->group(function () {
         Route::get('new-password', 'newPassword')->name('new-password');
         Route::post('password-update', 'passwordUpdate')->name('password-update');
     });
-    Route::resource('project',ProjectController::class);//no need this
+    // Route::resource('project',ProjectController::class);//no need this
 
     Route::middleware(['permission:user-index|user-create|user-edit|user-delete'])->group(function () {
         Route::resource('user',UserController::class);

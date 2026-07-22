@@ -15,6 +15,12 @@
                       <div data-i18n="My Payments" class="fs-5">My Payments</div>
                   </a>
               </li>
+              <li class="menu-item {{ Route::currentRouteNamed('meals.create') ? 'active' : '' }}">
+                  <a href="{{ route('meals.create') }}" class="menu-link">
+                      <i class="menu-icon tf-icons ti ti-calendar-event"></i>
+                      <div data-i18n="Daily Meal Create" class="fs-5">Daily Meal Create</div>
+                  </a>
+              </li>
               @endrole
               @canany(['user-index','user-create','user-edit','user-delete'])
               <!-- User Management -->
@@ -195,6 +201,43 @@
                   <li class="menu-item {{ Route::currentRouteNamed('monthly-payments.index') ? 'active' : '' }}">
                     <a href="{{ route('monthly-payments.index') }}" class="menu-link">
                       <div class="fs-5">Payments</div>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              @endrole
+
+              {{-- Meal Management --}}
+              @role('admin')
+              <li class="menu-item {{ Route::currentRouteNamed('meals.index') || Route::currentRouteNamed('meals.create') || Route::currentRouteNamed('meal-history') || Route::currentRouteNamed('deposits.index') || Route::currentRouteNamed('deposits.create') || Route::currentRouteNamed('fines.index') || Route::currentRouteNamed('fines.create') ? 'active open' : '' }}">
+                <a href="javascript:void(0)" class="menu-link menu-toggle fs-5">
+                  <i class="fas fa-utensils" style="background-color: white; padding: 5px; border-radius: 50%;"></i>
+                  <div class="ms-3">Meal Management</div>
+                </a>
+                <ul class="menu-sub">
+                  <li class="menu-item {{ Route::currentRouteNamed('meals.create') ? 'active' : '' }}">
+                    <a href="{{ route('meals.create') }}" class="menu-link">
+                      <div class="fs-5">Daily Meal Create</div>
+                    </a>
+                  </li>
+                  <li class="menu-item {{ Route::currentRouteNamed('meals.index') ? 'active' : '' }}">
+                    <a href="{{ route('meals.index') }}" class="menu-link">
+                      <div class="fs-5">Daily Meal List</div>
+                    </a>
+                  </li>
+                  <li class="menu-item {{ Route::currentRouteNamed('meal-history') ? 'active' : '' }}">
+                    <a href="{{ route('meal-history') }}" class="menu-link">
+                      <div class="fs-5">Meal History</div>
+                    </a>
+                  </li>
+                  <li class="menu-item {{ Route::currentRouteNamed('deposits.index') || Route::currentRouteNamed('deposits.create') ? 'active' : '' }}">
+                    <a href="{{ route('deposits.index') }}" class="menu-link">
+                      <div class="fs-5">Meal Deposits</div>
+                    </a>
+                  </li>
+                  <li class="menu-item {{ Route::currentRouteNamed('fines.index') || Route::currentRouteNamed('fines.create') ? 'active' : '' }}">
+                    <a href="{{ route('fines.index') }}" class="menu-link">
+                      <div class="fs-5">Meal Fines</div>
                     </a>
                   </li>
                 </ul>

@@ -70,9 +70,20 @@ class MyPaymentController extends Controller
 
         $currentMonthPayment = $payments->firstWhere('payment_month', $currentMonth);
 
+        // Meal System Data
+        $selectedMonth = Carbon::now()->format('Y-m');
+        $mealService = app(\App\Services\MealService::class);
+        $depositService = app(\App\Services\DepositService::class);
+        $fineService = app(\App\Services\FineService::class);
+
+        $mealSummary = $mealService->singleUserMealHistory($selectedMonth, $user);
+        $mealsList = $mealService->monthlyMealByUser($selectedMonth, $user->id);
+        $depositData = $depositService->getUserMonthlyHistory($user->id, $selectedMonth);
+        $finesList = $fineService->fineByUser($selectedMonth, $user->id);
+
         return view('Frontend.page.my-payment', compact(
             'payments', 'totalBilled', 'totalPaid', 'totalDue',
-            'currentMonthPayment', 'user'
+            'currentMonthPayment', 'user', 'mealSummary', 'mealsList', 'depositData', 'finesList', 'selectedMonth'
         ));
     }
 
@@ -135,9 +146,20 @@ class MyPaymentController extends Controller
 
         $currentMonthPayment = $payments->firstWhere('payment_month', $currentMonth);
 
+        // Meal System Data
+        $selectedMonth = Carbon::now()->format('Y-m');
+        $mealService = app(\App\Services\MealService::class);
+        $depositService = app(\App\Services\DepositService::class);
+        $fineService = app(\App\Services\FineService::class);
+
+        $mealSummary = $mealService->singleUserMealHistory($selectedMonth, $user);
+        $mealsList = $mealService->monthlyMealByUser($selectedMonth, $user->id);
+        $depositData = $depositService->getUserMonthlyHistory($user->id, $selectedMonth);
+        $finesList = $fineService->fineByUser($selectedMonth, $user->id);
+
         return view('backend.monthly_payment.guest_payments', compact(
             'payments', 'totalBilled', 'totalPaid', 'totalDue',
-            'currentMonthPayment', 'user'
+            'currentMonthPayment', 'user', 'mealSummary', 'mealsList', 'depositData', 'finesList', 'selectedMonth'
         ));
     }
 }

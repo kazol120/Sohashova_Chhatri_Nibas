@@ -130,6 +130,89 @@
   </div>
   @endif
 
+  <!-- Meal System Summary & History for Resident -->
+  <div class="row g-6 mb-6">
+    <div class="col-md-12 col-xl-4">
+      <div class="card h-100 border border-2 border-success bg-label-success">
+        <div class="card-body">
+          <div class="d-flex align-items-center justify-content-between mb-4">
+            <h5 class="card-title mb-0 fw-bold text-dark"><i class="ti ti-salad me-2 text-success"></i>Meal Account Overview</h5>
+            <span class="badge bg-success">{{ \Carbon\Carbon::parse($selectedMonth . '-01')->format('F Y') }}</span>
+          </div>
+          <div class="row g-4 text-center">
+            <div class="col-4">
+              <small class="text-muted d-block mb-1">Total Meals</small>
+              <h4 class="mb-0 fw-bold text-dark">{{ $mealSummary->total_meal }}</h4>
+            </div>
+            <div class="col-4">
+              <small class="text-muted d-block mb-1">Meal Cost</small>
+              <h4 class="mb-0 fw-bold text-danger">৳{{ number_format($mealSummary->meal_cost, 2) }}</h4>
+            </div>
+            <div class="col-4">
+              <small class="text-muted d-block mb-1">Meal Deposit</small>
+              <h4 class="mb-0 fw-bold text-success">৳{{ number_format($mealSummary->deposit_total, 2) }}</h4>
+            </div>
+          </div>
+          <hr class="my-3">
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="fw-semibold text-secondary">Outstanding Balance:</span>
+            <span class="badge bg-{{ $mealSummary->balance < 0 ? 'danger' : 'success' }} fs-6 px-3 py-2 rounded-pill">
+              ৳{{ number_format($mealSummary->balance, 2) }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-12 col-xl-8">
+      <div class="card h-100">
+        <div class="card-header border-bottom py-3 d-flex align-items-center justify-content-between">
+          <h5 class="card-title mb-0 fw-bold text-dark">
+            <i class="ti ti-history me-2 text-primary"></i>Recent Meals (This Month)
+          </h5>
+        </div>
+        <div class="table-responsive text-nowrap" style="max-height: 180px; overflow-y: auto;">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr class="text-muted small fw-bold text-uppercase">
+                <th class="ps-4">Date</th>
+                <th class="text-center">Half Meal</th>
+                <th class="text-center">Full Meal</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              @forelse($mealsList as $meal)
+                <tr>
+                  <td class="ps-4">{{ \Carbon\Carbon::parse($meal->date)->format('d M Y') }}</td>
+                  <td class="text-center">
+                    @if($meal->half_meal)
+                      <span class="badge bg-label-info">{{ $meal->note == 'day' ? '☀️ Day' : '🌙 Night' }}</span>
+                    @else
+                      <span class="text-muted">—</span>
+                    @endif
+                  </td>
+                  <td class="text-center">
+                    @if($meal->full_meal)
+                      <span class="badge bg-label-success">Yes</span>
+                    @else
+                      <span class="text-muted">—</span>
+                    @endif
+                  </td>
+                  <td>{{ $meal->note ?: '—' }}</td>
+                </tr>
+              @empty
+                <tr>
+                  <td colspan="4" class="text-center py-4 text-muted">No meals recorded this month.</td>
+                </tr>
+              @endforelse
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Payment List Table -->
   <div class="card">
     <div class="card-header border-bottom d-flex align-items-center justify-content-between py-3">

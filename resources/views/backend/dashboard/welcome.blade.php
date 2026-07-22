@@ -105,7 +105,7 @@
         </div>
         @endhasanyrole
 
-        @hasanyrole('admin|HotelGuest')
+        @role('admin')
         <div class="col-sm-6 col-xl-3">
             <a href="{{ route('room-release.history') }}">
                 <div class="card">
@@ -128,7 +128,7 @@
                 </div>
             </a>
         </div>
-        @endhasanyrole
+        @endrole
 
         @role('HotelGuest')
         <div class="col-sm-6 col-xl-3">

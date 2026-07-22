@@ -1,65 +1,95 @@
 <?php
+
 namespace App\Services;
+
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
-class UserService{
-
+class UserService
+{
     public function user()
     {
-        return User::where('id','>','1')->get();
+        return $this->usersWithRole();
     }
+
+    public function releaseList()
+    {
+        // Released bookings phones
+        $releasedBookingPhones = \App\Models\Backend\RoomBookingHistory::where('status', 1)
+            ->pluck('phone')
+            ->map(function($p) {
+                return substr(preg_replace('/[^0-9]/', '', $p), -10);
+            })
+            ->filter()
+            ->unique()
+            ->toArray();
+
+        if (empty($releasedBookingPhones)) {
+            return collect();
+        }
+
+        return User::role('HotelGuest')
+            ->get()
+            ->filter(function($user) use ($releasedBookingPhones) {
+                $normPhone = substr(preg_replace('/[^0-9]/', '', $user->phone), -10);
+                return in_array($normPhone, $releasedBookingPhones);
+            })
+            ->values();
+    }
+
+    public function usersWithRole()
+    {
+        // Active bookings phones
+        $activeBookingPhones = \App\Models\Backend\RoomBookingHistory::where('status', 0)
+            ->pluck('phone')
+            ->map(function($p) {
+                return substr(preg_replace('/[^0-9]/', '', $p), -10);
+            })
+            ->filter()
+            ->unique()
+            ->toArray();
+
+        if (empty($activeBookingPhones)) {
+            return collect();
+        }
+
+        return User::role('HotelGuest')
+            ->where('status', 1)
+            ->get()
+            ->filter(function($user) use ($activeBookingPhones) {
+                $normPhone = substr(preg_replace('/[^0-9]/', '', $user->phone), -10);
+                return in_array($normPhone, $activeBookingPhones);
+            })
+            ->values();
+    }
+
+    public function usersWithoutRole()
+    {
+        return User::where('id', '>', 1)
+            ->whereDoesntHave('roles')
+            ->get();
+    }
+
     public function userById($id)
     {
         return User::findOrFail($id);
     }
-    public function userCreate(Request $request)
-    {
-        $in = $request->except('_token');
-        $in['password'] = bcrypt(12345678);
-        $in['status'] = $request->status == 'on' ? '1' : '0';
-        $user = User::create($in);
 
-        // Check if permissions are provided
-        $role = $request->get('roles', '');
-        if (!empty($role)) {
-            $user->syncRoles([$role]); // Use syncRoles to replace any existing roles
-        }
-        // Assign the permissions to the user
-        $permissions = $request->get('permissions', []);
-        if (!empty($permissions)) {
-            $user->syncPermissions($permissions); // Use syncPermissions to replace any existing permissions
-        }
-        return $user;
-    }
-    public function userUpdate(Request $request, $id)
+    public function userByPhone($phone)
     {
-        $user = $this->userById($id);
-        $in = $request->except('_token');
-        $in['status'] = $request->status == 'on' ? '1' : '0';
-        $user->update($in);
+        // Normalize search phone to last 10 digits
+        $normSearch = substr(preg_replace('/[^0-9]/', '', $phone), -10);
+        
+        $user = User::get()->filter(function($u) use ($normSearch) {
+            $normPhone = substr(preg_replace('/[^0-9]/', '', $u->phone), -10);
+            return $normPhone === $normSearch;
+        })->first();
 
-        // Check if permissions are provided
-        $role = $request->get('roles', '');
-        if (!empty($role)) {
-            $user->syncRoles([$role]); // Use syncRoles to replace any existing roles
+        if ($user) {
+            return $user->makeHidden(['password', 'email_verified_at', 'temp_password']);
         }
-        // Assign the permissions to the user
-        $permissions = $request->get('permissions', []);
-        if (!empty($permissions)) {
-            $user->syncPermissions($permissions); // Use syncPermissions to replace any existing permissions
-        }
-        return $user;
-    }
-    public function userDelete($id)
-    {
-        $user = $this->userById($id);
 
-        // Detach all roles and permissions from the user
-        $user->syncPermissions([]);
-        $user->roles()->detach();
-        $user->status = 0;
-        $user->save();
-        return $user;
+        return null;
     }
 }

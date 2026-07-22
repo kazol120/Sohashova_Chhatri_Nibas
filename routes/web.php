@@ -30,6 +30,9 @@
   use  App\Http\Controllers\Backend\HotelManagementController;
   use  App\Http\Controllers\Backend\MonthlyPaymentController;
   use  App\Http\Controllers\Frontend\MyPaymentController;
+  use  App\Http\Controllers\Backend\MealController;
+  use  App\Http\Controllers\Backend\DepositController;
+  use  App\Http\Controllers\Backend\FineController;
 
     Auth::routes();
 
@@ -247,7 +250,12 @@
     Route::post('monthly-payments/generate', [MonthlyPaymentController::class, 'generateBills']);
     Route::post('monthly-payments/collect', [MonthlyPaymentController::class, 'collectPayment']);
 
-    // frontend: resident-এর নিজের payment history (login থাকলেই দেখা যাবে) //
+    // meal management routes //
+    Route::resource('meals', MealController::class);
+    Route::get('meal-history', [MealController::class, 'mealHistory'])->name('meal-history');
+    Route::resource('deposits', DepositController::class);
+    Route::get('deposit-history', [DepositController::class, 'depositHistory'])->name('deposit.history');
+    Route::resource('fines', FineController::class);
     Route::get('my-payment', [MyPaymentController::class, 'index'])->name('my-payment.index')->middleware('auth');
 
     //
