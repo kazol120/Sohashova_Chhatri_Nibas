@@ -35,9 +35,18 @@ class DashboardController extends Controller
         $user = Auth::user();
        if ($user->hasRole('admin')) {
         $data['roombookingcount'] = RoomBookingHistory::where('status', 0)->count();
+        $data['releasehistorycount'] = RoomBookingHistory::where('status', 1)->count();
         } else {
             $cleanPhone = preg_replace('/[^0-9]/', '', $user->phone ?? '');
             $data['roombookingcount'] = RoomBookingHistory::where('status', 0)->where(function ($q) use ($user, $cleanPhone) {
+                if (!empty($user->email)) {
+                    $q->orWhere('email', $user->email);
+                }
+                if (!empty($cleanPhone)) {
+                    $q->orWhere('phone', 'like', "%{$cleanPhone}%");
+                }
+            })->count();
+            $data['releasehistorycount'] = RoomBookingHistory::where('status', 1)->where(function ($q) use ($user, $cleanPhone) {
                 if (!empty($user->email)) {
                     $q->orWhere('email', $user->email);
                 }

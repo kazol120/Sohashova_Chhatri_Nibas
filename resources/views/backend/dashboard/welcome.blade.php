@@ -105,6 +105,31 @@
         </div>
         @endhasanyrole
 
+        @hasanyrole('admin|HotelGuest')
+        <div class="col-sm-6 col-xl-3">
+            <a href="{{ route('room-release.history') }}">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span class="text-heading">Release History</span>
+                                <div class="d-flex align-items-center my-1">
+                                    <h4 class="mb-0 me-2">{{ $releasehistorycount }}</h4>
+                                </div>
+                                <small class="mb-0">Checkout & Release</small>
+                            </div>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-warning">
+                                   <i class="fa fa-user-slash"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        @endhasanyrole
+
         @role('HotelGuest')
         <div class="col-sm-6 col-xl-3">
             <a href="{{ route('dashboard.my-payments') }}">
