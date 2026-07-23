@@ -11,26 +11,21 @@
         <div class="row">
             <div class="col-12">
                 <div class="card mb-4">
-                    <div class="user-profile-header-banner">
-                        <img id="coverImagePreview" style="width: 995px; height: 250px" src="{{asset("storage/user/$user->cover_image")}}" alt="Banner image" class="rounded-top" />
-                    </div>
-                    <div class="user-profile-header d-flex flex-column flex-sm-row text-sm-start text-center mb-4">
-                        <div class="flex-shrink-0 mt-n2 mx-sm-0 mx-auto">
-                            <img id="imagePreview" style="width: 110px; height: 110px" src="{{asset("storage/user/$user->user_image")}}" alt="user image" class="d-block h-auto ms-0 ms-sm-4 rounded user-profile-img" />
+                    <div class="user-profile-header d-flex flex-column flex-sm-row text-sm-start text-center p-4">
+                        <div class="flex-shrink-0 mx-sm-0 mx-auto">
+                            <img id="imagePreview" style="width: 110px; height: 110px; object-fit: cover;" src="{{ $user->avatar_url }}" alt="user image" class="d-block h-auto rounded-circle user-profile-img border border-3 border-primary" />
                         </div>
-                        <div class="flex-grow-1 mt-3 mt-sm-5">
-                            <div
-                                class="d-flex align-items-md-end align-items-sm-start align-items-center justify-content-md-between justify-content-start mx-4 flex-md-row flex-column gap-4">
+                        <div class="flex-grow-1 mt-3 mt-sm-2 ms-sm-4">
+                            <div class="d-flex align-items-md-end align-items-sm-start align-items-center justify-content-md-between justify-content-start flex-md-row flex-column gap-4">
                                 <div class="user-profile-info">
-                                    <h4>{{$user->name}}</h4>
-                                    <ul
-                                        class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-2">
+                                    <h4 class="mb-2 fw-bold">{{$user->name}}</h4>
+                                    <ul class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-3">
                                         <li class="list-inline-item d-flex gap-1">
-                                            <i class="ti ti-color-swatch"></i> {{ $user->roles->pluck('name')->implode(', ') }}
+                                            <i class="ti ti-color-swatch text-primary"></i> {{ $user->roles->pluck('name')->implode(', ') }}
                                         </li>
-                                        <li class="list-inline-item d-flex gap-1"><i class="ti ti-map-pin"></i> {{$user->address}}</li>
+                                        <li class="list-inline-item d-flex gap-1"><i class="ti ti-map-pin text-danger"></i> {{$user->address}}</li>
                                         <li class="list-inline-item d-flex gap-1">
-                                            <i class="ti ti-calendar"></i> {{\Carbon\Carbon::parse($user->created_at)->format('d M,Y')}}
+                                            <i class="ti ti-calendar text-info"></i> {{\Carbon\Carbon::parse($user->created_at)->format('d M, Y')}}
                                         </li>
                                     </ul>
                                 </div>
@@ -54,20 +49,16 @@
                         <small class="card-text text-uppercase">About</small>
                         <ul class="list-unstyled mb-4 mt-3">
                             <li class="d-flex align-items-center mb-3">
-                                <i class="ti ti-user text-heading"></i
-                                ><span class="fw-medium mx-2 text-heading">Full Name:</span> <span>{{$user->name}}</span>
+                                <i class="ti ti-user text-heading"></i><span class="fw-medium mx-2 text-heading">Full Name:</span> <span>{{$user->name}}</span>
                             </li>
                             <li class="d-flex align-items-center mb-3">
-                                <i class="fas fa-{{$user->status == 1 ? 'check' : 'times'}} text-heading"></i
-                                ><span class="fw-medium mx-2 text-heading">Status:</span> <span>{{$user->status == 1 ? 'Active' : 'Deactivated'}}</span>
+                                <i class="fas fa-{{$user->status == 1 ? 'check' : 'times'}} text-heading"></i><span class="fw-medium mx-2 text-heading">Status:</span> <span>{{$user->status == 1 ? 'Active' : 'Deactivated'}}</span>
                             </li>
                             <li class="d-flex align-items-center mb-3">
-                                <i class="ti ti-crown text-heading"></i
-                                ><span class="fw-medium mx-2 text-heading">Role:</span> <span>{{ $user->roles->pluck('name')->implode(', ') }}</span>
+                                <i class="ti ti-crown text-heading"></i><span class="fw-medium mx-2 text-heading">Role:</span> <span>{{ $user->roles->pluck('name')->implode(', ') }}</span>
                             </li>
                             <li class="d-flex align-items-center mb-3">
-                                <i class="ti ti-map-pin text-heading"></i
-                                ><span class="fw-medium mx-2 text-heading">Address:</span> <span>{{$user->address}}</span>
+                                <i class="ti ti-map-pin text-heading"></i><span class="fw-medium mx-2 text-heading">Address:</span> <span>{{$user->address}}</span>
                             </li>
                         </ul>
                         <small class="card-text text-uppercase">Contacts</small>
@@ -88,13 +79,14 @@
             <div class="col-xl-8 col-lg-7 col-md-7">
                 <!-- Activity Timeline -->
                 <div class="card mb-4">
-                    <h5 class="card-header">Change Password</h5>
+                    <h5 class="card-header">Set Your New Password</h5>
                     <div class="card-body">
                         <form action="{{route('password-update')}}" method="post" enctype="multipart/form-data">
                             @csrf
                             <div class="mb-3">
-                                <label for="name" class="form-label">New Password</label>
-                                <input type="password" class="form-control  @error('new_password') is-invalid @enderror" name="new_password" id="new_password" placeholder="New Password">
+                                <label for="new_password" class="form-label">New Password <code>*</code></label>
+                                <input type="password" class="form-control @error('new_password') is-invalid @enderror" name="new_password" id="new_password" placeholder="New Password (minimum 6 characters)" minlength="6" required>
+                                <small class="text-muted d-block mt-1">Minimum 6 characters required</small>
                                 @error('new_password')
                                 <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -102,8 +94,8 @@
                                 @enderror
                             </div>
                             <div class="mb-3">
-                                <label for="name" class="form-label">Confirm New Password</label>
-                                <input type="password" class="form-control @error('confirm_password') is-invalid @enderror" name="confirm_password" id="confirm_password" placeholder="Confirm Password">
+                                <label for="confirm_password" class="form-label">Confirm New Password <code>*</code></label>
+                                <input type="password" class="form-control @error('confirm_password') is-invalid @enderror" name="confirm_password" id="confirm_password" placeholder="Confirm Password" minlength="6" required>
                                 @error('confirm_password')
                                 <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
