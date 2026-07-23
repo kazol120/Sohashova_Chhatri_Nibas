@@ -380,18 +380,6 @@
               </li>
               @endrole
 
-
-          <li class="menu-item w-75">             
-            <ul>
-              <i class="ti ti-logout fs-7"></i>
-              <a class="ms-2"  href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                <small class="align-middle fs-5">Logout</small>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                  @csrf
-                </form>
-              </a>
-              </ul> 
-            </li>
         </ul>
 
   <style>
