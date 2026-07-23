@@ -67,7 +67,7 @@ class ProfileController extends Controller
     {
         // Validate the input for the old password
         $request->validate([
-            'old_password' => 'required|string|min:6',
+            'old_password' => 'required|string|min:6|max:6',
         ]);
 
         // Check if the entered old password matches the current password
@@ -89,8 +89,8 @@ class ProfileController extends Controller
     public function passwordUpdate(Request $request)
     {
         $request->validate([
-            'new_password' => 'required|string|min:6',
-            'confirm_password' => 'required|string|min:6|same:new_password',
+            'new_password' => 'required|string|min:6|max:6',
+            'confirm_password' => 'required|string|min:6|max:6|same:new_password',
         ]);
         $id = Auth::id();
         $this->profileService->changePassword($request,$id);

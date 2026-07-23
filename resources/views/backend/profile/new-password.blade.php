@@ -85,8 +85,8 @@
                             @csrf
                             <div class="mb-3">
                                 <label for="new_password" class="form-label">New Password <code>*</code></label>
-                                <input type="password" class="form-control @error('new_password') is-invalid @enderror" name="new_password" id="new_password" placeholder="New Password (minimum 6 characters)" minlength="6" required>
-                                <small class="text-muted d-block mt-1">Minimum 6 characters required</small>
+                                <input type="password" class="form-control @error('new_password') is-invalid @enderror" name="new_password" id="new_password" placeholder="Enter 6-digit password" minlength="6" maxlength="6" required>
+                                <small class="text-muted d-block mt-1">Exactly 6 digits required</small>
                                 @error('new_password')
                                 <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -95,7 +95,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="confirm_password" class="form-label">Confirm New Password <code>*</code></label>
-                                <input type="password" class="form-control @error('confirm_password') is-invalid @enderror" name="confirm_password" id="confirm_password" placeholder="Confirm Password" minlength="6" required>
+                                <input type="password" class="form-control @error('confirm_password') is-invalid @enderror" name="confirm_password" id="confirm_password" placeholder="Confirm 6-digit password" minlength="6" maxlength="6" required>
                                 @error('confirm_password')
                                 <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>

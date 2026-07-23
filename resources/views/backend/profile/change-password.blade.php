@@ -89,8 +89,8 @@
                         <form action="{{route('check-old-password')}}" method="post" enctype="multipart/form-data">
                             @csrf
                             <div class="mb-3">
-                                <label for="name" class="form-label">Old Password </label>
-                                <input type="password" class="form-control @error('old_password') is-invalid @enderror" required name="old_password" id="old_password" placeholder="Enter your old password">
+                                <label for="old_password" class="form-label">Old Password </label>
+                                <input type="password" class="form-control @error('old_password') is-invalid @enderror" required name="old_password" id="old_password" placeholder="Enter your 6-digit old password" maxlength="6">
                                 @error('old_password')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
