@@ -61,7 +61,7 @@ class User extends Authenticatable
      */
     public function getAvatarUrlAttribute()
     {
-        $img = $this->user_image ?: $this->image;
+        $img = $this->user_image;
         if ($img) {
             if (file_exists(public_path('storage/user/' . $img))) {
                 return asset('storage/user/' . $img);

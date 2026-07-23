@@ -34,7 +34,6 @@ class ProfileService {
             $image->move($destinationPath, $imageName);
 
             $in['user_image'] = $imageName;
-            $in['image']      = $imageName;
         }
 
         $user->update($in);

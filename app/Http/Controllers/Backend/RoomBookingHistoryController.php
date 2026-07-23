@@ -394,7 +394,6 @@ public function store(Request $request)
                 'email'      => $request->filled('email') ? $request->email : $existingUser->email,
                 'phone'      => $request->phone ?: $existingUser->phone,
                 'user_image' => $imagePath ?: $existingUser->user_image,
-                'image'      => $imagePath ?: $existingUser->image,
                 'status'     => 1,
             ]);
             $user = $existingUser;
@@ -405,7 +404,6 @@ public function store(Request $request)
                 'phone'         => $request->phone,
                 'password'      => bcrypt($tempPassword),
                 'user_image'    => $imagePath,
-                'image'         => $imagePath,
                 'status'        => 1,
                 'temp_password' => $tempPassword,
             ]);
