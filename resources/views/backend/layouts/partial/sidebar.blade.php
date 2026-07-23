@@ -8,7 +8,7 @@
               </li>
               
               <!-- Resident My Payments & Meals -->
-              @role('HotelGuest')
+              @unlessrole('admin|staffs')
               <li class="menu-item {{ Route::currentRouteNamed('dashboard.my-payments') ? 'active' : '' }}">
                   <a href="{{ route('dashboard.my-payments') }}" class="menu-link">
                       <i class="menu-icon tf-icons ti ti-wallet"></i>
@@ -27,7 +27,7 @@
                       <div data-i18n="Daily Meal Create" class="fs-5">Daily Meal Create</div>
                   </a>
               </li>
-              @endrole
+              @endunlessrole
               @canany(['user-index','user-create','user-edit','user-delete'])
               <!-- User Management -->
               <li class="menu-header small">

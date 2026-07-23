@@ -80,7 +80,7 @@
         @endhasanyrole
 
 
-        @hasanyrole('admin|HotelGuest')
+        @unlessrole('staffs')
         <div class="col-sm-6 col-xl-3">
             <a href="{{ url('room-booking-history') }}">
                 <div class="card">
@@ -103,7 +103,7 @@
                 </div>
             </a>
         </div>
-        @endhasanyrole
+        @endunlessrole
 
         @role('admin')
         <div class="col-sm-6 col-xl-3">
@@ -130,7 +130,7 @@
         </div>
         @endrole
 
-        @role('HotelGuest')
+        @unlessrole('admin|staffs')
         <div class="col-sm-6 col-xl-3">
             <a href="{{ route('dashboard.my-payments') }}">
                 <div class="card">
@@ -176,7 +176,7 @@
                 </div>
             </a>
         </div>
-        @endrole
+        @endunlessrole
 
         
         @role('admin')

@@ -29,7 +29,7 @@ class UserService
             return collect();
         }
 
-        return User::role('HotelGuest')
+        return User::whereDoesntHave('roles', function($q) { $q->whereIn('name', ['admin', 'staffs']); })
             ->get()
             ->filter(function($user) use ($releasedBookingPhones) {
                 $normPhone = substr(preg_replace('/[^0-9]/', '', $user->phone), -10);
@@ -54,7 +54,7 @@ class UserService
             return collect();
         }
 
-        return User::role('HotelGuest')
+        return User::whereDoesntHave('roles', function($q) { $q->whereIn('name', ['admin', 'staffs']); })
             ->where('status', 1)
             ->get()
             ->filter(function($user) use ($activeBookingPhones) {
