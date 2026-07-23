@@ -638,6 +638,7 @@ public function getbookinghistory(Request $request)
                 'education_level',
                 'education_class',
                 'workplace_name',
+                'address',
             ]), [
                 'group_key'     => 'booking_' . $row->id,
                 'floornumber'   => $c->pluck('floornumber')->filter()->unique()->implode(', '),
@@ -706,6 +707,7 @@ public function getbookinghistory(Request $request)
                 'education_level',
                 'education_class',
                 'workplace_name',
+                'address',
             ]), [
                 'group_key'     => 'booking_' . $row->id,
                 'floornumber'   => $c->pluck('floornumber')->filter()->unique()->implode(', '),

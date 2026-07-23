@@ -109,6 +109,7 @@
                     <th style="width: 120px">Division</th>
                     <th style="width: 120px">District</th>
                     <th style="width: 120px">Thana</th>
+                    <th style="width: 160px">Address</th>
                     <th style="width: 120px">Payment</th>
                   </tr>
                 </thead>
@@ -221,6 +222,10 @@
 
                     <td>
                       <span class="fw-semibold">{{ r.thana_name || "-" }}</span>
+                    </td>
+
+                    <td>
+                      <span class="fw-semibold">{{ r.address || "-" }}</span>
                     </td>
 
                     <td>
