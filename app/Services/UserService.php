@@ -92,4 +92,75 @@ class UserService
 
         return null;
     }
+
+    public function userCreate(Request $request)
+    {
+        $in = $request->except(['_token', 'roles', 'password']);
+
+        if ($request->filled('password')) {
+            $in['password'] = bcrypt($request->password);
+            $in['temp_password'] = $request->password;
+        }
+
+        if ($request->hasFile('user_image')) {
+            $image = $request->file('user_image');
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $destinationPath = public_path('storage/user');
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+            $image->move($destinationPath, $imageName);
+            $in['user_image'] = $imageName;
+        }
+
+        $user = User::create($in);
+
+        if ($request->filled('roles')) {
+            $user->syncRoles($request->roles);
+        }
+
+        return $user;
+    }
+
+    public function userUpdate(Request $request, $id)
+    {
+        $user = $this->userById($id);
+        $in = $request->except(['_token', 'roles', 'password']);
+
+        if ($request->filled('password')) {
+            $in['password'] = bcrypt($request->password);
+            $in['temp_password'] = $request->password;
+        }
+
+        if ($request->hasFile('user_image')) {
+            if ($user->user_image && file_exists(public_path('storage/user/' . $user->user_image))) {
+                @unlink(public_path('storage/user/' . $user->user_image));
+            }
+            $image = $request->file('user_image');
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $destinationPath = public_path('storage/user');
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+            $image->move($destinationPath, $imageName);
+            $in['user_image'] = $imageName;
+        }
+
+        $user->update($in);
+
+        if ($request->has('roles')) {
+            $user->syncRoles($request->roles);
+        }
+
+        return $user;
+    }
+
+    public function userDelete($id)
+    {
+        $user = $this->userById($id);
+        if ($user->user_image && file_exists(public_path('storage/user/' . $user->user_image))) {
+            @unlink(public_path('storage/user/' . $user->user_image));
+        }
+        return $user->delete();
+    }
 }
