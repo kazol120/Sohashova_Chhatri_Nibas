@@ -1220,6 +1220,7 @@ function showSuccessAlert(message, redirectUrl) {
                         setVal('mother_name', data.mother_name);
                         setVal('institution_name', data.institution_name);
                         setVal('workplace_name', data.workplace_name);
+                        setVal('address', data.address);
 
                         if (data.user_type) {
                             setVal('user_type', data.user_type);

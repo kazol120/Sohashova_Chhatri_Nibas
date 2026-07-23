@@ -531,29 +531,36 @@ public function store(Request $request)
             [$last11]
         )->latest()->first();
 
-        if (!$guest) {
+        $user = \App\Models\User::whereRaw(
+            "RIGHT(REPLACE(REPLACE(phone, '+', ''), ' ', ''), 11) = ?",
+            [$last11]
+        )->first();
+
+        if (!$guest && !$user) {
             return response()->json(['found' => false]);
         }
 
         return response()->json([
             'found'            => true,
-            'full_name'        => $guest->full_name,
-            'user_type'        => $guest->user_type ?? 'student',
-            'institution_name' => $guest->institution_name,
-            'education_level'  => $guest->education_level,
-            'education_class'  => $guest->education_class,
-            'workplace_name'   => $guest->workplace_name,
-            'email'            => $guest->email,
-            'nid'              => $guest->nid,
-            'mother_nid'       => $guest->mother_nid,
-            'father_nid'  => $guest->father_nid,
-            'father_name' => $guest->father_name,
-            'mother_name' => $guest->mother_name,
-            'division_id' => $guest->division_id,
-            'district_id' => $guest->district_id,
-            'thana_id'    => $guest->thana_id,
-            'image_url'   => $guest->image ? asset('bookingsimage/' . $guest->image) : null,
-            'image_name'  => $guest->image,
+            'has_account'      => (bool) $user,
+            'full_name'        => $guest ? $guest->full_name : ($user ? $user->name : ''),
+            'user_type'        => $guest ? ($guest->user_type ?? 'student') : 'student',
+            'institution_name' => $guest ? $guest->institution_name : null,
+            'education_level'  => $guest ? $guest->education_level : null,
+            'education_class'  => $guest ? $guest->education_class : null,
+            'workplace_name'   => $guest ? $guest->workplace_name : null,
+            'email'            => $guest ? $guest->email : ($user ? $user->email : null),
+            'nid'              => $guest ? $guest->nid : null,
+            'mother_nid'       => $guest ? $guest->mother_nid : null,
+            'father_nid'       => $guest ? $guest->father_nid : null,
+            'father_name'      => $guest ? $guest->father_name : null,
+            'mother_name'      => $guest ? $guest->mother_name : null,
+            'division_id'      => $guest ? $guest->division_id : null,
+            'district_id'      => $guest ? $guest->district_id : null,
+            'thana_id'         => $guest ? $guest->thana_id : null,
+            'address'          => $guest && $guest->address ? $guest->address : ($user ? $user->address : null),
+            'image_url'        => ($guest && $guest->image) ? asset('bookingsimage/' . $guest->image) : ($user && $user->user_image ? asset('storage/user/' . $user->user_image) : null),
+            'image_name'       => $guest ? $guest->image : ($user ? $user->user_image : null),
         ]);
     }
 

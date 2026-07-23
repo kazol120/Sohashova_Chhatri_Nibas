@@ -818,6 +818,7 @@ function showSuccessAlert(message, redirectUrl) {
                         setVal('fullname', data.full_name);
                         setVal('guestEmail', data.email);
                         setVal('nid', data.nid);
+                        setVal('address', data.address);
 
                         if (data.image_url && data.image_name) {
                             existingImageUrl = data.image_url;
