@@ -7,12 +7,18 @@
                   </a>
               </li>
               
-              <!-- Resident My Payments -->
+              <!-- Resident My Payments & Meals -->
               @role('HotelGuest')
               <li class="menu-item {{ Route::currentRouteNamed('dashboard.my-payments') ? 'active' : '' }}">
                   <a href="{{ route('dashboard.my-payments') }}" class="menu-link">
                       <i class="menu-icon tf-icons ti ti-wallet"></i>
                       <div data-i18n="My Payments" class="fs-5">My Payments</div>
+                  </a>
+              </li>
+              <li class="menu-item {{ Route::currentRouteNamed('dashboard.my-meals') ? 'active' : '' }}">
+                  <a href="{{ route('dashboard.my-meals') }}" class="menu-link">
+                      <i class="menu-icon tf-icons ti ti-salad"></i>
+                      <div data-i18n="My Meal History" class="fs-5">My Meal History</div>
                   </a>
               </li>
               <li class="menu-item {{ Route::currentRouteNamed('meals.create') ? 'active' : '' }}">

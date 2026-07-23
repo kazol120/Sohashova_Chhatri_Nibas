@@ -83,7 +83,7 @@ class MyPaymentController extends Controller
 
         return view('Frontend.page.my-payment', compact(
             'payments', 'totalBilled', 'totalPaid', 'totalDue',
-            'currentMonthPayment', 'user', 'mealSummary', 'mealsList', 'depositData', 'finesList', 'selectedMonth'
+            'currentMonthPayment', 'user'
         ));
     }
 
@@ -146,8 +146,20 @@ class MyPaymentController extends Controller
 
         $currentMonthPayment = $payments->firstWhere('payment_month', $currentMonth);
 
-        // Meal System Data
-        $selectedMonth = Carbon::now()->format('Y-m');
+        return view('backend.monthly_payment.guest_payments', compact(
+            'payments', 'totalBilled', 'totalPaid', 'totalDue',
+            'currentMonthPayment', 'user'
+        ));
+    }
+
+    /**
+     * Show logged in user's own meal history (Dashboard / Backend layout)
+     */
+    public function guestMeals(Request $request)
+    {
+        $user = Auth::user();
+        $selectedMonth = $request->get('month', Carbon::now()->format('Y-m'));
+
         $mealService = app(\App\Services\MealService::class);
         $depositService = app(\App\Services\DepositService::class);
         $fineService = app(\App\Services\FineService::class);
@@ -157,9 +169,8 @@ class MyPaymentController extends Controller
         $depositData = $depositService->getUserMonthlyHistory($user->id, $selectedMonth);
         $finesList = $fineService->fineByUser($selectedMonth, $user->id);
 
-        return view('backend.monthly_payment.guest_payments', compact(
-            'payments', 'totalBilled', 'totalPaid', 'totalDue',
-            'currentMonthPayment', 'user', 'mealSummary', 'mealsList', 'depositData', 'finesList', 'selectedMonth'
+        return view('backend.monthly_payment.guest_meals', compact(
+            'user', 'mealSummary', 'mealsList', 'depositData', 'finesList', 'selectedMonth'
         ));
     }
 }

@@ -141,11 +141,34 @@
                                 <div class="d-flex align-items-center my-1">
                                     <h4 class="mb-0 me-2">Rent History</h4>
                                 </div>
-                                <small class="mb-0">My monthly payments</small>
+                                <small class="mb-0"></small>
                             </div>
                             <div class="avatar">
                                 <span class="avatar-initial rounded bg-label-primary">
                                    <i class="fa fa-wallet"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
+            <a href="{{ route('dashboard.my-meals') }}">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span class="text-heading">Meal History</span>
+                                <div class="d-flex align-items-center my-1">
+                                    <h4 class="mb-0 me-2">Meal Records</h4>
+                                </div>
+                                <small class="mb-0"></small>
+                            </div>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-success">
+                                   <i class="fa fa-utensils"></i>
                                 </span>
                             </div>
                         </div>

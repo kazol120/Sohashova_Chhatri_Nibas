@@ -15,6 +15,7 @@ Route::middleware(['auth','checkUserStatus'])->group(function () {
 
     // Resident's backend payment history route
     Route::get('/dashboard/my-payments', [\App\Http\Controllers\Frontend\MyPaymentController::class, 'guestIndex'])->name('dashboard.my-payments');
+    Route::get('/dashboard/my-meals', [\App\Http\Controllers\Frontend\MyPaymentController::class, 'guestMeals'])->name('dashboard.my-meals');
     // setting routes;
     Route::middleware(['permission:setting-index|setting-create|setting-edit|setting-delete'])->group(function () {
 
