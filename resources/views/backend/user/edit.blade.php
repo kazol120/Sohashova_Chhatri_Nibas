@@ -96,6 +96,7 @@
                                         data-width="100%"
                                         type="checkbox"
                                         name="status"
+                                        value="1"
                                         id="statusToggle"
                                         data-user-id="{{ $user->id }}"
                                         {{ $user->status == 1 ? 'checked' : '' }}

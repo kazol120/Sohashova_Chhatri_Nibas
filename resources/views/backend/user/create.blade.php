@@ -94,7 +94,9 @@
                                         data-width="100%"
                                         type="checkbox"
                                         name="status"
+                                        value="1"
                                         id="statusToggle"
+                                        checked
                                     >
                                 </div>
 

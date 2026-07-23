@@ -97,6 +97,8 @@ class UserService
     {
         $in = $request->except(['_token', 'roles', 'password']);
 
+        $in['status'] = ($request->has('status') && ($request->status === 'on' || $request->status == 1 || $request->status === '1')) ? 1 : 1;
+
         if ($request->filled('password')) {
             $in['password'] = bcrypt($request->password);
             $in['temp_password'] = $request->password;
@@ -126,6 +128,12 @@ class UserService
     {
         $user = $this->userById($id);
         $in = $request->except(['_token', 'roles', 'password']);
+
+        if ($request->has('status')) {
+            $in['status'] = ($request->status === 'on' || $request->status == 1 || $request->status === '1') ? 1 : 0;
+        } else {
+            $in['status'] = 0;
+        }
 
         if ($request->filled('password')) {
             $in['password'] = bcrypt($request->password);
