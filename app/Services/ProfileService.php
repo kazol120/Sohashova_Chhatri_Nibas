@@ -13,43 +13,28 @@ class ProfileService {
     {
         return User::with('roles')->find($id);
     }
-    public function updateProfile(Request $request,$user)
+    public function updateProfile(Request $request, $user)
     {
-        $in = $request->except('_token');
+        $in = $request->except(['_token', 'cover_image']);
 
-        if($request->hasFile('user_image'))
-        {
-            // Check if the user already has an existing file
-            if ($user->user_image) {
-                // Delete the existing file if it exists
-                if ($user->user_image !== 'user.png' && Storage::exists($user->user_image)) {
-                    Storage::delete($user->user_image);
+        if ($request->hasFile('user_image')) {
+            if ($user->user_image && $user->user_image !== 'user.png') {
+                if (file_exists(public_path('storage/user/' . $user->user_image))) {
+                    @unlink(public_path('storage/user/' . $user->user_image));
                 }
             }
 
             $image = $request->file('user_image');
-            $imageName = uniqid().'.'.$image->getClientOriginalExtension();
-            // Store the file in the 'public/user_images' directory
-            $image->storeAs('public/user', $imageName);
-            $in['user_image'] = $imageName;
-
-        }
-        if($request->hasFile('cover_image'))
-        {
-            // Check if the user already has an existing file
-            if ($user->cover_image) {
-                // Delete the existing file if it exists
-                if ($user->cover_image !== 'cover.png' && Storage::exists($user->cover_image)) {
-                    Storage::delete($user->cover_image);
-                }
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            
+            $destinationPath = public_path('storage/user');
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
             }
+            $image->move($destinationPath, $imageName);
 
-            $image = $request->file('cover_image');
-            $imageName = 'cover_'.uniqid().'.'.$image->getClientOriginalExtension();
-            // Store the file in the 'public/user_images' directory
-            $image->storeAs('public/user', $imageName);
-            $in['cover_image'] = $imageName;
-
+            $in['user_image'] = $imageName;
+            $in['image']      = $imageName;
         }
 
         $user->update($in);

@@ -1,15 +1,6 @@
 @php
     $user = auth()->user();
-    $avatarUrl = asset('image/user.png');
-    if ($user && !empty($user->user_image)) {
-        if (file_exists(public_path('storage/user/' . $user->user_image))) {
-            $avatarUrl = asset('storage/user/' . $user->user_image);
-        } elseif (file_exists(public_path('image/' . $user->user_image))) {
-            $avatarUrl = asset('image/' . $user->user_image);
-        }
-    } elseif (file_exists(public_path('storage/user/user.png'))) {
-        $avatarUrl = asset('storage/user/user.png');
-    }
+    $avatarUrl = $user ? $user->avatar_url : asset('image/user.png');
 @endphp
 
 <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">

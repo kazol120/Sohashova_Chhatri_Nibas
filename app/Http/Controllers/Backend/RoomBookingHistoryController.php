@@ -390,10 +390,12 @@ public function store(Request $request)
         $dayByTotalAmount = $totalAmount * $numberOfDays;
         if ($existingUser) {
             $existingUser->update([
-                'name'   => $request->full_name ?: $existingUser->name,
-                'email'  => $request->filled('email') ? $request->email : $existingUser->email,
-                'phone'  => $request->phone ?: $existingUser->phone,
-                'status' => 1,
+                'name'       => $request->full_name ?: $existingUser->name,
+                'email'      => $request->filled('email') ? $request->email : $existingUser->email,
+                'phone'      => $request->phone ?: $existingUser->phone,
+                'user_image' => $imagePath ?: $existingUser->user_image,
+                'image'      => $imagePath ?: $existingUser->image,
+                'status'     => 1,
             ]);
             $user = $existingUser;
         } else {
@@ -402,6 +404,8 @@ public function store(Request $request)
                 'email'         => $request->filled('email') ? $request->email : null,
                 'phone'         => $request->phone,
                 'password'      => bcrypt($tempPassword),
+                'user_image'    => $imagePath,
+                'image'         => $imagePath,
                 'status'        => 1,
                 'temp_password' => $tempPassword,
             ]);
@@ -410,6 +414,15 @@ public function store(Request $request)
                 'guard_name' => 'web'
             ]);
             $user->assignRole($role);
+        }
+
+        if ($request->filled('user_type')) {
+            $formattedUserType = ucfirst(str_replace('_', ' ', $request->user_type));
+            $typeRole = Role::firstOrCreate([
+                'name'       => $formattedUserType,
+                'guard_name' => 'web'
+            ]);
+            $user->assignRole($typeRole);
         }
         RoomBookingHistory::create([
             'image'                              => $imagePath,

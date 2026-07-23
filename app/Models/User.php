@@ -55,5 +55,27 @@ class User extends Authenticatable
     {
         return $this->hasOne(Patient::class, 'patient_id');
     }
-    
+
+    /**
+     * Get avatar URL attribute with fallbacks
+     */
+    public function getAvatarUrlAttribute()
+    {
+        $img = $this->user_image ?: $this->image;
+        if ($img) {
+            if (file_exists(public_path('storage/user/' . $img))) {
+                return asset('storage/user/' . $img);
+            }
+            if (file_exists(public_path('bookingsimage/' . $img))) {
+                return asset('bookingsimage/' . $img);
+            }
+            if (file_exists(public_path('image/' . $img))) {
+                return asset('image/' . $img);
+            }
+        }
+        if (file_exists(public_path('storage/user/user.png'))) {
+            return asset('storage/user/user.png');
+        }
+        return asset('image/user.png');
+    }
 }

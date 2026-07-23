@@ -12,36 +12,27 @@
         <div class="row">
             <div class="col-12">
                 <div class="card mb-4">
-                    <div class="user-profile-header-banner">
-                        <img id="coverImagePreview" style="width: 995px; height: 250px" src="{{asset("storage/user/$user->cover_image")}}" alt="Banner image" class="rounded-top" />
-                    </div>
-                    <div class="user-profile-header d-flex flex-column flex-sm-row text-sm-start text-center mb-4">
-                        <div class="flex-shrink-0 mt-n2 mx-sm-0 mx-auto">
-                            <img id="imagePreview" style="width: 110px; height: 110px" src="{{asset("storage/user/$user->user_image")}}" alt="user image" class="d-block h-auto ms-0 ms-sm-4 rounded user-profile-img" />
+                    <div class="user-profile-header d-flex flex-column flex-sm-row text-sm-start text-center p-4">
+                        <div class="flex-shrink-0 mx-sm-0 mx-auto">
+                            <img id="imagePreview" style="width: 110px; height: 110px; object-fit: cover;" src="{{ $user->avatar_url }}" alt="user image" class="d-block h-auto rounded-circle user-profile-img border border-3 border-primary" />
                         </div>
-                        <div class="flex-grow-1 mt-3 mt-sm-5">
-                            <div
-                                class="d-flex align-items-md-end align-items-sm-start align-items-center justify-content-md-between justify-content-start mx-4 flex-md-row flex-column gap-4">
+                        <div class="flex-grow-1 mt-3 mt-sm-2 ms-sm-4">
+                            <div class="d-flex align-items-md-end align-items-sm-start align-items-center justify-content-md-between justify-content-start flex-md-row flex-column gap-4">
                                 <div class="user-profile-info">
-                                    <h4>{{$user->name}}</h4>
-                                    <ul
-                                        class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-2">
+                                    <h4 class="mb-2 fw-bold">{{$user->name}}</h4>
+                                    <ul class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-3">
                                         <li class="list-inline-item d-flex gap-1">
-                                            <i class="ti ti-color-swatch"></i> {{ $user->roles->pluck('name')->implode(', ') }}
+                                            <i class="ti ti-color-swatch text-primary"></i> {{ $user->roles->pluck('name')->implode(', ') }}
                                         </li>
-                                        <li class="list-inline-item d-flex gap-1"><i class="ti ti-map-pin"></i> {{$user->address}}</li>
+                                        <li class="list-inline-item d-flex gap-1"><i class="ti ti-map-pin text-danger"></i> {{$user->address}}</li>
                                         <li class="list-inline-item d-flex gap-1">
-                                            <i class="ti ti-calendar"></i> {{\Carbon\Carbon::parse($user->created_at)->format('d M,Y')}}
+                                            <i class="ti ti-calendar text-info"></i> {{\Carbon\Carbon::parse($user->created_at)->format('d M, Y')}}
                                         </li>
                                     </ul>
                                 </div>
                                 <button class="btn btn-{{$user->status == 1 ? 'primary' : 'warning'}}">
                                     <i class="fas fa-{{$user->status == 1 ? 'check' : 'times'}} me-1"></i>{{$user->status == 1 ? 'Active' : 'Deactivated'}}
                                 </button>
-{{--                                <button onclick="changeStatus({{$user->id}})" class="btn btn-{{$user->status == 1 ? 'primary' : 'warning'}}">--}}
-{{--                                    <i class="fas fa-{{$user->status == 1 ? 'check' : 'times'}} me-1"></i>{{$user->status == 1 ? 'Active' : 'Deactivated'}}--}}
-{{--                                </button>--}}
-{{--                                profile-status-update--}}
                             </div>
                         </div>
                     </div>
@@ -131,14 +122,6 @@
                                 <small>Image Size 100x100</small>
                             </div>
                               @error("user_image")
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            <div class="mb-3">
-                                <label for="coverImage" class="form-label">Cover Image</label>
-                                <input type="file" class="form-control @error('cover_image') is-invalid @enderror" name="cover_image" id="coverImage">
-                                <small>Image Size 1693x376</small>
-                            </div>
-                              @error("cover_image")
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                             <button type="submit" class="btn btn-primary waves-effect waves-light">Submit</button>
