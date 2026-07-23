@@ -31,6 +31,7 @@ class RoomBookingHistory extends Model
         'division_id',
         'district_id',
         'thana_id',
+        'address',
         'pay_cash_in',
         'pay_online',
         'check_in',

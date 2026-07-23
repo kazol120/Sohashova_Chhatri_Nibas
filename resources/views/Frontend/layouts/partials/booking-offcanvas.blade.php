@@ -617,6 +617,11 @@
                 <option value="">Select Thana</option>
             </select>
           </div>
+          <!-- Permanent Address Field -->
+          <div class="col-12 mt-2">
+            <label class="form-label">Permanent Address / স্থায়ী ঠিকানা <code>*</code></label>
+            <input type="text" class="form-control" id="address" name="address" placeholder="Enter permanent address (Village/Road, Post Office, House No)" required>
+          </div>
         </div>
       </div>
       <!-- Payment Options -->

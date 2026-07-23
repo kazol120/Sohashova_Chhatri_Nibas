@@ -332,6 +332,7 @@ public function store(Request $request)
                 'name'       => $request->full_name ?: $existingUser->name,
                 'email'      => $request->email ?: $existingUser->email,
                 'phone'      => $request->phone ?: $existingUser->phone,
+                'address'    => $request->address ?: $existingUser->address,
                 'user_image' => $imagePath ?: $existingUser->user_image,
                 'status'     => 1,
             ]);
@@ -341,6 +342,7 @@ public function store(Request $request)
                 'name'          => $request->full_name,
                 'email'         => $request->email,
                 'phone'         => $request->phone,
+                'address'       => $request->address,
                 'password'      => bcrypt($tempPassword),
                 'user_image'    => $imagePath,
                 'status'        => 1,
@@ -380,6 +382,7 @@ public function store(Request $request)
             'division_id'                        => $request->division_id,
             'district_id'                        => $request->district_id,
             'thana_id'                           => $request->thana_id,
+            'address'                            => $request->address,
             'pay_cash_in'                        => $request->payment === 'cash' ? 'cash' : null,
             'pay_online'                         => $request->payment === 'online'
                                                     ? (($request->pay_method ?? 'Online') . ' | TRX: ' . ($request->trx ?? ''))
