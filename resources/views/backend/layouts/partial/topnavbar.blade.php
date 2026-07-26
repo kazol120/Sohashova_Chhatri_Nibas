@@ -1,8 +1,14 @@
 @php
     $user = auth()->user();
-    $avatarUrl = $user ? $user->avatar_url : asset('image/user.png');
-@endphp
 
+    if ($user && $user->status == 2 && !empty($user->user_image)) {
+        $avatarUrl = asset('staff_images/' . $user->user_image);
+    } else {
+        $avatarUrl = $user
+            ? $user->avatar_url
+            : asset('image/user.png');
+    }
+@endphp
 <style>
   .layout-navbar .navbar-dropdown.dropdown-user .dropdown-menu {
     right: 0 !important;
@@ -56,7 +62,10 @@
            data-bs-toggle="dropdown"
            aria-expanded="false">
           <div class="avatar avatar-online">
-            <img src="{{ $avatarUrl }}" alt="User Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" />
+            <img src="{{ $avatarUrl }}"
+             alt="User Avatar"
+             class="rounded-circle"
+             style="width: 40px; height: 40px; object-fit: cover;" />
           </div>
         </a>
         <ul class="dropdown-menu dropdown-menu-end" style="right: 0 !important; left: auto !important; margin-top: 8px;">
@@ -65,7 +74,10 @@
               <div class="d-flex align-items-center">
                 <div class="flex-shrink-0 me-2">
                   <div class="avatar avatar-online">
-                    <img src="{{ $avatarUrl }}" alt="User Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" />
+                    <img src="{{ $avatarUrl }}"
+                     alt="User Avatar"
+                     class="rounded-circle"
+                     style="width: 40px; height: 40px; object-fit: cover;" />
                   </div>
                 </div>
                 <div class="flex-grow-1">
@@ -104,10 +116,8 @@
         </ul>
       </li>
       <!-- / User Dropdown -->
-
     </ul>
   </div>
-
   <!-- Search Small Screens -->
   <div class="navbar-search-wrapper search-input-wrapper d-none">
     <input type="text" class="form-control search-input container-xxl border-0" placeholder="Search..." aria-label="Search..." />
@@ -140,7 +150,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
-
     document.addEventListener('click', function (e) {
         if (!e.target.closest('#layout-navbar .dropdown')) {
             document.querySelectorAll('#layout-navbar .dropdown-menu.show').forEach(function (m) {

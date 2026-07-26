@@ -73134,6 +73134,7 @@ __webpack_require__.r(__webpack_exports__);
 var store = (0,vuex__WEBPACK_IMPORTED_MODULE_0__.createStore)({
   state: {
     url: 'http://localhost:8000/'
+    // url: 'https://sohashova.nsmlimited.com',
   },
   mutations: {},
   actions: {},

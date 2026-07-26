@@ -16,8 +16,8 @@
     <title> @yield('title', '')</title>
     <meta name="description" content="" />
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon"
-      href="{{ !empty($webSetting['favicon']) ? asset($webSetting['favicon']) : asset('backend/img/favicon/logoimage (2).png') }}" />
+   <link rel="icon" type="image/x-icon" 
+      href="{{ isset($webSetting) && !empty($webSetting['favicon']) ? asset($webSetting['favicon']) : asset('backend/img/favicon/logoimage (2).png') }}" />
 
 
     <!-- Fonts -->

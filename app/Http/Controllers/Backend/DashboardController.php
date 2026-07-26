@@ -72,11 +72,6 @@ class DashboardController extends Controller
         return $item->purchase_date . '_' . $item->floor_id . '_' . $item->room_id . '_' . $item->customer_id;
     })
     ->count();
-       
-
         return view('backend.dashboard.welcome',$data);
     }
-
-
-
 }

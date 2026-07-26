@@ -24,6 +24,8 @@ class ProfileController extends Controller
         $data['user'] = $this->profileService->getUser($id);
         return view('backend.profile.profile',$data);
     }
+
+
     public function profileUpdate(Request $request)
     {
         $user = Auth::user();

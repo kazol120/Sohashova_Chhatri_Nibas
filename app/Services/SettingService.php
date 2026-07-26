@@ -59,6 +59,13 @@ class SettingService{
                 }
             }
 
+            // Remove any file fields that were NOT uploaded (null/empty) so existing values are preserved
+            foreach ($contents as $key => $value) {
+                if (is_null($value) || $value === '') {
+                    unset($contents[$key]);
+                }
+            }
+
             // Merge existing contents with the updated contents
             if($existingContents)
             {

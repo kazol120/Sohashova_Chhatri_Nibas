@@ -1,3 +1,14 @@
+@php
+    $webSetting = \App\Services\SettingService::getSettingContentBySlug('web_setting');
+    $wsPhone   = $webSetting['phone']   ?? '';
+    $wsEmail   = $webSetting['email']   ?? '';
+    $wsAddress = $webSetting['address'] ?? '';
+    $wsTitle   = $webSetting['title']   ?? 'Sohashova Chhatri Nibas';
+
+    $logoSetting = \App\Services\SettingService::getSettingContentBySlug('logo_setting');
+    $wsLogo    = isset($logoSetting['logo'])    ? asset($logoSetting['logo'])    : asset('logo/logoimage (2).png');
+    $wsFavicon = isset($logoSetting['favicon']) ? asset($logoSetting['favicon']) : asset('logo/logoimage (2).png');
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +16,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>@yield('title', 'Home') | সোহাশোভা ছাত্রী নিবাস</title>
   <link rel="stylesheet" href="{{ asset('frontend/style.css') }}">
- <link rel="shortcut icon" href="{{ asset('logo/logoimage (2).png') }}">
+  <link rel="shortcut icon" href="{{ $wsFavicon }}" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Tagesschrift&display=swap" rel="stylesheet">
@@ -102,6 +113,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
 
-</body>
 </body>
 </html>

@@ -54,7 +54,7 @@
 
       <!-- CENTER : logo -->
       <a href="{{ url('/') }}" class="nsm-logo-center text-decoration-none">
-        <img src="{{ asset('logo/logoimage (2).png') }}" alt="Logo">
+        <img src="{{ $wsLogo }}" alt="{{ $wsTitle ?? 'Logo' }}">
       </a>
 
       <!-- RIGHT : login / phone -->
@@ -76,9 +76,9 @@
           <span class="position-absolute bg-success border border-white rounded-circle" style="width: 10px; height: 10px; bottom: 0; right: 0;"></span>
         </a>
         @endguest
-            <a href="tel:+8801713558866" class="right-item">
+            <a href="tel:{{ $wsPhone ?? '' }}" class="right-item">
         <i class="bi bi-telephone"></i>
-        <span class="nav-link-min phone-text">+8801713-555221</span>
+        <span class="nav-link-min phone-text">+88{{ $wsPhone ?? '' }}</span>
       </a>
       </div>
 

@@ -12,7 +12,7 @@
         <div class="login-visual">
           <div class="login-brand">
             <div class="login-logo">
-              <img src="{{ asset('logo/logoimage (2).png') }}" alt="Sohashova Chhatri Nibas Logo">
+              <img src="{{ $wsLogo }}" alt="Sohashova Chhatri Nibas Logo">
             </div>
             <div>
               <div class="login-brand-title">সোহাশোভা ছাত্রী নিবাস</div>
@@ -32,7 +32,7 @@
         <div class="login-panel">
           <div class="login-card">
             <div class="login-card-logo">
-              <img src="{{ asset('logo/logoimage (2).png') }}" alt="Logo">
+              <img src="{{ $wsLogo }}" alt="Logo">
             </div>
             <h3>Login</h3>
             <p>আপনার অ্যাকাউন্টে সাইন ইন করুন</p>
