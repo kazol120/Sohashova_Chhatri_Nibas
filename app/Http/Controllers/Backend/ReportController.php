@@ -9,6 +9,7 @@ use App\Models\Backend\StaffSalaryPayment;
 use App\Models\Backend\RoomBookingHistory;
 use App\Models\Backend\ProductDistribution;
 use App\Models\Backend\ProductPurchase;
+use App\Models\Backend\MonthlyPayment;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -18,104 +19,6 @@ class ReportController extends Controller
 public function index(){
     return view('backend.report.report');
 }
-
-// public function profitLossReport(Request $request)
-// {
-//     $mode = $request->mode ?? 'monthly'; 
-//     $months = [
-//         1=>'Jan',2=>'Feb',3=>'Mar',4=>'Apr',
-//         5=>'May',6=>'Jun',7=>'Jul',8=>'Aug',
-//         9=>'Sep',10=>'Oct',11=>'Nov',12=>'Dec',
-//     ];
-//     $rows = [];
-//     if ($mode === 'monthly') {
-//         $year = $request->year ?? date('Y');
-//         foreach ($months as $num => $name) {
-//             $booking = (float) RoomBookingHistory::whereYear('check_in', $year)
-//                 ->whereMonth('check_in', $num)->sum('daybytotalamount');
-
-//             $expense = (float) Expense::whereYear('created_at', $year)
-//                 ->whereMonth('created_at', $num)->sum('expense_amount');
-
-//             $salary  = (float) StaffSalaryPayment::whereYear('created_at', $year)
-//                 ->whereMonth('created_at', $num)->sum('amount');
-
-//             $cost    = $expense + $salary;
-
-//             $rows[] = [
-//                 'label'       => $name . ' ' . $year,
-//                 'booking'     => $booking,
-//                 'expense'     => $expense,
-//                 'salary'      => $salary,
-//                 'total_cost'  => $cost,
-//                 'profit_loss' => $booking - $cost,
-//             ];
-//         }
-
-//     } else {
-//     $currentYear = (int) date('Y');
-
-//     $oldestYear = min(
-//         (int) (RoomBookingHistory::min(DB::raw('YEAR(check_in)')) ?: $currentYear),
-//         (int) (Expense::min(DB::raw('YEAR(created_at)')) ?: $currentYear),
-//         (int) (StaffSalaryPayment::min(DB::raw('YEAR(created_at)')) ?: $currentYear),
-//     );
-
-//     $months = [
-//         1=>'Jan',2=>'Feb',3=>'Mar',4=>'Apr',
-//         5=>'May',6=>'Jun',7=>'Jul',8=>'Aug',
-//         9=>'Sep',10=>'Oct',11=>'Nov',12=>'Dec',
-//     ];
-
-//     foreach (range($currentYear, $oldestYear) as $year) {
-//         $booking = (float) RoomBookingHistory::whereYear('check_in', $year)->sum('daybytotalamount');
-//         $expense = (float) Expense::whereYear('created_at', $year)->sum('expense_amount');
-//         $salary  = (float) StaffSalaryPayment::whereYear('created_at', $year)->sum('amount');
-//         $cost    = $expense + $salary;
-
-//         if ($booking == 0 && $expense == 0 && $salary == 0) continue;
-
-//         $monthlyBreakdown = [];
-//         foreach ($months as $num => $name) {
-//             $mBooking = (float) RoomBookingHistory::whereYear('check_in', $year)
-//                 ->whereMonth('check_in', $num)->sum('daybytotalamount');
-//             $mExpense = (float) Expense::whereYear('created_at', $year)
-//                 ->whereMonth('created_at', $num)->sum('expense_amount');
-//             $mSalary  = (float) StaffSalaryPayment::whereYear('created_at', $year)
-//                 ->whereMonth('created_at', $num)->sum('amount');
-//             $mCost    = $mExpense + $mSalary;
-
-//             if ($mBooking == 0 && $mExpense == 0 && $mSalary == 0) continue;
-
-//             $monthlyBreakdown[] = [
-//                 'month'       => $name,
-//                 'booking'     => $mBooking,
-//                 'expense'     => $mExpense,
-//                 'salary'      => $mSalary,
-//                 'total_cost'  => $mCost,
-//                 'profit_loss' => $mBooking - $mCost,
-//             ];
-//         }
-
-//         $rows[] = [
-//             'label'             => (string) $year,
-//             'booking'           => $booking,
-//             'expense'           => $expense,
-//             'salary'            => $salary,
-//             'total_cost'        => $cost,
-//             'profit_loss'       => $booking - $cost,
-//             'monthly_breakdown' => $monthlyBreakdown,
-//         ];
-//     }
-// }
-//     return response()->json([
-//         'status' => true,
-//         'mode'   => $mode,
-//         'data'   => $rows,
-//     ]);
-// }
-
-
 
 public function profitLossReport(Request $request)
 {
@@ -133,28 +36,41 @@ public function profitLossReport(Request $request)
         $year = (int) ($request->year ?? date('Y'));
 
         foreach ($months as $num => $name) {
-            $booking = (float) RoomBookingHistory::whereYear('check_in', $year)
+            // ====== INCOME ======
+            $roomBooking    = (float) RoomBookingHistory::whereYear('check_in', $year)
                 ->whereMonth('check_in', $num)->sum('daybytotalamount');
 
-            $expense = (float) Expense::whereYear('created_at', $year)
-                ->whereMonth('created_at', $num)->sum('expense_amount');
+            $monthlyPayment = (float) MonthlyPayment::whereYear('created_at', $year)
+                ->whereMonth('created_at', $num)->sum('paid_amount');
 
-            $salary = (float) StaffSalaryPayment::whereYear('created_at', $year)
-                ->whereMonth('created_at', $num)->sum('amount');
-
-            $product = (float) ProductDistribution::whereYear('created_at', $year)
+            $productSales   = (float) ProductDistribution::whereYear('created_at', $year)
                 ->whereMonth('created_at', $num)->sum('total_price_available');
 
-            $cost = $expense + $salary + $product;
+            $totalIncome = $roomBooking + $monthlyPayment + $productSales;
+
+            // ====== COST ======
+            $expense         = (float) Expense::whereYear('created_at', $year)
+                ->whereMonth('created_at', $num)->sum('expense_amount');
+
+            $salary          = (float) StaffSalaryPayment::whereYear('created_at', $year)
+                ->whereMonth('created_at', $num)->sum('amount');
+
+            $productPurchase = (float) ProductPurchase::whereYear('created_at', $year)
+                ->whereMonth('created_at', $num)->sum('total_price');
+
+            $totalCost = $expense + $salary + $productPurchase;
 
             $rows[] = [
-                'label'       => $name . ' ' . $year,
-                'booking'     => $booking,
-                'expense'     => $expense,
-                'salary'      => $salary,
-                'product'     => $product,
-                'total_cost'  => $cost,
-                'profit_loss' => $booking - $cost,
+                'label'            => $name . ' ' . $year,
+                'room_booking'     => $roomBooking,
+                'monthly_payment'  => $monthlyPayment,
+                'product_sales'    => $productSales,
+                'total_income'     => $totalIncome,
+                'expense'          => $expense,
+                'salary'           => $salary,
+                'product_purchase' => $productPurchase,
+                'total_cost'       => $totalCost,
+                'profit_loss'      => $totalIncome - $totalCost,
             ];
         }
 
@@ -166,47 +82,66 @@ public function profitLossReport(Request $request)
             (int) (Expense::min(DB::raw('YEAR(created_at)')) ?: $currentYear),
             (int) (StaffSalaryPayment::min(DB::raw('YEAR(created_at)')) ?: $currentYear),
             (int) (ProductDistribution::min(DB::raw('YEAR(created_at)')) ?: $currentYear),
+            (int) (ProductPurchase::min(DB::raw('YEAR(created_at)')) ?: $currentYear),
         );
 
         foreach (range($currentYear, $oldestYear) as $year) {
-            $booking = (float) RoomBookingHistory::whereYear('check_in', $year)->sum('daybytotalamount');
-            $expense = (float) Expense::whereYear('created_at', $year)->sum('expense_amount');
-            $salary  = (float) StaffSalaryPayment::whereYear('created_at', $year)->sum('amount');
-            $product = (float) ProductDistribution::whereYear('created_at', $year)->sum('total_price_available');
-            $cost    = $expense + $salary + $product;
+            // ====== INCOME ======
+            $roomBooking    = (float) RoomBookingHistory::whereYear('check_in', $year)->sum('daybytotalamount');
+            $monthlyPayment = (float) MonthlyPayment::whereYear('created_at', $year)->sum('paid_amount');
+            $productSales   = (float) ProductDistribution::whereYear('created_at', $year)->sum('total_price_available');
+            $totalIncome    = $roomBooking + $monthlyPayment + $productSales;
 
-            if ($booking == 0 && $expense == 0 && $salary == 0 && $product == 0) continue;
+            // ====== COST ======
+            $expense         = (float) Expense::whereYear('created_at', $year)->sum('expense_amount');
+            $salary          = (float) StaffSalaryPayment::whereYear('created_at', $year)->sum('amount');
+            $productPurchase = (float) ProductPurchase::whereYear('created_at', $year)->sum('total_price');
+            $totalCost       = $expense + $salary + $productPurchase;
+
+            if ($roomBooking == 0 && $monthlyPayment == 0 && $productSales == 0
+                && $expense == 0 && $salary == 0 && $productPurchase == 0) continue;
 
             // Monthly breakdown
             $monthlyBreakdown = [];
             foreach ($months as $num => $name) {
-                $mBooking = (float) RoomBookingHistory::whereYear('check_in', $year)->whereMonth('check_in', $num)->sum('daybytotalamount');
-                $mExpense = (float) Expense::whereYear('created_at', $year)->whereMonth('created_at', $num)->sum('expense_amount');
-                $mSalary  = (float) StaffSalaryPayment::whereYear('created_at', $year)->whereMonth('created_at', $num)->sum('amount');
-                $mProduct = (float) ProductDistribution::whereYear('created_at', $year)->whereMonth('created_at', $num)->sum('total_price_available');
-                $mCost    = $mExpense + $mSalary + $mProduct;
+                $mRoomBooking    = (float) RoomBookingHistory::whereYear('check_in', $year)->whereMonth('check_in', $num)->sum('daybytotalamount');
+                $mMonthlyPayment = (float) MonthlyPayment::whereYear('created_at', $year)->whereMonth('created_at', $num)->sum('paid_amount');
+                $mProductSales   = (float) ProductDistribution::whereYear('created_at', $year)->whereMonth('created_at', $num)->sum('total_price_available');
+                $mTotalIncome    = $mRoomBooking + $mMonthlyPayment + $mProductSales;
 
-                if ($mBooking == 0 && $mExpense == 0 && $mSalary == 0 && $mProduct == 0) continue;
+                $mExpense         = (float) Expense::whereYear('created_at', $year)->whereMonth('created_at', $num)->sum('expense_amount');
+                $mSalary          = (float) StaffSalaryPayment::whereYear('created_at', $year)->whereMonth('created_at', $num)->sum('amount');
+                $mProductPurchase = (float) ProductPurchase::whereYear('created_at', $year)->whereMonth('created_at', $num)->sum('total_price');
+                $mTotalCost       = $mExpense + $mSalary + $mProductPurchase;
+
+                if ($mRoomBooking == 0 && $mMonthlyPayment == 0 && $mProductSales == 0
+                    && $mExpense == 0 && $mSalary == 0 && $mProductPurchase == 0) continue;
 
                 $monthlyBreakdown[] = [
-                    'month'       => $name,
-                    'booking'     => $mBooking,
-                    'expense'     => $mExpense,
-                    'salary'      => $mSalary,
-                    'product'     => $mProduct,
-                    'total_cost'  => $mCost,
-                    'profit_loss' => $mBooking - $mCost,
+                    'month'            => $name,
+                    'room_booking'     => $mRoomBooking,
+                    'monthly_payment'  => $mMonthlyPayment,
+                    'product_sales'    => $mProductSales,
+                    'total_income'     => $mTotalIncome,
+                    'expense'          => $mExpense,
+                    'salary'           => $mSalary,
+                    'product_purchase' => $mProductPurchase,
+                    'total_cost'       => $mTotalCost,
+                    'profit_loss'      => $mTotalIncome - $mTotalCost,
                 ];
             }
 
             $rows[] = [
                 'label'             => (string) $year,
-                'booking'           => $booking,
+                'room_booking'      => $roomBooking,
+                'monthly_payment'   => $monthlyPayment,
+                'product_sales'     => $productSales,
+                'total_income'      => $totalIncome,
                 'expense'           => $expense,
                 'salary'            => $salary,
-                'product'           => $product,
-                'total_cost'        => $cost,
-                'profit_loss'       => $booking - $cost,
+                'product_purchase'  => $productPurchase,
+                'total_cost'        => $totalCost,
+                'profit_loss'       => $totalIncome - $totalCost,
                 'monthly_breakdown' => $monthlyBreakdown,
             ];
         }
@@ -256,22 +191,28 @@ public function availableYears()
         ->map(fn($y) => (int)$y)
         ->toArray();
 
-    $porductdistribution = ProductDistribution::selectRaw('YEAR(created_at) as year')
+    $productDistributionYears = ProductDistribution::selectRaw('YEAR(created_at) as year')
         ->groupBy('year')
         ->pluck('year')
         ->map(fn($y) => (int)$y)
         ->toArray();
 
+    $productPurchaseYears = ProductPurchase::selectRaw('YEAR(created_at) as year')
+        ->groupBy('year')
+        ->pluck('year')
+        ->map(fn($y) => (int)$y)
+        ->toArray();
 
     $allYears = array_unique(array_merge(
         [$currentYear],
         $bookingYears,
         $expenseYears,
         $salaryYears,
-        $porductdistribution
+        $productDistributionYears,
+        $productPurchaseYears
     ));
 
-    rsort($allYears); 
+    rsort($allYears);
 
     return response()->json([
         'status' => true,
@@ -281,4 +222,3 @@ public function availableYears()
 
 
 }
-
