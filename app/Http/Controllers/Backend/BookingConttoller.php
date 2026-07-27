@@ -68,7 +68,7 @@ class BookingConttoller extends Controller
 
         $query = RoomBookingHistory::with(['division:id,name','district:id,name','thana:id,name'])
             ->where('status', 0)
-            ->whereDate('created_at', today());
+            ->whereDate('check_in', today());
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {

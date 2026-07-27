@@ -179,56 +179,7 @@
         @endunlessrole
 
         
-        @role('admin')
-        <div class="col-sm-6 col-xl-3">
-           <a href="{{ url('customer-report') }}?filter=checkout_in">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex align-items-start justify-content-between">
-                            <div class="content-left">
-                                <span class="text-heading">Today check In </span>
-                                <div class="d-flex align-items-center my-1">
-                                    <h4 class="mb-0 me-2">{{ $todayacheackin }}</h4>
-                                </div>
-                                <small class="mb-0 text-muted">{{ \Carbon\Carbon::today()->format('d M Y') }}</small>
-                            </div>
-                            <div class="avatar">
-                                <span class="avatar-initial rounded bg-label-success">
-                                  <i class="fa fa-calendar-check"></i>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        @endrole
 
-
-        @role('admin')
-        <div class="col-sm-6 col-xl-3">
-           <a href="{{ url('customer-report') }}?filter=checkout_list">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex align-items-start justify-content-between">
-                            <div class="content-left">
-                                <span class="text-heading">Today check Out </span>
-                                <div class="d-flex align-items-center my-1">
-                                    <h4 class="mb-0 me-2">{{ $todaycheackout }}</h4>
-                                </div>
-                                <small class="mb-0 text-muted">{{ \Carbon\Carbon::today()->format('d M Y') }}</small>
-                            </div>
-                            <div class="avatar">
-                                <span class="avatar-initial rounded bg-label-success">
-                                  <i class="fa fa-calendar-times"></i>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        @endrole
 
         @role('admin')
         <div class="col-sm-6 col-xl-3">

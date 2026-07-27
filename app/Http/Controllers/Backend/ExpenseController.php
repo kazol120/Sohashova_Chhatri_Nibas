@@ -56,25 +56,55 @@ class ExpenseController extends Controller
 
     public function store(Request $request)
     {
+        // Support bulk/multiple expenses submission
+        if ($request->has('expenses') && is_array($request->expenses)) {
+            $validated = $request->validate([
+                'date'                        => ['required', 'date'],
+                'expenses'                    => ['required', 'array', 'min:1'],
+                'expenses.*.expense_category' => ['required', 'exists:expense_types,id'],
+                'expenses.*.expense_note'     => ['nullable', 'string', 'max:1000'],
+                'expenses.*.expense_amount'   => ['required', 'numeric', 'min:0.01'],
+            ]);
 
+            $createdExpenses = [];
+            \Illuminate\Support\Facades\DB::transaction(function () use ($validated, &$createdExpenses) {
+                foreach ($validated['expenses'] as $item) {
+                    $createdExpenses[] = Expense::create([
+                        'date'             => $validated['date'],
+                        'expense_category' => $item['expense_category'],
+                        'expense_note'     => $item['expense_note'] ?? null,
+                        'expense_amount'   => $item['expense_amount'],
+                    ]);
+                }
+            });
+
+            return response()->json([
+                'status'   => 'success',
+                'message'  => 'Expenses saved successfully.',
+                'expenses' => $createdExpenses,
+            ]);
+        }
+
+        // Single expense submission fallback
         $validated = $request->validate([
             'date'             => ['required', 'date'],
             'expense_category' => ['required', 'exists:expense_types,id'],
-            'expense_note'     => ['required', 'string', 'max:1000'],
+            'expense_note'     => ['nullable', 'string', 'max:1000'],
             'expense_amount'   => ['required', 'numeric', 'min:0.01'],
         ]);
-            $expense = Expense::create([
+
+        $expense = Expense::create([
             'date'             => $validated['date'],
             'expense_category' => $validated['expense_category'],
-            'expense_note'     => $validated['expense_note'],
+            'expense_note'     => $validated['expense_note'] ?? null,
             'expense_amount'   => $validated['expense_amount'],
         ]);
+
         return response()->json([
             'status'  => 'success',
             'message' => 'Expense saved successfully.',
             'expense' => $expense,
         ]);
-
     }
 
 
@@ -156,7 +186,7 @@ class ExpenseController extends Controller
         $validated = $request->validate([
             'date'             => ['required', 'date'],
             'expense_category' => ['required', 'exists:expense_types,id'],
-            'expense_note'     => ['required', 'string', 'max:1000'],
+            'expense_note'     => ['nullable', 'string', 'max:1000'],
             'expense_amount'   => ['required', 'numeric', 'min:0.01'],
         ]);
 

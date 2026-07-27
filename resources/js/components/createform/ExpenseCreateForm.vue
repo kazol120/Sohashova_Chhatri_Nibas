@@ -5,6 +5,7 @@
         <div class="modal-wrap">
           <div class="modal-box" role="dialog" aria-modal="true">
 
+            <!-- Modal Header -->
             <div class="modal-header">
               <div class="header-left">
                 <div class="header-icon">
@@ -15,7 +16,7 @@
                 </div>
                 <div>
                   <h5 class="modal-title">Add Expense</h5>
-                  <span class="modal-subtitle">Record a new expense entry</span>
+                  <span class="modal-subtitle">Select category to enter amount</span>
                 </div>
               </div>
               <button class="close-btn" @click="emitClose" aria-label="Close">
@@ -28,7 +29,8 @@
             <form @submit.prevent="submit">
               <div class="modal-body custom-scrollbar">
 
-                <div class="field-group">
+                <!-- Date Field -->
+                <div class="field-group mb-3">
                   <label class="field-label">Date <span class="req-star">*</span></label>
                   <div class="input-wrapper">
                     <span class="input-icon">
@@ -47,8 +49,9 @@
                   <span v-if="errors.date" class="error-msg">{{ errors.date }}</span>
                 </div>
 
-                <div class="field-group">
-                  <label class="field-label">Category <span class="req-star">*</span></label>
+                <!-- Select Category Dropdown -->
+                <div class="field-group mb-3">
+                  <label class="field-label">Select Expense Category <span class="req-star">*</span></label>
                   <div class="input-wrapper">
                     <span class="input-icon">
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -56,81 +59,128 @@
                       </svg>
                     </span>
                     <select
-                      v-model="form.expense_category"
-                      class="field-input"
-                      :class="{ 'is-error': errors.expense_category }">
-                      <option value="" disabled>Select category</option>
+                      v-model="selectedCategoryInput"
+                      class="field-input field-select"
+                      @change="handleCategoryChoose"
+                    >
+                      <option value="" disabled selected>-- Choose Category to Add Amount --</option>
                       <option
-                        v-for="category in categories"
-                        :key="category.id"
-                        :value="category.id">
-                        {{ category.name }}
+                        v-for="cat in availableCategories"
+                        :key="cat.id"
+                        :value="cat.id"
+                      >
+                        + {{ cat.name }}
                       </option>
                     </select>
-                    <span class="select-arrow">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M6 9l6 6 6-6"/>
-                      </svg>
-                    </span>
                   </div>
-                  <span v-if="errors.expense_category" class="error-msg">{{ errors.expense_category }}</span>
+                  <small class="text-muted text-hint">
+                    Select a category above (e.g. Electricity Bill, Water Bill) to open its amount field.
+                  </small>
                 </div>
 
-                <div class="field-group">
-                  <label class="field-label">Expense Note <span class="req-star">*</span></label>
-                  <div class="input-wrapper textarea-wrapper">
-                    <span class="input-icon textarea-icon">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                      </svg>
-                    </span>
-                    <textarea
-                      v-model="form.expense_note"
-                      class="field-input field-textarea"
-                      :class="{ 'is-error': errors.expense_note }"
-                      placeholder="Describe the expense..."
-                      rows="3"
-                    ></textarea>
+                <!-- Added Categories & Amount Sections -->
+                <div v-if="form.items.length > 0" class="added-sections-wrap mb-3">
+                  <label class="field-label mb-2">Selected Categories & Amounts:</label>
+                  
+                  <div
+                    v-for="(item, index) in form.items"
+                    :key="item.expense_category"
+                    class="category-amount-card"
+                  >
+                    <div class="card-top-bar">
+                      <div class="cat-badge">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                          <line x1="7" y1="7" x2="7.01" y2="7"/>
+                        </svg>
+                        <strong>{{ getCategoryName(item.expense_category) }}</strong>
+                      </div>
+                      <button
+                        type="button"
+                        class="btn-remove-cat"
+                        @click="removeCategory(index)"
+                        title="Remove Category"
+                      >
+                        ✕ Remove
+                      </button>
+                    </div>
+
+                    <div class="card-inputs-grid">
+                      <!-- Amount Field -->
+                      <div class="field-group">
+                        <label class="field-sublabel">Expense Amount (৳) <span class="req-star">*</span></label>
+                        <div class="input-wrapper">
+                          <span class="input-icon currency-sign">৳</span>
+                          <input
+                            type="number"
+                            v-model.number="item.expense_amount"
+                            class="field-input amount-input"
+                            :class="{ 'is-error': getItemError(index, 'expense_amount') }"
+                            placeholder="Enter amount..."
+                            min="0"
+                            step="0.01"
+                          />
+                        </div>
+                        <span v-if="getItemError(index, 'expense_amount')" class="error-msg">
+                          {{ getItemError(index, 'expense_amount') }}
+                        </span>
+                      </div>
+
+                      <!-- Note Field (Optional) -->
+                      <div class="field-group">
+                        <label class="field-sublabel">Note <span class="optional-tag">(Optional)</span></label>
+                        <input
+                          type="text"
+                          v-model="item.expense_note"
+                          class="field-input"
+                          placeholder="Note (optional)"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <span v-if="errors.expense_note" class="error-msg">{{ errors.expense_note }}</span>
                 </div>
 
-                <div class="field-group">
-                  <label class="field-label">Expense Amount <span class="req-star">*</span></label>
-                  <div class="input-wrapper">
-                    <span class="input-icon currency-sign">৳</span>
-                    <input
-                      type="number"
-                      v-model="form.expense_amount"
-                      class="field-input amount-input"
-                      :class="{ 'is-error': errors.expense_amount }"
-                      placeholder="0.00"
-                      min="0"
-                      step="0.01"
-                    />
-                  </div>
-                  <span v-if="errors.expense_amount" class="error-msg">{{ errors.expense_amount }}</span>
+                <!-- Empty State Prompt -->
+                <div v-else class="empty-prompt-card mb-3">
+                  <div class="empty-icon">💡</div>
+                  <div class="empty-text">Please select an expense category from the dropdown above to enter amount.</div>
                 </div>
 
-                <div class="summary-card" v-if="form.expense_amount > 0">
-                  <div class="summary-row">
-                    <span class="summary-label">Total Amount</span>
-                    <span class="summary-amount">৳ {{ Number(form.expense_amount).toFixed(2) }}</span>
-                  </div>
-                  <div class="summary-row" v-if="categoryLabel">
-                    <span class="summary-label">Category</span>
-                    <span class="summary-badge">{{ categoryLabel }}</span>
-                  </div>
+                <!-- Summary Table & Grand Total -->
+                <div v-if="form.items.length > 0" class="summary-table-box mb-2">
+                  <div class="summary-title">Summary</div>
+                  <table class="table table-sm table-borderless mb-0 summary-table">
+                    <thead>
+                      <tr>
+                        <th>Category</th>
+                        <th>Note</th>
+                        <th class="text-end">Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="item in form.items" :key="'sum-'+item.expense_category">
+                        <td><span class="fw-semibold text-dark">{{ getCategoryName(item.expense_category) }}</span></td>
+                        <td><span class="text-muted small">{{ item.expense_note || '—' }}</span></td>
+                        <td class="text-end fw-bold">৳ {{ (parseFloat(item.expense_amount) || 0).toFixed(2) }}</td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr class="border-top">
+                        <th colspan="2" class="text-end text-success">Total Amount:</th>
+                        <th class="text-end text-success fs-6">৳ {{ grandTotal.toFixed(2) }}</th>
+                      </tr>
+                    </tfoot>
+                  </table>
                 </div>
 
               </div>
 
+              <!-- Modal Footer -->
               <div class="modal-footer">
-                <span class="req-note"><span class="req-star">*</span> Required fields</span>
+                <span class="req-note"><span class="req-star">*</span> Amount required for selected categories</span>
                 <div class="footer-actions">
                   <button type="button" class="btn-cancel" @click="emitClose">Cancel</button>
-                  <button type="submit" class="btn-submit" :disabled="saving">
+                  <button type="submit" class="btn-submit" :disabled="saving || form.items.length === 0">
                     <span v-if="saving" class="spinner"></span>
                     <svg v-else width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                       <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
@@ -161,32 +211,38 @@ export default {
   props: {
     show: { type: Boolean, default: false },
   },
-  emits: ["close", "created"],
-  computed: {
-    url() {
-      return this.$store.state.url;
-    },
 
-    categoryLabel() {
-      const found = this.categories.find(
-        item => String(item.id) === String(this.form.expense_category)
-      );
-      return found ? found.name : "";
-    },
-  },
+  emits: ["close", "created"],
 
   data() {
     return {
       saving: false,
       errors: {},
       categories: [],
+      selectedCategoryInput: "",
       form: {
         date: new Date().toISOString().split("T")[0],
-        expense_category: "",
-        expense_note: "",
-        expense_amount: "",
+        items: [],
       },
     };
+  },
+
+  computed: {
+    url() {
+      return this.$store.state.url;
+    },
+
+    availableCategories() {
+      const selectedIds = new Set(this.form.items.map(i => String(i.expense_category)));
+      return this.categories.filter(c => !selectedIds.has(String(c.id)));
+    },
+
+    grandTotal() {
+      return this.form.items.reduce((sum, i) => {
+        const val = parseFloat(i.expense_amount);
+        return sum + (isNaN(val) ? 0 : val);
+      }, 0);
+    },
   },
 
   watch: {
@@ -210,17 +266,48 @@ export default {
 
     resetForm() {
       this.errors = {};
+      this.selectedCategoryInput = "";
       this.form = {
         date: new Date().toISOString().split("T")[0],
-        expense_category: "",
-        expense_note: "",
-        expense_amount: "",
+        items: [],
       };
+    },
+
+    handleCategoryChoose() {
+      if (!this.selectedCategoryInput) return;
+
+      const catId = this.selectedCategoryInput;
+      // Add row for this category if not already added
+      const exists = this.form.items.some(i => String(i.expense_category) === String(catId));
+      if (!exists) {
+        this.form.items.push({
+          expense_category: catId,
+          expense_note: "",
+          expense_amount: "",
+        });
+      }
+
+      // Reset dropdown input
+      this.selectedCategoryInput = "";
+    },
+
+    removeCategory(index) {
+      this.form.items.splice(index, 1);
+    },
+
+    getCategoryName(id) {
+      const found = this.categories.find(c => String(c.id) === String(id));
+      return found ? found.name : "Category";
+    },
+
+    getItemError(index, field) {
+      return this.errors[`items.${index}.${field}`] || "";
     },
 
     async getCategories() {
       try {
-        const res = await axios.get(this.url + "expense-categories-list");
+        const base = this.url.endsWith("/") ? this.url : `${this.url}/`;
+        const res = await axios.get(`${base}expense-categories-list`);
         if (res.data.status === "success") {
           this.categories = res.data.data || [];
         }
@@ -231,13 +318,24 @@ export default {
 
     validate() {
       this.errors = {};
-      if (!this.form.date) this.errors.date = "Date is required.";
-      if (!this.form.expense_category) this.errors.expense_category = "Category is required.";
-      if (!this.form.expense_note.trim()) this.errors.expense_note = "Expense note is required.";
-      if (!this.form.expense_amount || Number(this.form.expense_amount) <= 0) {
-        this.errors.expense_amount = "Enter a valid amount.";
+      if (!this.form.date) {
+        this.errors.date = "Date is required.";
       }
-      return Object.keys(this.errors).length === 0;
+
+      if (!this.form.items || this.form.items.length === 0) {
+        this.toast("Select at least one category above.", "warning");
+        return false;
+      }
+
+      let valid = true;
+      this.form.items.forEach((item, index) => {
+        if (!item.expense_amount || Number(item.expense_amount) <= 0) {
+          this.errors[`items.${index}.expense_amount`] = "Enter valid amount.";
+          valid = false;
+        }
+      });
+
+      return valid && Object.keys(this.errors).length === 0;
     },
 
     async submit() {
@@ -245,26 +343,27 @@ export default {
 
       this.saving = true;
       try {
-        const res = await axios.post(this.url + "expenses", {
+        const base = this.url.endsWith("/") ? this.url : `${this.url}/`;
+        const payload = {
           date: this.form.date,
-          expense_note: this.form.expense_note,
-          expense_category: this.form.expense_category,
-          expense_amount: this.form.expense_amount,
-        });
+          expenses: this.form.items.map(item => ({
+            expense_category: item.expense_category,
+            expense_note: item.expense_note || null,
+            expense_amount: parseFloat(item.expense_amount),
+          })),
+        };
+
+        const res = await axios.post(`${base}expenses`, payload);
 
         if (res.data.status === "success") {
-          this.$emit("created", res.data.expense);
+          this.$emit("created", res.data.expenses);
           this.emitClose();
         } else {
           this.toast(res.data.message || "Something went wrong.", "error");
         }
       } catch (err) {
         if (err.response?.data?.errors) {
-          const laravelErrors = err.response.data.errors;
-          this.errors = Object.fromEntries(
-            Object.entries(laravelErrors).map(([k, v]) => [k, v[0]])
-          );
-          this.toast("Please fix the errors.", "error");
+          this.toast("Please fix the errors in the form.", "error");
         } else {
           this.toast("Server error. Please try again.", "error");
         }
@@ -283,6 +382,8 @@ export default {
           background:
             type === "success"
               ? "linear-gradient(135deg, #10b981, #059669)"
+              : type === "warning"
+              ? "linear-gradient(135deg, #f59e0b, #d97706)"
               : "linear-gradient(135deg, #ef4444, #dc2626)",
           borderRadius: "10px",
           fontWeight: "500",
@@ -312,7 +413,7 @@ export default {
   font-family: 'DM Sans', sans-serif;
 }
 
-.modal-wrap { width: 100%; max-width: 480px; }
+.modal-wrap { width: 100%; max-width: 580px; }
 
 .modal-box {
   background: #fff;
@@ -327,14 +428,14 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 24px;
+  padding: 18px 24px;
   border-bottom: 1px solid #f0f4f8;
   background: #fafbfc;
 }
 .header-left { display: flex; align-items: center; gap: 12px; }
 .header-icon {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: 12px;
   background: linear-gradient(135deg, #dbeafe, #bfdbfe);
   color: #1d4ed8;
@@ -358,8 +459,8 @@ export default {
 }
 
 .close-btn {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 10px;
   border: 1px solid #e8ecf0;
   background: #fff;
@@ -377,25 +478,93 @@ export default {
 }
 
 .modal-body {
-  padding: 22px 24px;
-  max-height: 60vh;
+  padding: 20px 24px;
+  max-height: 65vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
-.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar { width: 5px; }
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
 }
 
-.field-group { display: flex; flex-direction: column; gap: 5px; }
-.field-label { font-size: 13px; font-weight: 600; color: #374151; }
+.field-group { display: flex; flex-direction: column; gap: 4px; }
+.field-label { font-size: 13px; font-weight: 700; color: #374151; }
+.field-sublabel { font-size: 12px; font-weight: 600; color: #475569; }
 .req-star { color: #ef4444; margin-left: 2px; }
+.optional-tag { color: #94a3b8; font-weight: 400; font-size: 11px; margin-left: 4px; }
+.text-hint { font-size: 11px; margin-top: 3px; }
+
+.empty-prompt-card {
+  background: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+.empty-icon { font-size: 24px; margin-bottom: 4px; }
+.empty-text { font-size: 13px; color: #64748b; font-weight: 500; }
+
+.added-sections-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.category-amount-card {
+  background: #ffffff;
+  border: 1.5px solid #3b82f6;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.08);
+  animation: cardSlide 0.2s ease-out;
+}
+@keyframes cardSlide {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.cat-badge {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #1e40af;
+}
+
+.btn-remove-cat {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-remove-cat:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+
+.card-inputs-grid {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 12px;
+}
 
 .input-wrapper { position: relative; display: flex; align-items: center; }
-.textarea-wrapper { align-items: flex-start; }
 
 .input-icon {
   position: absolute;
@@ -406,30 +575,22 @@ export default {
   pointer-events: none;
   z-index: 1;
 }
-.textarea-icon { top: 11px; }
-.currency-sign { font-size: 15px; font-weight: 700; color: #4b5563; }
-
-.select-arrow {
-  position: absolute;
-  right: 12px;
-  color: #9ca3af;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-}
+.currency-sign { font-size: 14px; font-weight: 700; color: #4b5563; }
 
 .field-input {
   width: 100%;
-  padding: 10px 14px 10px 38px;
+  padding: 8px 12px 8px 36px;
   border: 1.5px solid #e2e8f0;
-  border-radius: 10px;
-  font-size: 14px;
+  border-radius: 9px;
+  font-size: 13px;
   font-family: 'DM Sans', sans-serif;
   color: #1e293b;
   background: #fff;
   transition: all 0.15s;
   outline: none;
-  appearance: none;
+}
+.field-select {
+  padding-left: 36px;
 }
 .field-input:focus {
   border-color: #3b82f6;
@@ -439,31 +600,25 @@ export default {
   border-color: #ef4444;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
-.field-textarea { resize: vertical; min-height: 80px; }
-.amount-input { font-size: 16px; font-weight: 600; }
-.error-msg { font-size: 12px; color: #ef4444; font-weight: 500; }
+.amount-input { font-weight: 700; font-size: 14px; color: #0f172a; }
+.error-msg { font-size: 11px; color: #ef4444; font-weight: 500; }
 
-.summary-card {
-  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-  border: 1.5px solid #86efac;
+.summary-table-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 12px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  padding: 12px 14px;
 }
-.summary-row { display: flex; align-items: center; justify-content: space-between; }
-.summary-label { font-size: 13px; color: #166534; font-weight: 500; }
-.summary-amount { font-size: 20px; font-weight: 700; color: #15803d; letter-spacing: -0.5px; }
-.summary-badge {
-  font-size: 11px;
-  font-weight: 600;
-  background: #22c55e;
-  color: #fff;
-  padding: 2px 10px;
-  border-radius: 20px;
-  text-transform: capitalize;
+.summary-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
 }
+.summary-table th { font-size: 11px; color: #64748b; }
+.summary-table td { font-size: 13px; }
 
 .modal-footer {
   padding: 14px 24px;
@@ -477,9 +632,9 @@ export default {
 .footer-actions { display: flex; gap: 10px; }
 
 .btn-cancel {
-  padding: 9px 20px;
+  padding: 9px 18px;
   border: 1.5px solid #e2e8f0;
-  border-radius: 10px;
+  border-radius: 9px;
   background: #fff;
   font-size: 13px;
   font-weight: 600;
@@ -491,9 +646,9 @@ export default {
 .btn-cancel:hover { border-color: #94a3b8; color: #374151; }
 
 .btn-submit {
-  padding: 9px 22px;
+  padding: 9px 20px;
   border: none;
-  border-radius: 10px;
+  border-radius: 9px;
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
   font-size: 13px;
   font-weight: 600;
@@ -538,6 +693,7 @@ export default {
 }
 
 @media (max-width: 520px) {
+  .card-inputs-grid { grid-template-columns: 1fr; }
   .modal-body { padding: 16px; }
   .modal-footer { flex-direction: column; gap: 10px; align-items: stretch; }
   .footer-actions { justify-content: flex-end; }

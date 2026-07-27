@@ -86,9 +86,9 @@ class RoomBookingHistoryController extends Controller
     $query = RoomBookingHistory::with(['division:id,name', 'district:id,name', 'thana:id,name'])
         ->where('status', 0);
 
-    // Default: today data
+    // Default: today data (check_in date)
     if (empty($startDate) && empty($endDate)) {
-        $query->whereDate('created_at', today());
+        $query->whereDate('check_in', today());
     }
 
     if ($search !== '') {
@@ -492,18 +492,14 @@ public function store(Request $request)
             'image_file'       => $imageName,
         ];
 
-    Mail::to($request->email)->send(new \App\Mail\RoomBookingMail($mailData));
-
-      try {
-
-    Mail::to($adminEmail)->send(new RoomBookingMail($mailData));
-    if (!empty($request->email)) {
-        Mail::to($request->email)->send(new RoomBookingMail($mailData));
-    }
-
-    } catch (\Throwable $mailError) {
-        \Log::error('Room booking email failed: ' . $mailError->getMessage());
-    }
+        try {
+            Mail::to($adminEmail)->send(new RoomBookingMail($mailData));
+            if (!empty($request->email)) {
+                Mail::to($request->email)->send(new RoomBookingMail($mailData));
+            }
+        } catch (\Throwable $mailError) {
+            \Log::error('Room booking email failed: ' . $mailError->getMessage());
+        }
             if ($request->ajax()) {
                 return response()->json([
                     'status'       => true,

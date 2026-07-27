@@ -91,7 +91,7 @@ class ProductDistributionController extends Controller
         // Booking এ roomnumber format: "roomNo-seatNo"
         $pattern = $room->room_no . '-' . $seat->seat_no;
 
-        $customers = RoomBookingHistory::where('status', 1)
+        $customers = RoomBookingHistory::where('status', 0)
             ->where(function ($q) use ($pattern) {
                 $q->where('floor_number_room_number_roomprice', 'like', '%"roomnumber":"' . $pattern . '"%')
                   ->orWhere('floor_number_room_number_roomprice', 'like', '%"roomnumber": "' . $pattern . '"%');
