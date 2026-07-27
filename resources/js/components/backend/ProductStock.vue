@@ -100,30 +100,36 @@
                       <i class="fa fa-spinner fa-spin me-2"></i>Loading...
                     </td>
                   </tr>
-                  <tr v-else-if="productstock.length === 0">
+                  <tr v-else-if="groupedProductStock.length === 0">
                     <td colspan="11" class="text-center py-5 text-muted">No records found</td>
                   </tr>
                   <template v-else>
-                    <tr v-for="(item, index) in productstock" :key="item.id">
-                      <td>{{ from + index }}</td>
-                      <td>{{ item.purchase_date }}</td>
-                      <td>{{ item.memo_number }}</td>
-                      <td>{{ item.supplier?.name || '—' }}</td>
-                      <td class="text-uppercase fw-semibold">{{ item.product_name }}</td>
-                      <td>{{ parseFloat(item.single_price || 0).toFixed(2) }} ৳</td>
-                      <td>{{ item.quantity }}</td>
-                  
-                      <td>{{ parseFloat(item.total_price || 0).toFixed(2) }} ৳</td>
-                      <td>{{ item.available_quantity }}</td>
-                      <td>{{ parseFloat(item.total_price_available || 0).toFixed(2) }} ৳</td>
-                      <td>
-                        <div class="d-flex gap-2 align-items-center">
-                          <button class="btn btn-sm btn-danger" @click="openDeleteModal(item)">
-                            <i class="ti ti-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
+                    <template v-for="(group, gIdx) in groupedProductStock" :key="group.date">
+                      <tr v-for="(item, idx) in group.items" :key="item.id">
+                        <td v-if="idx === 0" :rowspan="group.items.length" class="text-center align-middle fw-bold">
+                          {{ from + gIdx }}
+                        </td>
+                        <td v-if="idx === 0" :rowspan="group.items.length" class="align-middle bg-light-subtle">
+                          <div class="fw-bold text-dark">{{ group.date }}</div>
+                          <small class="text-muted">{{ group.items.length }} Item(s)</small>
+                        </td>
+                        <td>{{ item.memo_number || '—' }}</td>
+                        <td>{{ item.supplier?.name || '—' }}</td>
+                        <td class="text-uppercase fw-semibold">{{ item.product_name }}</td>
+                        <td>{{ parseFloat(item.single_price || 0).toFixed(2) }} ৳</td>
+                        <td class="fw-bold text-primary">{{ item.quantity }}</td>
+                        <td>{{ parseFloat(item.total_price || 0).toFixed(2) }} ৳</td>
+                        <td class="fw-bold text-success">{{ item.available_quantity }}</td>
+                        <td>{{ parseFloat(item.total_price_available || 0).toFixed(2) }} ৳</td>
+                        <td>
+                          <div class="d-flex gap-2 align-items-center">
+                            <button class="btn btn-sm btn-danger" @click="openDeleteModal(item)">
+                              <i class="ti ti-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </template>
                   </template>
                 </tbody>
 
@@ -209,6 +215,25 @@ export default {
   computed: {
     url() {
       return this.$store.state.url;
+    },
+
+    groupedProductStock() {
+      if (!this.productstock || !this.productstock.length) return [];
+
+      const groupsMap = new Map();
+
+      this.productstock.forEach(item => {
+        const key = item.purchase_date || 'No Date';
+        if (!groupsMap.has(key)) {
+          groupsMap.set(key, {
+            date: key,
+            items: [],
+          });
+        }
+        groupsMap.get(key).items.push(item);
+      });
+
+      return Array.from(groupsMap.values());
     },
   },
 
@@ -379,20 +404,42 @@ export default {
       const grandTotalQty       = res.data.grand_total_quantity || 0;
       const grandTotalAvailQty  = res.data.grand_total_available_quantity || 0;
 
-      const rows = allData.map((item, index) => `
-        <tr>
-          <td>${index + 1}</td>
-          <td>${item.purchase_date || '—'}</td>
-          <td>${item.memo_number || '—'}</td>
-          <td>${item.supplier?.name || '—'}</td>
-          <td>${item.product_name || '—'}</td>
-          <td>${parseFloat(item.single_price || 0).toFixed(2)} ৳</td>
-          <td>${item.quantity}</td>
-          <td>${parseFloat(item.total_price || 0).toFixed(2)} ৳</td>
-          <td>${item.available_quantity}</td>
-          <td>${parseFloat(item.total_price_available || 0).toFixed(2)} ৳</td>
-        </tr>
-      `).join('');
+      // Group allData by purchase_date
+      const groupsMap = new Map();
+      allData.forEach(item => {
+        const key = item.purchase_date || 'No Date';
+        if (!groupsMap.has(key)) groupsMap.set(key, { date: key, items: [] });
+        groupsMap.get(key).items.push(item);
+      });
+
+      const printGroups = Array.from(groupsMap.values());
+      const rowsArr = [];
+      let slCounter = 1;
+
+      printGroups.forEach(grp => {
+        grp.items.forEach((item, idx) => {
+          const isFirst = idx === 0;
+          const rowspan = isFirst ? ` rowspan="${grp.items.length}"` : '';
+
+          rowsArr.push(`
+            <tr>
+              ${isFirst ? `<td ${rowspan} style="text-align:center; vertical-align:middle;">${slCounter}</td>` : ''}
+              ${isFirst ? `<td ${rowspan} style="vertical-align:middle;"><strong>${grp.date || '—'}</strong></td>` : ''}
+              <td>${item.memo_number || '—'}</td>
+              <td>${item.supplier?.name || '—'}</td>
+              <td>${item.product_name || '—'}</td>
+              <td style="text-align:right;">${parseFloat(item.single_price || 0).toFixed(2)} ৳</td>
+              <td style="text-align:center;">${item.quantity}</td>
+              <td style="text-align:right;">${parseFloat(item.total_price || 0).toFixed(2)} ৳</td>
+              <td style="text-align:center;">${item.available_quantity}</td>
+              <td style="text-align:right;">${parseFloat(item.total_price_available || 0).toFixed(2)} ৳</td>
+            </tr>
+          `);
+        });
+        slCounter++;
+      });
+
+      const rows = rowsArr.join('');
   const html = `
     <!DOCTYPE html>
     <html>

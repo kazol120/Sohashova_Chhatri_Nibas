@@ -31276,6 +31276,21 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
   computed: {
     url: function url() {
       return this.$store.state.url;
+    },
+    groupedProductStock: function groupedProductStock() {
+      if (!this.productstock || !this.productstock.length) return [];
+      var groupsMap = new Map();
+      this.productstock.forEach(function (item) {
+        var key = item.purchase_date || 'No Date';
+        if (!groupsMap.has(key)) {
+          groupsMap.set(key, {
+            date: key,
+            items: []
+          });
+        }
+        groupsMap.get(key).items.push(item);
+      });
+      return Array.from(groupsMap.values());
     }
   },
   data: function data() {
@@ -31479,7 +31494,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     printTable: function printTable() {
       var _this5 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-        var base, res, allData, grandTotal, grandTotalAvailable, grandTotalQty, grandTotalAvailQty, rows, html, old, iframe;
+        var base, res, allData, grandTotal, grandTotalAvailable, grandTotalQty, grandTotalAvailQty, groupsMap, printGroups, rowsArr, slCounter, rows, html, old, iframe;
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
             case 0:
@@ -31502,11 +31517,29 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
               grandTotal = parseFloat(res.data.grand_total || 0);
               grandTotalAvailable = parseFloat(res.data.grand_total_available || 0);
               grandTotalQty = res.data.grand_total_quantity || 0;
-              grandTotalAvailQty = res.data.grand_total_available_quantity || 0;
-              rows = allData.map(function (item, index) {
-                var _item$supplier;
-                return "\n        <tr>\n          <td>".concat(index + 1, "</td>\n          <td>").concat(item.purchase_date || '—', "</td>\n          <td>").concat(item.memo_number || '—', "</td>\n          <td>").concat(((_item$supplier = item.supplier) === null || _item$supplier === void 0 ? void 0 : _item$supplier.name) || '—', "</td>\n          <td>").concat(item.product_name || '—', "</td>\n          <td>").concat(parseFloat(item.single_price || 0).toFixed(2), " \u09F3</td>\n          <td>").concat(item.quantity, "</td>\n          <td>").concat(parseFloat(item.total_price || 0).toFixed(2), " \u09F3</td>\n          <td>").concat(item.available_quantity, "</td>\n          <td>").concat(parseFloat(item.total_price_available || 0).toFixed(2), " \u09F3</td>\n        </tr>\n      ");
-              }).join('');
+              grandTotalAvailQty = res.data.grand_total_available_quantity || 0; // Group allData by purchase_date
+              groupsMap = new Map();
+              allData.forEach(function (item) {
+                var key = item.purchase_date || 'No Date';
+                if (!groupsMap.has(key)) groupsMap.set(key, {
+                  date: key,
+                  items: []
+                });
+                groupsMap.get(key).items.push(item);
+              });
+              printGroups = Array.from(groupsMap.values());
+              rowsArr = [];
+              slCounter = 1;
+              printGroups.forEach(function (grp) {
+                grp.items.forEach(function (item, idx) {
+                  var _item$supplier;
+                  var isFirst = idx === 0;
+                  var rowspan = isFirst ? " rowspan=\"".concat(grp.items.length, "\"") : '';
+                  rowsArr.push("\n            <tr>\n              ".concat(isFirst ? "<td ".concat(rowspan, " style=\"text-align:center; vertical-align:middle;\">").concat(slCounter, "</td>") : '', "\n              ").concat(isFirst ? "<td ".concat(rowspan, " style=\"vertical-align:middle;\"><strong>").concat(grp.date || '—', "</strong></td>") : '', "\n              <td>").concat(item.memo_number || '—', "</td>\n              <td>").concat(((_item$supplier = item.supplier) === null || _item$supplier === void 0 ? void 0 : _item$supplier.name) || '—', "</td>\n              <td>").concat(item.product_name || '—', "</td>\n              <td style=\"text-align:right;\">").concat(parseFloat(item.single_price || 0).toFixed(2), " \u09F3</td>\n              <td style=\"text-align:center;\">").concat(item.quantity, "</td>\n              <td style=\"text-align:right;\">").concat(parseFloat(item.total_price || 0).toFixed(2), " \u09F3</td>\n              <td style=\"text-align:center;\">").concat(item.available_quantity, "</td>\n              <td style=\"text-align:right;\">").concat(parseFloat(item.total_price_available || 0).toFixed(2), " \u09F3</td>\n            </tr>\n          "));
+                });
+                slCounter++;
+              });
+              rows = rowsArr.join('');
               html = "\n    <!DOCTYPE html>\n    <html>\n    <head>\n      <title>Product Stock Report</title>\n      <style>\n        @page { size: A4 landscape; margin: 12mm; }\n        * { box-sizing: border-box; margin: 0; padding: 0; }\n        body { font-family: Arial, sans-serif; font-size: 11px; }\n        h2 { text-align: center; margin-bottom: 6px; font-size: 15px; }\n         p.sub { text-align: center; margin-bottom: 12px; font-size: 12px; font-weight: 400;}\n        table { width: 100%; border-collapse: collapse; }\n        td { border: 1px solid #999; padding: 6px 8px; text-align: left; }\n        .header-row td { background: #e9e9e9; font-weight: bold; }\n        tr:nth-child(even) td { background: #f9f9f9; }\n        .total-row td { background: #333 !important; color: #fff !important; font-weight: bold; }\n        .total-row .label { text-align: right; color: #fff !important; }\n        .total-row .highlight { color: #ffcc00 !important; }\n      </style>\n    </head>\n    <body>\n      <h2>Product Stock Report</h2>\n       <p class=\"sub\">Printed: ".concat(new Date().toLocaleString(), "</p>\n      <table>\n        <tbody>\n          <tr class=\"header-row\">\n            <td>Sl</td>\n            <td>Date</td>\n            <td>Memo No</td>\n            <td>Supplier</td>\n            <td>Product</td>\n            <td>Unit Price</td>\n            <td>Qty</td>\n            <td>Total Price</td>\n            <td>Avail Qty</td>\n            <td>Avail Amount</td>\n          </tr>\n          ").concat(rows, "\n          <tr class=\"total-row\">\n            <td colspan=\"6\" class=\"label\">Current Stock :</td>\n            <td class=\"highlight\">").concat(grandTotalQty, "</td>\n            <td class=\"highlight\">").concat(grandTotal.toFixed(2), " \u09F3</td>\n            <td class=\"highlight\">").concat(grandTotalAvailQty, "</td>\n            <td class=\"highlight\">").concat(grandTotalAvailable.toFixed(2), " \u09F3</td>\n          </tr>\n        </tbody>\n      </table>\n    </body>\n    </html>\n  ");
               old = document.getElementById('print-iframe');
               if (old) old.remove();
@@ -31523,17 +31556,17 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
                   iframe.contentWindow.print();
                 }, 300);
               };
-              _context4.next = 27;
+              _context4.next = 33;
               break;
-            case 24:
-              _context4.prev = 24;
+            case 30:
+              _context4.prev = 30;
               _context4.t0 = _context4["catch"](0);
               _this5.toast('Print failed.', 'error');
-            case 27:
+            case 33:
             case "end":
               return _context4.stop();
           }
-        }, _callee4, null, [[0, 24]]);
+        }, _callee4, null, [[0, 30]]);
       }))();
     }
   }
@@ -43928,59 +43961,73 @@ var _hoisted_17 = {
 var _hoisted_18 = {
   key: 1
 };
-var _hoisted_19 = {
-  "class": "text-uppercase fw-semibold"
+var _hoisted_19 = ["rowspan"];
+var _hoisted_20 = ["rowspan"];
+var _hoisted_21 = {
+  "class": "fw-bold text-dark"
 };
-var _hoisted_20 = {
-  "class": "d-flex gap-2 align-items-center"
-};
-var _hoisted_21 = ["onClick"];
 var _hoisted_22 = {
-  "class": "table-dark"
+  "class": "text-muted"
 };
 var _hoisted_23 = {
-  "class": "fw-bold text-warning"
+  "class": "text-uppercase fw-semibold"
 };
 var _hoisted_24 = {
-  "class": "fw-bold text-warning"
+  "class": "fw-bold text-primary"
 };
 var _hoisted_25 = {
-  "class": "fw-bold text-warning"
+  "class": "fw-bold text-success"
 };
 var _hoisted_26 = {
-  "class": "fw-bold text-warning"
+  "class": "d-flex gap-2 align-items-center"
 };
-var _hoisted_27 = {
-  "class": "d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2"
-};
+var _hoisted_27 = ["onClick"];
 var _hoisted_28 = {
-  "class": "small text-muted"
+  "class": "table-dark"
 };
 var _hoisted_29 = {
-  "class": "d-flex gap-2"
+  "class": "fw-bold text-warning"
 };
-var _hoisted_30 = ["disabled"];
-var _hoisted_31 = ["disabled"];
+var _hoisted_30 = {
+  "class": "fw-bold text-warning"
+};
+var _hoisted_31 = {
+  "class": "fw-bold text-warning"
+};
 var _hoisted_32 = {
-  "class": "modal-box"
+  "class": "fw-bold text-warning"
 };
 var _hoisted_33 = {
-  "class": "modal-box-head d-flex justify-content-between align-items-center"
+  "class": "d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2"
 };
 var _hoisted_34 = {
-  "class": "modal-box-body"
+  "class": "small text-muted"
 };
 var _hoisted_35 = {
-  "class": "alert alert-warning mb-0"
+  "class": "d-flex gap-2"
 };
-var _hoisted_36 = {
-  "class": "modal-box-foot d-flex justify-content-end gap-2"
-};
+var _hoisted_36 = ["disabled"];
 var _hoisted_37 = ["disabled"];
 var _hoisted_38 = {
-  key: 0
+  "class": "modal-box"
 };
 var _hoisted_39 = {
+  "class": "modal-box-head d-flex justify-content-between align-items-center"
+};
+var _hoisted_40 = {
+  "class": "modal-box-body"
+};
+var _hoisted_41 = {
+  "class": "alert alert-warning mb-0"
+};
+var _hoisted_42 = {
+  "class": "modal-box-foot d-flex justify-content-end gap-2"
+};
+var _hoisted_43 = ["disabled"];
+var _hoisted_44 = {
+  key: 0
+};
+var _hoisted_45 = {
   key: 1
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -44100,45 +44147,57 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "text-center py-5 text-muted"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "fa fa-spinner fa-spin me-2"
-  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Loading... ")], -1 /* HOISTED */)]))) : $data.productstock.length === 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", _hoisted_18, _cache[29] || (_cache[29] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
+  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Loading... ")], -1 /* HOISTED */)]))) : $options.groupedProductStock.length === 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", _hoisted_18, _cache[29] || (_cache[29] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
     colspan: "11",
     "class": "text-center py-5 text-muted"
   }, "No records found", -1 /* HOISTED */)]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
     key: 2
-  }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.productstock, function (item, index) {
-    var _item$supplier;
-    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
-      key: item.id
-    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.from + index), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.purchase_date), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.memo_number), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(((_item$supplier = item.supplier) === null || _item$supplier === void 0 ? void 0 : _item$supplier.name) || '—'), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_19, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.product_name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(parseFloat(item.single_price || 0).toFixed(2)) + " ৳", 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.quantity), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(parseFloat(item.total_price || 0).toFixed(2)) + " ৳", 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.available_quantity), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(parseFloat(item.total_price_available || 0).toFixed(2)) + " ৳", 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-      "class": "btn btn-sm btn-danger",
-      onClick: function onClick($event) {
-        return $options.openDeleteModal(item);
-      }
-    }, _toConsumableArray(_cache[30] || (_cache[30] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
-      "class": "ti ti-trash"
-    }, null, -1 /* HOISTED */)])), 8 /* PROPS */, _hoisted_21)])])]);
-  }), 128 /* KEYED_FRAGMENT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tfoot", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", _hoisted_22, [_cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
+  }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($options.groupedProductStock, function (group, gIdx) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+      key: group.date
+    }, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(group.items, function (item, idx) {
+      var _item$supplier;
+      return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
+        key: item.id
+      }, [idx === 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", {
+        key: 0,
+        rowspan: group.items.length,
+        "class": "text-center align-middle fw-bold"
+      }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.from + gIdx), 9 /* TEXT, PROPS */, _hoisted_19)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), idx === 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", {
+        key: 1,
+        rowspan: group.items.length,
+        "class": "align-middle bg-light-subtle"
+      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(group.date), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("small", _hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(group.items.length) + " Item(s)", 1 /* TEXT */)], 8 /* PROPS */, _hoisted_20)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.memo_number || '—'), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(((_item$supplier = item.supplier) === null || _item$supplier === void 0 ? void 0 : _item$supplier.name) || '—'), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_23, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.product_name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(parseFloat(item.single_price || 0).toFixed(2)) + " ৳", 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_24, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.quantity), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(parseFloat(item.total_price || 0).toFixed(2)) + " ৳", 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_25, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.available_quantity), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(parseFloat(item.total_price_available || 0).toFixed(2)) + " ৳", 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+        "class": "btn btn-sm btn-danger",
+        onClick: function onClick($event) {
+          return $options.openDeleteModal(item);
+        }
+      }, _toConsumableArray(_cache[30] || (_cache[30] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+        "class": "ti ti-trash"
+      }, null, -1 /* HOISTED */)])), 8 /* PROPS */, _hoisted_27)])])]);
+    }), 128 /* KEYED_FRAGMENT */))], 64 /* STABLE_FRAGMENT */);
+  }), 128 /* KEYED_FRAGMENT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tfoot", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", _hoisted_28, [_cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
     colspan: "6",
     "class": "text-end fw-bold"
-  }, "Current Stock Quantity :", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_23, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.grandTotalQuantity), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_24, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(parseFloat($data.grandTotal || 0).toFixed(2)) + " ৳", 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_25, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.grandTotalAvailableQuantity), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_26, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(parseFloat($data.grandTotalAvailable || 0).toFixed(2)) + " ৳", 1 /* TEXT */), _cache[32] || (_cache[32] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, null, -1 /* HOISTED */))])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Pagination "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_28, " Total: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.total) + " | Page: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.currentPage) + " / " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.totalPages), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_29, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, "Current Stock Quantity :", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_29, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.grandTotalQuantity), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_30, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(parseFloat($data.grandTotal || 0).toFixed(2)) + " ৳", 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_31, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.grandTotalAvailableQuantity), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_32, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(parseFloat($data.grandTotalAvailable || 0).toFixed(2)) + " ৳", 1 /* TEXT */), _cache[32] || (_cache[32] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, null, -1 /* HOISTED */))])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Pagination "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_33, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_34, " Total: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.total) + " | Page: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.currentPage) + " / " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.totalPages), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_35, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-sm btn-secondary",
     disabled: $data.currentPage <= 1 || $data.loading,
     onClick: _cache[13] || (_cache[13] = function ($event) {
       return $options.fetchproductstock($data.currentPage - 1);
     })
-  }, " Previous ", 8 /* PROPS */, _hoisted_30), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, " Previous ", 8 /* PROPS */, _hoisted_36), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-sm btn-secondary",
     disabled: $data.currentPage >= $data.totalPages || $data.loading,
     onClick: _cache[14] || (_cache[14] = function ($event) {
       return $options.fetchproductstock($data.currentPage + 1);
     })
-  }, " Next ", 8 /* PROPS */, _hoisted_31)])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" ═══════════ DELETE MODAL ═══════════ "), $data.delOpen ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+  }, " Next ", 8 /* PROPS */, _hoisted_37)])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" ═══════════ DELETE MODAL ═══════════ "), $data.delOpen ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
     key: 0,
     "class": "modal-overlay",
     onClick: _cache[18] || (_cache[18] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $options.closeDeleteModal && $options.closeDeleteModal.apply($options, arguments);
     }, ["self"]))
-  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_32, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_33, [_cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_38, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_39, [_cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
     "class": "mb-0 text-danger"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "ti ti-trash me-2"
@@ -44148,7 +44207,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[15] || (_cache[15] = function () {
       return $options.closeDeleteModal && $options.closeDeleteModal.apply($options, arguments);
     })
-  })]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_34, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_35, [_cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Are you sure you want to delete: ")), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)((_$data$delItem = $data.delItem) === null || _$data$delItem === void 0 ? void 0 : _$data$delItem.product_name), 1 /* TEXT */), _cache[36] || (_cache[36] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("? "))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_36, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  })]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_40, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_41, [_cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Are you sure you want to delete: ")), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)((_$data$delItem = $data.delItem) === null || _$data$delItem === void 0 ? void 0 : _$data$delItem.product_name), 1 /* TEXT */), _cache[36] || (_cache[36] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("? "))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_42, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-outline-secondary",
     type: "button",
     onClick: _cache[16] || (_cache[16] = function () {
@@ -44161,11 +44220,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[17] || (_cache[17] = function () {
       return $options.confirmDelete && $options.confirmDelete.apply($options, arguments);
     })
-  }, [$data.savingDelete ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_38, _cache[37] || (_cache[37] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, [$data.savingDelete ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_44, _cache[37] || (_cache[37] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "fa fa-spinner fa-spin me-1"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Deleting...")]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_39, _cache[38] || (_cache[38] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Deleting...")]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_45, _cache[38] || (_cache[38] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "ti ti-trash me-1"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Yes, Delete")])))], 8 /* PROPS */, _hoisted_37)])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" CREATE MODAL "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_ProductPurchaseCreateForm, {
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Yes, Delete")])))], 8 /* PROPS */, _hoisted_43)])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" CREATE MODAL "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_ProductPurchaseCreateForm, {
     show: $data.showCreateModal,
     onClose: _cache[19] || (_cache[19] = function ($event) {
       return $data.showCreateModal = false;
