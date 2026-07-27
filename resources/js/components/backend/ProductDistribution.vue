@@ -92,6 +92,7 @@
                     <th>Seat</th>
                     <th>Guest Name</th>
                     <th>Product Name</th>
+                    <th>Unit Price</th>
                     <th>Quantity</th>
                     <th>Total Price</th>
                     <th style="width:80px">Action</th>
@@ -99,12 +100,12 @@
                 </thead>
                 <tbody>
                   <tr v-if="loading">
-                    <td colspan="10" class="text-center py-5 text-muted">
+                    <td colspan="11" class="text-center py-5 text-muted">
                       <i class="fa fa-spinner fa-spin me-2"></i>Loading...
                     </td>
                   </tr>
                   <tr v-else-if="productstock.length === 0">
-                    <td colspan="10" class="text-center py-5 text-muted">No records found</td>
+                    <td colspan="11" class="text-center py-5 text-muted">No records found</td>
                   </tr>
 
                   <template v-else>
@@ -119,6 +120,7 @@
                       </td>
                       <td>{{ item.customer_name || '—' }}</td>
                       <td>{{ item.product_names || '—' }}</td>
+                      <td>{{ item.single_price ? item.single_price + ' ৳' : '—' }}</td>
                       <td class="text-uppercase fw-semibold">{{ item.total_quantity }}</td>
                       <td>{{ parseFloat(item.total_price_available || 0).toFixed(2) }} ৳</td>
                       <td>
@@ -131,7 +133,7 @@
                 </tbody>
                 <tfoot>
                   <tr class="table-dark">
-                    <td colspan="7" class="text-end fw-bold">Grand Total :</td>
+                    <td colspan="8" class="text-end fw-bold">Grand Total :</td>
                     <td class="fw-bold text-warning">{{ grandTotalQuantity }}</td>
                     <td class="fw-bold text-warning">{{ parseFloat(grandTotal || 0).toFixed(2) }} ৳</td>
                     <td></td>
@@ -354,13 +356,14 @@ export default {
           <td class="text-center">${item.seat_no ? 'Seat ' + item.seat_no : '—'}</td>
           <td>${item.customer_name || '—'}</td>
           <td>${item.product_names || '—'}</td>
+          <td class="text-end">${item.single_price ? item.single_price + ' ৳' : '—'}</td>
           <td class="text-center">${item.total_quantity || 0}</td>
           <td class="text-end">${parseFloat(item.total_price_available || 0).toFixed(2)} ৳</td>
         </tr>
       `).join('');
       const totalRow = `
         <tr class="grand-total-row">
-          <td colspan="7" class="text-end fw-bold">Grand Total :</td>
+          <td colspan="8" class="text-end fw-bold">Grand Total :</td>
           <td class="text-center fw-bold">${this.grandTotalQuantity || 0}</td>
           <td class="text-end fw-bold">${parseFloat(this.grandTotal || 0).toFixed(2)} ৳</td>
         </tr>
@@ -393,14 +396,15 @@ export default {
               background: #f1f1f1 !important;
             }
             col.sl-col    { width: 4%; }
-            col.date-col  { width: 10%; }
-            col.floor-col { width: 11%; }
-            col.room-col  { width: 7%; }
-            col.seat-col  { width: 7%; }
-            col.guest-col { width: 15%; }
-            col.prod-col  { width: 23%; }
-            col.qty-col   { width: 8%; }
-            col.total-col { width: 15%; }
+            col.date-col  { width: 9%; }
+            col.floor-col { width: 10%; }
+            col.room-col  { width: 6%; }
+            col.seat-col  { width: 6%; }
+            col.guest-col { width: 14%; }
+            col.prod-col  { width: 20%; }
+            col.unit-col  { width: 10%; }
+            col.qty-col   { width: 7%; }
+            col.total-col { width: 14%; }
             @media print {
               thead { display: table-header-group; }
               tr { page-break-inside: avoid; }
@@ -419,6 +423,7 @@ export default {
               <col class="seat-col">
               <col class="guest-col">
               <col class="prod-col">
+              <col class="unit-col">
               <col class="qty-col">
               <col class="total-col">
             </colgroup>
@@ -431,6 +436,7 @@ export default {
                 <th>Seat</th>
                 <th>Guest Name</th>
                 <th>Product Name</th>
+                <th>Unit Price</th>
                 <th>Qty</th>
                 <th>Total Price</th>
               </tr>

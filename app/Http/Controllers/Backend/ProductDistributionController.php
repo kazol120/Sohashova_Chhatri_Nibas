@@ -307,6 +307,12 @@ class ProductDistributionController extends Controller
                 'customer_name'         => optional($first->customer)->full_name,
                 'product_names'         => $productNames,
                 'product_price_details' => $productPriceDetails,
+                'single_price'          => $productGroups->map(function ($items) {
+                    $totQty = $items->sum('customer_quantity');
+                    $totPrice = $items->sum('total_price_available');
+                    $unit = $totQty > 0 ? ($totPrice / $totQty) : ($items->first()->single_price ?? 0);
+                    return number_format($unit, 2);
+                })->implode(', '),
                 'total_quantity'        => $group->sum('customer_quantity'),
                 'total_price_available' => $group->sum('total_price_available'),
             ];
@@ -386,6 +392,12 @@ class ProductDistributionController extends Controller
             'customer_name'         => optional($first->customer)->full_name,
             'product_names'         => $productNames,
             'product_price_details' => $productPriceDetails,
+            'single_price'          => $productGroups->map(function ($items) {
+                $totQty = $items->sum('customer_quantity');
+                $totPrice = $items->sum('total_price_available');
+                $unit = $totQty > 0 ? ($totPrice / $totQty) : ($items->first()->single_price ?? 0);
+                return number_format($unit, 2);
+            })->implode(', '),
             'total_quantity'        => $group->sum('customer_quantity'),
             'total_price_available' => $group->sum('total_price_available'),
         ];
