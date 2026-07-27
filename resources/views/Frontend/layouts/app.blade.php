@@ -20,6 +20,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Tagesschrift&display=swap" rel="stylesheet">
+  <!-- SolaimanLipi Bengali Font -->
+  <style>
+    @font-face {
+      font-family: 'SolaimanLipi';
+      src: url('https://cdn.jsdelivr.net/npm/solaiman-lipi@1.0.0/SolaimanLipi.ttf') format('truetype');
+      font-display: swap;
+    }
+    .site-name-bn {
+      font-family: 'SolaimanLipi', 'Kalpurush', 'Siyam Rupali', 'Vrinda', Arial, sans-serif !important;
+      letter-spacing: 0.5px;
+    }
+  </style>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -83,6 +95,12 @@
           document.querySelectorAll('.site-name-text').forEach(function(el) {
             var text = lang === 'en' ? el.getAttribute('data-lang-en') : el.getAttribute('data-lang-bn');
             if (text) el.textContent = text;
+            // Apply SolaimanLipi font for Bengali, remove for English
+            if (lang === 'bn') {
+              el.classList.add('site-name-bn');
+            } else {
+              el.classList.remove('site-name-bn');
+            }
           });
         }
 

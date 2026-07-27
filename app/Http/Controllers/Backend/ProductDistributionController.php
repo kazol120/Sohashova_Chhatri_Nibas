@@ -49,9 +49,9 @@ class ProductDistributionController extends Controller
 
     // Get all customers (active bookings) in a specific room
     // room_booking_histories তে room_id নেই, JSON field এ roomnumber আছে
+
     public function roomCustomersSelect($room_id)
     {
-        // Room এর room_no বের করি
         $room = Room::find($room_id);
         if (!$room) {
             return response()->json(['status' => false, 'data' => []]);
@@ -59,10 +59,8 @@ class ProductDistributionController extends Controller
 
         $roomNo = $room->room_no;
 
-        // JSON field এ roomnumber এ room_no দিয়ে match করি (status=1 = active)
         $customers = RoomBookingHistory::where('status', 1)
             ->where(function ($q) use ($roomNo) {
-                // JSON array এর মধ্যে roomnumber LIKE room_no% খুঁজি
                 $q->where('floor_number_room_number_roomprice', 'like', '%"roomnumber":"' . $roomNo . '-%')
                   ->orWhere('floor_number_room_number_roomprice', 'like', '%"roomnumber": "' . $roomNo . '-%');
             })
@@ -75,22 +73,21 @@ class ProductDistributionController extends Controller
         ]);
     }
 
-    // Seat select করলে সেই seat এর active customer দেখাবে
+
+
     public function seatCustomersSelect($seat_id)
+
     {
+
         $seat = RoomSeat::find($seat_id);
         if (!$seat) {
             return response()->json(['status' => false, 'data' => [], 'message' => 'Seat not found']);
         }
-
         $room = Room::find($seat->room_id);
         if (!$room) {
             return response()->json(['status' => false, 'data' => [], 'message' => 'Room not found']);
         }
-
-        // Booking এ roomnumber format: "roomNo-seatNo"
         $pattern = $room->room_no . '-' . $seat->seat_no;
-
         $customers = RoomBookingHistory::where('status', 0)
             ->where(function ($q) use ($pattern) {
                 $q->where('floor_number_room_number_roomprice', 'like', '%"roomnumber":"' . $pattern . '"%')
@@ -98,7 +95,6 @@ class ProductDistributionController extends Controller
             })
             ->orderBy('full_name', 'asc')
             ->get(['id', 'full_name', 'phone']);
-
         return response()->json([
             'status'   => true,
             'data'     => $customers,
@@ -106,14 +102,14 @@ class ProductDistributionController extends Controller
             'room_no'  => $room->room_no,
             'pattern'  => $pattern,
         ]);
+
     }
+
 
     public function roomCustomerAutoLoad($room_number)
     {
         $customers = RoomBookingHistory::orderBy('id', 'desc')->get();
-
         $matchedCustomer = null;
-
         foreach ($customers as $customer) {
             $rooms = $customer->floor_number_room_number_roomprice;
 
@@ -124,7 +120,6 @@ class ProductDistributionController extends Controller
             if (!is_array($rooms)) {
                 continue;
             }
-
             foreach ($rooms as $room) {
                 if (isset($room['roomnumber']) && (string) $room['roomnumber'] === (string) $room_number) {
                     $matchedCustomer = [
@@ -135,7 +130,6 @@ class ProductDistributionController extends Controller
                 }
             }
         }
-
         if (!$matchedCustomer) {
             return response()->json([
                 'status'  => false,
@@ -143,12 +137,12 @@ class ProductDistributionController extends Controller
                 'data'    => null,
             ], 404);
         }
-
         return response()->json([
             'status' => true,
             'data'   => $matchedCustomer,
         ]);
     }
+
 
   public function store(Request $request)
 {
@@ -294,19 +288,6 @@ class ProductDistributionController extends Controller
                 $total = $items->sum('total_price_available');
                 return $productName . '=' . number_format($total, 2);
             })->values()->implode(', ');
-
-            $productItems = $productGroups->map(function ($items, $productName) {
-                $totQty = $items->sum('customer_quantity');
-                $totPrice = $items->sum('total_price_available');
-                $unit = $totQty > 0 ? ($totPrice / $totQty) : ($items->first()->single_price ?? 0);
-                return [
-                    'product_name' => $productName,
-                    'single_price' => number_format($unit, 2),
-                    'quantity'     => $totQty,
-                    'total_price'  => number_format($totPrice, 2),
-                ];
-            })->values();
-
             return [
                 'id'                    => $first->id,
                 'purchase_date'         => $first->purchase_date,
@@ -320,9 +301,6 @@ class ProductDistributionController extends Controller
                 'customer_name'         => optional($first->customer)->full_name,
                 'product_names'         => $productNames,
                 'product_price_details' => $productPriceDetails,
-                'single_price'          => $productItems->pluck('single_price')->implode(', '),
-                'quantity_breakdown'    => $productItems->pluck('quantity')->implode(', '),
-                'items'                 => $productItems,
                 'total_quantity'        => $group->sum('customer_quantity'),
                 'total_price_available' => $group->sum('total_price_available'),
             ];
@@ -389,19 +367,6 @@ class ProductDistributionController extends Controller
             $total = $items->sum('total_price_available');
             return $productName . '=' . number_format($total, 2);
         })->values()->implode(', ');
-
-        $productItems = $productGroups->map(function ($items, $productName) {
-            $totQty = $items->sum('customer_quantity');
-            $totPrice = $items->sum('total_price_available');
-            $unit = $totQty > 0 ? ($totPrice / $totQty) : ($items->first()->single_price ?? 0);
-            return [
-                'product_name' => $productName,
-                'single_price' => number_format($unit, 2),
-                'quantity'     => $totQty,
-                'total_price'  => number_format($totPrice, 2),
-            ];
-        })->values();
-
         return [
             'id'                    => $first->id,
             'purchase_date'         => $first->purchase_date,
@@ -415,9 +380,6 @@ class ProductDistributionController extends Controller
             'customer_name'         => optional($first->customer)->full_name,
             'product_names'         => $productNames,
             'product_price_details' => $productPriceDetails,
-            'single_price'          => $productItems->pluck('single_price')->implode(', '),
-            'quantity_breakdown'    => $productItems->pluck('quantity')->implode(', '),
-            'items'                 => $productItems,
             'total_quantity'        => $group->sum('customer_quantity'),
             'total_price_available' => $group->sum('total_price_available'),
         ];

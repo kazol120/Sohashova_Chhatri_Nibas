@@ -54,21 +54,39 @@
       <ul class="rules-list notranslate list-unstyled mb-0 d-flex flex-column gap-3" translate="no" style="font-size: 17px; color: #1e293b; font-weight: 600; line-height: 1.8;">
         <li class="d-flex align-items-start gap-2">
           <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
-          <span>মেসের ভাড়া <strong class="text-danger">০৭ তারিখের</strong> মধ্যে পরিশোধ করতে হবে। ০৭ তারিখ পার হলে ২৪ ঘন্টা পর পর <strong class="text-danger">৫০ টাকা</strong> করে জরিমানা।</span>
+          <span>মেসের ভাড়া <strong class="text-danger">০৭ তারিখের</strong> মধ্যে পরিশোধ করতে হবে। ০৭ তারিখ পার হলে <strong class="text-danger">১০০ টাকা</strong> জরিমানা।</span>
         </li>
         <li class="d-flex align-items-start gap-2">
           <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
-          <span>মেস ছাড়লে <strong class="text-danger">০২ মাস পূর্বেই</strong> মেস কর্তৃপক্ষকে জানাতে হবে। অন্যথায় দুই মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</span>
+          <span>অগ্রিম দুই মাসের টাকা জামানত দিতে হবে । মেস ছাড়লে <strong class="text-danger">০২ মাস পূর্বেই</strong> মেস কর্তৃপক্ষকে জানাতে হবে। অন্যথায় দুই মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</span>
         </li>
         <li class="d-flex align-items-start gap-2">
           <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
-          <span><strong class="text-danger">মাগরিবের আযানের পর</strong> মেসের বাহিরে থাকলে অভিভাবককে জানিয়ে দিতে হবে।</span>
+          <span><strong class="text-danger">মাগরিবের আযানের পর</strong> মেসের বাহিরে থাকলে মেস অভিভাবককে জানিয়ে দিতে হবে।</span>
         </li>
         <li class="d-flex align-items-start gap-2">
           <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
-          <span>রুম চেঞ্জ করতে চাইলে <strong class="text-danger">৫০০ টাকা</strong> জরিমানা প্রদান করতে হবে।</span>
+          <span>রুম চেঞ্জ করতে চাইলে <strong class="text-danger">৫০০ টাকা</strong> প্রদান করতে হবে।</span>
         </li>
-        <li class="d-flex align-items-start gap-2">
+        
+    <li class="d-flex align-items-start gap-2">
+          <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
+          <span>ওয়াইফাই, ক্লিনার, বিদ্যুৎ - ভাড়ার সাথে ইনক্লুড (সংযুক্ত) থাকবে । </span>
+        </li>
+    <li class="d-flex align-items-start gap-2">
+          <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
+          <span> উন্নয়ন ফি ৩০০০/- (এককালীন) । </span>
+        </li>
+    
+    <li class="d-flex align-items-start gap-2">
+          <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
+          <span>একক রুম ভাড়া ৩০০০/- টাকা,দুই রুম ভাড়া ২৫০০/- টাকা  ।  </span> 
+        </li>
+    <li class="d-flex align-items-start gap-2">
+          <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
+          <span>সকল কিছু পরিবর্তন, পরিবর্ধন, যে কোন মুহূর্তে কর্তৃপক্ষ শিদান্ত নিতে পারিবে ।   </span> 
+        </li>
+    <li class="d-flex align-items-start gap-2">
           <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
           <span>মেসের নিয়ম-কানুন মেনে চলতে হবে। কারো বিরুদ্ধে কোনো অভিযোগ আসলে এবং তা প্রমাণিত হলে সিট বাতিলসহ যেকোনো ব্যবস্থা নেয়ার অধিকার কর্তৃপক্ষ রাখে।</span>
         </li>
