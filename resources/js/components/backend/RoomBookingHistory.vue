@@ -90,11 +90,10 @@
                     <th style="width: 130px">Image</th>
                     <th style="width: 160px">Name</th>
                     <th style="width: 130px">User Type</th>
-                    <th style="width: 180px">Floor</th>
-                    <th style="width: 180px">Rooms</th>
-                    <th style="width: 180px">Room Price</th>
-                    <th style="width: 140px">Monthly Amount</th>
+                    <th style="width: 140px">Floor</th>
+                    <th style="width: 160px">Seat</th>
                     <th style="width: 180px">Booking Date & Time</th>
+                    <th style="width: 150px">Monthly Amount</th>
                     <th style="width: 180px">Email</th>
                     <th v-if="showFamilyColumns" style="width: 160px">Institution Name</th>
                     <th v-if="showFamilyColumns" style="width: 140px">Education System</th>
@@ -138,7 +137,7 @@
                       <span class="badge bg-label-secondary fw-semibold">{{ r.user_type || 'Student' }}</span>
                     </td>
 
-                    <td colspan="4">
+                    <td colspan="2">
                       <div v-if="r.room_items && r.room_items.length" class="booking-card">
                         <div
                           v-for="(item, i) in r.room_items"
@@ -151,16 +150,6 @@
                           <div class="booking-col room">
                             <span class="room-badge">{{ item.roomnumber }}</span>
                           </div>
-
-                          <div class="booking-col price">
-                            ৳ {{ Number(item.advance_price || 0).toFixed(2) }}
-                          </div>
-                        </div>
-
-                        <div
-                          v-if="r.room_items.length > 1"
-                          class="booking-total">
-                          Total: ৳ {{ Number(r.monthly_amount || 0).toFixed(2) }}
                         </div>
                       </div>
                       <span v-else>-</span>
@@ -168,6 +157,10 @@
 
                     <td>
                       <span class="fw-semibold">{{ formatDateTime(r.created_at) }}</span>
+                    </td>
+
+                    <td>
+                      <span class="fw-bold text-success">৳ {{ Number(r.monthly_amount || 0).toFixed(2) }}</span>
                     </td>
 
                     <td>

@@ -83,12 +83,10 @@
                     <th style="width: 70px">Sl</th>
                     <th style="width: 130px">Image</th>
                     <th style="width: 160px">Name</th>
-                    <th style="width: 180px">Floor</th>
-                    <th style="width: 180px">Rooms</th>
-                    <th style="width: 180px">Room Price</th>
-                    <th style="width: 140px">Total Amount</th>
-                    <th style="width: 180px">Total Days & Amount</th>
+                    <th style="width: 140px">Floor</th>
+                    <th style="width: 160px">Seat</th>
                     <th style="width: 180px">Booking Date & Time</th>
+                    <th style="width: 150px">Monthly Amount</th>
                     <th style="width: 140px">Check In</th>
                     <th style="width: 140px">Check Out</th>
                     <th style="width: 180px">Email</th>
@@ -114,7 +112,7 @@
                       <div class="fw-semibold">{{ r.full_name || "-" }}</div>
                     </td>
 
-                    <td colspan="4">
+                    <td colspan="2">
                       <div v-if="r.room_items && r.room_items.length" class="booking-card">
                         <div
                           v-for="(item, i) in r.room_items"
@@ -128,17 +126,6 @@
                           <div class="booking-col room">
                             <span class="room-badge">{{ item.roomnumber }}</span>
                           </div>
-
-                          <div class="booking-col price">
-                            ৳ {{ Number(item.price || 0).toFixed(2) }}
-                          </div>
-                        </div>
-
-                        <div
-                          v-if="r.room_items.length > 1"
-                          class="booking-total"
-                        >
-                          Total: ৳ {{ Number(r.monthly_amount || 0).toFixed(2) }}
                         </div>
                       </div>
 
@@ -147,6 +134,10 @@
 
                     <td>
                       <span class="fw-semibold">{{ formatDateTime(r.created_at) }}</span>
+                    </td>
+
+                    <td>
+                      <span class="fw-bold text-success">৳ {{ Number(r.monthly_amount || 0).toFixed(2) }}</span>
                     </td>
 
                     <td>
