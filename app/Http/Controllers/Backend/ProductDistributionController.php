@@ -27,16 +27,21 @@ class ProductDistributionController extends Controller
 
     public function floorRoomSelect($floor_id)
     {
+        // শুধু সেই rooms দেখাবে যেগুলোর কমপক্ষে ১টি seat booked (status=1) আছে
         $rooms = Room::where('floor_id', $floor_id)
-            ->orderBy('id', 'desc')
+            ->whereHas('seats', function ($q) {
+                $q->where('status', 1); // শুধু booked seat আছে এমন rooms
+            })
+            ->orderBy('room_no', 'asc')
             ->get(['id', 'floor_id', 'room_no']);
         return response()->json($rooms);
     }
 
-    // Get seats for a specific room
+    // Get seats for a specific room — শুধু booked (status=1) seats দেখাবে
     public function roomSeatsSelect($room_id)
     {
         $seats = RoomSeat::where('room_id', $room_id)
+            ->where('status', 1) // শুধু booked/active seats
             ->orderBy('seat_no', 'asc')
             ->get(['id', 'room_id', 'seat_no', 'price', 'status']);
         return response()->json($seats);

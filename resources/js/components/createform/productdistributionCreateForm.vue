@@ -92,12 +92,10 @@
                       @change="onSeatSelect"
                     >
                       <option value="">
-                        {{ !form.room_id ? 'Select Room first' : loadingSeats ? 'Loading seats...' : seats.length === 0 ? 'No seats found' : 'Select Seat' }}
+                        {{ !form.room_id ? 'Select Room first' : loadingSeats ? 'Loading seats...' : seats.length === 0 ? 'No active seat found' : 'Select Seat' }}
                       </option>
                       <option v-for="s in seats" :key="s.id" :value="s.id">
                         Seat {{ s.seat_no }}
-                        <span v-if="s.status == 1"> (Booked)</span>
-                        <span v-else> (Vacant)</span>
                       </option>
                     </select>
                   </div>
