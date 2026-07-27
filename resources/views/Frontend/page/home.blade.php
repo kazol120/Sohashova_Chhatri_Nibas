@@ -179,7 +179,7 @@
     <div class="gallery-header text-center">
       <h2 class="gallery-title" style="font-weight: 800; font-size: 32px; color: #033364; margin-bottom: 10px;">Our Gallery</h2>
       <p class="gallery-sub" style="font-size: 15px; color: #6b7280; max-width: 700px; margin: 0 auto 30px;">
-        A glimpse of the well-furnished, comfortable, and modern rooms at Sohashova Chhatri Nibas.
+        সোহাশোভা ছাত্রী নিবাসের সুসজ্জিত, আরামদায়ক ও আধুনিক কক্ষগুলোর একটি ঝলক।
       </p>
     </div>
 

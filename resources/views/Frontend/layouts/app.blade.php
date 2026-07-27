@@ -3,7 +3,7 @@
     $wsPhone   = $webSetting['phone']   ?? '';
     $wsEmail   = $webSetting['email']   ?? '';
     $wsAddress = $webSetting['address'] ?? '';
-    $wsTitle   = $webSetting['title']   ?? 'Sohashova Chhatri Nibas';
+    $wsTitle   = $webSetting['title']   ?? 'সোহাশোভা ছাত্রী নিবাস';
 
     $logoSetting = \App\Services\SettingService::getSettingContentBySlug('logo_setting');
     $wsLogo    = isset($logoSetting['logo'])    ? asset($logoSetting['logo'])    : asset('logo/logoimage (2).png');
