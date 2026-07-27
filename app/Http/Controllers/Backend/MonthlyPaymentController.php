@@ -110,16 +110,16 @@ class MonthlyPaymentController extends Controller
                     continue;
                 }
 
-                $items = is_string($booking->floor_number_room_number_roomprice)
-                    ? (json_decode($booking->floor_number_room_number_roomprice, true) ?? [])
-                    : ($booking->floor_number_room_number_roomprice ?? []);
-                
-                $totalMonthlyRent = collect($items)->sum(function ($item) {
-                    return (float) ($item['price'] ?? $item['advance_price'] ?? $item['roomprice'] ?? 0);
-                });
+                $totalMonthlyRent = (float) ($booking->monthly_amount ?? 0);
 
                 if ($totalMonthlyRent <= 0) {
-                    $totalMonthlyRent = (float) ($booking->payment_amount_total ?? $booking->daybytotalamount ?? 0);
+                    $items = is_string($booking->floor_number_room_number_roomprice)
+                        ? (json_decode($booking->floor_number_room_number_roomprice, true) ?? [])
+                        : ($booking->floor_number_room_number_roomprice ?? []);
+                    
+                    $totalMonthlyRent = collect($items)->sum(function ($item) {
+                        return (float) ($item['price'] ?? $item['advance_price'] ?? $item['roomprice'] ?? 0);
+                    });
                 }
 
                 if ($totalMonthlyRent <= 0) {

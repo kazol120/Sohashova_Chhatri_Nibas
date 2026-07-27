@@ -38,7 +38,7 @@ public function profitLossReport(Request $request)
         foreach ($months as $num => $name) {
             // ====== INCOME ======
             $roomBooking    = (float) RoomBookingHistory::whereYear('check_in', $year)
-                ->whereMonth('check_in', $num)->sum('daybytotalamount');
+                ->whereMonth('check_in', $num)->sum('monthly_amount');
 
             $monthlyPayment = (float) MonthlyPayment::whereYear('created_at', $year)
                 ->whereMonth('created_at', $num)->sum('paid_amount');
@@ -87,7 +87,7 @@ public function profitLossReport(Request $request)
 
         foreach (range($currentYear, $oldestYear) as $year) {
             // ====== INCOME ======
-            $roomBooking    = (float) RoomBookingHistory::whereYear('check_in', $year)->sum('daybytotalamount');
+            $roomBooking    = (float) RoomBookingHistory::whereYear('check_in', $year)->sum('monthly_amount');
             $monthlyPayment = (float) MonthlyPayment::whereYear('created_at', $year)->sum('paid_amount');
             $productSales   = (float) ProductDistribution::whereYear('created_at', $year)->sum('total_price_available');
             $totalIncome    = $roomBooking + $monthlyPayment + $productSales;
@@ -104,7 +104,7 @@ public function profitLossReport(Request $request)
             // Monthly breakdown
             $monthlyBreakdown = [];
             foreach ($months as $num => $name) {
-                $mRoomBooking    = (float) RoomBookingHistory::whereYear('check_in', $year)->whereMonth('check_in', $num)->sum('daybytotalamount');
+                $mRoomBooking    = (float) RoomBookingHistory::whereYear('check_in', $year)->whereMonth('check_in', $num)->sum('monthly_amount');
                 $mMonthlyPayment = (float) MonthlyPayment::whereYear('created_at', $year)->whereMonth('created_at', $num)->sum('paid_amount');
                 $mProductSales   = (float) ProductDistribution::whereYear('created_at', $year)->whereMonth('created_at', $num)->sum('total_price_available');
                 $mTotalIncome    = $mRoomBooking + $mMonthlyPayment + $mProductSales;

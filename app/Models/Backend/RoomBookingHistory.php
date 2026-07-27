@@ -38,8 +38,7 @@ class RoomBookingHistory extends Model
         'check_out',
         'status',
         'roomprice',
-        'payment_amount_total',
-        'daybytotalamount',
+        'monthly_amount',
         'password',
         'floor_number_room_number_roomprice',
         'today_check_out',
@@ -53,7 +52,7 @@ class RoomBookingHistory extends Model
         'check_out' => 'date',
         'today_check_out' => 'date',
         'floor_number_room_number_roomprice' => 'array',
-        'daybytotalamount' => 'float',
+        'monthly_amount' => 'float',
     ];
 
     public function floor(){

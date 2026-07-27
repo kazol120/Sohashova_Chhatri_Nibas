@@ -588,7 +588,7 @@ public function store(Request $request)
         'pay_online'                         => $request->payment === 'online'
                                                 ? (($request->pay_method ?? 'Online') . ' | TRX: ' . ($request->trx ?? ''))
                                                 : null,
-        'payment_amount_total'               => $totalAmount,
+        'monthly_amount'                     => $totalAmount,
         'check_in'                           => $request->check_in,
         'check_out'                          => $request->check_out,
         'status'                             => 0,

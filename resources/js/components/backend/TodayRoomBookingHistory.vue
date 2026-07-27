@@ -138,21 +138,11 @@
                           v-if="r.room_items.length > 1"
                           class="booking-total"
                         >
-                          Total: ৳ {{ Number(r.payment_amount_total || 0).toFixed(2) }}
+                          Total: ৳ {{ Number(r.monthly_amount || 0).toFixed(2) }}
                         </div>
                       </div>
 
                       <span v-else>-</span>
-                    </td>
-
-                    <td>
-                      <div class="fw-semibold">
-                        {{ getTotalDays(r.check_in, r.check_out) }} Days
-                      </div>
-
-                      <div class="fw-semibold text-success">
-                        ৳ {{ Number(r.daybytotalamount || 0).toFixed(2) }}
-                      </div>
                     </td>
 
                     <td>

@@ -85,7 +85,7 @@ class BookingConttoller extends Controller
 
             $c = collect($items);
 
-            return array_merge($row->only(['id','image','full_name','email','phone','nid','room_number','payment_amount_total','check_in','check_out','status','created_at','pay_cash_in','pay_online']), [
+            return array_merge($row->only(['id','image','full_name','email','phone','nid','room_number','monthly_amount','check_in','check_out','status','created_at','pay_cash_in','pay_online']), [
                 'group_key'     => 'booking_' . $row->id,
                 'floornumber'   => $c->pluck('floornumber')->filter()->unique()->implode(', '),
                 'roomnumber'    => $c->pluck('roomnumber')->filter()->implode(', '),
@@ -379,8 +379,7 @@ public function store(Request $request)
             'pay_online'                         => $request->payment === 'online'
                                                     ? (($request->pay_method ?? 'Online') . ' | TRX: ' . ($request->trx ?? ''))
                                                     : null,
-            'payment_amount_total'               => $totalAmount,      
-            'daybytotalamount'                   => $dayByTotalAmount,  
+            'monthly_amount'                     => $totalAmount,
             'check_in'                           => $request->check_in,
             'check_out'                          => $request->check_out,
             'status'                             => 0,
@@ -536,14 +535,13 @@ public function getbookinghistory(Request $request)
                 'phone',
                 'nid',
                 'room_number',
-                'payment_amount_total',
+                'monthly_amount',
                 'check_in',
                 'check_out',
                 'status',
                 'created_at',
                 'pay_cash_in',
                 'pay_online',
-                'daybytotalamount',
             ]), [
                 'group_key'     => 'booking_' . $row->id,
                 'floornumber'   => $c->pluck('floornumber')->filter()->unique()->implode(', '),
@@ -597,14 +595,13 @@ public function getbookinghistory(Request $request)
                 'phone',
                 'nid',
                 'room_number',
-                'payment_amount_total',
+                'monthly_amount',
                 'check_in',
                 'check_out',
                 'status',
                 'created_at',
                 'pay_cash_in',
                 'pay_online',
-                'daybytotalamount',
             ]), [
                 'group_key'     => 'booking_' . $row->id,
                 'floornumber'   => $c->pluck('floornumber')->filter()->unique()->implode(', '),

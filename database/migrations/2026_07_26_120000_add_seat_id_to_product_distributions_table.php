@@ -8,10 +8,12 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('product_distributions', function (Blueprint $table) {
-            $table->unsignedBigInteger('seat_id')->nullable()->after('room_id');
-            $table->foreign('seat_id')->references('id')->on('room_seats')->onDelete('set null');
-        });
+        if (!Schema::hasColumn('product_distributions', 'seat_id')) {
+            Schema::table('product_distributions', function (Blueprint $table) {
+                $table->unsignedBigInteger('seat_id')->nullable()->after('room_id');
+                $table->foreign('seat_id')->references('id')->on('room_seats')->onDelete('set null');
+            });
+        }
     }
 
     public function down(): void

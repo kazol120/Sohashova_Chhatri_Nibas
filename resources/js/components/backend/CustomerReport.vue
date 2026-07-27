@@ -95,7 +95,7 @@
 
             <td>
               <div class="text-success fw-bold">
-                ৳ {{ Number(r.payment_amount_total || r.daybytotalamount || 0).toFixed(2) }}
+                ৳ {{ Number(r.monthly_amount || 0).toFixed(2) }}
               </div>
             </td>
 
@@ -151,7 +151,7 @@
               </td>
                 <td v-if="pi === 0" :rowspan="r.products.length + 1">
                   <div class="text-success fw-bold">
-                    ৳ {{ Number(r.payment_amount_total || r.daybytotalamount || 0).toFixed(2) }}
+                    ৳ {{ Number(r.monthly_amount || 0).toFixed(2) }}
                   </div>
                 </td>
 
