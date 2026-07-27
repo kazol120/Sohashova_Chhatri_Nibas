@@ -278,7 +278,8 @@ export default {
 
     async loadSuppliers() {
       try {
-        const res = await axios.get(`${this.url}get-select-supplier`);
+        const base = this.url.endsWith('/') ? this.url : `${this.url}/`;
+        const res = await axios.get(`${base}get-select-supplier`);
         this.suppliers = res.data.data || [];
       } catch {
         this.toast("Failed to load suppliers.", "error");
@@ -288,7 +289,8 @@ export default {
     async fetchproductstock(page = 1) {
       this.loading = true;
       try {
-        const res = await axios.get(`${this.url}product_purchase_list`, {
+        const base = this.url.endsWith('/') ? this.url : `${this.url}/`;
+        const res = await axios.get(`${base}product_purchase_list`, {
           params: {
             page,
             per_page:    this.perPage,
@@ -303,10 +305,10 @@ export default {
         this.from                = res.data.from                ?? 1;
         this.currentPage         = res.data.current_page        || 1;
         this.totalPages          = res.data.last_page           || 1;
-          this.grandTotal                  = parseFloat(res.data.grand_total || 0);
+        this.grandTotal                  = parseFloat(res.data.grand_total || 0);
         this.grandTotalAvailable         = parseFloat(res.data.grand_total_available || 0);
-        this.grandTotalQuantity          = res.data.grand_total_quantity || 0;          // যোগ করুন
-        this.grandTotalAvailableQuantity = res.data.grand_total_available_quantity || 0; // যোগ করুন
+        this.grandTotalQuantity          = res.data.grand_total_quantity || 0;
+        this.grandTotalAvailableQuantity = res.data.grand_total_available_quantity || 0;
       } catch {
         this.toast('Failed to load stock list.', 'error');
       } finally {
@@ -345,7 +347,8 @@ export default {
     async confirmDelete() {
       this.savingDelete = true;
       try {
-        await axios.delete(`${this.url}product-purchase-delete/${this.delItem.id}`);
+        const base = this.url.endsWith('/') ? this.url : `${this.url}/`;
+        await axios.delete(`${base}product-purchase-delete/${this.delItem.id}`);
         this.toast('Stock deleted successfully.');
         this.closeDeleteModal();
         this.fetchproductstock(this.currentPage);
@@ -358,7 +361,8 @@ export default {
     // ── Print ────────────────────────────────────
   async printTable() {
     try {
-      const res = await axios.get(`${this.url}product_purchase_list`, {
+      const base = this.url.endsWith('/') ? this.url : `${this.url}/`;
+      const res = await axios.get(`${base}product_purchase_list`, {
         params: {
           page:        1,
           per_page:    99999,
@@ -404,8 +408,9 @@ export default {
         td { border: 1px solid #999; padding: 6px 8px; text-align: left; }
         .header-row td { background: #e9e9e9; font-weight: bold; }
         tr:nth-child(even) td { background: #f9f9f9; }
-        .total-row td { background: black !important; color: black; font-weight: bold; }
-        .total-row .label { color: black; text-align: right; }
+        .total-row td { background: #333 !important; color: #fff !important; font-weight: bold; }
+        .total-row .label { text-align: right; color: #fff !important; }
+        .total-row .highlight { color: #ffcc00 !important; }
       </style>
     </head>
     <body>
@@ -428,10 +433,10 @@ export default {
           ${rows}
           <tr class="total-row">
             <td colspan="6" class="label">Current Stock :</td>
-            <td>${grandTotalQty}</td>
-            <td>${grandTotal.toFixed(2)} ৳</td>
-            <td>${grandTotalAvailQty}</td>
-            <td>${grandTotalAvailable.toFixed(2)} ৳</td>
+            <td class="highlight">${grandTotalQty}</td>
+            <td class="highlight">${grandTotal.toFixed(2)} ৳</td>
+            <td class="highlight">${grandTotalAvailQty}</td>
+            <td class="highlight">${grandTotalAvailable.toFixed(2)} ৳</td>
           </tr>
         </tbody>
       </table>

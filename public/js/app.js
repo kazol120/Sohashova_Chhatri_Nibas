@@ -31343,42 +31343,44 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     loadSuppliers: function loadSuppliers() {
       var _this2 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-        var res;
+        var base, res;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
               _context.prev = 0;
-              _context.next = 3;
-              return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("".concat(_this2.url, "get-select-supplier"));
-            case 3:
+              base = _this2.url.endsWith('/') ? _this2.url : "".concat(_this2.url, "/");
+              _context.next = 4;
+              return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("".concat(base, "get-select-supplier"));
+            case 4:
               res = _context.sent;
               _this2.suppliers = res.data.data || [];
-              _context.next = 10;
+              _context.next = 11;
               break;
-            case 7:
-              _context.prev = 7;
+            case 8:
+              _context.prev = 8;
               _context.t0 = _context["catch"](0);
               _this2.toast("Failed to load suppliers.", "error");
-            case 10:
+            case 11:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[0, 7]]);
+        }, _callee, null, [[0, 8]]);
       }))();
     },
     fetchproductstock: function fetchproductstock() {
       var _arguments = arguments,
         _this3 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-        var page, _res$data$from, res;
+        var page, _res$data$from, base, res;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
               page = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : 1;
               _this3.loading = true;
               _context2.prev = 2;
-              _context2.next = 5;
-              return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("".concat(_this3.url, "product_purchase_list"), {
+              base = _this3.url.endsWith('/') ? _this3.url : "".concat(_this3.url, "/");
+              _context2.next = 6;
+              return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("".concat(base, "product_purchase_list"), {
                 params: {
                   page: page,
                   per_page: _this3.perPage,
@@ -31388,7 +31390,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
                   supplier_id: _this3.selectedSupplier
                 }
               });
-            case 5:
+            case 6:
               res = _context2.sent;
               _this3.productstock = res.data.productstock || [];
               _this3.total = res.data.total || 0;
@@ -31397,23 +31399,23 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
               _this3.totalPages = res.data.last_page || 1;
               _this3.grandTotal = parseFloat(res.data.grand_total || 0);
               _this3.grandTotalAvailable = parseFloat(res.data.grand_total_available || 0);
-              _this3.grandTotalQuantity = res.data.grand_total_quantity || 0; // যোগ করুন
-              _this3.grandTotalAvailableQuantity = res.data.grand_total_available_quantity || 0; // যোগ করুন
-              _context2.next = 20;
+              _this3.grandTotalQuantity = res.data.grand_total_quantity || 0;
+              _this3.grandTotalAvailableQuantity = res.data.grand_total_available_quantity || 0;
+              _context2.next = 21;
               break;
-            case 17:
-              _context2.prev = 17;
+            case 18:
+              _context2.prev = 18;
               _context2.t0 = _context2["catch"](2);
               _this3.toast('Failed to load stock list.', 'error');
-            case 20:
-              _context2.prev = 20;
+            case 21:
+              _context2.prev = 21;
               _this3.loading = false;
-              return _context2.finish(20);
-            case 23:
+              return _context2.finish(21);
+            case 24:
             case "end":
               return _context2.stop();
           }
-        }, _callee2, null, [[2, 17, 20, 23]]);
+        }, _callee2, null, [[2, 18, 21, 24]]);
       }))();
     },
     clearFilters: function clearFilters() {
@@ -31443,45 +31445,48 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     confirmDelete: function confirmDelete() {
       var _this4 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+        var base;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
               _this4.savingDelete = true;
               _context3.prev = 1;
-              _context3.next = 4;
-              return axios__WEBPACK_IMPORTED_MODULE_3__["default"]["delete"]("".concat(_this4.url, "product-purchase-delete/").concat(_this4.delItem.id));
-            case 4:
+              base = _this4.url.endsWith('/') ? _this4.url : "".concat(_this4.url, "/");
+              _context3.next = 5;
+              return axios__WEBPACK_IMPORTED_MODULE_3__["default"]["delete"]("".concat(base, "product-purchase-delete/").concat(_this4.delItem.id));
+            case 5:
               _this4.toast('Stock deleted successfully.');
               _this4.closeDeleteModal();
               _this4.fetchproductstock(_this4.currentPage);
-              _context3.next = 12;
+              _context3.next = 13;
               break;
-            case 9:
-              _context3.prev = 9;
+            case 10:
+              _context3.prev = 10;
               _context3.t0 = _context3["catch"](1);
               _this4.toast('Delete failed.', 'error');
-            case 12:
-              _context3.prev = 12;
+            case 13:
+              _context3.prev = 13;
               _this4.savingDelete = false;
-              return _context3.finish(12);
-            case 15:
+              return _context3.finish(13);
+            case 16:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[1, 9, 12, 15]]);
+        }, _callee3, null, [[1, 10, 13, 16]]);
       }))();
     },
     // ── Print ────────────────────────────────────
     printTable: function printTable() {
       var _this5 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-        var res, allData, grandTotal, grandTotalAvailable, grandTotalQty, grandTotalAvailQty, rows, html, old, iframe;
+        var base, res, allData, grandTotal, grandTotalAvailable, grandTotalQty, grandTotalAvailQty, rows, html, old, iframe;
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
             case 0:
               _context4.prev = 0;
-              _context4.next = 3;
-              return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("".concat(_this5.url, "product_purchase_list"), {
+              base = _this5.url.endsWith('/') ? _this5.url : "".concat(_this5.url, "/");
+              _context4.next = 4;
+              return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("".concat(base, "product_purchase_list"), {
                 params: {
                   page: 1,
                   per_page: 99999,
@@ -31491,7 +31496,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
                   supplier_id: _this5.selectedSupplier
                 }
               });
-            case 3:
+            case 4:
               res = _context4.sent;
               allData = res.data.productstock || [];
               grandTotal = parseFloat(res.data.grand_total || 0);
@@ -31502,7 +31507,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
                 var _item$supplier;
                 return "\n        <tr>\n          <td>".concat(index + 1, "</td>\n          <td>").concat(item.purchase_date || '—', "</td>\n          <td>").concat(item.memo_number || '—', "</td>\n          <td>").concat(((_item$supplier = item.supplier) === null || _item$supplier === void 0 ? void 0 : _item$supplier.name) || '—', "</td>\n          <td>").concat(item.product_name || '—', "</td>\n          <td>").concat(parseFloat(item.single_price || 0).toFixed(2), " \u09F3</td>\n          <td>").concat(item.quantity, "</td>\n          <td>").concat(parseFloat(item.total_price || 0).toFixed(2), " \u09F3</td>\n          <td>").concat(item.available_quantity, "</td>\n          <td>").concat(parseFloat(item.total_price_available || 0).toFixed(2), " \u09F3</td>\n        </tr>\n      ");
               }).join('');
-              html = "\n    <!DOCTYPE html>\n    <html>\n    <head>\n      <title>Product Stock Report</title>\n      <style>\n        @page { size: A4 landscape; margin: 12mm; }\n        * { box-sizing: border-box; margin: 0; padding: 0; }\n        body { font-family: Arial, sans-serif; font-size: 11px; }\n        h2 { text-align: center; margin-bottom: 6px; font-size: 15px; }\n         p.sub { text-align: center; margin-bottom: 12px; font-size: 12px; font-weight: 400;}\n        table { width: 100%; border-collapse: collapse; }\n        td { border: 1px solid #999; padding: 6px 8px; text-align: left; }\n        .header-row td { background: #e9e9e9; font-weight: bold; }\n        tr:nth-child(even) td { background: #f9f9f9; }\n        .total-row td { background: black !important; color: black; font-weight: bold; }\n        .total-row .label { color: black; text-align: right; }\n      </style>\n    </head>\n    <body>\n      <h2>Product Stock Report</h2>\n       <p class=\"sub\">Printed: ".concat(new Date().toLocaleString(), "</p>\n      <table>\n        <tbody>\n          <tr class=\"header-row\">\n            <td>Sl</td>\n            <td>Date</td>\n            <td>Memo No</td>\n            <td>Supplier</td>\n            <td>Product</td>\n            <td>Unit Price</td>\n            <td>Qty</td>\n            <td>Total Price</td>\n            <td>Avail Qty</td>\n            <td>Avail Amount</td>\n          </tr>\n          ").concat(rows, "\n          <tr class=\"total-row\">\n            <td colspan=\"6\" class=\"label\">Current Stock :</td>\n            <td>").concat(grandTotalQty, "</td>\n            <td>").concat(grandTotal.toFixed(2), " \u09F3</td>\n            <td>").concat(grandTotalAvailQty, "</td>\n            <td>").concat(grandTotalAvailable.toFixed(2), " \u09F3</td>\n          </tr>\n        </tbody>\n      </table>\n    </body>\n    </html>\n  ");
+              html = "\n    <!DOCTYPE html>\n    <html>\n    <head>\n      <title>Product Stock Report</title>\n      <style>\n        @page { size: A4 landscape; margin: 12mm; }\n        * { box-sizing: border-box; margin: 0; padding: 0; }\n        body { font-family: Arial, sans-serif; font-size: 11px; }\n        h2 { text-align: center; margin-bottom: 6px; font-size: 15px; }\n         p.sub { text-align: center; margin-bottom: 12px; font-size: 12px; font-weight: 400;}\n        table { width: 100%; border-collapse: collapse; }\n        td { border: 1px solid #999; padding: 6px 8px; text-align: left; }\n        .header-row td { background: #e9e9e9; font-weight: bold; }\n        tr:nth-child(even) td { background: #f9f9f9; }\n        .total-row td { background: #333 !important; color: #fff !important; font-weight: bold; }\n        .total-row .label { text-align: right; color: #fff !important; }\n        .total-row .highlight { color: #ffcc00 !important; }\n      </style>\n    </head>\n    <body>\n      <h2>Product Stock Report</h2>\n       <p class=\"sub\">Printed: ".concat(new Date().toLocaleString(), "</p>\n      <table>\n        <tbody>\n          <tr class=\"header-row\">\n            <td>Sl</td>\n            <td>Date</td>\n            <td>Memo No</td>\n            <td>Supplier</td>\n            <td>Product</td>\n            <td>Unit Price</td>\n            <td>Qty</td>\n            <td>Total Price</td>\n            <td>Avail Qty</td>\n            <td>Avail Amount</td>\n          </tr>\n          ").concat(rows, "\n          <tr class=\"total-row\">\n            <td colspan=\"6\" class=\"label\">Current Stock :</td>\n            <td class=\"highlight\">").concat(grandTotalQty, "</td>\n            <td class=\"highlight\">").concat(grandTotal.toFixed(2), " \u09F3</td>\n            <td class=\"highlight\">").concat(grandTotalAvailQty, "</td>\n            <td class=\"highlight\">").concat(grandTotalAvailable.toFixed(2), " \u09F3</td>\n          </tr>\n        </tbody>\n      </table>\n    </body>\n    </html>\n  ");
               old = document.getElementById('print-iframe');
               if (old) old.remove();
               iframe = document.createElement('iframe');
@@ -31518,17 +31523,17 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
                   iframe.contentWindow.print();
                 }, 300);
               };
-              _context4.next = 26;
+              _context4.next = 27;
               break;
-            case 23:
-              _context4.prev = 23;
+            case 24:
+              _context4.prev = 24;
               _context4.t0 = _context4["catch"](0);
               _this5.toast('Print failed.', 'error');
-            case 26:
+            case 27:
             case "end":
               return _context4.stop();
           }
-        }, _callee4, null, [[0, 23]]);
+        }, _callee4, null, [[0, 24]]);
       }))();
     }
   }
