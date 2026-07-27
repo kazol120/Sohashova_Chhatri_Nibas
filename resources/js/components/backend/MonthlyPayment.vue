@@ -337,6 +337,64 @@
         </div>
       </div>
     </div>
+
+    <!-- GENERATE BILLS CONFIRMATION MODAL -->
+    <div 
+      class="modal fade show" 
+      id="generateConfirmModal" 
+      tabindex="-1" 
+      style="display: block; background: rgba(0, 0, 0, 0.55); z-index: 1060;" 
+      v-if="showGenerateModal"
+      role="dialog"
+    >
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+          <!-- Header -->
+          <div class="modal-header bg-primary text-white py-3">
+            <h5 class="modal-title fw-bold text-white d-flex align-items-center gap-2">
+              <i class="ti ti-file-invoice fs-4"></i> Generate Monthly Bills
+            </h5>
+            <button type="button" class="btn-close btn-close-white" @click="closeGenerateModal" aria-label="Close"></button>
+          </div>
+          
+          <!-- Body -->
+          <div class="modal-body text-center py-4 px-4">
+            <div class="mb-3">
+              <div class="d-inline-flex align-items-center justify-content-center bg-light-primary text-primary rounded-circle p-3 shadow-sm" style="width: 75px; height: 75px; background: #e0f2fe;">
+                <i class="ti ti-refresh text-primary fs-1"></i>
+              </div>
+            </div>
+            
+            <h5 class="fw-bold text-dark mb-2">Confirm Bill Generation</h5>
+            <p class="text-muted mb-3 fs-6">
+              You are about to generate monthly rent bills for all active residents for:
+            </p>
+            
+            <div class="p-3 bg-light rounded-3 border mb-2">
+              <div class="badge bg-primary fs-6 px-3 py-2">
+                📅 {{ formatMonthYear(selectedMonth) }}
+              </div>
+              <p class="small text-muted mb-0 mt-2">
+                This will calculate the monthly rent for each active resident and sync their due balances.
+              </p>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="modal-footer bg-light py-3 px-4 justify-content-center gap-2 border-0">
+            <button type="button" class="btn btn-outline-secondary px-4 py-2 fw-semibold" @click="closeGenerateModal">
+              Cancel
+            </button>
+            <button type="button" class="btn btn-primary px-4 py-2 fw-bold d-flex align-items-center gap-2 shadow-sm" @click="executeGenerateBills" :disabled="generating">
+              <span v-if="generating" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              <i v-else class="ti ti-check fs-5"></i>
+              <span>Yes, Generate Bills</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -361,6 +419,7 @@ export default {
 
       // Modal management
       showModal: false,
+      showGenerateModal: false,
       activePayment: null,
       form: {
         amount_to_collect: 0,
@@ -445,9 +504,11 @@ export default {
     },
 
     confirmGenerateBills() {
-      if (confirm(`Are you sure you want to generate monthly rent bills for all active guests in "${this.formatMonthYear(this.selectedMonth)}"?`)) {
-        this.executeGenerateBills();
-      }
+      this.showGenerateModal = true;
+    },
+
+    closeGenerateModal() {
+      this.showGenerateModal = false;
     },
 
     async executeGenerateBills() {
@@ -458,6 +519,7 @@ export default {
         });
         if (res.data.status) {
           this.toast(res.data.message, "success");
+          this.closeGenerateModal();
           this.fetchPayments(1);
         } else {
           this.toast(res.data.message || "Failed to generate bills", "error");
