@@ -118,11 +118,55 @@
                         <span v-if="item.seat_no" class="badge bg-primary">Seat {{ item.seat_no }}</span>
                         <span v-else class="text-muted">—</span>
                       </td>
-                      <td>{{ item.customer_name || '—' }}</td>
-                      <td>{{ item.product_names || '—' }}</td>
-                      <td>{{ item.single_price ? item.single_price + ' ৳' : '—' }}</td>
-                      <td class="text-uppercase fw-semibold">{{ item.total_quantity }}</td>
-                      <td>{{ parseFloat(item.total_price_available || 0).toFixed(2) }} ৳</td>
+                      <td class="fw-semibold">{{ item.customer_name || '—' }}</td>
+
+                      <!-- Product Name Column -->
+                      <td>
+                        <div v-if="item.items && item.items.length" class="d-flex flex-column gap-1">
+                          <div v-for="sub in item.items" :key="'name-'+sub.product_name" class="fw-semibold text-dark">
+                            {{ sub.product_name }}
+                          </div>
+                        </div>
+                        <span v-else>{{ item.product_names || '—' }}</span>
+                      </td>
+
+                      <!-- Unit Price Column -->
+                      <td>
+                        <div v-if="item.items && item.items.length" class="d-flex flex-column gap-1">
+                          <div v-for="sub in item.items" :key="'unit-'+sub.product_name">
+                            {{ sub.single_price }} ৳
+                          </div>
+                        </div>
+                        <span v-else-if="item.single_price">{{ item.single_price }} ৳</span>
+                        <span v-else>—</span>
+                      </td>
+
+                      <!-- Quantity Column -->
+                      <td>
+                        <div v-if="item.items && item.items.length" class="d-flex flex-column gap-1">
+                          <div v-for="sub in item.items" :key="'qty-'+sub.product_name" class="fw-bold text-primary">
+                            {{ sub.quantity }} pcs
+                          </div>
+                          <div v-if="item.items.length > 1" class="small text-muted border-top pt-1 fw-bold">
+                            Total: {{ item.total_quantity }} pcs
+                          </div>
+                        </div>
+                        <span v-else class="fw-bold text-primary">{{ item.total_quantity }} pcs</span>
+                      </td>
+
+                      <!-- Total Price Column -->
+                      <td>
+                        <div v-if="item.items && item.items.length" class="d-flex flex-column gap-1">
+                          <div v-for="sub in item.items" :key="'price-'+sub.product_name" class="fw-bold text-dark">
+                            {{ sub.total_price }} ৳
+                          </div>
+                          <div v-if="item.items.length > 1" class="small text-success border-top pt-1 fw-bold">
+                            Total: {{ parseFloat(item.total_price_available || 0).toFixed(2) }} ৳
+                          </div>
+                        </div>
+                        <span v-else class="fw-bold">{{ parseFloat(item.total_price_available || 0).toFixed(2) }} ৳</span>
+                      </td>
+
                       <td>
                         <button class="btn btn-sm btn-danger" @click="openDeleteModal(item)">
                           <i class="ti ti-trash"></i>
@@ -347,20 +391,34 @@ export default {
     // ── Print ──
     printTable() {
       const fromIndex = this.from; 
-      const rows = this.productstock.map((item, index) => `
-        <tr>
-          <td class="text-center">${fromIndex + index}</td>
-          <td class="text-center">${item.purchase_date || '—'}</td>
-          <td>${item.floor_name || '—'}</td>
-          <td class="text-center">${item.room_no || '—'}</td>
-          <td class="text-center">${item.seat_no ? 'Seat ' + item.seat_no : '—'}</td>
-          <td>${item.customer_name || '—'}</td>
-          <td>${item.product_names || '—'}</td>
-          <td class="text-end">${item.single_price ? item.single_price + ' ৳' : '—'}</td>
-          <td class="text-center">${item.total_quantity || 0}</td>
-          <td class="text-end">${parseFloat(item.total_price_available || 0).toFixed(2)} ৳</td>
-        </tr>
-      `).join('');
+      const rows = this.productstock.map((item, index) => {
+        let prodNamesHtml = item.product_names || '—';
+        let unitPricesHtml = item.single_price ? item.single_price + ' ৳' : '—';
+        let qtysHtml = (item.total_quantity || 0) + ' pcs';
+        let pricesHtml = parseFloat(item.total_price_available || 0).toFixed(2) + ' ৳';
+
+        if (item.items && item.items.length) {
+          prodNamesHtml = item.items.map(sub => `<div>${sub.product_name}</div>`).join('');
+          unitPricesHtml = item.items.map(sub => `<div>${sub.single_price} ৳</div>`).join('');
+          qtysHtml = item.items.map(sub => `<div>${sub.quantity} pcs</div>`).join('');
+          pricesHtml = item.items.map(sub => `<div>${sub.total_price} ৳</div>`).join('');
+        }
+
+        return `
+          <tr>
+            <td class="text-center">${fromIndex + index}</td>
+            <td class="text-center">${item.purchase_date || '—'}</td>
+            <td>${item.floor_name || '—'}</td>
+            <td class="text-center">${item.room_no || '—'}</td>
+            <td class="text-center">${item.seat_no ? 'Seat ' + item.seat_no : '—'}</td>
+            <td>${item.customer_name || '—'}</td>
+            <td>${prodNamesHtml}</td>
+            <td class="text-end">${unitPricesHtml}</td>
+            <td class="text-center">${qtysHtml}</td>
+            <td class="text-end">${pricesHtml}</td>
+          </tr>
+        `;
+      }).join('');
       const totalRow = `
         <tr class="grand-total-row">
           <td colspan="8" class="text-end fw-bold">Grand Total :</td>

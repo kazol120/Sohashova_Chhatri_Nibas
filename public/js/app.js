@@ -31196,7 +31196,25 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     printTable: function printTable() {
       var fromIndex = this.from;
       var rows = this.productstock.map(function (item, index) {
-        return "\n        <tr>\n          <td class=\"text-center\">".concat(fromIndex + index, "</td>\n          <td class=\"text-center\">").concat(item.purchase_date || '—', "</td>\n          <td>").concat(item.floor_name || '—', "</td>\n          <td class=\"text-center\">").concat(item.room_no || '—', "</td>\n          <td class=\"text-center\">").concat(item.seat_no ? 'Seat ' + item.seat_no : '—', "</td>\n          <td>").concat(item.customer_name || '—', "</td>\n          <td>").concat(item.product_names || '—', "</td>\n          <td class=\"text-end\">").concat(item.single_price ? item.single_price + ' ৳' : '—', "</td>\n          <td class=\"text-center\">").concat(item.total_quantity || 0, "</td>\n          <td class=\"text-end\">").concat(parseFloat(item.total_price_available || 0).toFixed(2), " \u09F3</td>\n        </tr>\n      ");
+        var prodNamesHtml = item.product_names || '—';
+        var unitPricesHtml = item.single_price ? item.single_price + ' ৳' : '—';
+        var qtysHtml = (item.total_quantity || 0) + ' pcs';
+        var pricesHtml = parseFloat(item.total_price_available || 0).toFixed(2) + ' ৳';
+        if (item.items && item.items.length) {
+          prodNamesHtml = item.items.map(function (sub) {
+            return "<div>".concat(sub.product_name, "</div>");
+          }).join('');
+          unitPricesHtml = item.items.map(function (sub) {
+            return "<div>".concat(sub.single_price, " \u09F3</div>");
+          }).join('');
+          qtysHtml = item.items.map(function (sub) {
+            return "<div>".concat(sub.quantity, " pcs</div>");
+          }).join('');
+          pricesHtml = item.items.map(function (sub) {
+            return "<div>".concat(sub.total_price, " \u09F3</div>");
+          }).join('');
+        }
+        return "\n          <tr>\n            <td class=\"text-center\">".concat(fromIndex + index, "</td>\n            <td class=\"text-center\">").concat(item.purchase_date || '—', "</td>\n            <td>").concat(item.floor_name || '—', "</td>\n            <td class=\"text-center\">").concat(item.room_no || '—', "</td>\n            <td class=\"text-center\">").concat(item.seat_no ? 'Seat ' + item.seat_no : '—', "</td>\n            <td>").concat(item.customer_name || '—', "</td>\n            <td>").concat(prodNamesHtml, "</td>\n            <td class=\"text-end\">").concat(unitPricesHtml, "</td>\n            <td class=\"text-center\">").concat(qtysHtml, "</td>\n            <td class=\"text-end\">").concat(pricesHtml, "</td>\n          </tr>\n        ");
       }).join('');
       var totalRow = "\n        <tr class=\"grand-total-row\">\n          <td colspan=\"8\" class=\"text-end fw-bold\">Grand Total :</td>\n          <td class=\"text-center fw-bold\">".concat(this.grandTotalQuantity || 0, "</td>\n          <td class=\"text-end fw-bold\">").concat(parseFloat(this.grandTotal || 0).toFixed(2), " \u09F3</td>\n        </tr>\n      ");
       var html = "\n        <!DOCTYPE html>\n        <html>\n        <head>\n          <title>Product Distribution Report</title>\n          <style>\n            @page { size: A4 landscape; margin: 10mm; }\n            * { box-sizing: border-box; margin: 0; padding: 0; }\n            body { font-family: Arial, sans-serif; font-size: 10px; color: #000; background: #fff; }\n            h2 { text-align: center; margin-bottom: 4px; font-size: 16px; font-weight: 700; }\n            p.sub { text-align: center; margin-bottom: 12px; font-size: 12px; font-weight: 400;}\n            table { width: 100%; border-collapse: collapse; table-layout: fixed; }\n            th, td {\n              border: 1px solid #999;\n              padding: 5px 6px;\n              vertical-align: middle;\n              word-break: break-word;\n            }\n            th { background: #e9e9e9; font-weight: 700; text-align: center; }\n            tbody tr:nth-child(even) td { background: #f9f9f9; }\n            .text-center { text-align: center !important; }\n            .text-end { text-align: right !important; }\n            .fw-bold { font-weight: 700; }\n            .grand-total-row td {\n              font-weight: 700;\n              background: #f1f1f1 !important;\n            }\n            col.sl-col    { width: 4%; }\n            col.date-col  { width: 9%; }\n            col.floor-col { width: 10%; }\n            col.room-col  { width: 6%; }\n            col.seat-col  { width: 6%; }\n            col.guest-col { width: 14%; }\n            col.prod-col  { width: 20%; }\n            col.unit-col  { width: 10%; }\n            col.qty-col   { width: 7%; }\n            col.total-col { width: 14%; }\n            @media print {\n              thead { display: table-header-group; }\n              tr { page-break-inside: avoid; }\n            }\n          </style>\n        </head>\n        <body>\n          <h2>Product Distribution Report</h2>\n          <p class=\"sub\">Printed: ".concat(new Date().toLocaleString(), "</p>\n          <table>\n            <colgroup>\n              <col class=\"sl-col\">\n              <col class=\"date-col\">\n              <col class=\"floor-col\">\n              <col class=\"room-col\">\n              <col class=\"seat-col\">\n              <col class=\"guest-col\">\n              <col class=\"prod-col\">\n              <col class=\"unit-col\">\n              <col class=\"qty-col\">\n              <col class=\"total-col\">\n            </colgroup>\n            <thead>\n              <tr>\n                <th>SL</th>\n                <th>Date</th>\n                <th>Floor</th>\n                <th>Room</th>\n                <th>Seat</th>\n                <th>Guest Name</th>\n                <th>Product Name</th>\n                <th>Unit Price</th>\n                <th>Qty</th>\n                <th>Total Price</th>\n              </tr>\n            </thead>\n            <tbody>\n              ").concat(rows, "\n              ").concat(totalRow, "\n            </tbody>\n          </table>\n        </body>\n        </html>\n      ");
@@ -43533,49 +43551,90 @@ var _hoisted_21 = {
   "class": "text-muted"
 };
 var _hoisted_22 = {
-  "class": "text-uppercase fw-semibold"
+  "class": "fw-semibold"
 };
-var _hoisted_23 = ["onClick"];
+var _hoisted_23 = {
+  key: 0,
+  "class": "d-flex flex-column gap-1"
+};
 var _hoisted_24 = {
-  "class": "table-dark"
+  key: 1
 };
 var _hoisted_25 = {
-  "class": "fw-bold text-warning"
+  key: 0,
+  "class": "d-flex flex-column gap-1"
 };
 var _hoisted_26 = {
-  "class": "fw-bold text-warning"
+  key: 1
 };
 var _hoisted_27 = {
-  "class": "d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2"
+  key: 2
 };
 var _hoisted_28 = {
-  "class": "small text-muted"
+  key: 0,
+  "class": "d-flex flex-column gap-1"
 };
 var _hoisted_29 = {
-  "class": "d-flex gap-2"
+  key: 0,
+  "class": "small text-muted border-top pt-1 fw-bold"
 };
-var _hoisted_30 = ["disabled"];
-var _hoisted_31 = ["disabled"];
+var _hoisted_30 = {
+  key: 1,
+  "class": "fw-bold text-primary"
+};
+var _hoisted_31 = {
+  key: 0,
+  "class": "d-flex flex-column gap-1"
+};
 var _hoisted_32 = {
-  "class": "modal-box"
+  key: 0,
+  "class": "small text-success border-top pt-1 fw-bold"
 };
 var _hoisted_33 = {
-  "class": "modal-box-head d-flex justify-content-between align-items-center"
+  key: 1,
+  "class": "fw-bold"
 };
-var _hoisted_34 = {
-  "class": "modal-box-body"
-};
+var _hoisted_34 = ["onClick"];
 var _hoisted_35 = {
-  "class": "alert alert-warning mb-0"
+  "class": "table-dark"
 };
 var _hoisted_36 = {
-  "class": "modal-box-foot d-flex justify-content-end gap-2"
+  "class": "fw-bold text-warning"
 };
-var _hoisted_37 = ["disabled"];
+var _hoisted_37 = {
+  "class": "fw-bold text-warning"
+};
 var _hoisted_38 = {
-  key: 0
+  "class": "d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2"
 };
 var _hoisted_39 = {
+  "class": "small text-muted"
+};
+var _hoisted_40 = {
+  "class": "d-flex gap-2"
+};
+var _hoisted_41 = ["disabled"];
+var _hoisted_42 = ["disabled"];
+var _hoisted_43 = {
+  "class": "modal-box"
+};
+var _hoisted_44 = {
+  "class": "modal-box-head d-flex justify-content-between align-items-center"
+};
+var _hoisted_45 = {
+  "class": "modal-box-body"
+};
+var _hoisted_46 = {
+  "class": "alert alert-warning mb-0"
+};
+var _hoisted_47 = {
+  "class": "modal-box-foot d-flex justify-content-end gap-2"
+};
+var _hoisted_48 = ["disabled"];
+var _hoisted_49 = {
+  key: 0
+};
+var _hoisted_50 = {
   key: 1
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -43707,36 +43766,55 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.productstock, function (item, index) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
       key: item.id
-    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.from + index), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.purchase_date), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.floor_name || '—'), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.room_no || '—'), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [item.seat_no ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_20, "Seat " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.seat_no), 1 /* TEXT */)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_21, "—"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.customer_name || '—'), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.product_names || '—'), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.single_price ? item.single_price + ' ৳' : '—'), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.total_quantity), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(parseFloat(item.total_price_available || 0).toFixed(2)) + " ৳", 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.from + index), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.purchase_date), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.floor_name || '—'), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.room_no || '—'), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [item.seat_no ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_20, "Seat " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.seat_no), 1 /* TEXT */)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_21, "—"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.customer_name || '—'), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Product Name Column "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [item.items && item.items.length ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_23, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(item.items, function (sub) {
+      return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+        key: 'name-' + sub.product_name,
+        "class": "fw-semibold text-dark"
+      }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(sub.product_name), 1 /* TEXT */);
+    }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_24, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.product_names || '—'), 1 /* TEXT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Unit Price Column "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [item.items && item.items.length ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_25, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(item.items, function (sub) {
+      return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+        key: 'unit-' + sub.product_name
+      }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(sub.single_price) + " ৳ ", 1 /* TEXT */);
+    }), 128 /* KEYED_FRAGMENT */))])) : item.single_price ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_26, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.single_price) + " ৳", 1 /* TEXT */)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_27, "—"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Quantity Column "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [item.items && item.items.length ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_28, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(item.items, function (sub) {
+      return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+        key: 'qty-' + sub.product_name,
+        "class": "fw-bold text-primary"
+      }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(sub.quantity) + " pcs ", 1 /* TEXT */);
+    }), 128 /* KEYED_FRAGMENT */)), item.items.length > 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_29, " Total: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.total_quantity) + " pcs ", 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_30, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.total_quantity) + " pcs", 1 /* TEXT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Total Price Column "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [item.items && item.items.length ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_31, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(item.items, function (sub) {
+      return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+        key: 'price-' + sub.product_name,
+        "class": "fw-bold text-dark"
+      }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(sub.total_price) + " ৳ ", 1 /* TEXT */);
+    }), 128 /* KEYED_FRAGMENT */)), item.items.length > 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_32, " Total: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(parseFloat(item.total_price_available || 0).toFixed(2)) + " ৳ ", 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_33, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(parseFloat(item.total_price_available || 0).toFixed(2)) + " ৳", 1 /* TEXT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
       "class": "btn btn-sm btn-danger",
       onClick: function onClick($event) {
         return $options.openDeleteModal(item);
       }
     }, _toConsumableArray(_cache[29] || (_cache[29] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "ti ti-trash"
-    }, null, -1 /* HOISTED */)])), 8 /* PROPS */, _hoisted_23)])]);
-  }), 128 /* KEYED_FRAGMENT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tfoot", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", _hoisted_24, [_cache[30] || (_cache[30] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
+    }, null, -1 /* HOISTED */)])), 8 /* PROPS */, _hoisted_34)])]);
+  }), 128 /* KEYED_FRAGMENT */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tfoot", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", _hoisted_35, [_cache[30] || (_cache[30] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
     colspan: "8",
     "class": "text-end fw-bold"
-  }, "Grand Total :", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_25, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.grandTotalQuantity), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_26, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(parseFloat($data.grandTotal || 0).toFixed(2)) + " ৳", 1 /* TEXT */), _cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, null, -1 /* HOISTED */))])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Pagination "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_28, " Total: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.total) + " | Page: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.currentPage) + " / " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.totalPages), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_29, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, "Grand Total :", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_36, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.grandTotalQuantity), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_37, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(parseFloat($data.grandTotal || 0).toFixed(2)) + " ৳", 1 /* TEXT */), _cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, null, -1 /* HOISTED */))])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Pagination "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_38, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_39, " Total: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.total) + " | Page: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.currentPage) + " / " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.totalPages), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_40, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-sm btn-secondary",
     disabled: $data.currentPage <= 1 || $data.loading,
     onClick: _cache[13] || (_cache[13] = function ($event) {
       return $options.fetchproductstock($data.currentPage - 1);
     })
-  }, " Previous ", 8 /* PROPS */, _hoisted_30), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, " Previous ", 8 /* PROPS */, _hoisted_41), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-sm btn-secondary",
     disabled: $data.currentPage >= $data.totalPages || $data.loading,
     onClick: _cache[14] || (_cache[14] = function ($event) {
       return $options.fetchproductstock($data.currentPage + 1);
     })
-  }, " Next ", 8 /* PROPS */, _hoisted_31)])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" DELETE MODAL "), $data.delOpen ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+  }, " Next ", 8 /* PROPS */, _hoisted_42)])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" DELETE MODAL "), $data.delOpen ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
     key: 0,
     "class": "modal-overlay",
     onClick: _cache[18] || (_cache[18] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $options.closeDeleteModal && $options.closeDeleteModal.apply($options, arguments);
     }, ["self"]))
-  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_32, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_33, [_cache[33] || (_cache[33] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_43, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_44, [_cache[33] || (_cache[33] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
     "class": "mb-0 text-danger"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "ti ti-trash me-2"
@@ -43746,7 +43824,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[15] || (_cache[15] = function () {
       return $options.closeDeleteModal && $options.closeDeleteModal.apply($options, arguments);
     })
-  })]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_34, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_35, [_cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Are you sure you want to delete distribution for: ")), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(((_$data$delItem = $data.delItem) === null || _$data$delItem === void 0 ? void 0 : _$data$delItem.customer_name) || 'Guest') + " (" + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(((_$data$delItem2 = $data.delItem) === null || _$data$delItem2 === void 0 ? void 0 : _$data$delItem2.product_names) || 'Products') + ")", 1 /* TEXT */), _cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("? "))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_36, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  })]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_45, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_46, [_cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Are you sure you want to delete distribution for: ")), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(((_$data$delItem = $data.delItem) === null || _$data$delItem === void 0 ? void 0 : _$data$delItem.customer_name) || 'Guest') + " (" + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(((_$data$delItem2 = $data.delItem) === null || _$data$delItem2 === void 0 ? void 0 : _$data$delItem2.product_names) || 'Products') + ")", 1 /* TEXT */), _cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("? "))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_47, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-outline-secondary",
     type: "button",
     onClick: _cache[16] || (_cache[16] = function () {
@@ -43759,11 +43837,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[17] || (_cache[17] = function () {
       return $options.confirmDelete && $options.confirmDelete.apply($options, arguments);
     })
-  }, [$data.savingDelete ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_38, _cache[36] || (_cache[36] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, [$data.savingDelete ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_49, _cache[36] || (_cache[36] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "fa fa-spinner fa-spin me-1"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Deleting...")]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_39, _cache[37] || (_cache[37] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Deleting...")]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_50, _cache[37] || (_cache[37] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "ti ti-trash me-1"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Yes, Delete")])))], 8 /* PROPS */, _hoisted_37)])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" CREATE MODAL "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_productdistributionCreateForm, {
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Yes, Delete")])))], 8 /* PROPS */, _hoisted_48)])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" CREATE MODAL "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_productdistributionCreateForm, {
     show: $data.showCreateModal,
     onClose: _cache[19] || (_cache[19] = function ($event) {
       return $data.showCreateModal = false;

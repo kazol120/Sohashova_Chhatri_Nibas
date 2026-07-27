@@ -294,6 +294,19 @@ class ProductDistributionController extends Controller
                 $total = $items->sum('total_price_available');
                 return $productName . '=' . number_format($total, 2);
             })->values()->implode(', ');
+
+            $productItems = $productGroups->map(function ($items, $productName) {
+                $totQty = $items->sum('customer_quantity');
+                $totPrice = $items->sum('total_price_available');
+                $unit = $totQty > 0 ? ($totPrice / $totQty) : ($items->first()->single_price ?? 0);
+                return [
+                    'product_name' => $productName,
+                    'single_price' => number_format($unit, 2),
+                    'quantity'     => $totQty,
+                    'total_price'  => number_format($totPrice, 2),
+                ];
+            })->values();
+
             return [
                 'id'                    => $first->id,
                 'purchase_date'         => $first->purchase_date,
@@ -307,12 +320,9 @@ class ProductDistributionController extends Controller
                 'customer_name'         => optional($first->customer)->full_name,
                 'product_names'         => $productNames,
                 'product_price_details' => $productPriceDetails,
-                'single_price'          => $productGroups->map(function ($items) {
-                    $totQty = $items->sum('customer_quantity');
-                    $totPrice = $items->sum('total_price_available');
-                    $unit = $totQty > 0 ? ($totPrice / $totQty) : ($items->first()->single_price ?? 0);
-                    return number_format($unit, 2);
-                })->implode(', '),
+                'single_price'          => $productItems->pluck('single_price')->implode(', '),
+                'quantity_breakdown'    => $productItems->pluck('quantity')->implode(', '),
+                'items'                 => $productItems,
                 'total_quantity'        => $group->sum('customer_quantity'),
                 'total_price_available' => $group->sum('total_price_available'),
             ];
@@ -375,10 +385,18 @@ class ProductDistributionController extends Controller
         $first = $group->first();
         $productGroups = $group->groupBy('product_name');
         $productNames = $productGroups->keys()->implode(', ');
-        $productPriceDetails = $productGroups->map(function ($items, $productName) {
-            $total = $items->sum('total_price_available');
-            return $productName . '=' . number_format($total, 2);
-        })->values()->implode(', ');
+        $productItems = $productGroups->map(function ($items, $productName) {
+            $totQty = $items->sum('customer_quantity');
+            $totPrice = $items->sum('total_price_available');
+            $unit = $totQty > 0 ? ($totPrice / $totQty) : ($items->first()->single_price ?? 0);
+            return [
+                'product_name' => $productName,
+                'single_price' => number_format($unit, 2),
+                'quantity'     => $totQty,
+                'total_price'  => number_format($totPrice, 2),
+            ];
+        })->values();
+
         return [
             'id'                    => $first->id,
             'purchase_date'         => $first->purchase_date,
@@ -392,12 +410,9 @@ class ProductDistributionController extends Controller
             'customer_name'         => optional($first->customer)->full_name,
             'product_names'         => $productNames,
             'product_price_details' => $productPriceDetails,
-            'single_price'          => $productGroups->map(function ($items) {
-                $totQty = $items->sum('customer_quantity');
-                $totPrice = $items->sum('total_price_available');
-                $unit = $totQty > 0 ? ($totPrice / $totQty) : ($items->first()->single_price ?? 0);
-                return number_format($unit, 2);
-            })->implode(', '),
+            'single_price'          => $productItems->pluck('single_price')->implode(', '),
+            'quantity_breakdown'    => $productItems->pluck('quantity')->implode(', '),
+            'items'                 => $productItems,
             'total_quantity'        => $group->sum('customer_quantity'),
             'total_price_available' => $group->sum('total_price_available'),
         ];
