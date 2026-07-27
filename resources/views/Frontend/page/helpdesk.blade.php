@@ -6,9 +6,9 @@
 <div class="hompagesolution">
 <section class="hero-search-wrap bookingpage" style="background-image: linear-gradient(rgba(3, 51, 100, 0.65), rgba(3, 51, 100, 0.65)), url('{{ asset('help_desk/help.png') }}'); display: flex; align-items: center; justify-content: center; text-align: center; padding-top: 140px !important; padding-bottom: 60px !important;">
   <div class="container text-white">
-    <h1 style="font-size: 38px; font-weight: 800; text-shadow: 0 2px 12px rgba(0,0,0,0.4); margin: 0 auto 12px; color: #ffffff; max-width: 800px; line-height: 1.2;">সোহাশোভা ছাত্রী নিবাস - হেল্পডেস্ক</h1>
+    <h1 style="font-size: 38px; font-weight: 800; text-shadow: 0 2px 12px rgba(0,0,0,0.4); margin: 0 auto 12px; color: #ffffff; max-width: 800px; line-height: 1.2;"><span class="notranslate site-name-text" data-lang-bn="টি এস এস ডিলা" data-lang-en="TSS Villa">টি এস এস ডিলা</span> - হেল্পডেস্ক</h1>
     <p style="font-size: 16px; font-weight: 400; opacity: 0.95; max-width: 650px; margin: 0 auto; text-shadow: 0 1px 6px rgba(0,0,0,0.3); line-height: 1.6; color: #e2e8f0;">
-      সোহাশোভা ছাত্রী নিবাসে স্বাগতম। আপনার যেকোনো সমস্যায় আমরা আপনার পাশে আছি।
+      <span class="notranslate site-name-text" data-lang-bn="টি এস এস ডিলাতে" data-lang-en="TSS Villa">টি এস এস ডিলাতে</span> স্বাগতম। আপনার যেকোনো সমস্যায় আমরা আপনার পাশে আছি।
     </p>
   </div>
 </section>

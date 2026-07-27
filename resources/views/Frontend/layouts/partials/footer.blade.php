@@ -8,7 +8,7 @@
       {{-- Col 1: Brand --}}
       <div class="footer-brand">
         <div class="footer-logo">
-          <span class="footer-logo-main">{{ $wsTitle ?? 'সোহাশোভা ছাত্রী নিবাস' }}</span>
+          <span class="footer-logo-main notranslate site-name-text" data-lang-bn="টি এস এস ডিলা" data-lang-en="TSS Villa">{{ $wsTitle ?? 'টি এস এস ডিলা' }}</span>
           <span class="footer-logo-sub">BOOKING</span>
         </div>
         <p class="footer-desc">

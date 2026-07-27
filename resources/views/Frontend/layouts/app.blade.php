@@ -79,10 +79,20 @@
           }
         }
         
+        function updateSiteNames(lang) {
+          document.querySelectorAll('.site-name-text').forEach(function(el) {
+            var text = lang === 'en' ? el.getAttribute('data-lang-en') : el.getAttribute('data-lang-bn');
+            if (text) el.textContent = text;
+          });
+        }
+
         const savedLang = localStorage.getItem('selectedLang') || 'bn';
         if (desktopSelector) desktopSelector.value = savedLang;
         if (mobileSelector) mobileSelector.value = savedLang;
-        
+
+        // Apply site name for saved language immediately
+        updateSiteNames(savedLang);
+
         if (savedLang !== 'bn') {
           setTimeout(function() {
             translatePage(savedLang);
@@ -93,6 +103,7 @@
           localStorage.setItem('selectedLang', lang);
           if (desktopSelector) desktopSelector.value = lang;
           if (mobileSelector) mobileSelector.value = lang;
+          updateSiteNames(lang);
           translatePage(lang);
         }
         
