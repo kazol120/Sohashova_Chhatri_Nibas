@@ -8,10 +8,10 @@
               <h5 class="card-title mb-0">Notice Board</h5>
               <small class="text-muted">Manage marquee scrolling notices</small>
             </div>
-
+            <!-- 
             <button class="btn btn-primary" type="button" @click="openCreateFromComponent">
               <i class="ti ti-plus me-1"></i> Add Notice
-            </button>
+            </button> -->
           </div>
 
           <div class="card-body">
@@ -87,15 +87,13 @@
                 <button
                   class="btn btn-sm btn-secondary"
                   :disabled="currentPage <= 1 || loading"
-                  @click="fetchNotices(currentPage - 1)"
-                >
+                  @click="fetchNotices(currentPage - 1)">
                   Previous
                 </button>
                 <button
                   class="btn btn-sm btn-secondary"
                   :disabled="currentPage >= totalPages || loading"
-                  @click="fetchNotices(currentPage + 1)"
-                >
+                  @click="fetchNotices(currentPage + 1)">
                   Next
                 </button>
               </div>

@@ -19,13 +19,13 @@
 
             <!-- Content -->
             <div style="padding:20px;">
-
                 <!-- Guest Information -->
                 <div style="margin-bottom:20px;">
                     <h3 style="margin:0 0 10px; font-size:16px; color:#111827; border-left:4px solid #033364; padding-left:10px;">Guest Information</h3>
                     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                         @php
-                            $isProfessional = isset($user_type) && strtolower($user_type) === 'working professional';
+                            $userTypeLower = strtolower(trim(str_replace('_', ' ', $user_type ?? '')));
+                            $isProfessional = ($userTypeLower === 'working professional' || $userTypeLower === 'professional');
                             $isStudent = !$isProfessional;
                         @endphp
                         <tr>

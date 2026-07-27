@@ -12,6 +12,7 @@ class ProductDistribution extends Model
      protected $fillable = [
         'floor_id',
         'room_id',
+        'seat_id',
         'purchase_id',
         'customer_id',
         'supplier_id',
@@ -21,11 +22,17 @@ class ProductDistribution extends Model
         'purchase_date',
         'customer_quantity',
         'memo_number',
+        'seat_id',
     ];
 
      public function customer()
     {
         return $this->belongsTo(RoomBookingHistory::class, 'customer_id');
+    }
+
+    public function seat()
+    {
+        return $this->belongsTo(RoomSeat::class, 'seat_id');
     }
 
 

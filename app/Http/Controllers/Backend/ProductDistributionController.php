@@ -9,6 +9,7 @@ use App\Models\Backend\ProductPurchase;
 use App\Models\Backend\ManageSale;
 use App\Models\Backend\Floor;
 use App\Models\Backend\Room;
+use App\Models\Backend\RoomSeat;
 use App\Models\Backend\ProductDistribution;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -18,11 +19,9 @@ use Carbon\Carbon;
 class ProductDistributionController extends Controller
 {
 
-
    public function floorSelect()
     {
         $floors = Floor::orderBy('id', 'desc')->get(['id', 'name']);
-
         return response()->json($floors);
     }
 
@@ -32,6 +31,29 @@ class ProductDistributionController extends Controller
             ->orderBy('id', 'desc')
             ->get(['id', 'floor_id', 'room_no']);
         return response()->json($rooms);
+    }
+
+    // Get seats for a specific room
+    public function roomSeatsSelect($room_id)
+    {
+        $seats = RoomSeat::where('room_id', $room_id)
+            ->orderBy('seat_no', 'asc')
+            ->get(['id', 'room_id', 'seat_no', 'price', 'status']);
+        return response()->json($seats);
+    }
+
+    // Get all customers (active bookings) in a specific room
+    public function roomCustomersSelect($room_id)
+    {
+        $customers = RoomBookingHistory::where('room_id', $room_id)
+            ->where('status', 1) // active bookings only
+            ->orderBy('full_name', 'asc')
+            ->get(['id', 'full_name', 'phone']);
+
+        return response()->json([
+            'status' => true,
+            'data'   => $customers,
+        ]);
     }
 
     public function roomCustomerAutoLoad($room_number)
@@ -83,12 +105,10 @@ class ProductDistributionController extends Controller
         'supplier_id'       => 'nullable',
         'room_id'           => 'required|exists:rooms,id',
         'floor_id'          => 'required|exists:floors,id',
+        'seat_id'           => 'nullable|exists:room_seats,id',
         'purchase_date'     => 'required|date',
         'memo_number'       => 'nullable|string|max:100',
-
-        // product_purchases table er product_id check korbe
         'product_id'        => 'required|exists:product_purchases,product_id',
-
         'single_price'      => 'required|numeric|min:0',
         'customer_quantity' => 'required|integer|min:1',
         'total_price'       => 'required|numeric|min:0',
@@ -124,10 +144,7 @@ class ProductDistributionController extends Controller
                     }
 
                     $availableQty = (int) $purchase->available_quantity;
-
-                    // ei row theke koto nibe
                     $takeQty = min($availableQty, $remainingNeed);
-
                     $saleAmount = $validated['single_price'] * $takeQty;
 
                     // stock update
@@ -143,6 +160,7 @@ class ProductDistributionController extends Controller
                         'product_name'          => $purchase->product_name,
                         'floor_id'              => $validated['floor_id'],
                         'room_id'               => $validated['room_id'],
+                        'seat_id'               => $validated['seat_id'] ?? null,
                         'customer_id'           => $validated['customer_id'] ?? null,
                         'supplier_id'           => $purchase->supplier_id,
                         'single_price'          => $validated['single_price'],
@@ -168,14 +186,8 @@ class ProductDistributionController extends Controller
 
 
    public function index(){
-
         return view('backend.inventory.productdistribution');
     }
-
-
-    /**
-   
-     */
 
 
     public function getselectproductSale()
@@ -198,15 +210,15 @@ class ProductDistributionController extends Controller
         return response()->json($products);
     }
 
-    
+
     public function todayDistributionList(Request $request)
 {
     $perPage    = $request->input('per_page', 50);
     $search     = $request->input('search', '');
     $supplierId = $request->input('supplier_id', '');
 
-    $query = ProductDistribution::with(['customer', 'floors', 'rooms'])
-        ->whereDate('purchase_date', Carbon::today()) // ✅ শুধু আজকের
+    $query = ProductDistribution::with(['customer', 'floors', 'rooms', 'seat'])
+        ->whereDate('purchase_date', Carbon::today())
         ->when($search, function ($q) use ($search) {
             $q->where('product_name', 'like', "%{$search}%");
         })
@@ -219,7 +231,7 @@ class ProductDistributionController extends Controller
     $allRows = $query->get();
     $grouped = $allRows
         ->groupBy(function ($item) {
-            return $item->purchase_date . '_' . $item->floor_id . '_' . $item->room_id . '_' . $item->customer_id;
+            return $item->purchase_date . '_' . $item->floor_id . '_' . $item->room_id . '_' . $item->seat_id . '_' . $item->customer_id;
         })
         ->values()
         ->map(function ($group) {
@@ -235,9 +247,11 @@ class ProductDistributionController extends Controller
                 'purchase_date'         => $first->purchase_date,
                 'floor_id'              => $first->floor_id,
                 'room_id'               => $first->room_id,
+                'seat_id'               => $first->seat_id,
                 'customer_id'           => $first->customer_id,
                 'floor_name'            => optional($first->floors)->name,
                 'room_no'               => optional($first->rooms)->room_no,
+                'seat_no'               => optional($first->seat)->seat_no,
                 'customer_name'         => optional($first->customer)->full_name,
                 'product_names'         => $productNames,
                 'product_price_details' => $productPriceDetails,
@@ -274,7 +288,7 @@ class ProductDistributionController extends Controller
         $endDate    = $request->input('end_date', '');
         $supplierId = $request->input('supplier_id', '');
 
-        $query = ProductDistribution::with(['customer', 'floors', 'rooms'])
+        $query = ProductDistribution::with(['customer', 'floors', 'rooms', 'seat'])
             ->when($search, function ($q) use ($search) {
                 $q->where('product_name', 'like', "%{$search}%");
             })
@@ -292,10 +306,11 @@ class ProductDistributionController extends Controller
             })
             ->orderBy('purchase_date', 'desc')
             ->orderBy('id', 'desc');
+
         $allRows = $query->get();
         $grouped = $allRows
     ->groupBy(function ($item) {
-        return $item->purchase_date . '_' . $item->floor_id . '_' . $item->room_id . '_' . $item->customer_id;
+        return $item->purchase_date . '_' . $item->floor_id . '_' . $item->room_id . '_' . $item->seat_id . '_' . $item->customer_id;
     })
     ->values()
     ->map(function ($group) {
@@ -311,9 +326,11 @@ class ProductDistributionController extends Controller
             'purchase_date'         => $first->purchase_date,
             'floor_id'              => $first->floor_id,
             'room_id'               => $first->room_id,
+            'seat_id'               => $first->seat_id,
             'customer_id'           => $first->customer_id,
             'floor_name'            => optional($first->floors)->name,
             'room_no'               => optional($first->rooms)->room_no,
+            'seat_no'               => optional($first->seat)->seat_no,
             'customer_name'         => optional($first->customer)->full_name,
             'product_names'         => $productNames,
             'product_price_details' => $productPriceDetails,
@@ -321,22 +338,23 @@ class ProductDistributionController extends Controller
             'total_price_available' => $group->sum('total_price_available'),
         ];
     });
-    $total = $grouped->count();
-    $currentPage = (int) $request->input('page', 1);
-    $offset = ($currentPage - 1) * $perPage;
-    $pagedItems = $grouped->slice($offset, $perPage)->values();
 
-    return response()->json([
-        'status'               => 'success',
-        'productstock'         => $pagedItems,
-        'total'                => $total,
-        'from'                 => $total > 0 ? $offset + 1 : 0,
-        'per_page'             => (int) $perPage,
-        'last_page'            => (int) ceil($total / $perPage),
-        'current_page'         => $currentPage,
-        'grand_total_quantity' => $grouped->sum('total_quantity'),
-        'grand_total'          => $grouped->sum('total_price_available'),
-    ]);
+        $total = $grouped->count();
+        $currentPage = (int) $request->input('page', 1);
+        $offset = ($currentPage - 1) * $perPage;
+        $pagedItems = $grouped->slice($offset, $perPage)->values();
+
+        return response()->json([
+            'status'               => 'success',
+            'productstock'         => $pagedItems,
+            'total'                => $total,
+            'from'                 => $total > 0 ? $offset + 1 : 0,
+            'per_page'             => (int) $perPage,
+            'last_page'            => (int) ceil($total / $perPage),
+            'current_page'         => $currentPage,
+            'grand_total_quantity' => $grouped->sum('total_quantity'),
+            'grand_total'          => $grouped->sum('total_price_available'),
+        ]);
     }
 
     public function getcustomer()
@@ -355,7 +373,7 @@ class ProductDistributionController extends Controller
             'data'   => $suppliers,
         ]);
     }
-    
+
 
     public function destroy($id)
     {

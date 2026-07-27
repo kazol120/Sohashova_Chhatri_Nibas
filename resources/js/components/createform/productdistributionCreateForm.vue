@@ -16,6 +16,7 @@
               <div class="xbody">
                 <div class="row g-3">
 
+                  <!-- Date -->
                   <div class="col-md-4">
                     <label class="form-label fw-semibold">Date <code class="req">*</code></label>
                     <input
@@ -29,6 +30,7 @@
                     </small>
                   </div>
 
+                  <!-- Memo Number -->
                   <div class="col-md-4">
                     <label class="form-label fw-semibold">Memo Number</label>
                     <input
@@ -40,6 +42,7 @@
                     />
                   </div>
 
+                  <!-- Floor -->
                   <div class="col-md-4">
                     <label class="form-label fw-semibold">Floor <code class="req">*</code></label>
                     <select
@@ -58,6 +61,7 @@
                     </small>
                   </div>
 
+                  <!-- Room -->
                   <div class="col-md-4">
                     <label class="form-label fw-semibold">Room <code class="req">*</code></label>
                     <select
@@ -78,16 +82,45 @@
                     </small>
                   </div>
 
+                  <!-- Seat -->
                   <div class="col-md-4">
-                    <label class="form-label fw-semibold">Guest Name <code class="req">*</code></label>
-                    <input
-                      type="text"
+                    <label class="form-label fw-semibold">Seat</label>
+                    <select
                       class="form-select"
-                      v-model="form.customer_name"
-                      placeholder="guest name"
-                      readonly
-                    />
+                      v-model="form.seat_id"
+                      :disabled="!form.room_id || loadingSeats"
+                      @change="onSeatSelect"
+                    >
+                      <option value="">
+                        {{ !form.room_id ? 'Select Room first' : loadingSeats ? 'Loading seats...' : seats.length === 0 ? 'No seats found' : 'Select Seat' }}
+                      </option>
+                      <option v-for="s in seats" :key="s.id" :value="s.id">
+                        Seat {{ s.seat_no }}
+                        <span v-if="s.status == 1"> (Booked)</span>
+                        <span v-else> (Vacant)</span>
+                      </option>
+                    </select>
                   </div>
+
+                  <!-- Customer / Guest -->
+                  <div class="col-md-4">
+                    <label class="form-label fw-semibold">Guest Name</label>
+                    <select
+                      class="form-select"
+                      v-model="form.customer_id"
+                      :disabled="!form.room_id || loadingCustomers"
+                      @change="onCustomerSelect"
+                    >
+                      <option value="">
+                        {{ !form.room_id ? 'Select Room first' : loadingCustomers ? 'Loading guests...' : roomCustomers.length === 0 ? 'No guest found' : 'Select Guest' }}
+                      </option>
+                      <option v-for="c in roomCustomers" :key="c.id" :value="c.id">
+                        {{ c.full_name }}{{ c.phone ? ' — ' + c.phone : '' }}
+                      </option>
+                    </select>
+                  </div>
+
+                  <!-- Product Name -->
                   <div class="col-md-4">
                     <label class="form-label fw-semibold">Product Name</label>
                     <select
@@ -230,9 +263,13 @@ export default {
     return {
       floors: [],
       rooms: [],
+      seats: [],
+      roomCustomers: [],
       products: [],
 
       loadingRooms: false,
+      loadingSeats: false,
+      loadingCustomers: false,
       loadingProducts: false,
       saving: false,
 
@@ -246,6 +283,7 @@ export default {
         floor_id: "",
         room_id: "",
         room_number: "",
+        seat_id: "",
         customer_id: "",
         customer_name: "",
       },
@@ -307,6 +345,8 @@ export default {
       this.errors = {};
       this.floors = [];
       this.rooms = [];
+      this.seats = [];
+      this.roomCustomers = [];
       this.products = [];
       this.productpurchaselist = [];
       this.selectedProductId = "";
@@ -317,6 +357,7 @@ export default {
         floor_id: "",
         room_id: "",
         room_number: "",
+        seat_id: "",
         customer_id: "",
         customer_name: "",
       };
@@ -328,77 +369,89 @@ export default {
         this.floors = Array.isArray(res.data) ? res.data : res.data.data || [];
       } catch (e) {
         this.toast("Failed to load floors", "error");
-        console.error("loadFloors error:", e?.response?.data);
       }
     },
 
     async onFloorSelect() {
       this.form.room_id = "";
       this.form.room_number = "";
+      this.form.seat_id = "";
       this.form.customer_id = "";
       this.form.customer_name = "";
       this.rooms = [];
+      this.seats = [];
+      this.roomCustomers = [];
 
       if (!this.form.floor_id) return;
 
       this.loadingRooms = true;
-
       try {
         const res = await axios.get(`${this.url}floor-room-select/${this.form.floor_id}`);
         this.rooms = Array.isArray(res.data) ? res.data : res.data.data || [];
       } catch (e) {
         this.toast("Failed to load rooms", "error");
-        console.error("onFloorSelect error:", e?.response?.data);
       } finally {
         this.loadingRooms = false;
       }
     },
 
     async onRoomSelect() {
-  this.form.customer_id = "";
-  this.form.customer_name = "";
-  this.form.room_number = "";
-
-  // customer error remove
-  if (this.errors.customer_id) {
-    delete this.errors.customer_id;
-  }
-
-  const room = this.rooms.find((r) => String(r.id) === String(this.form.room_id));
-
-  if (!room) return;
-
-  this.form.room_number = room.room_no;
-
-  try {
-    const res = await axios.get(`${this.url}room-customer-auto-load/${room.room_no}`);
-
-    const customer = res.data.data;
-
-    if (customer && customer.id) {
-      this.form.customer_id = customer.id;
-      this.form.customer_name = customer.full_name;
-    } else {
+      this.form.seat_id = "";
       this.form.customer_id = "";
       this.form.customer_name = "";
-    }
-  } catch (e) {
-    this.form.customer_id = "";
-    this.form.customer_name = "";
+      this.form.room_number = "";
+      this.seats = [];
+      this.roomCustomers = [];
 
-    // No red error, no toast
-    console.error("onRoomSelect customer not found:", e?.response?.data);
-  }
-},
+      if (this.errors.customer_id) delete this.errors.customer_id;
+
+      const room = this.rooms.find((r) => String(r.id) === String(this.form.room_id));
+      if (!room) return;
+
+      this.form.room_number = room.room_no;
+
+      // Load seats and customers in parallel
+      this.loadingSeats = true;
+      this.loadingCustomers = true;
+
+      try {
+        const [seatsRes, customersRes] = await Promise.all([
+          axios.get(`${this.url}room-seats-select/${this.form.room_id}`),
+          axios.get(`${this.url}room-customers-select/${this.form.room_id}`),
+        ]);
+
+        this.seats = Array.isArray(seatsRes.data) ? seatsRes.data : seatsRes.data.data || [];
+        this.roomCustomers = customersRes.data.data || [];
+
+        // Auto-fill customer if only one
+        if (this.roomCustomers.length === 1) {
+          this.form.customer_id = this.roomCustomers[0].id;
+          this.form.customer_name = this.roomCustomers[0].full_name;
+        }
+      } catch (e) {
+        console.error("Room select error:", e?.response?.data);
+      } finally {
+        this.loadingSeats = false;
+        this.loadingCustomers = false;
+      }
+    },
+
+    onSeatSelect() {
+      // Seat selected - no auto action needed, customer is selected separately
+    },
+
+    onCustomerSelect() {
+      const customer = this.roomCustomers.find((c) => String(c.id) === String(this.form.customer_id));
+      this.form.customer_name = customer ? customer.full_name : "";
+    },
+
     async loadProducts() {
       this.loadingProducts = true;
-
       try {
         const res = await axios.get(`${this.url}get-select-product-sale`);
         this.products = Array.isArray(res.data) ? res.data : res.data.data || [];
       } catch (e) {
         this.toast("Failed to load products", "error");
-        console.error("loadProducts error:", e?.response?.data);
       } finally {
         this.loadingProducts = false;
       }
@@ -408,7 +461,6 @@ export default {
       if (!this.selectedProductId) return;
 
       const product = this.products.find((p) => String(p.id) === String(this.selectedProductId));
-
       if (!product) return;
 
       this.form.memo_number = product.memo_number || "";
@@ -421,7 +473,6 @@ export default {
 
       const availableQty = parseInt(product.available_quantity) || 0;
       const singlePrice = parseFloat(product.single_price) || 0;
-      const defaultQty = availableQty > 0 ? 1 : 0;
 
       if (availableQty <= 0) {
         this.toast("This product has no available stock", "warning");
@@ -429,56 +480,51 @@ export default {
         return;
       }
 
-  this.productpurchaselist.push({
-  product_id: product.product_id, // 27 jabe
-  product_name: product.product_name,
-  supplier_id: product.supplier_id,
-  single_price: singlePrice,
-  available_quantity: availableQty,
-  customer_quantity: 1,
-  remaining_quantity: availableQty,
-  total_price: (singlePrice * 1).toFixed(2),
-});
+      this.productpurchaselist.push({
+        product_id: product.product_id,
+        product_name: product.product_name,
+        supplier_id: product.supplier_id,
+        single_price: singlePrice,
+        available_quantity: availableQty,
+        customer_quantity: 1,
+        remaining_quantity: availableQty,
+        total_price: (singlePrice * 1).toFixed(2),
+      });
 
       this.selectedProductId = "";
     },
 
-  calculateRowTotal(item, event) {
-  let qty = parseInt(event ? event.target.value : item.customer_quantity) || 0;
+    calculateRowTotal(item, event) {
+      let qty = parseInt(event ? event.target.value : item.customer_quantity) || 0;
+      if (qty > item.available_quantity) qty = item.available_quantity;
+      if (qty < 1) qty = 1;
+      item.customer_quantity = qty;
+      item.remaining_quantity = item.available_quantity - qty;
+      item.total_price = (parseFloat(item.single_price) * qty).toFixed(2);
+    },
 
-  if (qty > item.available_quantity) qty = item.available_quantity;
-  if (qty < 1) qty = 1;
-  item.customer_quantity = qty;
-  item.remaining_quantity = item.available_quantity - qty;
-  item.total_price = (parseFloat(item.single_price) * qty).toFixed(2);
-},
     removeRow(index) {
       this.productpurchaselist.splice(index, 1);
     },
 
     validate() {
       this.errors = {};
-
       if (!this.form.purchase_date) this.errors.purchase_date = "Date is required";
       if (!this.form.floor_id) this.errors.floor_id = "Floor is required";
       if (!this.form.room_id) this.errors.room_id = "Room is required";
-     
 
       if (this.productpurchaselist.length === 0) {
         this.toast("Please add at least one product", "warning");
         return false;
       }
-
       if (this.productpurchaselist.some((i) => !i.customer_quantity || i.customer_quantity <= 0)) {
         this.toast("Customer quantity must be at least 1", "warning");
         return false;
       }
-
       if (this.productpurchaselist.some((i) => i.customer_quantity > i.available_quantity)) {
         this.toast("Customer quantity exceeds available stock", "warning");
         return false;
       }
-
       return Object.keys(this.errors).length === 0;
     },
 
@@ -490,9 +536,9 @@ export default {
       try {
         const requests = this.productpurchaselist.map((item) => {
           const fd = new FormData();
-
           fd.append("floor_id", this.form.floor_id);
           fd.append("room_id", this.form.room_id);
+          fd.append("seat_id", this.form.seat_id || "");
           fd.append("customer_id", this.form.customer_id || "");
           fd.append("supplier_id", item.supplier_id);
           fd.append("purchase_date", this.form.purchase_date);
@@ -501,7 +547,6 @@ export default {
           fd.append("single_price", item.single_price);
           fd.append("customer_quantity", item.customer_quantity);
           fd.append("total_price", item.total_price);
-
           return axios.post(`${this.url}product-sale-store`, fd);
         });
 
@@ -512,19 +557,14 @@ export default {
         this.emitClose();
       } catch (e) {
         const data = e?.response?.data;
-
         if (e?.response?.status === 422 && data?.errors) {
           Object.keys(data.errors).forEach((k) => {
-            this.errors[k] = Array.isArray(data.errors[k])
-              ? data.errors[k][0]
-              : data.errors[k];
+            this.errors[k] = Array.isArray(data.errors[k]) ? data.errors[k][0] : data.errors[k];
           });
-
           this.toast(data?.message || "Validation error", "error");
         } else {
           this.toast(data?.message || "Create failed", "error");
         }
-
         console.error("submit error:", e?.response?.data);
       } finally {
         this.saving = false;

@@ -89,9 +89,9 @@
                     <th>Date</th>
                     <th>Floor</th>
                     <th>Room</th>
+                    <th>Seat</th>
                     <th>Guest Name</th>
                     <th>Product Name</th>
-                    <!-- <th>Price</th> -->
                     <th>Quantity</th>
                     <th>Total Price</th>
                     <th>Action</th>
@@ -113,9 +113,12 @@
                   <td>{{ item.purchase_date }}</td>
                   <td>{{ item.floor_name || '—' }}</td>
                   <td>{{ item.room_no || '—' }}</td>
+                  <td>
+                    <span v-if="item.seat_no" class="badge bg-primary">Seat {{ item.seat_no }}</span>
+                    <span v-else class="text-muted">—</span>
+                  </td>
                   <td>{{ item.customer_name || '—' }}</td>
                   <td>{{ item.product_names || '—' }}</td>
-                  <!-- <td>{{ item.product_price_details || '—' }}</td> -->
                   <td class="text-uppercase fw-semibold">{{ item.total_quantity }}</td>
                   <td>{{ parseFloat(item.total_price_available || 0).toFixed(2) }} ৳</td>
                   <td>
@@ -128,7 +131,7 @@
                 </tbody>
              <tfoot>
                 <tr class="table-dark">
-                <td colspan="6" class="text-end fw-bold">Grand Total :</td>
+                <td colspan="7" class="text-end fw-bold">Grand Total :</td>
                 <td class="fw-bold text-warning">{{ grandTotalQuantity }}</td>
                 <td class="fw-bold text-warning">{{ parseFloat(grandTotal || 0).toFixed(2) }} ৳</td>
                 <td></td>
@@ -344,16 +347,16 @@ async fetchproductstock(page = 1) {
         <td class="text-center">${item.purchase_date || '—'}</td>
         <td>${item.floor_name || '—'}</td>
         <td class="text-center">${item.room_no || '—'}</td>
+        <td class="text-center">${item.seat_no ? 'Seat ' + item.seat_no : '—'}</td>
         <td>${item.customer_name || '—'}</td>
         <td>${item.product_names || '—'}</td>
-       
         <td class="text-center">${item.total_quantity || 0}</td>
         <td class="text-end">${parseFloat(item.total_price_available || 0).toFixed(2)} ৳</td>
       </tr>
     `).join('');
       const totalRow = `
         <tr class="grand-total-row">
-          <td colspan="6" class="text-end fw-bold">Grand Total :</td>
+          <td colspan="7" class="text-end fw-bold">Grand Total :</td>
           <td class="text-center fw-bold">${this.grandTotalQuantity || 0}</td>
           <td class="text-end fw-bold">${parseFloat(this.grandTotal || 0).toFixed(2)} ৳</td>
         </tr>
@@ -421,6 +424,7 @@ async fetchproductstock(page = 1) {
                 <th>Date</th>
                 <th>Floor</th>
                 <th>Room</th>
+                <th>Seat</th>
                 <th>Guest Name</th>
                 <th>Product Name</th>
                 <th>Qty</th>

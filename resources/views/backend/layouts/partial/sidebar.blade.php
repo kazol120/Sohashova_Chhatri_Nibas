@@ -298,7 +298,7 @@
               </li>
               @endrole
 
-              @role('admin')
+      {{--         @role('admin')
               <li class="menu-item {{ Route::currentRouteNamed('management.index') ? 'active open' : '' }}">
                 <a href="javascript:void(0)" class="menu-link menu-toggle fs-5">
                   <i class="fas fa-clipboard-list" style="background-color: white; padding: 5px; border-radius: 50%;"></i>
@@ -312,7 +312,7 @@
                   </li>
                 </ul>
               </li>
-              @endrole
+              @endrole --}}
               {{-- Inventory --}}
               @role('admin')
               <li class="menu-item {{ Route::currentRouteNamed('brand-category.index') || Route::currentRouteNamed('brand.index') || Route::currentRouteNamed('product.index') || Route::currentRouteNamed('supplier.index') || Route::currentRouteNamed('product-stock.index') || Route::currentRouteNamed('manage-sale.index') ? 'active open' : '' }}">

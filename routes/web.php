@@ -223,6 +223,8 @@
     Route::post('product-sale-store', [ProductDistributionController::class, 'store']);
     Route::get('floor-select', [ProductDistributionController::class, 'floorSelect']);
     Route::get('floor-room-select/{floor_id}', [ProductDistributionController::class, 'floorRoomSelect']);
+    Route::get('room-seats-select/{room_id}', [ProductDistributionController::class, 'roomSeatsSelect']);
+    Route::get('room-customers-select/{room_id}', [ProductDistributionController::class, 'roomCustomersSelect']);
     Route::get('room-customer-auto-load/{room_number}', [ProductDistributionController::class, 'roomCustomerAutoLoad']);
 
     // report controller //

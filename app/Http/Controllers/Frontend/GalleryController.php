@@ -97,4 +97,5 @@ class GalleryController extends Controller
             'message' => 'Deleted successfully',
         ]);
     }
+    
 }

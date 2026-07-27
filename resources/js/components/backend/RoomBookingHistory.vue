@@ -95,6 +95,7 @@
                     <th style="width: 180px">Room Price</th>
                     <th style="width: 140px">Total Amount</th>
                     <th style="width: 180px">Booking Date & Time</th>
+                    <th style="width: 180px">Monthly Fee</th>
                     <th style="width: 180px">Email</th>
                     <th v-if="showFamilyColumns" style="width: 160px">Institution Name</th>
                     <th v-if="showFamilyColumns" style="width: 140px">Education System</th>
@@ -151,7 +152,7 @@
                           </div>
 
                           <div class="booking-col price">
-                            ৳ {{ Number(item.price || 0).toFixed(2) }}
+                            ৳ {{ Number(item.advance_price || 0).toFixed(2) }}
                           </div>
                         </div>
 
@@ -168,6 +169,10 @@
                       <span class="fw-semibold">{{ formatDateTime(r.created_at) }}</span>
                     </td>
 
+                    <td>
+                      <span class="fw-semibold">{{ r.daybytotalamount ? Number(r.daybytotalamount).toLocaleString() : "-" }}</span>
+                    </td>
+                    
                     <td>
                       <span class="fw-semibold">{{ r.email || "-" }}</span>
                     </td>

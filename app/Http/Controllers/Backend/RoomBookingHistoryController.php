@@ -365,8 +365,9 @@ public function store(Request $request)
                 throw new \Exception("Seat already booked: {$roomNumber}");
             }
 
-            $singleRoomPrice = (float) ($seat->price ?? 0);
-            $floorName       = $room->floor->name ?? '';
+        $singleRoomPrice    = (float) ($seat->price ?? 0);           
+        $singleAdvancePrice = (float) ($seat->advance_price ?? 0);  
+        $floorName          = $room->floor->name ?? '';
 
             $seat->update(['status' => 1]);
 
@@ -377,9 +378,10 @@ public function store(Request $request)
             $roomJsonData[] = [
                 'floornumber' => (string) $floorName,
                 'roomnumber'  => (string) $roomNumber,
-                'price'       => $singleRoomPrice,
+                'advance_price' => $singleAdvancePrice,
             ];
-            $totalAmount += $singleRoomPrice;
+
+            $totalAmount += $singleRoomPrice; 
         }
         $checkInDate      = Carbon::parse($request->check_in);
         $checkOutDate     = Carbon::parse($request->check_out);
@@ -458,49 +460,56 @@ public function store(Request $request)
         $thanaName       = optional(Thana::find($request->thana_id))->name ?? '-';
         $bookingDateTime = Carbon::now('Asia/Dhaka')->format('d/m/Y g:i A');
         $adminEmail = 'mr2798492@gmail.com';
+        $imageName = null;
+        if ($request->hasFile('image_file')) {
+            $imageName = time() . '_' . uniqid() . '.' . $request->file('image_file')->getClientOriginalExtension();
+            $request->file('image_file')->move(public_path('bookingsimage'), $imageName);
+        }
         $mailData = [
-            'full_name'    => $request->full_name,
-            'email'        => $request->email,
-            'phone'        => $request->phone,
-            'user_type'    => $request->user_type ?? 'student',
-            'nid'          => (strtolower($request->user_type ?? 'student') === 'student') ? null : $request->nid,
-            'mother_nid'   => $request->mother_nid,
-            'father_nid'   => $request->father_nid,
-            'father_name'  => $request->father_name,
-            'mother_name'  => $request->mother_name,
-            'floor_name'   => implode(', ', array_unique(array_filter($floorNames))),
-            'room_numbers' => implode(', ', $selectedRoomNumbers),
-            'room_acstatus'=> implode(', ', $selectedAcStatus),
-            'check_in'     => $request->check_in,
-            'check_out'    => $request->check_out,
-            'total_amount' => $totalAmount,
-            'daybytotalamount' => $dayByTotalAmount, 
-            'division_name'=> $divisionName,
-            'district_name'=> $districtName,
-            'thana_name'   => $thanaName,
-            'payment_type' => $request->payment,
-            'pay_method'   => $request->pay_method,
-            'trx'          => $request->trx,
-            'image_file'   => $imagePath,
-            'create_at'    => $bookingDateTime,
-            'room_json'    => $roomJsonData,
+            'full_name'        => $request->full_name,
+            'email'            => $request->email,
+            'phone'            => $request->phone,
+            'user_type'        => $request->user_type,
+            'institution_name' => $request->institution_name,
+            'education_level'  => $request->education_level,
+            'education_class'  => $request->education_class,
+            'father_name'      => $request->father_name,
+            'mother_name'      => $request->mother_name,
+            'father_nid'       => $request->father_nid,
+            'mother_nid'       => $request->mother_nid,
+            'workplace_name'   => $request->workplace_name,
+            'nid'              => $request->nid,
+            'create_at'        => $bookingDateTime,
+            'floor_name'       => implode(', ', array_unique(array_filter($floorNames))),
+            'room_json'        => $roomJsonData,  
+            'total_amount'     => $totalAmount,
+            'division_name'    => $divisionName,
+            'district_name'    => $districtName,
+            'thana_name'       => $thanaName,
+            'payment_type'     => $request->payment,
+            'pay_method'       => $request->pay_method,
+            'trx'              => $request->trx,
+            'image_file'       => $imageName,
         ];
 
+    Mail::to($request->email)->send(new \App\Mail\RoomBookingMail($mailData));
+
       try {
+
     Mail::to($adminEmail)->send(new RoomBookingMail($mailData));
-    
     if (!empty($request->email)) {
         Mail::to($request->email)->send(new RoomBookingMail($mailData));
     }
-} catch (\Throwable $mailError) {
-    \Log::error('Room booking email failed: ' . $mailError->getMessage());
-}
-        if ($request->ajax()) {
-            return response()->json([
-                'status'       => true,
-                'message'      => 'Booking successfully!',
-                'redirect_url' => url('/backend/dashboard'),
-            ], 200);
+
+    } catch (\Throwable $mailError) {
+        \Log::error('Room booking email failed: ' . $mailError->getMessage());
+    }
+            if ($request->ajax()) {
+                return response()->json([
+                    'status'       => true,
+                    'message'      => 'Booking successfully!',
+                    'redirect_url' => url('/backend/dashboard'),
+                ], 200);
         }
         return redirect('/backend/dashboard')->with('success', 'Booking successfully!');
 
@@ -731,6 +740,8 @@ public function getbookinghistory(Request $request)
         return response()->json($paginator);
     }
 }
+
+
 
 public function getNameguet()
 {
