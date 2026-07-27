@@ -222,22 +222,11 @@
                     </table>
                 </div>
 
-                <!-- Guest Image -->
-                @php
-                    $embeddedImage = null;
-                    if (!empty($image_file)) {
-                        $fullImagePath = public_path('bookingsimage/' . $image_file);
-                        if (file_exists($fullImagePath)) {
-                            $embeddedImage = $message->embed($fullImagePath);
-                        }
-                    }
-                @endphp
-
-                @if($embeddedImage)
+                @if(!empty($image_file))
                     <div style="margin-bottom:20px;">
                         <h3 style="margin:0 0 10px; font-size:16px; color:#111827; border-left:4px solid #033364; padding-left:10px;">Guest Image</h3>
-                        <div style="padding:10px; border:1px solid #e5e7eb; border-radius:10px; background:#fafafa;">
-                            <img src="{{ $embeddedImage }}" alt="Guest Image" style="max-width:200px; width:100%; height:auto; border-radius:10px; display:block;">
+                        <div style="padding:10px; border:1px solid #e5e7eb; border-radius:10px; background:#fafafa; font-size:13px; color:#6b7280;">
+                            📎 Guest image is attached to this email.
                         </div>
                     </div>
                 @endif
