@@ -60,7 +60,7 @@ class MonthlyPaymentController extends Controller
                 'note'                    => $row->note,
                 'status'                  => $row->status,
                 'received_by'             => $row->received_by,
-                'created_at'              => $row->created_at->format('Y-m-d H:i:s'),
+                'created_at'              => $row->created_at ? $row->created_at->format('Y-m-d H:i:s') : '',
                 'full_name'               => $booking->full_name ?? '-',
                 'phone'                   => $booking->phone ?? '-',
                 'email'                   => $booking->email ?? '',
@@ -82,10 +82,20 @@ class MonthlyPaymentController extends Controller
         $startOfMonth = Carbon::parse($month . '-01')->startOfMonth()->toDateString();
         $endOfMonth = Carbon::parse($month . '-01')->endOfMonth()->toDateString();
 
+        // Active guest bookings (status = 0)
         $bookings = RoomBookingHistory::where('status', 0)
-            ->where('check_in', '<=', $endOfMonth)
-            ->where('check_out', '>=', $startOfMonth)
-            ->get();
+            ->get()
+            ->filter(function ($booking) use ($startOfMonth, $endOfMonth) {
+                if (!$booking->check_in) return true;
+                
+                try {
+                    $cIn = Carbon::parse($booking->check_in)->toDateString();
+                    $cOut = $booking->check_out ? Carbon::parse($booking->check_out)->toDateString() : '9999-12-31';
+                    return ($cIn <= $endOfMonth) && ($cOut >= $startOfMonth);
+                } catch (\Throwable $e) {
+                    return true;
+                }
+            });
 
         $generatedCount = 0;
 
@@ -105,8 +115,12 @@ class MonthlyPaymentController extends Controller
                     : ($booking->floor_number_room_number_roomprice ?? []);
                 
                 $totalMonthlyRent = collect($items)->sum(function ($item) {
-                    return (float) ($item['price'] ?? 0);
+                    return (float) ($item['price'] ?? $item['advance_price'] ?? $item['roomprice'] ?? 0);
                 });
+
+                if ($totalMonthlyRent <= 0) {
+                    $totalMonthlyRent = (float) ($booking->payment_amount_total ?? $booking->daybytotalamount ?? 0);
+                }
 
                 if ($totalMonthlyRent <= 0) {
                     continue;
