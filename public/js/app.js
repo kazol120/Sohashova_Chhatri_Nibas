@@ -31061,43 +31061,45 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     loadSuppliers: function loadSuppliers() {
       var _this2 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-        var res;
+        var base, res;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
               _context.prev = 0;
-              _context.next = 3;
-              return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("".concat(_this2.url, "get-select-customer"));
-            case 3:
+              base = _this2.url.endsWith('/') ? _this2.url : "".concat(_this2.url, "/");
+              _context.next = 4;
+              return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("".concat(base, "get-select-customer"));
+            case 4:
               res = _context.sent;
               _this2.suppliers = res.data.data || [];
-              _context.next = 10;
+              _context.next = 11;
               break;
-            case 7:
-              _context.prev = 7;
+            case 8:
+              _context.prev = 8;
               _context.t0 = _context["catch"](0);
               _this2.toast("Failed to load customers.", "error");
-            case 10:
+            case 11:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[0, 7]]);
+        }, _callee, null, [[0, 8]]);
       }))();
     },
     fetchproductstock: function fetchproductstock() {
       var _arguments = arguments,
         _this3 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-        var page, _res$data$from, endpoint, res;
+        var page, _res$data$from, base, endpoint, res;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
               page = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : 1;
               _this3.loading = true;
               _context2.prev = 2;
-              endpoint = _this3.todayOnly ? "".concat(_this3.url, "today-product-distribution-list") // today
-              : "".concat(_this3.url, "product-districbution-list"); // all
-              _context2.next = 6;
+              base = _this3.url.endsWith('/') ? _this3.url : "".concat(_this3.url, "/");
+              endpoint = _this3.todayOnly ? "".concat(base, "today-product-distribution-list") // today
+              : "".concat(base, "product-districbution-list"); // all
+              _context2.next = 7;
               return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get(endpoint, {
                 params: {
                   page: page,
@@ -31108,7 +31110,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
                   supplier_id: _this3.selectedSupplier
                 }
               });
-            case 6:
+            case 7:
               res = _context2.sent;
               _this3.productstock = res.data.productstock || [];
               _this3.total = res.data.total || 0;
@@ -31117,21 +31119,21 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
               _this3.totalPages = res.data.last_page || 1;
               _this3.grandTotal = parseFloat(res.data.grand_total || 0);
               _this3.grandTotalQuantity = res.data.grand_total_quantity || 0;
-              _context2.next = 19;
+              _context2.next = 20;
               break;
-            case 16:
-              _context2.prev = 16;
+            case 17:
+              _context2.prev = 17;
               _context2.t0 = _context2["catch"](2);
-              _this3.toast('Failed to load sale list.', 'error');
-            case 19:
-              _context2.prev = 19;
+              _this3.toast('Failed to load product distribution list.', 'error');
+            case 20:
+              _context2.prev = 20;
               _this3.loading = false;
-              return _context2.finish(19);
-            case 22:
+              return _context2.finish(20);
+            case 23:
             case "end":
               return _context2.stop();
           }
-        }, _callee2, null, [[2, 16, 19, 22]]);
+        }, _callee2, null, [[2, 17, 20, 23]]);
       }))();
     },
     clearFilters: function clearFilters() {
@@ -31160,42 +31162,44 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     confirmDelete: function confirmDelete() {
       var _this4 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+        var base;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
               _this4.savingDelete = true;
               _context3.prev = 1;
-              _context3.next = 4;
-              return axios__WEBPACK_IMPORTED_MODULE_3__["default"]["delete"]("".concat(_this4.url, "customerlist-delete/").concat(_this4.delItem.id));
-            case 4:
-              _this4.toast('Sale deleted successfully.');
+              base = _this4.url.endsWith('/') ? _this4.url : "".concat(_this4.url, "/");
+              _context3.next = 5;
+              return axios__WEBPACK_IMPORTED_MODULE_3__["default"]["delete"]("".concat(base, "customerlist-delete/").concat(_this4.delItem.id));
+            case 5:
+              _this4.toast('Product distribution deleted successfully.');
               _this4.closeDeleteModal();
               _this4.fetchproductstock(_this4.currentPage);
-              _context3.next = 12;
+              _context3.next = 13;
               break;
-            case 9:
-              _context3.prev = 9;
+            case 10:
+              _context3.prev = 10;
               _context3.t0 = _context3["catch"](1);
               _this4.toast('Delete failed.', 'error');
-            case 12:
-              _context3.prev = 12;
+            case 13:
+              _context3.prev = 13;
               _this4.savingDelete = false;
-              return _context3.finish(12);
-            case 15:
+              return _context3.finish(13);
+            case 16:
             case "end":
               return _context3.stop();
           }
-        }, _callee3, null, [[1, 9, 12, 15]]);
+        }, _callee3, null, [[1, 10, 13, 16]]);
       }))();
     },
     // ── Print ──
     printTable: function printTable() {
       var fromIndex = this.from;
       var rows = this.productstock.map(function (item, index) {
-        return "\n      <tr>\n        <td class=\"text-center\">".concat(fromIndex + index, "</td>\n        <td class=\"text-center\">").concat(item.purchase_date || '—', "</td>\n        <td>").concat(item.floor_name || '—', "</td>\n        <td class=\"text-center\">").concat(item.room_no || '—', "</td>\n        <td class=\"text-center\">").concat(item.seat_no ? 'Seat ' + item.seat_no : '—', "</td>\n        <td>").concat(item.customer_name || '—', "</td>\n        <td>").concat(item.product_names || '—', "</td>\n        <td class=\"text-center\">").concat(item.total_quantity || 0, "</td>\n        <td class=\"text-end\">").concat(parseFloat(item.total_price_available || 0).toFixed(2), " \u09F3</td>\n      </tr>\n    ");
+        return "\n        <tr>\n          <td class=\"text-center\">".concat(fromIndex + index, "</td>\n          <td class=\"text-center\">").concat(item.purchase_date || '—', "</td>\n          <td>").concat(item.floor_name || '—', "</td>\n          <td class=\"text-center\">").concat(item.room_no || '—', "</td>\n          <td class=\"text-center\">").concat(item.seat_no ? 'Seat ' + item.seat_no : '—', "</td>\n          <td>").concat(item.customer_name || '—', "</td>\n          <td>").concat(item.product_names || '—', "</td>\n          <td class=\"text-center\">").concat(item.total_quantity || 0, "</td>\n          <td class=\"text-end\">").concat(parseFloat(item.total_price_available || 0).toFixed(2), " \u09F3</td>\n        </tr>\n      ");
       }).join('');
       var totalRow = "\n        <tr class=\"grand-total-row\">\n          <td colspan=\"7\" class=\"text-end fw-bold\">Grand Total :</td>\n          <td class=\"text-center fw-bold\">".concat(this.grandTotalQuantity || 0, "</td>\n          <td class=\"text-end fw-bold\">").concat(parseFloat(this.grandTotal || 0).toFixed(2), " \u09F3</td>\n        </tr>\n      ");
-      var html = "\n        <!DOCTYPE html>\n        <html>\n        <head>\n          <title>Product Distribution Report</title>\n          <style>\n            @page { size: A4 landscape; margin: 10mm; }\n            * { box-sizing: border-box; margin: 0; padding: 0; }\n            body { font-family: Arial, sans-serif; font-size: 10px; color: #000; background: #fff; }\n            h2 { text-align: center; margin-bottom: 4px; font-size: 16px; font-weight: 700; }\n            p.sub { text-align: center; margin-bottom: 12px; font-size: 12px; font-weight: 400;}\n            table { width: 100%; border-collapse: collapse; table-layout: fixed; }\n            th, td {\n              border: 1px solid #999;\n              padding: 5px 6px;\n              vertical-align: middle;\n              word-break: break-word;\n            }\n            th { background: #e9e9e9; font-weight: 700; text-align: center; }\n            tbody tr:nth-child(even) td { background: #f9f9f9; }\n            .text-center { text-align: center !important; }\n            .text-end { text-align: right !important; }\n            .fw-bold { font-weight: 700; }\n            .grand-total-row td {\n              font-weight: 700;\n              background: #f1f1f1 !important;\n            }\n            /*  Column width  Realtion- SL  */\n            col.sl-col    { width: 4%; }\n            col.date-col  { width: 9%; }\n            col.floor-col { width: 11%; }\n            col.room-col  { width: 7%; }\n            col.guest-col { width: 13%; }\n            col.prod-col  { width: 16%; }\n            col.price-col { width: 22%; }\n            col.qty-col   { width: 5%; }\n            col.total-col { width: 13%; }\n            @media print {\n              thead { display: table-header-group; }\n              tr { page-break-inside: avoid; }\n            }\n          </style>\n        </head>\n        <body>\n          <h2>Product Distribution Report</h2>\n           <p class=\"sub\">Printed: ".concat(new Date().toLocaleString(), "</p>\n          <table>\n            <colgroup>\n              <col class=\"sl-col\">\n              <col class=\"date-col\">\n              <col class=\"floor-col\">\n              <col class=\"room-col\">\n              <col class=\"guest-col\">\n              <col class=\"prod-col\">\n              <col class=\"qty-col\">\n              <col class=\"total-col\">\n            </colgroup>\n            <thead>\n              <tr>\n                <th>SL</th>\n                <th>Date</th>\n                <th>Floor</th>\n                <th>Room</th>\n                <th>Seat</th>\n                <th>Guest Name</th>\n                <th>Product Name</th>\n                <th>Qty</th>\n                <th>Total Price</th>\n              </tr>\n            </thead>\n            <tbody>\n              ").concat(rows, "\n              ").concat(totalRow, "\n            </tbody>\n          </table>\n        </body>\n        </html>\n      ");
+      var html = "\n        <!DOCTYPE html>\n        <html>\n        <head>\n          <title>Product Distribution Report</title>\n          <style>\n            @page { size: A4 landscape; margin: 10mm; }\n            * { box-sizing: border-box; margin: 0; padding: 0; }\n            body { font-family: Arial, sans-serif; font-size: 10px; color: #000; background: #fff; }\n            h2 { text-align: center; margin-bottom: 4px; font-size: 16px; font-weight: 700; }\n            p.sub { text-align: center; margin-bottom: 12px; font-size: 12px; font-weight: 400;}\n            table { width: 100%; border-collapse: collapse; table-layout: fixed; }\n            th, td {\n              border: 1px solid #999;\n              padding: 5px 6px;\n              vertical-align: middle;\n              word-break: break-word;\n            }\n            th { background: #e9e9e9; font-weight: 700; text-align: center; }\n            tbody tr:nth-child(even) td { background: #f9f9f9; }\n            .text-center { text-align: center !important; }\n            .text-end { text-align: right !important; }\n            .fw-bold { font-weight: 700; }\n            .grand-total-row td {\n              font-weight: 700;\n              background: #f1f1f1 !important;\n            }\n            col.sl-col    { width: 4%; }\n            col.date-col  { width: 10%; }\n            col.floor-col { width: 11%; }\n            col.room-col  { width: 7%; }\n            col.seat-col  { width: 7%; }\n            col.guest-col { width: 15%; }\n            col.prod-col  { width: 23%; }\n            col.qty-col   { width: 8%; }\n            col.total-col { width: 15%; }\n            @media print {\n              thead { display: table-header-group; }\n              tr { page-break-inside: avoid; }\n            }\n          </style>\n        </head>\n        <body>\n          <h2>Product Distribution Report</h2>\n          <p class=\"sub\">Printed: ".concat(new Date().toLocaleString(), "</p>\n          <table>\n            <colgroup>\n              <col class=\"sl-col\">\n              <col class=\"date-col\">\n              <col class=\"floor-col\">\n              <col class=\"room-col\">\n              <col class=\"seat-col\">\n              <col class=\"guest-col\">\n              <col class=\"prod-col\">\n              <col class=\"qty-col\">\n              <col class=\"total-col\">\n            </colgroup>\n            <thead>\n              <tr>\n                <th>SL</th>\n                <th>Date</th>\n                <th>Floor</th>\n                <th>Room</th>\n                <th>Seat</th>\n                <th>Guest Name</th>\n                <th>Product Name</th>\n                <th>Qty</th>\n                <th>Total Price</th>\n              </tr>\n            </thead>\n            <tbody>\n              ").concat(rows, "\n              ").concat(totalRow, "\n            </tbody>\n          </table>\n        </body>\n        </html>\n      ");
       var old = document.getElementById('print-iframe');
       if (old) old.remove();
       var iframe = document.createElement('iframe');
@@ -43575,7 +43579,7 @@ var _hoisted_39 = {
   key: 1
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  var _$data$delItem;
+  var _$data$delItem, _$data$delItem2;
   var _component_productdistributionCreateForm = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("productdistributionCreateForm");
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Header "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", _hoisted_6, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.todayOnly ? 'Today Product Distribution List' : 'Product Distribution List'), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-primary",
@@ -43686,13 +43690,17 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     style: {
       "width": "55px"
     }
-  }, "Sl"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Date"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Floor"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Room"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Seat"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Guest Name"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Product Name"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Quantity"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Total Price"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Action")])], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [$data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", _hoisted_18, _cache[27] || (_cache[27] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
-    colspan: "7",
+  }, "Sl"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Date"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Floor"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Room"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Seat"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Guest Name"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Product Name"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Quantity"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Total Price"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+    style: {
+      "width": "80px"
+    }
+  }, "Action")])], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [$data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", _hoisted_18, _cache[27] || (_cache[27] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
+    colspan: "10",
     "class": "text-center py-5 text-muted"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "fa fa-spinner fa-spin me-2"
   }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Loading... ")], -1 /* HOISTED */)]))) : $data.productstock.length === 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", _hoisted_19, _cache[28] || (_cache[28] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
-    colspan: "7",
+    colspan: "10",
     "class": "text-center py-5 text-muted"
   }, "No records found", -1 /* HOISTED */)]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
     key: 2
@@ -43732,13 +43740,13 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "mb-0 text-danger"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "ti ti-trash me-2"
-  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Delete Sale")], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Delete Distribution")], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "btn-close",
     onClick: _cache[15] || (_cache[15] = function () {
       return $options.closeDeleteModal && $options.closeDeleteModal.apply($options, arguments);
     })
-  })]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_34, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_35, [_cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Are you sure you want to delete: ")), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)((_$data$delItem = $data.delItem) === null || _$data$delItem === void 0 ? void 0 : _$data$delItem.product_name), 1 /* TEXT */), _cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("? "))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_36, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  })]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_34, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_35, [_cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Are you sure you want to delete distribution for: ")), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(((_$data$delItem = $data.delItem) === null || _$data$delItem === void 0 ? void 0 : _$data$delItem.customer_name) || 'Guest') + " (" + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(((_$data$delItem2 = $data.delItem) === null || _$data$delItem2 === void 0 ? void 0 : _$data$delItem2.product_names) || 'Products') + ")", 1 /* TEXT */), _cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("? "))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_36, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-outline-secondary",
     type: "button",
     onClick: _cache[16] || (_cache[16] = function () {
@@ -61012,7 +61020,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_laravel_mix_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.form-control[data-v-238825fd],\r\n.form-select[data-v-238825fd] {\r\n  border-radius: 8px;\r\n  padding: .58rem .75rem;\r\n  border: 1px solid #dce0e4;\n}\n.form-control[data-v-238825fd]:focus,\r\n.form-select[data-v-238825fd]:focus {\r\n  border-color: #0d6efd;\r\n  box-shadow: 0 0 0 .22rem rgba(13,110,253,.12);\n}\n.modal-overlay[data-v-238825fd] {\r\n  position: fixed;\r\n  inset: 0;\r\n  z-index: 99999;\r\n  background: rgba(0,0,0,0.55);\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  padding: 20px;\n}\n.modal-box[data-v-238825fd] {\r\n  background: #fff;\r\n  border-radius: 12px;\r\n  width: 100%;\r\n  max-width: 500px;\r\n  box-shadow: 0 20px 60px rgba(0,0,0,0.3);\r\n  overflow: hidden;\n}\n.modal-box-head[data-v-238825fd] {\r\n  padding: 16px 20px;\r\n  border-bottom: 1px solid #eef2f7;\r\n  background: #fff;\n}\n.modal-box-body[data-v-238825fd] {\r\n  padding: 20px;\r\n  max-height: 65vh;\r\n  overflow-y: auto;\n}\n.modal-box-foot[data-v-238825fd] {\r\n  padding: 14px 20px;\r\n  border-top: 1px solid #eef2f7;\r\n  background: #fafafa;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.form-control[data-v-238825fd],\n.form-select[data-v-238825fd] {\n  border-radius: 8px;\n  padding: .58rem .75rem;\n  border: 1px solid #dce0e4;\n}\n.form-control[data-v-238825fd]:focus,\n.form-select[data-v-238825fd]:focus {\n  border-color: #0d6efd;\n  box-shadow: 0 0 0 .22rem rgba(13,110,253,.12);\n}\n.modal-overlay[data-v-238825fd] {\n  position: fixed;\n  inset: 0;\n  z-index: 99999;\n  background: rgba(0,0,0,0.55);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  padding: 20px;\n}\n.modal-box[data-v-238825fd] {\n  background: #fff;\n  border-radius: 12px;\n  width: 100%;\n  max-width: 500px;\n  box-shadow: 0 20px 60px rgba(0,0,0,0.3);\n  overflow: hidden;\n}\n.modal-box-head[data-v-238825fd] {\n  padding: 16px 20px;\n  border-bottom: 1px solid #eef2f7;\n  background: #fff;\n}\n.modal-box-body[data-v-238825fd] {\n  padding: 20px;\n  max-height: 65vh;\n  overflow-y: auto;\n}\n.modal-box-foot[data-v-238825fd] {\n  padding: 14px 20px;\n  border-top: 1px solid #eef2f7;\n  background: #fafafa;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

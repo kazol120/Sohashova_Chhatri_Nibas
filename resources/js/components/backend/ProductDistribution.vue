@@ -94,49 +94,49 @@
                     <th>Product Name</th>
                     <th>Quantity</th>
                     <th>Total Price</th>
-                    <th>Action</th>
+                    <th style="width:80px">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-if="loading">
-                    <td colspan="7" class="text-center py-5 text-muted">
+                    <td colspan="10" class="text-center py-5 text-muted">
                       <i class="fa fa-spinner fa-spin me-2"></i>Loading...
                     </td>
                   </tr>
                   <tr v-else-if="productstock.length === 0">
-                    <td colspan="7" class="text-center py-5 text-muted">No records found</td>
+                    <td colspan="10" class="text-center py-5 text-muted">No records found</td>
                   </tr>
 
                   <template v-else>
-                  <tr v-for="(item, index) in productstock" :key="item.id">
-                  <td>{{ from + index }}</td>
-                  <td>{{ item.purchase_date }}</td>
-                  <td>{{ item.floor_name || '—' }}</td>
-                  <td>{{ item.room_no || '—' }}</td>
-                  <td>
-                    <span v-if="item.seat_no" class="badge bg-primary">Seat {{ item.seat_no }}</span>
-                    <span v-else class="text-muted">—</span>
-                  </td>
-                  <td>{{ item.customer_name || '—' }}</td>
-                  <td>{{ item.product_names || '—' }}</td>
-                  <td class="text-uppercase fw-semibold">{{ item.total_quantity }}</td>
-                  <td>{{ parseFloat(item.total_price_available || 0).toFixed(2) }} ৳</td>
-                  <td>
-                    <button class="btn btn-sm btn-danger" @click="openDeleteModal(item)">
-                    <i class="ti ti-trash"></i>
-                    </button>
-                  </td>
-                </tr>
-                </template>
+                    <tr v-for="(item, index) in productstock" :key="item.id">
+                      <td>{{ from + index }}</td>
+                      <td>{{ item.purchase_date }}</td>
+                      <td>{{ item.floor_name || '—' }}</td>
+                      <td>{{ item.room_no || '—' }}</td>
+                      <td>
+                        <span v-if="item.seat_no" class="badge bg-primary">Seat {{ item.seat_no }}</span>
+                        <span v-else class="text-muted">—</span>
+                      </td>
+                      <td>{{ item.customer_name || '—' }}</td>
+                      <td>{{ item.product_names || '—' }}</td>
+                      <td class="text-uppercase fw-semibold">{{ item.total_quantity }}</td>
+                      <td>{{ parseFloat(item.total_price_available || 0).toFixed(2) }} ৳</td>
+                      <td>
+                        <button class="btn btn-sm btn-danger" @click="openDeleteModal(item)">
+                          <i class="ti ti-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </template>
                 </tbody>
-             <tfoot>
-                <tr class="table-dark">
-                <td colspan="7" class="text-end fw-bold">Grand Total :</td>
-                <td class="fw-bold text-warning">{{ grandTotalQuantity }}</td>
-                <td class="fw-bold text-warning">{{ parseFloat(grandTotal || 0).toFixed(2) }} ৳</td>
-                <td></td>
-              </tr>
-            </tfoot>
+                <tfoot>
+                  <tr class="table-dark">
+                    <td colspan="7" class="text-end fw-bold">Grand Total :</td>
+                    <td class="fw-bold text-warning">{{ grandTotalQuantity }}</td>
+                    <td class="fw-bold text-warning">{{ parseFloat(grandTotal || 0).toFixed(2) }} ৳</td>
+                    <td></td>
+                  </tr>
+                </tfoot>
               </table>
             </div>
 
@@ -169,13 +169,13 @@
     <div v-if="delOpen" class="modal-overlay" @click.self="closeDeleteModal">
       <div class="modal-box">
         <div class="modal-box-head d-flex justify-content-between align-items-center">
-          <h5 class="mb-0 text-danger"><i class="ti ti-trash me-2"></i>Delete Sale</h5>
+          <h5 class="mb-0 text-danger"><i class="ti ti-trash me-2"></i>Delete Distribution</h5>
           <button type="button" class="btn-close" @click="closeDeleteModal"></button>
         </div>
         <div class="modal-box-body">
           <div class="alert alert-warning mb-0">
-            Are you sure you want to delete:
-            <strong>{{ delItem?.product_name }}</strong>?
+            Are you sure you want to delete distribution for:
+            <strong>{{ delItem?.customer_name || 'Guest' }} ({{ delItem?.product_names || 'Products' }})</strong>?
           </div>
         </div>
         <div class="modal-box-foot d-flex justify-content-end gap-2">
@@ -203,6 +203,7 @@ import axios from "axios";
 import Toastify from "toastify-js";
 import "toastify-js/src/toastify.css";
 import productdistributionCreateForm from "../../components/createform/productdistributionCreateForm.vue";
+
 export default {
   name: "ManageSaleList",
   components: { productdistributionCreateForm },
@@ -231,12 +232,12 @@ export default {
       delOpen:          false,
       delItem:          null,
       savingDelete:     false,
-      todayOnly: false, 
+      todayOnly:        false, 
     };
   },
   mounted() {
     if (window.location.pathname.includes('today-product')) { 
-    this.todayOnly = true;
+      this.todayOnly = true;
     }
     this.fetchproductstock(1);
     this.loadSuppliers();
@@ -266,42 +267,44 @@ export default {
     },
     async loadSuppliers() {
       try {
-        const res = await axios.get(`${this.url}get-select-customer`);
+        const base = this.url.endsWith('/') ? this.url : `${this.url}/`;
+        const res = await axios.get(`${base}get-select-customer`);
         this.suppliers = res.data.data || [];
       } catch {
         this.toast("Failed to load customers.", "error");
       }
     },
-async fetchproductstock(page = 1) {
-  this.loading = true;
-  try {
-    const endpoint = this.todayOnly
-      ? `${this.url}today-product-distribution-list`  // today
-      : `${this.url}product-districbution-list`;       // all
+    async fetchproductstock(page = 1) {
+      this.loading = true;
+      try {
+        const base = this.url.endsWith('/') ? this.url : `${this.url}/`;
+        const endpoint = this.todayOnly
+          ? `${base}today-product-distribution-list`  // today
+          : `${base}product-districbution-list`;       // all
 
-    const res = await axios.get(endpoint, {
-      params: {
-        page,
-        per_page:    this.perPage,
-        search:      this.search,
-        start_date:  this.startDate,
-        end_date:    this.endDate,
-        supplier_id: this.selectedSupplier,
-      },
-    });
-    this.productstock       = res.data.productstock || [];
-    this.total              = res.data.total        || 0;
-    this.from               = res.data.from         ?? 1;
-    this.currentPage        = res.data.current_page || 1;
-    this.totalPages         = res.data.last_page    || 1;
-    this.grandTotal         = parseFloat(res.data.grand_total || 0);
-    this.grandTotalQuantity = res.data.grand_total_quantity || 0;
-  } catch {
-    this.toast('Failed to load sale list.', 'error');
-  } finally {
-    this.loading = false;
-  }
-},
+        const res = await axios.get(endpoint, {
+          params: {
+            page,
+            per_page:    this.perPage,
+            search:      this.search,
+            start_date:  this.startDate,
+            end_date:    this.endDate,
+            supplier_id: this.selectedSupplier,
+          },
+        });
+        this.productstock       = res.data.productstock || [];
+        this.total              = res.data.total        || 0;
+        this.from               = res.data.from         ?? 1;
+        this.currentPage        = res.data.current_page || 1;
+        this.totalPages         = res.data.last_page    || 1;
+        this.grandTotal         = parseFloat(res.data.grand_total || 0);
+        this.grandTotalQuantity = res.data.grand_total_quantity || 0;
+      } catch {
+        this.toast('Failed to load product distribution list.', 'error');
+      } finally {
+        this.loading = false;
+      }
+    },
     clearFilters() {
       this.startDate        = '';
       this.endDate          = '';
@@ -328,8 +331,9 @@ async fetchproductstock(page = 1) {
     async confirmDelete() {
       this.savingDelete = true;
       try {
-        await axios.delete(`${this.url}customerlist-delete/${this.delItem.id}`);
-        this.toast('Sale deleted successfully.');
+        const base = this.url.endsWith('/') ? this.url : `${this.url}/`;
+        await axios.delete(`${base}customerlist-delete/${this.delItem.id}`);
+        this.toast('Product distribution deleted successfully.');
         this.closeDeleteModal();
         this.fetchproductstock(this.currentPage);
       } catch {
@@ -339,21 +343,21 @@ async fetchproductstock(page = 1) {
       }
     },
     // ── Print ──
-  printTable() {
-    const fromIndex = this.from; 
-    const rows = this.productstock.map((item, index) => `
-      <tr>
-        <td class="text-center">${fromIndex + index}</td>
-        <td class="text-center">${item.purchase_date || '—'}</td>
-        <td>${item.floor_name || '—'}</td>
-        <td class="text-center">${item.room_no || '—'}</td>
-        <td class="text-center">${item.seat_no ? 'Seat ' + item.seat_no : '—'}</td>
-        <td>${item.customer_name || '—'}</td>
-        <td>${item.product_names || '—'}</td>
-        <td class="text-center">${item.total_quantity || 0}</td>
-        <td class="text-end">${parseFloat(item.total_price_available || 0).toFixed(2)} ৳</td>
-      </tr>
-    `).join('');
+    printTable() {
+      const fromIndex = this.from; 
+      const rows = this.productstock.map((item, index) => `
+        <tr>
+          <td class="text-center">${fromIndex + index}</td>
+          <td class="text-center">${item.purchase_date || '—'}</td>
+          <td>${item.floor_name || '—'}</td>
+          <td class="text-center">${item.room_no || '—'}</td>
+          <td class="text-center">${item.seat_no ? 'Seat ' + item.seat_no : '—'}</td>
+          <td>${item.customer_name || '—'}</td>
+          <td>${item.product_names || '—'}</td>
+          <td class="text-center">${item.total_quantity || 0}</td>
+          <td class="text-end">${parseFloat(item.total_price_available || 0).toFixed(2)} ৳</td>
+        </tr>
+      `).join('');
       const totalRow = `
         <tr class="grand-total-row">
           <td colspan="7" class="text-end fw-bold">Grand Total :</td>
@@ -388,16 +392,15 @@ async fetchproductstock(page = 1) {
               font-weight: 700;
               background: #f1f1f1 !important;
             }
-            /*  Column width  Realtion- SL  */
             col.sl-col    { width: 4%; }
-            col.date-col  { width: 9%; }
+            col.date-col  { width: 10%; }
             col.floor-col { width: 11%; }
             col.room-col  { width: 7%; }
-            col.guest-col { width: 13%; }
-            col.prod-col  { width: 16%; }
-            col.price-col { width: 22%; }
-            col.qty-col   { width: 5%; }
-            col.total-col { width: 13%; }
+            col.seat-col  { width: 7%; }
+            col.guest-col { width: 15%; }
+            col.prod-col  { width: 23%; }
+            col.qty-col   { width: 8%; }
+            col.total-col { width: 15%; }
             @media print {
               thead { display: table-header-group; }
               tr { page-break-inside: avoid; }
@@ -406,13 +409,14 @@ async fetchproductstock(page = 1) {
         </head>
         <body>
           <h2>Product Distribution Report</h2>
-           <p class="sub">Printed: ${new Date().toLocaleString()}</p>
+          <p class="sub">Printed: ${new Date().toLocaleString()}</p>
           <table>
             <colgroup>
               <col class="sl-col">
               <col class="date-col">
               <col class="floor-col">
               <col class="room-col">
+              <col class="seat-col">
               <col class="guest-col">
               <col class="prod-col">
               <col class="qty-col">
@@ -455,7 +459,6 @@ async fetchproductstock(page = 1) {
         }, 300);
       };
     },
-
   },
 };
 </script>
