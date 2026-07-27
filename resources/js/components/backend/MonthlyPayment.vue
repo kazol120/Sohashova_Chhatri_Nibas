@@ -132,11 +132,11 @@
                     </td>
                     <td class="py-3 text-end fw-bold text-dark">৳ {{ Number(pay.amount).toFixed(2) }}</td>
                     <td class="py-3 text-end fw-bold text-success">৳ {{ Number(pay.paid_amount || 0).toFixed(2) }}</td>
-                    <td class="py-3 text-end fw-bold text-danger">
-                      <span v-if="Number(pay.paid_amount || 0) > 0">
+                    <td class="py-3 text-end fw-bold">
+                      <span v-if="getDueAmount(pay) > 0" class="text-danger">
                         ৳ {{ Number(getDueAmount(pay)).toFixed(2) }}
                       </span>
-                      <span v-else class="text-muted">৳ 0.00</span>
+                      <span v-else class="text-success">৳ 0.00</span>
                     </td>
                    <!--  <td class="py-3 text-center">
                       <span class="text-muted small">{{ formatDate(pay.due_date) }}</span>

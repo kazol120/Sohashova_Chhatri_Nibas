@@ -102,14 +102,6 @@ class MonthlyPaymentController extends Controller
         DB::beginTransaction();
         try {
             foreach ($bookings as $booking) {
-                $exists = MonthlyPayment::where('room_booking_history_id', $booking->id)
-                    ->where('payment_month', $month)
-                    ->exists();
-
-                if ($exists) {
-                    continue;
-                }
-
                 $totalMonthlyRent = (float) ($booking->monthly_amount ?? 0);
 
                 if ($totalMonthlyRent <= 0) {
@@ -118,11 +110,28 @@ class MonthlyPaymentController extends Controller
                         : ($booking->floor_number_room_number_roomprice ?? []);
                     
                     $totalMonthlyRent = collect($items)->sum(function ($item) {
-                        return (float) ($item['price'] ?? $item['advance_price'] ?? $item['roomprice'] ?? 0);
+                        return (float) ($item['price'] ?? $item['roomprice'] ?? 0);
                     });
                 }
 
                 if ($totalMonthlyRent <= 0) {
+                    continue;
+                }
+
+                $existingPayment = MonthlyPayment::where('room_booking_history_id', $booking->id)
+                    ->where('payment_month', $month)
+                    ->first();
+
+                if ($existingPayment) {
+                    // If bill was generated before but unpaid, sync amount with monthly_amount
+                    if ((float) $existingPayment->paid_amount == 0 && (float) $existingPayment->amount != $totalMonthlyRent) {
+                        $carriedForwardDue = (float) $existingPayment->carried_forward_due;
+                        $existingPayment->update([
+                            'amount'     => $totalMonthlyRent,
+                            'due_amount' => $totalMonthlyRent + $carriedForwardDue,
+                        ]);
+                        $generatedCount++;
+                    }
                     continue;
                 }
 
