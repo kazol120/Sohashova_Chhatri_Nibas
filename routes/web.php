@@ -225,6 +225,7 @@
     Route::get('floor-room-select/{floor_id}', [ProductDistributionController::class, 'floorRoomSelect']);
     Route::get('room-seats-select/{room_id}', [ProductDistributionController::class, 'roomSeatsSelect']);
     Route::get('room-customers-select/{room_id}', [ProductDistributionController::class, 'roomCustomersSelect']);
+    Route::get('seat-customers-select/{seat_id}', [ProductDistributionController::class, 'seatCustomersSelect']);
     Route::get('room-customer-auto-load/{room_number}', [ProductDistributionController::class, 'roomCustomerAutoLoad']);
 
     // report controller //

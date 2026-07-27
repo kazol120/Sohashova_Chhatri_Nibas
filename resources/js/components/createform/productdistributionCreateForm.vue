@@ -112,12 +112,15 @@
                       @change="onCustomerSelect"
                     >
                       <option value="">
-                        {{ !form.room_id ? 'Select Room first' : loadingCustomers ? 'Loading guests...' : roomCustomers.length === 0 ? 'No guest found' : 'Select Guest' }}
+                        {{ !form.room_id ? 'Select Room first' : loadingCustomers ? 'Loading guests...' : roomCustomers.length === 0 ? 'No active guest found' : 'Select Guest' }}
                       </option>
                       <option v-for="c in roomCustomers" :key="c.id" :value="c.id">
                         {{ c.full_name }}{{ c.phone ? ' — ' + c.phone : '' }}
                       </option>
                     </select>
+                    <small v-if="form.seat_id && roomCustomers.length === 0 && !loadingCustomers" class="text-warning d-block mt-1">
+                      <i class="fa fa-exclamation-triangle me-1"></i> This seat has no active booking
+                    </small>
                   </div>
 
                   <!-- Product Name -->
@@ -436,8 +439,51 @@ export default {
       }
     },
 
-    onSeatSelect() {
-      // Seat selected - no auto action needed, customer is selected separately
+    // Seat select করলে শুধু ওই seat এর active customer filter হবে
+    async onSeatSelect() {
+      this.form.customer_id = "";
+      this.form.customer_name = "";
+
+      if (!this.form.seat_id) {
+        // Seat clear হলে room এর সব customer ফিরিয়ে দাও
+        if (this.form.room_id) {
+          this.loadingCustomers = true;
+          try {
+            const res = await axios.get(`${this.url}room-customers-select/${this.form.room_id}`);
+            this.roomCustomers = res.data.data || [];
+            if (this.roomCustomers.length === 1) {
+              this.form.customer_id = this.roomCustomers[0].id;
+              this.form.customer_name = this.roomCustomers[0].full_name;
+            }
+          } catch (e) {
+            console.error("Load customers error:", e);
+          } finally {
+            this.loadingCustomers = false;
+          }
+        }
+        return;
+      }
+
+      // নির্বাচিত seat এর customer লোড করো
+      this.loadingCustomers = true;
+      try {
+        const res = await axios.get(`${this.url}seat-customers-select/${this.form.seat_id}`);
+        this.roomCustomers = res.data.data || [];
+
+        // যদি শুধু একজন থাকে auto-select
+        if (this.roomCustomers.length === 1) {
+          this.form.customer_id = this.roomCustomers[0].id;
+          this.form.customer_name = this.roomCustomers[0].full_name;
+          this.toast(`Guest auto-selected: ${this.form.customer_name}`, "success");
+        } else if (this.roomCustomers.length === 0) {
+          this.toast("No active guest found for this seat", "warning");
+        }
+      } catch (e) {
+        console.error("Seat customer load error:", e);
+        this.toast("Failed to load seat guest", "error");
+      } finally {
+        this.loadingCustomers = false;
+      }
     },
 
     onCustomerSelect() {

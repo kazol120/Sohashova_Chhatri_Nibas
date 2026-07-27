@@ -38385,52 +38385,126 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
         }, _callee3, null, [[13, 25, 28, 32]]);
       }))();
     },
+    // Seat select করলে শুধু ওই seat এর active customer filter হবে
     onSeatSelect: function onSeatSelect() {
-      // Seat selected - no auto action needed, customer is selected separately
+      var _this4 = this;
+      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+        var res, _res;
+        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+          while (1) switch (_context4.prev = _context4.next) {
+            case 0:
+              _this4.form.customer_id = "";
+              _this4.form.customer_name = "";
+              if (_this4.form.seat_id) {
+                _context4.next = 20;
+                break;
+              }
+              if (!_this4.form.room_id) {
+                _context4.next = 19;
+                break;
+              }
+              _this4.loadingCustomers = true;
+              _context4.prev = 5;
+              _context4.next = 8;
+              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("".concat(_this4.url, "room-customers-select/").concat(_this4.form.room_id));
+            case 8:
+              res = _context4.sent;
+              _this4.roomCustomers = res.data.data || [];
+              if (_this4.roomCustomers.length === 1) {
+                _this4.form.customer_id = _this4.roomCustomers[0].id;
+                _this4.form.customer_name = _this4.roomCustomers[0].full_name;
+              }
+              _context4.next = 16;
+              break;
+            case 13:
+              _context4.prev = 13;
+              _context4.t0 = _context4["catch"](5);
+              console.error("Load customers error:", _context4.t0);
+            case 16:
+              _context4.prev = 16;
+              _this4.loadingCustomers = false;
+              return _context4.finish(16);
+            case 19:
+              return _context4.abrupt("return");
+            case 20:
+              // নির্বাচিত seat এর customer লোড করো
+              _this4.loadingCustomers = true;
+              _context4.prev = 21;
+              _context4.next = 24;
+              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("".concat(_this4.url, "seat-customers-select/").concat(_this4.form.seat_id));
+            case 24:
+              _res = _context4.sent;
+              _this4.roomCustomers = _res.data.data || [];
+
+              // যদি শুধু একজন থাকে auto-select
+              if (_this4.roomCustomers.length === 1) {
+                _this4.form.customer_id = _this4.roomCustomers[0].id;
+                _this4.form.customer_name = _this4.roomCustomers[0].full_name;
+                _this4.toast("Guest auto-selected: ".concat(_this4.form.customer_name), "success");
+              } else if (_this4.roomCustomers.length === 0) {
+                _this4.toast("No active guest found for this seat", "warning");
+              }
+              _context4.next = 33;
+              break;
+            case 29:
+              _context4.prev = 29;
+              _context4.t1 = _context4["catch"](21);
+              console.error("Seat customer load error:", _context4.t1);
+              _this4.toast("Failed to load seat guest", "error");
+            case 33:
+              _context4.prev = 33;
+              _this4.loadingCustomers = false;
+              return _context4.finish(33);
+            case 36:
+            case "end":
+              return _context4.stop();
+          }
+        }, _callee4, null, [[5, 13, 16, 19], [21, 29, 33, 36]]);
+      }))();
     },
     onCustomerSelect: function onCustomerSelect() {
-      var _this4 = this;
+      var _this5 = this;
       var customer = this.roomCustomers.find(function (c) {
-        return String(c.id) === String(_this4.form.customer_id);
+        return String(c.id) === String(_this5.form.customer_id);
       });
       this.form.customer_name = customer ? customer.full_name : "";
     },
     loadProducts: function loadProducts() {
-      var _this5 = this;
-      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+      var _this6 = this;
+      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
         var res;
-        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-          while (1) switch (_context4.prev = _context4.next) {
+        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+          while (1) switch (_context5.prev = _context5.next) {
             case 0:
-              _this5.loadingProducts = true;
-              _context4.prev = 1;
-              _context4.next = 4;
-              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("".concat(_this5.url, "get-select-product-sale"));
+              _this6.loadingProducts = true;
+              _context5.prev = 1;
+              _context5.next = 4;
+              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("".concat(_this6.url, "get-select-product-sale"));
             case 4:
-              res = _context4.sent;
-              _this5.products = Array.isArray(res.data) ? res.data : res.data.data || [];
-              _context4.next = 11;
+              res = _context5.sent;
+              _this6.products = Array.isArray(res.data) ? res.data : res.data.data || [];
+              _context5.next = 11;
               break;
             case 8:
-              _context4.prev = 8;
-              _context4.t0 = _context4["catch"](1);
-              _this5.toast("Failed to load products", "error");
+              _context5.prev = 8;
+              _context5.t0 = _context5["catch"](1);
+              _this6.toast("Failed to load products", "error");
             case 11:
-              _context4.prev = 11;
-              _this5.loadingProducts = false;
-              return _context4.finish(11);
+              _context5.prev = 11;
+              _this6.loadingProducts = false;
+              return _context5.finish(11);
             case 14:
             case "end":
-              return _context4.stop();
+              return _context5.stop();
           }
-        }, _callee4, null, [[1, 8, 11, 14]]);
+        }, _callee5, null, [[1, 8, 11, 14]]);
       }))();
     },
     onProductSelect: function onProductSelect() {
-      var _this6 = this;
+      var _this7 = this;
       if (!this.selectedProductId) return;
       var product = this.products.find(function (p) {
-        return String(p.id) === String(_this6.selectedProductId);
+        return String(p.id) === String(_this7.selectedProductId);
       });
       if (!product) return;
       this.form.memo_number = product.memo_number || "";
@@ -38495,65 +38569,65 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       return Object.keys(this.errors).length === 0;
     },
     submit: function submit() {
-      var _this7 = this;
-      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+      var _this8 = this;
+      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
         var requests, _e$response2, _e$response3, _e$response4, data;
-        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-          while (1) switch (_context5.prev = _context5.next) {
+        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+          while (1) switch (_context6.prev = _context6.next) {
             case 0:
-              if (_this7.validate()) {
-                _context5.next = 2;
+              if (_this8.validate()) {
+                _context6.next = 2;
                 break;
               }
-              return _context5.abrupt("return");
+              return _context6.abrupt("return");
             case 2:
-              _this7.saving = true;
-              _context5.prev = 3;
-              requests = _this7.productpurchaselist.map(function (item) {
+              _this8.saving = true;
+              _context6.prev = 3;
+              requests = _this8.productpurchaselist.map(function (item) {
                 var fd = new FormData();
-                fd.append("floor_id", _this7.form.floor_id);
-                fd.append("room_id", _this7.form.room_id);
-                fd.append("seat_id", _this7.form.seat_id || "");
-                fd.append("customer_id", _this7.form.customer_id || "");
+                fd.append("floor_id", _this8.form.floor_id);
+                fd.append("room_id", _this8.form.room_id);
+                fd.append("seat_id", _this8.form.seat_id || "");
+                fd.append("customer_id", _this8.form.customer_id || "");
                 fd.append("supplier_id", item.supplier_id);
-                fd.append("purchase_date", _this7.form.purchase_date);
-                fd.append("memo_number", _this7.form.memo_number);
+                fd.append("purchase_date", _this8.form.purchase_date);
+                fd.append("memo_number", _this8.form.memo_number);
                 fd.append("product_id", item.product_id);
                 fd.append("single_price", item.single_price);
                 fd.append("customer_quantity", item.customer_quantity);
                 fd.append("total_price", item.total_price);
-                return axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("".concat(_this7.url, "product-sale-store"), fd);
+                return axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("".concat(_this8.url, "product-sale-store"), fd);
               });
-              _context5.next = 7;
+              _context6.next = 7;
               return Promise.all(requests);
             case 7:
-              _this7.toast("Product distribution created successfully", "success");
-              _this7.$emit("created");
-              _this7.emitClose();
-              _context5.next = 17;
+              _this8.toast("Product distribution created successfully", "success");
+              _this8.$emit("created");
+              _this8.emitClose();
+              _context6.next = 17;
               break;
             case 12:
-              _context5.prev = 12;
-              _context5.t0 = _context5["catch"](3);
-              data = _context5.t0 === null || _context5.t0 === void 0 || (_e$response2 = _context5.t0.response) === null || _e$response2 === void 0 ? void 0 : _e$response2.data;
-              if ((_context5.t0 === null || _context5.t0 === void 0 || (_e$response3 = _context5.t0.response) === null || _e$response3 === void 0 ? void 0 : _e$response3.status) === 422 && data !== null && data !== void 0 && data.errors) {
+              _context6.prev = 12;
+              _context6.t0 = _context6["catch"](3);
+              data = _context6.t0 === null || _context6.t0 === void 0 || (_e$response2 = _context6.t0.response) === null || _e$response2 === void 0 ? void 0 : _e$response2.data;
+              if ((_context6.t0 === null || _context6.t0 === void 0 || (_e$response3 = _context6.t0.response) === null || _e$response3 === void 0 ? void 0 : _e$response3.status) === 422 && data !== null && data !== void 0 && data.errors) {
                 Object.keys(data.errors).forEach(function (k) {
-                  _this7.errors[k] = Array.isArray(data.errors[k]) ? data.errors[k][0] : data.errors[k];
+                  _this8.errors[k] = Array.isArray(data.errors[k]) ? data.errors[k][0] : data.errors[k];
                 });
-                _this7.toast((data === null || data === void 0 ? void 0 : data.message) || "Validation error", "error");
+                _this8.toast((data === null || data === void 0 ? void 0 : data.message) || "Validation error", "error");
               } else {
-                _this7.toast((data === null || data === void 0 ? void 0 : data.message) || "Create failed", "error");
+                _this8.toast((data === null || data === void 0 ? void 0 : data.message) || "Create failed", "error");
               }
-              console.error("submit error:", _context5.t0 === null || _context5.t0 === void 0 || (_e$response4 = _context5.t0.response) === null || _e$response4 === void 0 ? void 0 : _e$response4.data);
+              console.error("submit error:", _context6.t0 === null || _context6.t0 === void 0 || (_e$response4 = _context6.t0.response) === null || _e$response4 === void 0 ? void 0 : _e$response4.data);
             case 17:
-              _context5.prev = 17;
-              _this7.saving = false;
-              return _context5.finish(17);
+              _context6.prev = 17;
+              _this8.saving = false;
+              return _context6.finish(17);
             case 20:
             case "end":
-              return _context5.stop();
+              return _context6.stop();
           }
-        }, _callee5, null, [[3, 12, 17, 20]]);
+        }, _callee6, null, [[3, 12, 17, 20]]);
       }))();
     }
   }
@@ -52500,54 +52574,58 @@ var _hoisted_25 = {
 };
 var _hoisted_26 = ["value"];
 var _hoisted_27 = {
+  key: 0,
+  "class": "text-warning d-block mt-1"
+};
+var _hoisted_28 = {
   "class": "col-md-4"
 };
-var _hoisted_28 = ["disabled"];
-var _hoisted_29 = {
+var _hoisted_29 = ["disabled"];
+var _hoisted_30 = {
   value: ""
 };
-var _hoisted_30 = ["value"];
-var _hoisted_31 = {
+var _hoisted_31 = ["value"];
+var _hoisted_32 = {
   key: 0,
   "class": "purchase-wrapper mt-4"
 };
-var _hoisted_32 = {
+var _hoisted_33 = {
   "class": "table-responsive"
 };
-var _hoisted_33 = {
+var _hoisted_34 = {
   "class": "table purchase-table align-middle"
 };
-var _hoisted_34 = {
+var _hoisted_35 = {
   "class": "text-uppercase fw-semibold"
 };
-var _hoisted_35 = ["value"];
 var _hoisted_36 = ["value"];
-var _hoisted_37 = ["value", "max", "onInput"];
-var _hoisted_38 = {
+var _hoisted_37 = ["value"];
+var _hoisted_38 = ["value", "max", "onInput"];
+var _hoisted_39 = {
   key: 0,
   "class": "text-danger d-block mt-1"
 };
-var _hoisted_39 = ["value"];
-var _hoisted_40 = {
+var _hoisted_40 = ["value"];
+var _hoisted_41 = {
   "class": "text-center"
 };
-var _hoisted_41 = ["onClick"];
-var _hoisted_42 = {
+var _hoisted_42 = ["onClick"];
+var _hoisted_43 = {
   "class": "summary-row"
 };
-var _hoisted_43 = ["value"];
-var _hoisted_44 = {
+var _hoisted_44 = ["value"];
+var _hoisted_45 = {
   key: 1,
   "class": "text-center text-muted py-4 mt-3 border rounded"
 };
-var _hoisted_45 = {
+var _hoisted_46 = {
   "class": "xfoot d-flex justify-content-end gap-2"
 };
-var _hoisted_46 = ["disabled"];
-var _hoisted_47 = {
+var _hoisted_47 = ["disabled"];
+var _hoisted_48 = {
   key: 0
 };
-var _hoisted_48 = {
+var _hoisted_49 = {
   key: 1
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -52656,7 +52734,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
           key: s.id,
           value: s.id
         }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Seat " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(s.seat_no) + " ", 1 /* TEXT */), s.status == 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_21, " (Booked)")) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_22, " (Vacant)"))], 8 /* PROPS */, _hoisted_20);
-      }), 128 /* KEYED_FRAGMENT */))], 40 /* PROPS, NEED_HYDRATION */, _hoisted_18), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.form.seat_id]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Customer / Guest "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [_cache[24] || (_cache[24] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+      }), 128 /* KEYED_FRAGMENT */))], 40 /* PROPS, NEED_HYDRATION */, _hoisted_18), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.form.seat_id]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Customer / Guest "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [_cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
         "class": "form-label fw-semibold"
       }, "Guest Name", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
         "class": "form-select",
@@ -52667,12 +52745,14 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         onChange: _cache[10] || (_cache[10] = function () {
           return $options.onCustomerSelect && $options.onCustomerSelect.apply($options, arguments);
         })
-      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", _hoisted_25, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(!$data.form.room_id ? 'Select Room first' : $data.loadingCustomers ? 'Loading guests...' : $data.roomCustomers.length === 0 ? 'No guest found' : 'Select Guest'), 1 /* TEXT */), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.roomCustomers, function (c) {
+      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", _hoisted_25, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(!$data.form.room_id ? 'Select Room first' : $data.loadingCustomers ? 'Loading guests...' : $data.roomCustomers.length === 0 ? 'No active guest found' : 'Select Guest'), 1 /* TEXT */), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.roomCustomers, function (c) {
         return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
           key: c.id,
           value: c.id
         }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(c.full_name) + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(c.phone ? ' — ' + c.phone : ''), 9 /* TEXT, PROPS */, _hoisted_26);
-      }), 128 /* KEYED_FRAGMENT */))], 40 /* PROPS, NEED_HYDRATION */, _hoisted_24), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.form.customer_id]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Product Name "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [_cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+      }), 128 /* KEYED_FRAGMENT */))], 40 /* PROPS, NEED_HYDRATION */, _hoisted_24), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.form.customer_id]]), $data.form.seat_id && $data.roomCustomers.length === 0 && !$data.loadingCustomers ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_27, _cache[24] || (_cache[24] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+        "class": "fa fa-exclamation-triangle me-1"
+      }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" This seat has no active booking ")]))) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Product Name "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_28, [_cache[26] || (_cache[26] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
         "class": "form-label fw-semibold"
       }, "Product Name", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
         "class": "form-select",
@@ -52683,12 +52763,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         onChange: _cache[12] || (_cache[12] = function () {
           return $options.onProductSelect && $options.onProductSelect.apply($options, arguments);
         })
-      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", _hoisted_29, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.loadingProducts ? 'Loading products...' : 'Select Product to Add'), 1 /* TEXT */), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.products, function (p) {
+      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", _hoisted_30, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.loadingProducts ? 'Loading products...' : 'Select Product to Add'), 1 /* TEXT */), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.products, function (p) {
         return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
           key: p.id,
           value: p.id
-        }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(p.product_name), 9 /* TEXT, PROPS */, _hoisted_30);
-      }), 128 /* KEYED_FRAGMENT */))], 40 /* PROPS, NEED_HYDRATION */, _hoisted_28), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.selectedProductId]])])]), $data.productpurchaselist.length > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_31, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_32, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_33, [_cache[29] || (_cache[29] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+        }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(p.product_name), 9 /* TEXT, PROPS */, _hoisted_31);
+      }), 128 /* KEYED_FRAGMENT */))], 40 /* PROPS, NEED_HYDRATION */, _hoisted_29), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.selectedProductId]])])]), $data.productpurchaselist.length > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_32, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_33, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_34, [_cache[30] || (_cache[30] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
         style: {
           "width": "45px"
         }
@@ -52719,17 +52799,17 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       }, "ACTION")])], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.productpurchaselist, function (item, index) {
         return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
           key: index
-        }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(index + 1), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_34, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.product_name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+        }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(index + 1), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_35, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.product_name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
           type: "number",
           "class": "form-control purchase-input",
           value: item.single_price,
           readonly: ""
-        }, null, 8 /* PROPS */, _hoisted_35)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+        }, null, 8 /* PROPS */, _hoisted_36)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
           type: "number",
           "class": "form-control purchase-input",
           value: item.remaining_quantity,
           readonly: ""
-        }, null, 8 /* PROPS */, _hoisted_36)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+        }, null, 8 /* PROPS */, _hoisted_37)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
           type: "number",
           "class": "form-control purchase-input",
           value: item.customer_quantity,
@@ -52738,21 +52818,21 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
           onInput: function onInput($event) {
             return $options.calculateRowTotal(item, $event);
           }
-        }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_37), item.customer_quantity > item.available_quantity ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_38, " Max: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.available_quantity), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+        }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_38), item.customer_quantity > item.available_quantity ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_39, " Max: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.available_quantity), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
           type: "text",
           "class": "form-control purchase-input",
           value: item.total_price,
           readonly: ""
-        }, null, 8 /* PROPS */, _hoisted_39)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_40, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+        }, null, 8 /* PROPS */, _hoisted_40)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_41, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
           type: "button",
           "class": "btn btn-danger btn-sm delete-btn",
           onClick: function onClick($event) {
             return $options.removeRow(index);
           }
-        }, _toConsumableArray(_cache[26] || (_cache[26] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+        }, _toConsumableArray(_cache[27] || (_cache[27] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
           "class": "fa fa-trash"
-        }, null, -1 /* HOISTED */)])), 8 /* PROPS */, _hoisted_41)])]);
-      }), 128 /* KEYED_FRAGMENT */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", _hoisted_42, [_cache[27] || (_cache[27] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
+        }, null, -1 /* HOISTED */)])), 8 /* PROPS */, _hoisted_42)])]);
+      }), 128 /* KEYED_FRAGMENT */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", _hoisted_43, [_cache[28] || (_cache[28] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
         colspan: "5",
         "class": "text-end fw-bold"
       }, "GRAND TOTAL", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
@@ -52760,9 +52840,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         "class": "form-control purchase-input fw-bold",
         value: $options.grandTotal,
         readonly: ""
-      }, null, 8 /* PROPS */, _hoisted_43)]), _cache[28] || (_cache[28] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, null, -1 /* HOISTED */))])])])])])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_44, _cache[30] || (_cache[30] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+      }, null, 8 /* PROPS */, _hoisted_44)]), _cache[29] || (_cache[29] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, null, -1 /* HOISTED */))])])])])])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_45, _cache[31] || (_cache[31] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
         "class": "fa fa-shopping-cart fa-2x mb-2 d-block"
-      }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" No product added yet. Select a product from above. ")])))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_45, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+      }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" No product added yet. Select a product from above. ")])))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_46, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
         type: "button",
         "class": "btn btn-outline-secondary",
         onClick: _cache[13] || (_cache[13] = function () {
@@ -52772,11 +52852,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         type: "submit",
         "class": "btn btn-success",
         disabled: $data.saving || $data.productpurchaselist.length === 0
-      }, [$data.saving ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_47, _cache[31] || (_cache[31] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+      }, [$data.saving ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_48, _cache[32] || (_cache[32] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
         "class": "fa fa-spinner fa-spin me-1"
-      }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Saving... ")]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_48, _cache[32] || (_cache[32] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+      }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Saving... ")]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_49, _cache[33] || (_cache[33] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
         "class": "fa fa-save me-1"
-      }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Submit ")])))], 8 /* PROPS */, _hoisted_46)])], 32 /* NEED_HYDRATION */)])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)];
+      }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Submit ")])))], 8 /* PROPS */, _hoisted_47)])], 32 /* NEED_HYDRATION */)])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)];
     }),
     _: 1 /* STABLE */
   })]);

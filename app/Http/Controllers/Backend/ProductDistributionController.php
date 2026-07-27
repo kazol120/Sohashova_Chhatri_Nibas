@@ -43,16 +43,63 @@ class ProductDistributionController extends Controller
     }
 
     // Get all customers (active bookings) in a specific room
+    // room_booking_histories তে room_id নেই, JSON field এ roomnumber আছে
     public function roomCustomersSelect($room_id)
     {
-        $customers = RoomBookingHistory::where('room_id', $room_id)
-            ->where('status', 1) // active bookings only
+        // Room এর room_no বের করি
+        $room = Room::find($room_id);
+        if (!$room) {
+            return response()->json(['status' => false, 'data' => []]);
+        }
+
+        $roomNo = $room->room_no;
+
+        // JSON field এ roomnumber এ room_no দিয়ে match করি (status=1 = active)
+        $customers = RoomBookingHistory::where('status', 1)
+            ->where(function ($q) use ($roomNo) {
+                // JSON array এর মধ্যে roomnumber LIKE room_no% খুঁজি
+                $q->where('floor_number_room_number_roomprice', 'like', '%"roomnumber":"' . $roomNo . '-%')
+                  ->orWhere('floor_number_room_number_roomprice', 'like', '%"roomnumber": "' . $roomNo . '-%');
+            })
             ->orderBy('full_name', 'asc')
             ->get(['id', 'full_name', 'phone']);
 
         return response()->json([
             'status' => true,
             'data'   => $customers,
+        ]);
+    }
+
+    // Seat select করলে সেই seat এর active customer দেখাবে
+    public function seatCustomersSelect($seat_id)
+    {
+        $seat = RoomSeat::find($seat_id);
+        if (!$seat) {
+            return response()->json(['status' => false, 'data' => [], 'message' => 'Seat not found']);
+        }
+
+        $room = Room::find($seat->room_id);
+        if (!$room) {
+            return response()->json(['status' => false, 'data' => [], 'message' => 'Room not found']);
+        }
+
+        // Booking এ roomnumber format: "roomNo-seatNo"
+        $pattern = $room->room_no . '-' . $seat->seat_no;
+
+        $customers = RoomBookingHistory::where('status', 1)
+            ->where(function ($q) use ($pattern) {
+                $q->where('floor_number_room_number_roomprice', 'like', '%"roomnumber":"' . $pattern . '"%')
+                  ->orWhere('floor_number_room_number_roomprice', 'like', '%"roomnumber": "' . $pattern . '"%');
+            })
+            ->orderBy('full_name', 'asc')
+            ->get(['id', 'full_name', 'phone']);
+
+        return response()->json([
+            'status'   => true,
+            'data'     => $customers,
+            'seat_no'  => $seat->seat_no,
+            'room_no'  => $room->room_no,
+            'pattern'  => $pattern,
         ]);
     }
 
