@@ -104,7 +104,7 @@
                     <td colspan="11" class="text-center py-5 text-muted">No records found</td>
                   </tr>
                   <template v-else>
-                    <template v-for="(group, gIdx) in groupedProductStock" :key="group.date">
+                    <template v-for="(group, gIdx) in groupedProductStock" :key="group.key">
                       <tr v-for="(item, idx) in group.items" :key="item.id">
                         <td v-if="idx === 0" :rowspan="group.items.length" class="text-center align-middle fw-bold">
                           {{ from + gIdx }}
@@ -114,7 +114,9 @@
                           <small class="text-muted">{{ group.items.length }} Item(s)</small>
                         </td>
                         <td>{{ item.memo_number || '—' }}</td>
-                        <td>{{ item.supplier?.name || '—' }}</td>
+                        <td v-if="idx === 0" :rowspan="group.items.length" class="align-middle fw-semibold text-dark">
+                          {{ group.supplierName }}
+                        </td>
                         <td class="text-uppercase fw-semibold">{{ item.product_name }}</td>
                         <td>{{ parseFloat(item.single_price || 0).toFixed(2) }} ৳</td>
                         <td class="fw-bold text-primary">{{ item.quantity }}</td>
@@ -223,10 +225,15 @@ export default {
       const groupsMap = new Map();
 
       this.productstock.forEach(item => {
-        const key = item.purchase_date || 'No Date';
+        const supplierId = item.supplier_id || (item.supplier ? item.supplier.id : 'no_supplier');
+        const supplierName = item.supplier?.name || '—';
+        const key = `${item.purchase_date}_${supplierId}`;
+
         if (!groupsMap.has(key)) {
           groupsMap.set(key, {
-            date: key,
+            key,
+            date: item.purchase_date || 'No Date',
+            supplierName: supplierName,
             items: [],
           });
         }
@@ -404,11 +411,20 @@ export default {
       const grandTotalQty       = res.data.grand_total_quantity || 0;
       const grandTotalAvailQty  = res.data.grand_total_available_quantity || 0;
 
-      // Group allData by purchase_date
+      // Group allData by purchase_date + supplier_id
       const groupsMap = new Map();
       allData.forEach(item => {
-        const key = item.purchase_date || 'No Date';
-        if (!groupsMap.has(key)) groupsMap.set(key, { date: key, items: [] });
+        const supplierId = item.supplier_id || (item.supplier ? item.supplier.id : 'no_supplier');
+        const supplierName = item.supplier?.name || '—';
+        const key = `${item.purchase_date}_${supplierId}`;
+
+        if (!groupsMap.has(key)) {
+          groupsMap.set(key, {
+            date: item.purchase_date || 'No Date',
+            supplierName: supplierName,
+            items: [],
+          });
+        }
         groupsMap.get(key).items.push(item);
       });
 
@@ -426,7 +442,7 @@ export default {
               ${isFirst ? `<td ${rowspan} style="text-align:center; vertical-align:middle;">${slCounter}</td>` : ''}
               ${isFirst ? `<td ${rowspan} style="vertical-align:middle;"><strong>${grp.date || '—'}</strong></td>` : ''}
               <td>${item.memo_number || '—'}</td>
-              <td>${item.supplier?.name || '—'}</td>
+              ${isFirst ? `<td ${rowspan} style="vertical-align:middle;"><strong>${grp.supplierName}</strong></td>` : ''}
               <td>${item.product_name || '—'}</td>
               <td style="text-align:right;">${parseFloat(item.single_price || 0).toFixed(2)} ৳</td>
               <td style="text-align:center;">${item.quantity}</td>
