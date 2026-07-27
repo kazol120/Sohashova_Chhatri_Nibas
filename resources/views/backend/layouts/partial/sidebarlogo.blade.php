@@ -1,7 +1,7 @@
 <div class="app-brand demo">
     <a href="{{ url('backend/dashboard') }}" class="app-brand-link">
-        <span class="app-brand-text demo menu-text fw-bold maintital">
-            ShohaShova Chattri Nibas
+        <span class="app-brand-text demo menu-text fw-bold maintital notranslate">
+            টি এস এস ডিলা
         </span>
     </a>
 
