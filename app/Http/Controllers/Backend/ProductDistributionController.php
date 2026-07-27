@@ -385,6 +385,11 @@ class ProductDistributionController extends Controller
         $first = $group->first();
         $productGroups = $group->groupBy('product_name');
         $productNames = $productGroups->keys()->implode(', ');
+        $productPriceDetails = $productGroups->map(function ($items, $productName) {
+            $total = $items->sum('total_price_available');
+            return $productName . '=' . number_format($total, 2);
+        })->values()->implode(', ');
+
         $productItems = $productGroups->map(function ($items, $productName) {
             $totQty = $items->sum('customer_quantity');
             $totPrice = $items->sum('total_price_available');
