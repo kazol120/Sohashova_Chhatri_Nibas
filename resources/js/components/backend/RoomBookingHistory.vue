@@ -103,6 +103,8 @@
                     <th v-if="showFamilyColumns" style="width: 150px">Mother Name</th>
                     <th v-if="showFamilyColumns" style="width: 140px">Father NID</th>
                     <th v-if="showFamilyColumns" style="width: 140px">NID / Mother NID</th>
+                    <th v-if="showFamilyColumns" style="width: 140px">Father Phone</th>
+                    <th v-if="showFamilyColumns" style="width: 140px">Mother Phone</th>
                     <th v-if="showNidColumn" style="width: 160px">Workplace Name</th>
                     <th v-if="showNidColumn" style="width: 140px">NID</th>
                     <th style="width: 140px">Phone</th>
@@ -198,6 +200,14 @@
 
                     <td v-if="showFamilyColumns">
                       <span class="fw-semibold">{{ isStudent(r) ? (r.mother_nid || '-') : '—' }}</span>
+                    </td>
+
+                    <td v-if="showFamilyColumns">
+                      <span class="fw-semibold">{{ isStudent(r) ? (r.father_phone || '-') : '—' }}</span>
+                    </td>
+
+                    <td v-if="showFamilyColumns">
+                      <span class="fw-semibold">{{ isStudent(r) ? (r.mother_phone || '-') : '—' }}</span>
                     </td>
 
                     <td v-if="showNidColumn">

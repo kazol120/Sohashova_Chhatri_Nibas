@@ -367,6 +367,8 @@ public function store(Request $request)
             'mother_name'                        => $request->mother_name,
             'father_nid'                         => $request->father_nid,
             'mother_nid'                         => $request->mother_nid,
+            'father_phone'                       => $request->father_phone,
+            'mother_phone'                       => $request->mother_phone,
             'email'                              => $request->email,
             'phone'                              => '+88' . ltrim($request->phone, '+88'),
             'nid'                                => $request->nid,

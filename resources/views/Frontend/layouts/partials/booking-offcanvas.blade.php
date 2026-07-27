@@ -594,6 +594,16 @@
                 <label class="form-label">Mother's NID <span class="req">*</span></label>
                 <input type="text" class="form-control" id="mother_nid" name="mother_nid" placeholder="Mother's NID number" required>
               </div>
+
+              <div class="col-6">
+                <label class="form-label">Father's Phone <small class="text-muted">(Optional)</small></label>
+                <input type="text" class="form-control" id="father_phone" name="father_phone" placeholder="01XXXXXXXXX" maxlength="11">
+              </div>
+
+              <div class="col-6">
+                <label class="form-label">Mother's Phone <small class="text-muted">(Optional)</small></label>
+                <input type="text" class="form-control" id="mother_phone" name="mother_phone" placeholder="01XXXXXXXXX" maxlength="11">
+              </div>
             </div>
           </div>
           <!-- Division -->

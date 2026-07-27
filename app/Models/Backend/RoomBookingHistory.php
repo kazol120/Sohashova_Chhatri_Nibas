@@ -28,6 +28,8 @@ class RoomBookingHistory extends Model
         'nid',
         'mother_nid',
         'father_nid',
+        'father_phone',
+        'mother_phone',
         'division_id',
         'district_id',
         'thana_id',
