@@ -39,37 +39,37 @@
 </section>
 
 <!-- ═══════════════ নিয়মাবলী (RULES & REGULATIONS SECTION) ═══════════════ -->
-<section class="rules-notice-section py-4" style="background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);">
+<section class="rules-notice-section py-5" style="background: linear-gradient(135deg, #ffedd5 0%, #fecdd3 50%, #fef3c7 100%); margin-bottom: 10px;">
   <div class="container">
-    <div class="rules-notice-card position-relative p-4 p-md-5 my-2" style="background-color: #fffdf0; border: 2px solid #fecdd3; border-radius: 24px; box-shadow: 0 12px 35px rgba(225, 29, 72, 0.08);">
+    <div class="rules-notice-card position-relative p-4 p-md-5" style="background-color: #fffbeb; border: 3px solid #f43f5e; border-radius: 28px; box-shadow: 0 15px 40px rgba(244, 63, 94, 0.15);">
       
       <!-- Title Badge -->
-      <div class="text-center mb-4">
-        <span class="d-inline-block px-4 py-2 text-white fw-bold fs-4 shadow-sm" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); border-radius: 50px; letter-spacing: 1px; border: 3px solid #ffffff; min-width: 180px;">
+      <div class="text-center" style="margin-top: -45px; margin-bottom: 25px;">
+        <span class="d-inline-block px-5 py-2 text-white fw-bold fs-3 shadow" style="background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); border-radius: 50px; letter-spacing: 1px; border: 3px solid #ffffff; min-width: 220px; box-shadow: 0 6px 18px rgba(225,29,72,0.35) !important;">
           নিয়মাবলী
         </span>
       </div>
 
-      <!-- Rules List -->
-      <ul class="rules-list list-unstyled mb-0 d-flex flex-column gap-3" style="font-size: 16px; color: #1e293b; font-weight: 600; line-height: 1.7;">
+      <!-- Rules List (Always Hardcoded Bengali) -->
+      <ul class="rules-list list-unstyled mb-0 d-flex flex-column gap-3" style="font-size: 17px; color: #1e293b; font-weight: 600; line-height: 1.8;">
         <li class="d-flex align-items-start gap-2">
-          <span class="text-danger fw-bold fs-5 mt-1">*</span>
+          <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
           <span>মেসের ভাড়া <strong class="text-danger">০৭ তারিখের</strong> মধ্যে পরিশোধ করতে হবে। ০৭ তারিখ পার হলে ২৪ ঘন্টা পর পর <strong class="text-danger">৫০ টাকা</strong> করে জরিমানা।</span>
         </li>
         <li class="d-flex align-items-start gap-2">
-          <span class="text-danger fw-bold fs-5 mt-1">*</span>
+          <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
           <span>মেস ছাড়লে <strong class="text-danger">০২ মাস পূর্বেই</strong> মেস কর্তৃপক্ষকে জানাতে হবে। অন্যথায় দুই মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</span>
         </li>
         <li class="d-flex align-items-start gap-2">
-          <span class="text-danger fw-bold fs-5 mt-1">*</span>
+          <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
           <span><strong class="text-danger">মাগরিবের আযানের পর</strong> মেসের বাহিরে থাকলে অভিভাবককে জানিয়ে দিতে হবে।</span>
         </li>
         <li class="d-flex align-items-start gap-2">
-          <span class="text-danger fw-bold fs-5 mt-1">*</span>
+          <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
           <span>রুম চেঞ্জ করতে চাইলে <strong class="text-danger">৫০০ টাকা</strong> জরিমানা প্রদান করতে হবে।</span>
         </li>
         <li class="d-flex align-items-start gap-2">
-          <span class="text-danger fw-bold fs-5 mt-1">*</span>
+          <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
           <span>মেসের নিয়ম-কানুন মেনে চলতে হবে। কারো বিরুদ্ধে কোনো অভিযোগ আসলে এবং তা প্রমাণিত হলে সিট বাতিলসহ যেকোনো ব্যবস্থা নেয়ার অধিকার কর্তৃপক্ষ রাখে।</span>
         </li>
       </ul>
