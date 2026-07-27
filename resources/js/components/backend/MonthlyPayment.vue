@@ -671,8 +671,8 @@ export default {
                 <button class="btn btn-primary btn-sm px-4" onclick="window.print()"><i class="ti ti-printer"></i> Click to Print Receipt</button>
               </div>
               <div class="receipt-header text-center">
-                <h3 class="receipt-title mb-1">সোহাশোভা ছাত্রী নিবাস</h3>
-                <p class="text-muted mb-2 small">Ragnpur</p>
+                <h3 class="receipt-title mb-1">TSS Villa</h3>
+                <p class="text-muted mb-2 small">Rangpur</p>
                 <div class="mt-3">
                   ${pay.status === 'paid' 
                     ? '<span class="badge-paid">Payment Fully Paid</span>' 
@@ -730,7 +730,7 @@ export default {
               ${logHtml}
 
               <div class="footer-signature">
-                <p>সোহাশোভা ছাত্রী নিবাসে থাকার জন্য আপনাকে ধন্যবাদ। এটি সিস্টেম দ্বারা তৈরিরসিদ রসিদ।</p>
+                <p>Thank you for staying at TSS Villa. This is a computer-generated receipt.</p>
               </div>
             </div>
           </body>
