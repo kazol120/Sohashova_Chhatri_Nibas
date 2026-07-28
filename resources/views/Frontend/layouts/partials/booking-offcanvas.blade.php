@@ -1,3 +1,8 @@
+@php
+    $appSettings = \App\Services\SettingService::getSettingContentBySlug('app_setting');
+    $devFeeActive = ($appSettings['development_fee_status'] ?? '1') == '1';
+    $devFeeAmount = (float) ($appSettings['development_fee'] ?? 3000);
+@endphp
 <style>
   /* ====== Room UI ====== */
   .room-box{
@@ -646,6 +651,23 @@
       </div>
       <!-- Payment Options -->
       <div class="bk-block mb-3">
+        @if($devFeeActive)
+        <div class="p-3 mb-3 rounded-4 border border-warning" id="devFeeBreakdown" style="display: none; background-color: #fffdf5;">
+          <div class="d-flex justify-content-between align-items-center text-secondary mb-1 fs-6">
+            <span>অ্যাডভান্স ডিপোজিট (Advance Deposit):</span>
+            <span class="fw-bold">৳<span id="advanceTotalDisplay">0</span></span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center text-warning-emphasis mb-2 fs-6 fw-bold">
+            <span>উন্নয়ন ফি (Development Fee - এককালীন):</span>
+            <span>+ ৳{{ number_format($devFeeAmount) }}</span>
+          </div>
+          <hr class="my-2" style="border-top: 1px dashed #d97706;">
+          <div class="d-flex justify-content-between align-items-center text-dark fw-bold fs-6">
+            <span>মোট পরিশোধযোগ্য (Total Amount):</span>
+            <span class="text-success fs-5 fw-bold">৳<span id="grandTotalDisplay">0</span></span>
+          </div>
+        </div>
+        @endif
         <div class="payment-head-row">
           <h6 class="bk-title"><i class="bi bi-credit-card"></i> Payment Option</h6>
           <div class="total-amountsss">
@@ -881,18 +903,30 @@ function showSuccessAlert(message, redirectUrl) {
             : 1;
 
         const months = Math.max(1, Math.round(days / 30));
-        const grandTotal = advanceTotal;
+        const isDevFeeActive = {{ $devFeeActive ? 'true' : 'false' }};
+        const devFeeAmount = {{ $devFeeAmount }};
+        const currentDevFee = (rooms.length > 0 && isDevFeeActive) ? devFeeAmount : 0;
+        const grandTotal = advanceTotal + currentDevFee;
 
         if (els.selectedCount) els.selectedCount.textContent = rooms.length;
         if (els.selectedListText) els.selectedListText.textContent = rooms.length ? rooms.join(', ') : '';
-        if (els.totalAmount) els.totalAmount.textContent = grandTotal;
+        if (els.totalAmount) els.totalAmount.textContent = grandTotal.toLocaleString();
         if (els.finalRooms) els.finalRooms.textContent = rooms.length ? rooms.join(', ') : '—';
-        if (els.finalTotal) els.finalTotal.textContent = grandTotal;
+        if (els.finalTotal) els.finalTotal.textContent = grandTotal.toLocaleString();
         if (els.selectedSeatsInput) els.selectedSeatsInput.value = JSON.stringify(roomPayload);
         if (els.selectedTotalInput) els.selectedTotalInput.value = grandTotal;
         if (els.paymentAmount) els.paymentAmount.value = grandTotal;
         if (els.stickyBar) els.stickyBar.style.display = rooms.length ? 'flex' : 'none';
         if (els.openBookingBtn) els.openBookingBtn.disabled = rooms.length === 0;
+
+        const advanceEl = document.getElementById('advanceTotalDisplay');
+        if (advanceEl) advanceEl.textContent = advanceTotal.toLocaleString();
+
+        const grandEl = document.getElementById('grandTotalDisplay');
+        if (grandEl) grandEl.textContent = grandTotal.toLocaleString();
+
+        const devFeeBox = document.getElementById('devFeeBreakdown');
+        if (devFeeBox) devFeeBox.style.display = rooms.length ? 'block' : 'none';
 
         const grandTotalEl = document.getElementById('grandTotal');
         if (grandTotalEl) grandTotalEl.textContent = grandTotal.toLocaleString();

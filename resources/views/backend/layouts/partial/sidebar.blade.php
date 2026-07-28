@@ -78,6 +78,11 @@
                                   <div data-i18n="Setting list" class="fs-5">Logo Setting</div>
                               </a>
                           </li>
+                          <li class="menu-item {{ Request::segment(3) == 'app_setting' ? 'active' : '' }}">
+                              <a href="{{ route('setting.index', 'app_setting') }}" class="menu-link">
+                                  <div data-i18n="App Setting" class="fs-5">App Setting</div>
+                              </a>
+                          </li>
                       @endcan
                   </ul>
               </li>

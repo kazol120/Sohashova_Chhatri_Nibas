@@ -126,6 +126,7 @@ class RoomBookingHistoryController extends Controller
             'mother_phone',
             'room_number',
             'monthly_amount',
+            'development_fee',
             'check_in',
             'check_out',
             'status',
@@ -426,6 +427,10 @@ public function store(Request $request)
             ]);
             $user->syncRoles([$role]);
         }
+        $appSettings = \App\Services\SettingService::getSettingContentBySlug('app_setting');
+        $devFeeActive = ($appSettings['development_fee_status'] ?? '1') == '1';
+        $devFee = $devFeeActive ? (float) ($appSettings['development_fee'] ?? 3000) : 0.00;
+
         RoomBookingHistory::create([
             'image'                              => $imagePath,
             'floor_number_room_number_roomprice' => $roomJsonData,
@@ -454,6 +459,7 @@ public function store(Request $request)
                                                     ? (($request->pay_method ?? 'Online') . ' | TRX: ' . ($request->trx ?? ''))
                                                     : null,
             'monthly_amount'                     => $totalAmount,
+            'development_fee'                    => $devFee,
             'check_in'                           => $request->check_in,
             'check_out'                          => $request->check_out,
             'status'                             => 0,
@@ -640,6 +646,7 @@ public function getbookinghistory(Request $request)
                 'mother_phone',
                 'room_number',
                 'monthly_amount',
+                'development_fee',
                 'check_in',
                 'check_out',
                 'status',

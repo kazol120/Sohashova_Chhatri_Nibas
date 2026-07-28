@@ -64,6 +64,21 @@
                 {{ !empty($filed['required']) ? 'required' : '' }}
             >
 
+        @elseif($filed['type'] == 'select')
+
+            <select
+                name="{{$key}}"
+                class="form-select @error($key) is-invalid @enderror"
+                id="{{$key}}"
+                {{ !empty($filed['required']) ? 'required' : '' }}
+            >
+                @foreach(($filed['options'] ?? []) as $optVal => $optLabel)
+                    <option value="{{$optVal}}" {{ (string) old($key, $editData->$key ?? '') === (string) $optVal ? 'selected' : '' }}>
+                        {{$optLabel}}
+                    </option>
+                @endforeach
+            </select>
+
         @else
 
             <input

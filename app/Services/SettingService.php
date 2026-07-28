@@ -108,6 +108,15 @@ class SettingService{
                         'seat_rent' => '2000'
                     ])
                 ]);
+            } elseif ($slug === 'app_setting') {
+                $setting = Setting::create([
+                    'title' => 'App Setting',
+                    'slug' => 'app_setting',
+                    'contents' => json_encode([
+                        'development_fee' => '3000',
+                        'development_fee_status' => '1'
+                    ])
+                ]);
             } else {
                 return null;
             }

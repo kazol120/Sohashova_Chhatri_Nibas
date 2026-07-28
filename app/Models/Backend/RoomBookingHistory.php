@@ -41,6 +41,7 @@ class RoomBookingHistory extends Model
         'status',
         'roomprice',
         'monthly_amount',
+        'development_fee',
         'password',
         'floor_number_room_number_roomprice',
         'today_check_out',
@@ -55,6 +56,7 @@ class RoomBookingHistory extends Model
         'today_check_out' => 'date',
         'floor_number_room_number_roomprice' => 'array',
         'monthly_amount' => 'float',
+        'development_fee' => 'float',
     ];
 
     public function floor(){
