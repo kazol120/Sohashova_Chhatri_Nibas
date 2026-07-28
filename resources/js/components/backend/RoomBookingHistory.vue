@@ -95,6 +95,7 @@
                     <th style="width: 120px">Seat</th>
                     <th style="width: 180px">Booking Date & Time</th>
                     <th style="width: 150px">Monthly Amount</th>
+                    <th style="width: 150px">Development Fee</th>
                     <th style="width: 180px">Email</th>
                     <th v-if="showFamilyColumns" style="width: 160px">Institution Name</th>
                     <th v-if="showFamilyColumns" style="width: 140px">Education System</th>
@@ -171,9 +172,13 @@
 
                     <td>
                       <span class="fw-bold text-success">৳ {{ formatCurrency(r.monthly_amount) }}</span>
-                      <div v-if="r.development_fee" class="small text-warning fw-bold mt-1">
-                        + ৳ {{ formatCurrency(r.development_fee) }} (উন্নয়ন ফি)
-                      </div>
+                    </td>
+
+                    <td>
+                      <span v-if="r.development_fee && Number(r.development_fee) > 0" class="fw-bold text-warning">
+                        ৳ {{ formatCurrency(r.development_fee) }}
+                      </span>
+                      <span v-else class="text-muted">-</span>
                     </td>
 
                     <td>
