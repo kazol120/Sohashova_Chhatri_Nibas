@@ -29,6 +29,7 @@ import MonthlyPaymentList from './components/backend/MonthlyPayment.vue';
 import ResidentReleaseManager from './components/backend/ResidentReleaseManager.vue';
 import ResidentReleaseHistory from './components/backend/ResidentReleaseHistory.vue';
 import RoomChangeManager from './components/backend/RoomChangeManager.vue';
+import DevelopmentFeeManager from './components/backend/DevelopmentFeeManager.vue';
 
 const app = createApp({
     components:{
@@ -57,6 +58,7 @@ const app = createApp({
         ResidentReleaseManager,
         ResidentReleaseHistory,
         RoomChangeManager,
+        DevelopmentFeeManager,
     }
 });
 

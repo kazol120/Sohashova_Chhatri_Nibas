@@ -1088,4 +1088,101 @@ public function getNameguet()
         }
     }
 
+    public function devFeeIndex()
+    {
+        return view('backend.room.development_fee');
+    }
+
+    public function getDevFeeList(Request $request)
+    {
+        $perPage = (int) $request->get('per_page', 10);
+        $page    = (int) $request->get('page', 1);
+        $search  = trim($request->get('search', ''));
+        $filter  = $request->get('filter', 'all');
+
+        $query = RoomBookingHistory::where('status', 0);
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        if ($filter === 'paid') {
+            $query->where('development_fee', '>', 0);
+        } elseif ($filter === 'unpaid') {
+            $query->where(function ($q) {
+                $q->whereNull('development_fee')->orWhere('development_fee', 0);
+            });
+        }
+
+        $appSettings = \App\Services\SettingService::getSettingContentBySlug('app_setting');
+        $defaultDevFee = (float) ($appSettings['development_fee'] ?? 3000);
+
+        $mapped = $query->orderByDesc('id')->get()->map(function ($row) use ($defaultDevFee) {
+            $items = is_string($row->floor_number_room_number_roomprice)
+                ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
+                : ($row->floor_number_room_number_roomprice ?? []);
+
+            $c = collect($items);
+
+            return array_merge($row->only([
+                'id',
+                'image',
+                'full_name',
+                'father_name',
+                'mother_name',
+                'email',
+                'phone',
+                'father_phone',
+                'mother_phone',
+                'room_number',
+                'monthly_amount',
+                'development_fee',
+                'check_in',
+                'check_out',
+                'created_at',
+                'user_type'
+            ]), [
+                'floornumber'     => $c->pluck('floornumber')->filter()->unique()->implode(', '),
+                'roomnumber'      => $c->pluck('roomnumber')->filter()->implode(', '),
+                'is_paid'         => (float) $row->development_fee > 0,
+                'default_fee'     => $defaultDevFee,
+            ]);
+        })->values();
+
+        $paginator = new LengthAwarePaginator(
+            $mapped->slice(($page - 1) * $perPage, $perPage)->values(),
+            $mapped->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return response()->json($paginator);
+    }
+
+    public function payDevFee(Request $request, $id)
+    {
+        try {
+            $booking = RoomBookingHistory::findOrFail($id);
+
+            $appSettings = \App\Services\SettingService::getSettingContentBySlug('app_setting');
+            $feeAmount = (float) ($request->get('amount') ?: ($appSettings['development_fee'] ?? 3000));
+
+            $booking->update([
+                'development_fee' => $feeAmount,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Development Fee (৳ ' . number_format($feeAmount) . ') recorded successfully!',
+                'data'    => $booking
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
 }

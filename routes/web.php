@@ -254,6 +254,11 @@
     Route::get('admin/available-seats-tree', [RoomBookingHistoryController::class, 'getAvailableSeatsTree']);
     Route::post('admin/bookings/{id}/change-room-seat', [RoomBookingHistoryController::class, 'changeRoomSeat']);
 
+    // development fee management routes
+    Route::get('admin/development-fees', [RoomBookingHistoryController::class, 'devFeeIndex'])->name('development-fee.index');
+    Route::get('admin/development-fees/get', [RoomBookingHistoryController::class, 'getDevFeeList']);
+    Route::post('admin/development-fees/{id}/pay', [RoomBookingHistoryController::class, 'payDevFee']);
+
     // monthly payment controller //
     Route::get('monthly-payments', [MonthlyPaymentController::class, 'index'])->name('monthly-payments.index');
     Route::get('monthly-payments/get', [MonthlyPaymentController::class, 'getPayments']);
