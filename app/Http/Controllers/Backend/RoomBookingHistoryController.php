@@ -260,49 +260,59 @@ public function store(Request $request)
     $accountCreated = false;
     $tempPassword   = null;
     $user           = null;
+    $isResetPassword = $request->boolean('is_reset_password');
+
     if ($existingUser && !$request->filled('password')) {
         if ($request->ajax()) {
             return response()->json([
                 'status'               => false,
-                'message'              => ' Account  already exists. Please enter your password.',
+                'message'              => 'Account already exists. Please enter your password or check "Forgot / Set New Password".',
                 'account_exists_alert' => true,
             ], 422);
         }
         return back()->with('error', 'Account already exists. Please enter your password.')->withInput();
     }
 
-   if ($existingUser && $request->filled('password')) {
-    $passwordMatched = false;
-    // temp password check
-    if (
-        !empty($existingUser->temp_password) &&
-        $request->password == $existingUser->temp_password
-    ) {
-        $passwordMatched = true;
-    }
-    // hashed password check
-    if (
-        !$passwordMatched &&
-        !empty($existingUser->password)
-    ) {
-        $passwordMatched = Hash::check(
-            $request->password,
-            $existingUser->password
-        );
-    }
-    if (!$passwordMatched) {
-        if ($request->ajax()) {
-            return response()->json([
-                'status'         => false,
-                'message'        => 'Password did not match. Please enter the correct password. (Maximum 6 digits allowed)',
-                'wrong_password' => true,
-            ], 422);
+    if ($existingUser && $request->filled('password')) {
+        if ($isResetPassword) {
+            $tempPassword = $request->password;
+            $existingUser->update([
+                'password'      => bcrypt($request->password),
+                'temp_password' => $request->password,
+            ]);
+            $user = $existingUser;
+        } else {
+            $passwordMatched = false;
+            if (
+                !empty($existingUser->temp_password) &&
+                $request->password == $existingUser->temp_password
+            ) {
+                $passwordMatched = true;
+            }
+            if (
+                !$passwordMatched &&
+                !empty($existingUser->password)
+            ) {
+                $passwordMatched = Hash::check(
+                    $request->password,
+                    $existingUser->password
+                );
+            }
+            if (!$passwordMatched) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'status'         => false,
+                        'message'        => 'Password did not match. If you forgot your password, please check "Forgot / Set New Password".',
+                        'wrong_password' => true,
+                    ], 422);
+                }
+                return back()
+                    ->with('error', 'Password did not match. If you forgot your password, please check "Forgot / Set New Password".')
+                    ->withInput();
+            }
+            $user = $existingUser;
+            $tempPassword = $request->password;
         }
-        return back()
-            ->with('error', 'Password did not match. Please enter the correct password. (Maximum 6 digits allowed)')
-            ->withInput();
-    }
-    $user = $existingUser;
     }
     if (!$existingUser) {
         $tempPassword = $request->filled('password')

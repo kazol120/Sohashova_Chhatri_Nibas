@@ -522,10 +522,20 @@
           </div>
 
           <div class="col-12">
-              <label class="form-label">Password</label>
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label mb-0">Password <span class="req">*</span></label>
+                <div id="resetPasswordOption" style="display:none;">
+                  <div class="form-check form-check-inline m-0">
+                    <input class="form-check-input" type="checkbox" id="is_reset_password" name="is_reset_password" value="1">
+                    <label class="form-check-label text-danger fw-bold" for="is_reset_password" style="font-size:12px; cursor:pointer;">
+                      🔑 Forgot / Set New Password
+                    </label>
+                  </div>
+                </div>
+              </div>
               <input type="text" class="form-control" id="bookingPassword" name="password" placeholder="Max 6 digit password" autocomplete="off" maxlength="6">
               <div class="form-text" id="passwordHint" style="color:#888; font-size:12px;">🔒 Maximum 6 digits. <strong>এই password আপনার login password হবে।</strong></div>
-        </div>
+          </div>
 
           <div class="col-12">
             <label class="form-label">User Type (গ্রাহকের ধরন) <span class="req">*</span></label>
@@ -1193,8 +1203,13 @@ function showSuccessAlert(message, redirectUrl) {
                 fetch(`/guest/by-phone/${encodeURIComponent(val)}`)
                     .then(r => r.json())
                     .then(async data => {
+                        const resetOpt = document.getElementById('resetPasswordOption');
+                        const resetCb = document.getElementById('is_reset_password');
+
                         if (!data.found) {
                             guestHasAccount = false;
+                            if (resetOpt) resetOpt.style.display = 'none';
+                            if (resetCb) resetCb.checked = false;
                             if (statusEl) {
                                 statusEl.textContent = '✅ New guest – fill in the form.';
                                 statusEl.className = 'form-text text-success';
@@ -1206,6 +1221,12 @@ function showSuccessAlert(message, redirectUrl) {
 
                         guestHasAccount = !!data.has_account;
 
+                        if (data.has_account && resetOpt) {
+                            resetOpt.style.display = 'block';
+                        } else if (resetOpt) {
+                            resetOpt.style.display = 'none';
+                        }
+
                         if (statusEl) {
                             statusEl.textContent = data.has_account
                                 ? '✅ Guest found! Account exists. Please enter password.'
@@ -1214,7 +1235,7 @@ function showSuccessAlert(message, redirectUrl) {
                         }
 
                         const pwHint = document.getElementById('passwordHint');
-                        if (pwHint) { pwHint.innerHTML = '🔐 Guest found! Please enter your <strong>previously saved password</strong> to continue.'; pwHint.style.color = '#1a7a4a'; }
+                        if (pwHint) { pwHint.innerHTML = '🔐 Guest found! Please enter your <strong>previously saved password</strong> to continue or check "Forgot / Set New Password".'; pwHint.style.color = '#1a7a4a'; }
 
                         const setVal = (id, value) => {
                             const el = document.getElementById(id);
@@ -1478,6 +1499,16 @@ function showSuccessAlert(message, redirectUrl) {
                 return;
             }
 
+            if (data.wrong_password || data.account_exists_alert) {
+                const resetOpt = document.getElementById('resetPasswordOption');
+                if (resetOpt) resetOpt.style.display = 'block';
+                const pwHint = document.getElementById('passwordHint');
+                if (pwHint) {
+                    pwHint.innerHTML = '⚠️ Password did not match. Check <strong>"Forgot / Set New Password"</strong> above to enter a new password.';
+                    pwHint.style.color = '#dc2626';
+                }
+            }
+
             showMsg('danger', `
                 <div style="display:flex; gap:12px; align-items:flex-start;">
                     <div style="font-size:22px; line-height:1;">⚠️</div>
@@ -1566,24 +1597,73 @@ document.getElementById('phone')?.addEventListener('input', function () {
                 });
                 document.querySelectorAll('#seatGridWrap .floor-header-section').forEach(header => {
                     header.style.display = '';
-                });
-            }
-        });
-    }
+    const resetOpt = document.getElementById('resetPasswordOption');
+    if (resetOpt) resetOpt.style.display = 'none';
+});
 
-    (async function init() {
-        bindOpenCanvas();
-        await bindLocationDropdowns();
-        bindRooms();
-        bindFormToggle();
-        bindImagePreview();
-        bindPayment();
-        bindDatepickers();
-        bindUserTypeToggle();
-        bindOffcanvasFilter();
-        bindAjaxSubmit();
-        syncSticky();
-        bindPhoneAutofill();
-    })();
+function bindResetPasswordToggle() {
+    const resetCb = document.getElementById('is_reset_password');
+    const pwInput = document.getElementById('bookingPassword');
+    const pwHint = document.getElementById('passwordHint');
+
+    if (!resetCb) return;
+
+    resetCb.addEventListener('change', function () {
+        if (this.checked) {
+            if (pwHint) {
+                pwHint.innerHTML = '🔑 <strong>Set New Password mode active!</strong> Type a new 6-digit password. Your account password will be updated.';
+                pwHint.style.color = '#d97706';
+            }
+            if (pwInput) pwInput.placeholder = 'Enter new 6 digit password';
+        } else {
+            if (pwHint) {
+                pwHint.innerHTML = '🔐 Guest found! Please enter your <strong>previously saved password</strong> to continue.';
+                pwHint.style.color = '#1a7a4a';
+            }
+            if (pwInput) pwInput.placeholder = 'Max 6 digit password';
+        }
+    });
+}
+
+function bindOffcanvasFilter() {
+    const bookingCanvasEl = document.getElementById('bookingCanvas');
+    if (!bookingCanvasEl) return;
+
+    bookingCanvasEl.addEventListener('show.bs.offcanvas', function (e) {
+        const triggerEl = e.relatedTarget;
+        if (triggerEl && triggerEl.classList.contains('bookNowBtn')) {
+            const targetRoomNo = triggerEl.getAttribute('data-room');
+            document.querySelectorAll('#seatGridWrap .room-box').forEach(el => {
+                const elRoomNo = el.getAttribute('data-room-no');
+                el.style.setProperty('display', elRoomNo === targetRoomNo ? 'flex' : 'none', 'important');
+            });
+            const firstMatchingSeat = document.querySelector(`#seatGridWrap .room-box[data-room-no="${targetRoomNo}"]`);
+            const targetFloorName = firstMatchingSeat ? firstMatchingSeat.getAttribute('data-floor') : '';
+            document.querySelectorAll('#seatGridWrap .floor-header-section').forEach(header => {
+                const headerFloorName = header.getAttribute('data-floor-name');
+                header.style.setProperty('display', headerFloorName === targetFloorName ? 'block' : 'none', 'important');
+            });
+        } else {
+            document.querySelectorAll('#seatGridWrap .room-box').forEach(el => el.style.display = '');
+            document.querySelectorAll('#seatGridWrap .floor-header-section').forEach(header => header.style.display = '');
+        }
+    });
+}
+
+(async function init() {
+    bindOpenCanvas();
+    await bindLocationDropdowns();
+    bindRooms();
+    bindFormToggle();
+    bindImagePreview();
+    bindPayment();
+    bindDatepickers();
+    bindUserTypeToggle();
+    bindOffcanvasFilter();
+    bindAjaxSubmit();
+    bindResetPasswordToggle();
+    syncSticky();
+    bindPhoneAutofill();
+})();
 });
 </script>
