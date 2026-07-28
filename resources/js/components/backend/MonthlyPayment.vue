@@ -775,7 +775,7 @@ export default {
               </div>
 
               <div class="text-center text-muted small mt-4 pt-3 border-top">
-                টি এস এস ভিলা মেসে থাকার জন্য ধন্যবাদ। এটি একটি কম্পিউটার-জেনারেটেড রিসিট।
+                টি এস এস ভিলা মেসে থাকার জন্য ধন্যবাদ।
               </div>
             </div>
           </body>
