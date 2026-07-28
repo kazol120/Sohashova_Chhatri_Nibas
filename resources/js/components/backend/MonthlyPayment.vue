@@ -629,117 +629,175 @@ export default {
 
     printReceipt(pay) {
       const formattedMonth = this.formatMonthYear(pay.payment_month);
-      const printWindow = window.open("", "_blank");
-      
-      // Split payments logs
       const logLines = pay.note ? pay.note.split("\n") : [];
       let logHtml = "";
       if (logLines.length > 0) {
-        logHtml = `<h5 class="fw-bold mb-3 border-bottom pb-2 text-primary">Payment Transactions History</h5><ul class="list-group mb-4">`;
+        logHtml = `
+          <h6 class="fw-bold mb-2 border-bottom pb-1 text-primary">Payment Transactions Log (আদায়ের বিবরণ)</h6>
+          <div class="mb-4">
+        `;
         logLines.forEach(line => {
-          logHtml += `<li class="list-group-item small" style="background:#fcfcfc;">${line}</li>`;
+          logHtml += `<div class="p-2 mb-1 rounded bg-light border small text-dark">${line}</div>`;
         });
-        logHtml += `</ul>`;
+        logHtml += `</div>`;
       }
 
+      const carriedForward = Number(pay.carried_forward_due || 0);
+      const rentAmount = Number(pay.amount || 0);
+      const totalBill = rentAmount + carriedForward;
+      const paidAmount = Number(pay.paid_amount || 0);
+      const dueAmount = Number(pay.due_amount || 0);
+
       const htmlContent = `
+        <!DOCTYPE html>
         <html>
           <head>
-            <title>Payment Receipt - #${pay.id}</title>
+            <title>Money Receipt - টি এস এস ভিলা</title>
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
             <style>
-              body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 30px; background-color: #f9f9f9; color: #333; }
-              .receipt-card { max-width: 650px; margin: auto; background: #fff; padding: 40px; border-radius: 16px; border: 1px solid #e0e0e0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-              .receipt-header { border-bottom: 2px dashed #eee; padding-bottom: 20px; margin-bottom: 25px; }
-              .receipt-title { font-weight: 800; color: #033364; text-transform: uppercase; letter-spacing: 1px; }
-              .table-details th { font-weight: 600; color: #666; width: 40%; }
+              body { font-family: 'Segoe UI', Arial, sans-serif; padding: 25px; background-color: #f9f9f9; color: #222; }
+              .receipt-card { max-width: 680px; margin: auto; background: #fff; padding: 35px; border-radius: 12px; border: 2px solid #033364; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+              .receipt-header { border-bottom: 2px solid #033364; padding-bottom: 15px; margin-bottom: 20px; }
+              .table-details th { font-weight: 600; color: #444; width: 45%; }
               .table-details td { font-weight: 700; color: #111; }
-              .footer-signature { margin-top: 60px; border-top: 1px solid #ddd; padding-top: 15px; text-align: center; font-style: italic; color: #888; }
-              .badge-paid { background-color: #d4edda; color: #155724; font-size: 15px; font-weight: 800; padding: 6px 16px; border-radius: 5px; text-transform: uppercase; border: 1px solid #c3e6cb; }
-              .badge-partial { background-color: #fff3cd; color: #856404; font-size: 15px; font-weight: 800; padding: 6px 16px; border-radius: 5px; text-transform: uppercase; border: 1px solid #ffeeba; }
+              .badge-paid { background-color: #198754; color: #fff; font-size: 14px; font-weight: 800; padding: 5px 15px; border-radius: 4px; text-transform: uppercase; }
+              .badge-partial { background-color: #ffc107; color: #000; font-size: 14px; font-weight: 800; padding: 5px 15px; border-radius: 4px; text-transform: uppercase; }
               @media print {
                 body { background-color: #fff; padding: 0; }
-                .receipt-card { border: none; box-shadow: none; max-width: 100%; padding: 20px; }
+                .receipt-card { border: 2px solid #000 !important; box-shadow: none; max-width: 100%; padding: 25px; }
                 .no-print-btn { display: none !important; }
               }
             </style>
           </head>
           <body>
             <div class="receipt-card">
-              <div class="d-flex justify-content-between align-items-center mb-4 no-print-btn">
-                <a href="#" class="btn btn-secondary btn-sm" onclick="window.close()">Close Window</a>
-                <button class="btn btn-primary btn-sm px-4" onclick="window.print()"><i class="ti ti-printer"></i> Click to Print Receipt</button>
+              <div class="d-flex justify-content-between align-items-center mb-3 no-print-btn">
+                <button class="btn btn-secondary btn-sm" onclick="window.close()">Close Window</button>
+                <button class="btn btn-primary btn-sm px-4 fw-bold" onclick="window.print()">Click to Print Receipt</button>
               </div>
+
+              <!-- Header Info -->
               <div class="receipt-header text-center">
-                <h3 class="receipt-title mb-1">TSS Villa</h3>
-                <p class="text-muted mb-2 small">Rangpur</p>
-                <div class="mt-3">
-                  ${pay.status === 'paid' 
-                    ? '<span class="badge-paid">Payment Fully Paid</span>' 
+                <h3 class="fw-bold mb-1" style="color: #033364;">টি এস এস ভিলা</h3>
+                <div class="fw-semibold text-dark mb-1">কলেজ রোড, নেসকো গেট সংলগ্ন, রংপুর</div>
+                <div class="small text-muted mb-2">মোবাইল: +8801977270920</div>
+                <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+                  <span class="badge bg-primary px-3 py-2 fs-6">মাসিক ভাড়া আদায় রিসিট (Monthly Rent Receipt)</span>
+                  ${pay.status === 'paid'
+                    ? '<span class="badge-paid">Payment Fully Paid</span>'
                     : '<span class="badge-partial">Partially Paid</span>'}
                 </div>
               </div>
-              <div class="row mb-4">
+
+              <!-- Invoice Metadata -->
+              <div class="row mb-3 pb-2 border-bottom">
                 <div class="col-6">
-                  <small class="text-muted d-block">Invoice No:</small>
-                  <strong>#RENT-INV-${pay.id}</strong>
+                  <small class="text-muted d-block">Invoice No / রিসিট নং:</small>
+                  <strong class="text-dark">#RENT-INV-${pay.id}</strong>
                 </div>
                 <div class="col-6 text-end">
-                  <small class="text-muted d-block">Date:</small>
-                  <strong>${pay.created_at.substring(0, 10)}</strong>
+                  <small class="text-muted d-block">Date / তারিখ:</small>
+                  <strong class="text-dark">${pay.created_at ? pay.created_at.substring(0, 10) : ''}</strong>
                 </div>
               </div>
-              
-              <h5 class="fw-bold mb-3 border-bottom pb-2 text-primary">Resident & Room Details</h5>
-              <table class="table table-borderless table-details mb-4">
+
+              <!-- Resident & Room Details -->
+              <h6 class="fw-bold mb-2 border-bottom pb-1 text-primary">Resident Details (বোর্ডারের বিবরণ)</h6>
+              <table class="table table-sm table-borderless table-details mb-3">
                 <tr>
-                  <th>Resident Name:</th>
+                  <th>Resident Name (বোর্ডারের নাম):</th>
                   <td>${pay.full_name}</td>
                 </tr>
                 <tr>
-                  <th>Phone Number:</th>
+                  <th>Phone Number (মোবাইল নম্বর):</th>
                   <td>${pay.phone}</td>
                 </tr>
                 <tr>
-                  <th>Room & Seat No:</th>
+                  <th>Room & Seat No (রুম ও সিট):</th>
                   <td>${pay.roomnumber} (${pay.floornumber})</td>
                 </tr>
                 <tr>
-                  <th>Billing Month:</th>
+                  <th>Billing Month (ভাড়ার মাস):</th>
                   <td>${formattedMonth}</td>
                 </tr>
               </table>
 
-              <h5 class="fw-bold mb-3 border-bottom pb-2 text-primary">Financial Summary</h5>
-              <table class="table table-borderless table-details mb-4">
-                <tr>
-                  <th>Total Monthly Rent:</th>
-                  <td>৳ ${Number(pay.amount).toFixed(2)}</td>
-                </tr>
-                <tr class="text-success">
-                  <th>Amount Paid So Far:</th>
-                  <td>৳ ${Number(pay.paid_amount || 0).toFixed(2)}</td>
-                </tr>
-                ${Number(this.getDueAmount(pay)) > 0 ? `
-                <tr class="text-danger">
-                  <th>Remaining Due Balance:</th>
-                  <td>৳ ${Number(this.getDueAmount(pay)).toFixed(2)}</td>
-                </tr>` : ''}
+              <!-- Financial Summary -->
+              <h6 class="fw-bold mb-2 border-bottom pb-1 text-primary">Financial Summary (হিসাবের বিবরণ)</h6>
+              <table class="table table-sm table-bordered table-details mb-3">
+                <tbody>
+                  <tr>
+                    <th>Monthly Rent (মাসিক ভাড়া):</th>
+                    <td class="text-end">৳ ${rentAmount.toFixed(2)}</td>
+                  </tr>
+                  ${carriedForward > 0 ? `
+                  <tr class="table-warning">
+                    <th>Previous Carried Forward Due (আগের মাসের বকেয়া):</th>
+                    <td class="text-end text-danger font-monospace">৳ ${carriedForward.toFixed(2)}</td>
+                  </tr>
+                  <tr class="table-light">
+                    <th>Total Payable Bill (মোট বিল):</th>
+                    <td class="text-end fw-bold">৳ ${totalBill.toFixed(2)}</td>
+                  </tr>` : ''}
+                  <tr class="table-success">
+                    <th>Amount Paid So Far (মোট আদায়):</th>
+                    <td class="text-end text-success font-monospace fw-bold">৳ ${paidAmount.toFixed(2)}</td>
+                  </tr>
+                  ${dueAmount > 0 ? `
+                  <tr class="table-danger">
+                    <th>Remaining Due Balance (অবশিষ্ট বকেয়া):</th>
+                    <td class="text-end text-danger font-monospace fw-bold">৳ ${dueAmount.toFixed(2)}</td>
+                  </tr>` : ''}
+                </tbody>
               </table>
 
+              <!-- Payment Log History -->
               ${logHtml}
 
-              <div class="footer-signature">
-                <p>Thank you for staying at TSS Villa. This is a computer-generated receipt.</p>
+              <!-- Received By & Signatures -->
+              <div class="mt-3 pt-2">
+                <div class="small fw-semibold text-muted mb-4">
+                  Received By / আদায়কারী: <strong class="text-dark">${pay.received_by || 'Admin'}</strong>
+                </div>
+
+                <div class="d-flex justify-content-end align-items-end mt-4 pt-2">
+                  <div class="text-center" style="width: 220px;">
+                    <div style="border-top: 1px solid #000; padding-top: 4px;" class="small fw-bold">
+                      অফিস কর্তৃপক্ষের স্বাক্ষর
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-center text-muted small mt-4 pt-3 border-top">
+                টি এস এস ভিলা মেসে থাকার জন্য ধন্যবাদ। এটি একটি কম্পিউটার-জেনারেটেড রিসিট।
               </div>
             </div>
           </body>
         </html>
       `;
 
-      printWindow.document.open();
-      printWindow.document.write(htmlContent);
-      printWindow.document.close();
+      let iframe = document.getElementById("monthlyReceiptPrintIframe");
+      if (!iframe) {
+        iframe = document.createElement("iframe");
+        iframe.id = "monthlyReceiptPrintIframe";
+        iframe.style.position = "fixed";
+        iframe.style.right = "0";
+        iframe.style.bottom = "0";
+        iframe.style.width = "0px";
+        iframe.style.height = "0px";
+        iframe.style.border = "0";
+        document.body.appendChild(iframe);
+      }
+      const doc = iframe.contentWindow.document;
+      doc.open();
+      doc.write(htmlContent);
+      doc.close();
+
+      setTimeout(() => {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      }, 300);
     }
   }
 };
