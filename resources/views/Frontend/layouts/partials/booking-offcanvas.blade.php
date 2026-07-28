@@ -365,6 +365,9 @@
                                 @if((int)$seat->advance_price > 0)
                                   <div><strong>Advance Deposit:</strong> ৳{{ $seat->advance_price }}</div>
                                 @endif
+                                @if($devFeeActive)
+                                  <div><strong>Development Fee:</strong> ৳{{ number_format($devFeeAmount) }}</div>
+                                @endif
                               @endif
                             </div>
                           </div>
@@ -410,6 +413,9 @@
                                 <div><strong>Monthly Rent:</strong> ৳{{ $seat->price }}</div>
                                 @if((int)$seat->advance_price > 0)
                                   <div><strong>Advance Deposit:</strong> ৳{{ $seat->advance_price }}</div>
+                                @endif
+                                @if($devFeeActive)
+                                  <div><strong>Development Fee:</strong> ৳{{ number_format($devFeeAmount) }}</div>
                                 @endif
                               @endif
                             </div>
