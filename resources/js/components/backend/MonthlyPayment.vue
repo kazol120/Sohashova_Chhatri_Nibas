@@ -164,7 +164,7 @@
                         {{ getLatestLog(pay.note) }}
                       </div>
                       <div v-if="pay.received_by" class="small mt-1" style="color: #6c757d;">
-                        <i class="ti ti-user-check me-1 text-success"></i>{{ pay.received_by }}
+                        <i class="ti ti-user-check me-1 text-success"></i>{{ cleanReceivedBy(pay.received_by) }}
                       </div>
                       <span v-if="!pay.note && !pay.received_by" class="text-muted small">—</span>
                     </td>
@@ -611,6 +611,11 @@ export default {
       return lines[lines.length - 1] || "";
     },
 
+    cleanReceivedBy(str) {
+      if (!str) return "Admin";
+      return str.replace(/\s*\([^)]*\)/g, "").trim();
+    },
+
     getDueAmount(pay) {
       if (!pay) return 0;
       const due = Number(pay.due_amount);
@@ -757,7 +762,7 @@ export default {
               <!-- Received By & Signatures -->
               <div class="mt-3 pt-2">
                 <div class="small fw-semibold text-muted mb-4">
-                  Received By / আদায়কারী: <strong class="text-dark">${pay.received_by || 'Admin'}</strong>
+                  Received By / আদায়কারী: <strong class="text-dark">${this.cleanReceivedBy(pay.received_by)}</strong>
                 </div>
 
                 <div class="d-flex justify-content-end align-items-end mt-4 pt-2">

@@ -215,7 +215,7 @@ class MonthlyPaymentController extends Controller
             }
 
             $user = Auth::user();
-            $receivedBy = $user ? ($user->name . ' (ID: ' . $user->id . ')') : 'Admin';
+            $receivedBy = $user ? $user->name : 'Admin';
             $dateTimeStr = Carbon::now('Asia/Dhaka')->format('d-m-Y g:i A');
             $trxText     = $request->trx_id ? " (Trx: {$request->trx_id})" : "";
             $customNote  = $request->note ? " - Note: {$request->note}" : "";
