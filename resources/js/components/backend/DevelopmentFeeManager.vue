@@ -257,7 +257,7 @@
                     <th class="bg-light">Phone Number:</th>
                     <td>{{ receiptResident.phone }}</td>
                   </tr>
-                  <tr>
+                  <tr v-if="isStudent(receiptResident)">
                     <th class="bg-light">Father / Guardian Phone:</th>
                     <td>{{ receiptResident.father_phone || receiptResident.mother_phone || '-' }}</td>
                   </tr>
@@ -298,9 +298,9 @@
 
               <div class="d-flex justify-content-between align-items-end mt-4 pt-3">
                 <div class="text-center" style="width: 200px;">
-               <!--    <div style="border-top: 1px solid #000; padding-top: 4px;" class="small fw-bold">
-                    বোর্ডার / অভিভাবকের স্বাক্ষর
-                  </div> -->
+                  <div style="border-top: 1px solid #000; padding-top: 4px;" class="small fw-bold">
+                    {{ isStudent(receiptResident) ? 'বোর্ডার / অভিভাবকের স্বাক্ষর' : 'বোর্ডারের স্বাক্ষর' }}
+                  </div>
                 </div>
 
                 <div class="text-center" style="width: 220px;">
@@ -383,6 +383,12 @@ export default {
     formatCurrency(val) {
       if (val === null || val === undefined || isNaN(val)) return "0";
       return Number(val).toLocaleString("en-US");
+    },
+
+    isStudent(r) {
+      if (!r || !r.user_type) return false;
+      const u = String(r.user_type).toLowerCase().trim();
+      return u === "student" || u === "ছাত্রী";
     },
 
     formatDate(d) {
