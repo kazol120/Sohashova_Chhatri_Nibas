@@ -21,7 +21,7 @@
           </div>
 
           <div class="login-hero">
-            <h2>স্বাগতম — <span class="notranslate site-name-text" data-lang-bn="টি এস এস ডিলা" data-lang-en="TSS Villa">টি এস এস ডিলা</span>য়</h2>
+            <h2>স্বাগতম — <span class="notranslate site-name-text" data-lang-bn="টি এস এস ডিলা" data-lang-en="TSS Villa">টি এস এস ডিলা</span></h2>
             <p>নিরাপদ, পরিষ্কার ও বাড়ির মতো পরিবেশে আপনাকে স্বাগত জানাই। লগইন করুন এবং আপনার বুকিং ম্যানেজ করুন।</p>
           </div>
 
