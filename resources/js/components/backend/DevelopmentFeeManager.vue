@@ -237,8 +237,8 @@
             <!-- Receipt Template Box -->
             <div class="receipt-box p-4 border border-2 border-dark rounded-3 bg-white" style="font-family: 'Segoe UI', Arial, sans-serif;">
               <div class="text-center border-bottom pb-3 mb-3">
-                <h3 class="fw-bold mb-1" style="color: #033364;">সোহাসভা ছাত্রী নিবাস</h3>
-                <div class="small text-muted">জাহাজ কোম্পানী মোড়, রংপুর | ফোন: 01891151713</div>
+                <h3 class="fw-bold mb-1" style="color: #033364;">টি এস এস ভিলা</h3>
+                <div class="small text-dark fw-semibold">কলেজ রোড, নেসকোগেট সংলগ্ন, রংপুর | ফোন: +8801977270920</div>
                 <div class="badge bg-dark fs-6 px-3 py-1 mt-2 text-uppercase">DEVELOPMENT FEE MONEY RECEIPT</div>
               </div>
 
@@ -284,16 +284,28 @@
                 </tbody>
               </table>
 
-              <div class="d-flex justify-content-between align-items-end mt-5 pt-4">
+              <!-- Rules Section -->
+              <div class="mt-4 pt-2 border-top">
+                <div class="d-inline-block bg-danger text-white fw-bold px-3 py-1 rounded-pill mb-2" style="font-size: 13px;">
+                  নিয়মাবলী
+                </div>
+                <ul class="list-unstyled mb-3" style="font-size: 12.5px; line-height: 1.8; color: #1f2937;">
+                  <li>❖ প্রতি মাসের ভাড়া ঐ মাসের ৭ তারিখের মধ্যে দিতে হবে। অন্যথায় ১০০ টাকা জরিমানা দিতে হবে।</li>
+                  <li>❖ সীট ছাড়তে চাইলে অবশ্যই ২ মাস আগে লিখিত জানাতে হবে। অন্যথায় ২ মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</li>
+                  <li>❖ লাইট/ফ্যান/দেয়াল সহ অন্যান্য জিনিস নষ্ট করলে ক্ষতিপূরণ দিতে হবে।</li>
+                </ul>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-end mt-4 pt-3">
                 <div class="text-center" style="width: 200px;">
                   <div style="border-top: 1px solid #000; padding-top: 4px;" class="small fw-bold">
-                    Resident Signature
+                    বোর্ডার / অভিভাবকের স্বাক্ষর
                   </div>
                 </div>
 
-                <div class="text-center" style="width: 200px;">
+                <div class="text-center" style="width: 220px;">
                   <div style="border-top: 1px solid #000; padding-top: 4px;" class="small fw-bold">
-                    Authorized Signature
+                    অফিস কর্তৃপক্ষের স্বাক্ষর
                   </div>
                 </div>
               </div>
@@ -485,26 +497,45 @@ export default {
 
     printReceiptNow() {
       const content = document.getElementById("printableReceiptArea").innerHTML;
-      const printWindow = window.open("", "_blank", "width=800,height=600");
-      printWindow.document.write(`
+      let iframe = document.getElementById("receiptPrintIframe");
+      if (!iframe) {
+        iframe = document.createElement("iframe");
+        iframe.id = "receiptPrintIframe";
+        iframe.style.position = "fixed";
+        iframe.style.right = "0";
+        iframe.style.bottom = "0";
+        iframe.style.width = "0px";
+        iframe.style.height = "0px";
+        iframe.style.border = "0";
+        document.body.appendChild(iframe);
+      }
+      const doc = iframe.contentWindow.document;
+      doc.open();
+      doc.write(`
+        <!DOCTYPE html>
         <html>
           <head>
-            <title>Development Fee Receipt</title>
+            <title>Development Fee Receipt - টি এস এস ভিলা</title>
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
             <style>
-              body { padding: 20px; font-family: 'Segoe UI', Arial, sans-serif; }
+              body { padding: 25px; font-family: 'Segoe UI', Arial, sans-serif; background: #fff; }
+              .receipt-box { border: 2px solid #000 !important; border-radius: 8px; padding: 25px; }
               @media print {
                 body { padding: 0; }
-                .btn { display: none !important; }
+                .receipt-box { border: 2px solid #000 !important; }
               }
             </style>
           </head>
-          <body onload="window.print(); window.close();">
+          <body>
             ${content}
           </body>
         </html>
       `);
-      printWindow.document.close();
+      doc.close();
+      setTimeout(() => {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      }, 300);
     },
   },
 };

@@ -29117,9 +29117,26 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     },
     printReceiptNow: function printReceiptNow() {
       var content = document.getElementById("printableReceiptArea").innerHTML;
-      var printWindow = window.open("", "_blank", "width=800,height=600");
-      printWindow.document.write("\n        <html>\n          <head>\n            <title>Development Fee Receipt</title>\n            <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\">\n            <style>\n              body { padding: 20px; font-family: 'Segoe UI', Arial, sans-serif; }\n              @media print {\n                body { padding: 0; }\n                .btn { display: none !important; }\n              }\n            </style>\n          </head>\n          <body onload=\"window.print(); window.close();\">\n            ".concat(content, "\n          </body>\n        </html>\n      "));
-      printWindow.document.close();
+      var iframe = document.getElementById("receiptPrintIframe");
+      if (!iframe) {
+        iframe = document.createElement("iframe");
+        iframe.id = "receiptPrintIframe";
+        iframe.style.position = "fixed";
+        iframe.style.right = "0";
+        iframe.style.bottom = "0";
+        iframe.style.width = "0px";
+        iframe.style.height = "0px";
+        iframe.style.border = "0";
+        document.body.appendChild(iframe);
+      }
+      var doc = iframe.contentWindow.document;
+      doc.open();
+      doc.write("\n        <!DOCTYPE html>\n        <html>\n          <head>\n            <title>Development Fee Receipt - \u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE</title>\n            <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\">\n            <style>\n              body { padding: 25px; font-family: 'Segoe UI', Arial, sans-serif; background: #fff; }\n              .receipt-box { border: 2px solid #000 !important; border-radius: 8px; padding: 25px; }\n              @media print {\n                body { padding: 0; }\n                .receipt-box { border: 2px solid #000 !important; }\n              }\n            </style>\n          </head>\n          <body>\n            ".concat(content, "\n          </body>\n        </html>\n      "));
+      doc.close();
+      setTimeout(function () {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      }, 300);
     }
   }
 });
@@ -41744,9 +41761,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     style: {
       "color": "#033364"
     }
-  }, "সোহাসভা ছাত্রী নিবাস"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-    "class": "small text-muted"
-  }, "জাহাজ কোম্পানী মোড়, রংপুর | ফোন: 01891151713"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  }, "টি এস এস ভিলা"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+    "class": "small text-dark fw-semibold"
+  }, "কলেজ রোড, নেসকোগেট সংলগ্ন, রংপুর | ফোন: +8801977270920"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "badge bg-dark fs-6 px-3 py-1 mt-2 text-uppercase"
   }, "DEVELOPMENT FEE MONEY RECEIPT")], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_52, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_cache[29] || (_cache[29] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Receipt No: ")), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, "#DEV-" + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.receiptResident.id), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_cache[30] || (_cache[30] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Date: ")), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatDate($data.receiptResident.created_at)), 1 /* TEXT */)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_53, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [_cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
@@ -41769,7 +41786,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "bg-light"
   }, "Payment Status:"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
     "class": "badge bg-success px-3 py-1 fs-6"
-  }, "PAID / পরিশোধিত")])], -1 /* HOISTED */))])]), _cache[40] || (_cache[40] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"d-flex justify-content-between align-items-end mt-5 pt-4\" data-v-3dff1dcc><div class=\"text-center\" style=\"width:200px;\" data-v-3dff1dcc><div style=\"border-top:1px solid #000;padding-top:4px;\" class=\"small fw-bold\" data-v-3dff1dcc> Resident Signature </div></div><div class=\"text-center\" style=\"width:200px;\" data-v-3dff1dcc><div style=\"border-top:1px solid #000;padding-top:4px;\" class=\"small fw-bold\" data-v-3dff1dcc> Authorized Signature </div></div></div>", 1))])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_56, [_cache[42] || (_cache[42] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, "PAID / পরিশোধিত")])], -1 /* HOISTED */))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Rules Section "), _cache[40] || (_cache[40] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"mt-4 pt-2 border-top\" data-v-3dff1dcc><div class=\"d-inline-block bg-danger text-white fw-bold px-3 py-1 rounded-pill mb-2\" style=\"font-size:13px;\" data-v-3dff1dcc> নিয়মাবলী </div><ul class=\"list-unstyled mb-3\" style=\"font-size:12.5px;line-height:1.8;color:#1f2937;\" data-v-3dff1dcc><li data-v-3dff1dcc>❖ প্রতি মাসের ভাড়া ঐ মাসের ৭ তারিখের মধ্যে দিতে হবে। অন্যথায় ১০০ টাকা জরিমানা দিতে হবে।</li><li data-v-3dff1dcc>❖ সীট ছাড়তে চাইলে অবশ্যই ২ মাস আগে লিখিত জানাতে হবে। অন্যথায় ২ মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</li><li data-v-3dff1dcc>❖ লাইট/ফ্যান/দেয়াল সহ অন্যান্য জিনিস নষ্ট করলে ক্ষতিপূরণ দিতে হবে।</li></ul></div><div class=\"d-flex justify-content-between align-items-end mt-4 pt-3\" data-v-3dff1dcc><div class=\"text-center\" style=\"width:200px;\" data-v-3dff1dcc><div style=\"border-top:1px solid #000;padding-top:4px;\" class=\"small fw-bold\" data-v-3dff1dcc> বোর্ডার / অভিভাবকের স্বাক্ষর </div></div><div class=\"text-center\" style=\"width:220px;\" data-v-3dff1dcc><div style=\"border-top:1px solid #000;padding-top:4px;\" class=\"small fw-bold\" data-v-3dff1dcc> অফিস কর্তৃপক্ষের স্বাক্ষর </div></div></div>", 2))])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_56, [_cache[42] || (_cache[42] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "btn btn-secondary",
     "data-bs-dismiss": "modal"
