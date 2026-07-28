@@ -205,7 +205,7 @@ public function store(Request $request)
     $validator = Validator::make($request->all(), [
         'image'       => 'nullable|file|mimes:jpg,jpeg,png,webp,gif,svg,jfif,heic,heif,avif,bmp|max:2048',
         'check_in'    => 'required|date_format:Y-m-d',
-        'check_out'   => 'required|date_format:Y-m-d|after_or_equal:check_in',
+        'check_out'   => 'nullable|date_format:Y-m-d',
         'full_name'   => 'required|string|max:150',
         'phone' => 'required|regex:/^01[3-9][0-9]{8}$/',
         'email'            => 'nullable|email|max:150',
@@ -461,7 +461,7 @@ public function store(Request $request)
             'monthly_amount'                     => $totalAmount,
             'development_fee'                    => $devFee,
             'check_in'                           => $request->check_in,
-            'check_out'                          => $request->check_out,
+            'check_out'                          => null,
             'status'                             => 0,
         ]);
 
@@ -893,6 +893,7 @@ public function getNameguet()
             $booking->status = 1;
             $booking->will_leave = 0;
             $booking->today_check_out = now();
+            $booking->check_out = now()->toDateString();
             $booking->save();
 
             DB::commit();

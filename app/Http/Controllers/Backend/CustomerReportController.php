@@ -122,7 +122,8 @@ public function activeRoom(Request $request)
         $dodatydatetime = now(); //  today date + time
         //  RoomBookingHistory status = 1
         $booking->status = 1;
-      $booking->today_check_out = now();
+        $booking->today_check_out = now();
+        $booking->check_out = now()->toDateString();
         $booking->save();
 
         return response()->json(['success' => true]);

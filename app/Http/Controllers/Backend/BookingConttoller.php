@@ -383,7 +383,7 @@ public function store(Request $request)
                                                     : null,
             'monthly_amount'                     => $totalAmount,
             'check_in'                           => $request->check_in,
-            'check_out'                          => $request->check_out,
+            'check_out'                          => null,
             'status'                             => 0,
         ]);
 
