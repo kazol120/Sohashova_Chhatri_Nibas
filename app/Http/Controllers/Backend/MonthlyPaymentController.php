@@ -37,9 +37,18 @@ class MonthlyPaymentController extends Controller
 
         $paginator = $query->orderBy('id', 'desc')->paginate($perPage);
 
+        // Sync future dues for each booking in current paginator collection
+        foreach ($paginator->getCollection() as $pRow) {
+            if ($pRow->room_booking_history_id) {
+                self::syncFutureDues($pRow->room_booking_history_id);
+            }
+        }
+
+        // Re-fetch fresh model instances after sync
         $mapped = $paginator->getCollection()->map(function ($row) {
-            $booking = $row->booking;
-            $items = [];
+            $freshRow = MonthlyPayment::find($row->id) ?? $row;
+            $booking  = $freshRow->booking;
+            $items    = [];
             if ($booking) {
                 $items = is_string($booking->floor_number_room_number_roomprice)
                     ? (json_decode($booking->floor_number_room_number_roomprice, true) ?? [])
@@ -48,25 +57,25 @@ class MonthlyPaymentController extends Controller
             $c = collect($items);
 
             return [
-                'id'                      => $row->id,
-                'room_booking_history_id' => $row->room_booking_history_id,
-                'payment_month'           => $row->payment_month,
-                'amount'                  => $row->amount,
-                'carried_forward_due'     => $row->carried_forward_due ?? 0,
-                'paid_amount'             => $row->paid_amount,
-                'due_amount'              => $row->due_amount,
-                'payment_method'          => $row->payment_method,
-                'trx_id'                  => $row->trx_id,
-                'note'                    => $row->note,
-                'status'                  => $row->status,
-                'received_by'             => $row->received_by,
-                'created_at'              => $row->created_at ? $row->created_at->format('Y-m-d H:i:s') : '',
+                'id'                      => $freshRow->id,
+                'room_booking_history_id' => $freshRow->room_booking_history_id,
+                'payment_month'           => $freshRow->payment_month,
+                'amount'                  => $freshRow->amount,
+                'carried_forward_due'     => $freshRow->carried_forward_due ?? 0,
+                'paid_amount'             => $freshRow->paid_amount,
+                'due_amount'              => $freshRow->due_amount,
+                'payment_method'          => $freshRow->payment_method,
+                'trx_id'                  => $freshRow->trx_id,
+                'note'                    => $freshRow->note,
+                'status'                  => $freshRow->status,
+                'received_by'             => $freshRow->received_by,
+                'created_at'              => $freshRow->created_at ? $freshRow->created_at->format('Y-m-d H:i:s') : '',
                 'full_name'               => $booking->full_name ?? '-',
                 'phone'                   => $booking->phone ?? '-',
                 'email'                   => $booking->email ?? '',
                 'roomnumber'              => $c->pluck('roomnumber')->filter()->implode(', '),
                 'floornumber'             => $c->pluck('floornumber')->filter()->unique()->implode(', '),
-                'due_date'                => $row->payment_month . '-05',
+                'due_date'                => $freshRow->payment_month . '-05',
             ];
         });
 
@@ -255,6 +264,9 @@ class MonthlyPaymentController extends Controller
                 'received_by'    => $receivedBy,
             ]);
 
+            // Sync all subsequent months' carried forward dues & total dues
+            self::syncFutureDues($payment->room_booking_history_id);
+
             DB::commit();
             return response()->json([
                 'status'  => true,
@@ -266,6 +278,40 @@ class MonthlyPaymentController extends Controller
                 'status'  => false,
                 'message' => $e->getMessage(),
             ], 500);
+        }
+    }
+
+    public static function syncFutureDues($bookingId)
+    {
+        $payments = MonthlyPayment::where('room_booking_history_id', $bookingId)
+            ->orderBy('payment_month', 'asc')
+            ->get();
+
+        $runningPrevDue = 0;
+
+        foreach ($payments as $index => $pay) {
+            if ($index === 0) {
+                $runningPrevDue = (float) $pay->due_amount;
+                continue;
+            }
+
+            $totalMonthlyRent = (float) $pay->amount;
+            $alreadyPaid      = (float) ($pay->paid_amount ?? 0);
+
+            $carriedForward = $runningPrevDue;
+            $totalBill      = $totalMonthlyRent + $carriedForward;
+            $newDue         = $totalBill - $alreadyPaid;
+            if ($newDue < 0.01) $newDue = 0;
+
+            $status = ($newDue <= 0) ? 'paid' : (($alreadyPaid > 0) ? 'partial' : ($carriedForward > 0 ? 'overdue' : 'pending'));
+
+            $pay->update([
+                'carried_forward_due' => $carriedForward,
+                'due_amount'          => $newDue,
+                'status'              => $status,
+            ]);
+
+            $runningPrevDue = $newDue;
         }
     }
 }
