@@ -214,63 +214,77 @@ class MonthlyPaymentController extends Controller
         DB::beginTransaction();
         try {
             $payment = MonthlyPayment::findOrFail($request->id);
-            if ($payment->status === 'paid') {
+            $bookingId = $payment->room_booking_history_id;
+
+            // Make sure all dues are synced up to date before collecting
+            self::syncFutureDues($bookingId);
+            $payment->refresh();
+
+            if ($payment->status === 'paid' || (float) $payment->due_amount <= 0) {
                 throw new \Exception("This bill is already fully paid.");
             }
 
-            $amountToCollect  = (float) $request->amount_to_collect;
-            $totalRent        = (float) $payment->amount;
-            $carriedForward   = (float) ($payment->carried_forward_due ?? 0);
-            $alreadyPaid      = (float) ($payment->paid_amount ?? 0);
+            $amountToCollect = (float) $request->amount_to_collect;
+            $actualDue       = (float) $payment->due_amount;
 
-            // আসল total due = এই মাসের rent + আগের বকেয়া
-            $totalBill = $totalRent + $carriedForward;
-
-            // DB-তে due_amount যদি সঠিকভাবে set না থাকে (0 কিন্তু কিছুই দেওয়া হয়নি)
-            $actualDue = (float) $payment->due_amount;
-            if ($actualDue <= 0 && $alreadyPaid <= 0) {
-                $actualDue = $totalBill;
-                // DB fix করে দিই
-                $payment->due_amount = $totalBill;
-            }
-
-            if ($amountToCollect > $actualDue) {
+            if ($amountToCollect > $actualDue + 0.01) {
                 throw new \Exception("Collected amount cannot exceed the remaining due amount of ৳" . number_format($actualDue, 2));
-            }
-
-            $newPaidTotal = $alreadyPaid + $amountToCollect;
-            $newDueTotal  = $totalBill - $newPaidTotal;
-            if ($newDueTotal < 0.01) {
-                $newDueTotal = 0;
             }
 
             $user = Auth::user();
             $receivedBy = $user ? ($user->name . ' (ID: ' . $user->id . ')') : 'Admin';
-
-            // Append transaction details to the note field history log
             $dateTimeStr = Carbon::now('Asia/Dhaka')->format('d-m-Y g:i A');
             $trxText     = $request->trx_id ? " (Trx: {$request->trx_id})" : "";
             $customNote  = $request->note ? " - Note: {$request->note}" : "";
-            $logEntry    = "[{$dateTimeStr}] Collected ৳{$amountToCollect} via {$request->payment_method}{$trxText}{$customNote}";
-            $updatedNote = trim(($payment->note ? $payment->note . "\n" : "") . $logEntry);
 
-            $payment->update([
-                'paid_amount'    => $newPaidTotal,
-                'due_amount'     => $newDueTotal,
-                'status'         => ($newDueTotal <= 0) ? 'paid' : 'partial',
-                'payment_method' => $request->payment_method,
-                'trx_id'         => $request->trx_id,
-                'note'           => $updatedNote,
-                'received_by'    => $receivedBy,
-            ]);
+            // FIFO Payment Distribution: Fetch all unpaid or partial bills up to the target payment month (oldest first)
+            $unpaidBills = MonthlyPayment::where('room_booking_history_id', $bookingId)
+                ->where('payment_month', '<=', $payment->payment_month)
+                ->where(function ($q) {
+                    $q->whereIn('status', ['pending', 'partial', 'overdue'])
+                      ->orWhere('due_amount', '>', 0);
+                })
+                ->orderBy('payment_month', 'asc')
+                ->get();
+
+            $remainingCollection = $amountToCollect;
+
+            foreach ($unpaidBills as $bill) {
+                if ($remainingCollection <= 0) break;
+
+                $billDue = (float) $bill->due_amount;
+                if ($billDue <= 0) continue;
+
+                $payForThisBill = min($remainingCollection, $billDue);
+                $newPaidTotal   = (float) ($bill->paid_amount ?? 0) + $payForThisBill;
+                $newDueTotal    = $billDue - $payForThisBill;
+                if ($newDueTotal < 0.01) {
+                    $newDueTotal = 0;
+                }
+
+                $logEntry    = "[{$dateTimeStr}] Collected ৳{$payForThisBill} via {$request->payment_method}{$trxText}{$customNote}";
+                $updatedNote = trim(($bill->note ? $bill->note . "\n" : "") . $logEntry);
+
+                $bill->update([
+                    'paid_amount'    => $newPaidTotal,
+                    'due_amount'     => $newDueTotal,
+                    'status'         => ($newDueTotal <= 0) ? 'paid' : 'partial',
+                    'payment_method' => $request->payment_method,
+                    'trx_id'         => $request->trx_id,
+                    'note'           => $updatedNote,
+                    'received_by'    => $receivedBy,
+                ]);
+
+                $remainingCollection -= $payForThisBill;
+            }
 
             // Sync all subsequent months' carried forward dues & total dues
-            self::syncFutureDues($payment->room_booking_history_id);
+            self::syncFutureDues($bookingId);
 
             DB::commit();
             return response()->json([
                 'status'  => true,
-                'message' => 'Payment collected successfully!',
+                'message' => 'Payment collected and applied to oldest dues successfully!',
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
