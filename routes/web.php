@@ -238,26 +238,26 @@
     Route::get('customer-report', [CustomerReportController::class, 'index'])->name('customer-report.index');
     Route::get('get-roombooking', [CustomerReportController::class, 'getroombooing']);
     Route::get('get-productdistribution', [CustomerReportController::class, 'getproductdistributton']);
-    Route::post('/admin/rooms/active', [CustomerReportController::class, 'activeRoom']);
+    Route::post('rooms/active', [CustomerReportController::class, 'activeRoom']);
 
     // room release manager routes
-    Route::get('admin/rooms/release-manager', [RoomBookingHistoryController::class, 'releaseManagerIndex'])->name('room-release.index');
-    Route::get('admin/active-bookings', [RoomBookingHistoryController::class, 'getActiveBookings']);
-    Route::post('admin/bookings/{id}/schedule-leave', [RoomBookingHistoryController::class, 'scheduleLeave']);
-    Route::post('admin/bookings/{id}/cancel-leave', [RoomBookingHistoryController::class, 'cancelLeave']);
-    Route::post('admin/bookings/{id}/instant-release', [RoomBookingHistoryController::class, 'instantRelease']);
-    Route::get('admin/rooms/release-history', [RoomBookingHistoryController::class, 'releaseHistoryIndex'])->name('room-release.history');
-    Route::get('admin/released-bookings', [RoomBookingHistoryController::class, 'getReleaseHistory']);
+    Route::get('rooms/release-manager', [RoomBookingHistoryController::class, 'releaseManagerIndex'])->name('room-release.index');
+    Route::get('active-bookings', [RoomBookingHistoryController::class, 'getActiveBookings']);
+    Route::post('bookings/{id}/schedule-leave', [RoomBookingHistoryController::class, 'scheduleLeave']);
+    Route::post('bookings/{id}/cancel-leave', [RoomBookingHistoryController::class, 'cancelLeave']);
+    Route::post('bookings/{id}/instant-release', [RoomBookingHistoryController::class, 'instantRelease']);
+    Route::get('rooms/release-history', [RoomBookingHistoryController::class, 'releaseHistoryIndex'])->name('room-release.history');
+    Route::get('released-bookings', [RoomBookingHistoryController::class, 'getReleaseHistory']);
 
     // room change / seat transfer routes
-    Route::get('admin/rooms/change-manager', [RoomBookingHistoryController::class, 'changeManagerIndex'])->name('room-change.index');
-    Route::get('admin/available-seats-tree', [RoomBookingHistoryController::class, 'getAvailableSeatsTree']);
-    Route::post('admin/bookings/{id}/change-room-seat', [RoomBookingHistoryController::class, 'changeRoomSeat']);
+    Route::get('rooms/change-manager', [RoomBookingHistoryController::class, 'changeManagerIndex'])->name('room-change.index');
+    Route::get('available-seats-tree', [RoomBookingHistoryController::class, 'getAvailableSeatsTree']);
+    Route::post('bookings/{id}/change-room-seat', [RoomBookingHistoryController::class, 'changeRoomSeat']);
 
     // development fee management routes
-    Route::get('admin/development-fees', [RoomBookingHistoryController::class, 'devFeeIndex'])->name('development-fee.index');
-    Route::get('admin/development-fees/get', [RoomBookingHistoryController::class, 'getDevFeeList']);
-    Route::post('admin/development-fees/{id}/pay', [RoomBookingHistoryController::class, 'payDevFee']);
+    Route::get('development-fees', [RoomBookingHistoryController::class, 'devFeeIndex'])->name('development-fee.index');
+    Route::get('development-fees/get', [RoomBookingHistoryController::class, 'getDevFeeList']);
+    Route::post('development-fees/{id}/pay', [RoomBookingHistoryController::class, 'payDevFee']);
 
     // monthly payment controller //
     Route::get('monthly-payments', [MonthlyPaymentController::class, 'index'])->name('monthly-payments.index');

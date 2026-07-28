@@ -313,7 +313,7 @@ export default {
           search: this.search,
         };
 
-        const res = await axios.get(`${this.url}admin/active-bookings`, { params });
+        const res = await axios.get(`${this.url}active-bookings`, { params });
         this.residents = res.data.data || [];
         this.pagination = {
           total: res.data.total || 0,
@@ -341,7 +341,7 @@ export default {
 
     async fetchCounts() {
       try {
-        const res = await axios.get(`${this.url}admin/active-bookings`, {
+        const res = await axios.get(`${this.url}active-bookings`, {
           params: { page: 1, per_page: 1000, filter: "all" }
         });
         const allData = res.data.data || [];
@@ -384,7 +384,7 @@ export default {
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
-            const res = await axios.post(`${this.url}admin/bookings/${r.id}/schedule-leave`);
+            const res = await axios.post(`${this.url}bookings/${r.id}/schedule-leave`);
             if (res.data.success) {
               this.toast(res.data.message || "Scheduled successfully!", "success");
               this.fetchData(this.pagination.current_page);
@@ -412,7 +412,7 @@ export default {
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
-            const res = await axios.post(`${this.url}admin/bookings/${r.id}/cancel-leave`);
+            const res = await axios.post(`${this.url}bookings/${r.id}/cancel-leave`);
             if (res.data.success) {
               this.toast(res.data.message || "Schedule cancelled successfully!", "success");
               this.fetchData(this.pagination.current_page);
@@ -445,7 +445,7 @@ export default {
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
-            const res = await axios.post(`${this.url}admin/bookings/${r.id}/instant-release`);
+            const res = await axios.post(`${this.url}bookings/${r.id}/instant-release`);
             if (res.data.success) {
               this.toast(res.data.message || "Checkout completed successfully!", "success");
               // Fetch page again

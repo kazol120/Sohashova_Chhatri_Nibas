@@ -327,7 +327,7 @@ previousPage() {
     async activeAndPrint(r) {
       this.printSingleRow(r);
       try {
-        const res = await axios.post(`${this.url}admin/rooms/active`, { id: r.id });
+        const res = await axios.post(`${this.url}rooms/active`, { id: r.id });
         if (res.data.success) {
           this.rooms = this.rooms.filter(room => room.id !== r.id);
           this.toast("Room activated successfully!", "success");

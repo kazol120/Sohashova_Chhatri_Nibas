@@ -360,7 +360,7 @@ export default {
     async fetchResidents(page = 1) {
       this.loading = true;
       try {
-        const res = await axios.get(this.endpoint("admin/active-bookings"), {
+        const res = await axios.get(this.endpoint("active-bookings"), {
           params: {
             page,
             per_page: this.perPage,
@@ -383,7 +383,7 @@ export default {
 
     async fetchAvailableTree() {
       try {
-        const res = await axios.get(this.endpoint("admin/available-seats-tree"));
+        const res = await axios.get(this.endpoint("available-seats-tree"));
         if (res.data.status === "success") {
           this.availableTree = res.data.data || [];
         }
@@ -421,7 +421,7 @@ export default {
       this.submitting = true;
       try {
         const res = await axios.post(
-          this.endpoint(`admin/bookings/${this.selectedResident.id}/change-room-seat`),
+          this.endpoint(`bookings/${this.selectedResident.id}/change-room-seat`),
           {
             new_seat_id: this.selectedSeatId,
           }

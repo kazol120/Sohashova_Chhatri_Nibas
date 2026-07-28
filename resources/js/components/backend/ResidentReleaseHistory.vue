@@ -238,7 +238,7 @@ export default {
           search: this.search,
         };
 
-        const res = await axios.get(`${this.url}admin/released-bookings`, { params });
+        const res = await axios.get(`${this.url}released-bookings`, { params });
         this.history = res.data.data || [];
         this.pagination = {
           total: res.data.total || 0,
@@ -261,7 +261,7 @@ export default {
 
     async calculateOutstandingDue() {
       try {
-        const res = await axios.get(`${this.url}admin/released-bookings`, {
+        const res = await axios.get(`${this.url}released-bookings`, {
           params: { page: 1, per_page: 1000 }
         });
         const allData = res.data.data || [];

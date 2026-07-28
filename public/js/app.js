@@ -28780,7 +28780,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
               _this2.printSingleRow(r);
               _context2.prev = 1;
               _context2.next = 4;
-              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("".concat(_this2.url, "admin/rooms/active"), {
+              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("".concat(_this2.url, "rooms/active"), {
                 id: r.id
               });
             case 4:
@@ -29017,7 +29017,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
               _this2.loading = true;
               _context.prev = 2;
               _context.next = 5;
-              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(_this2.endpoint("admin/development-fees/get"), {
+              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(_this2.endpoint("development-fees/get"), {
                 params: {
                   page: page,
                   per_page: _this2.perPage,
@@ -29075,7 +29075,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
               _this3.submitting = true;
               _context2.prev = 3;
               _context2.next = 6;
-              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].post(_this3.endpoint("admin/development-fees/".concat(_this3.selectedResident.id, "/pay")), {
+              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].post(_this3.endpoint("development-fees/".concat(_this3.selectedResident.id, "/pay")), {
                 amount: _this3.payAmount
               });
             case 6:
@@ -32107,7 +32107,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
                 search: _this.search
               };
               _context.next = 6;
-              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("".concat(_this.url, "admin/released-bookings"), {
+              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("".concat(_this.url, "released-bookings"), {
                 params: params
               });
             case 6:
@@ -32150,7 +32150,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
             case 0:
               _context2.prev = 0;
               _context2.next = 3;
-              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("".concat(_this2.url, "admin/released-bookings"), {
+              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("".concat(_this2.url, "released-bookings"), {
                 params: {
                   page: 1,
                   per_page: 1000
@@ -32291,7 +32291,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
                 search: _this.search
               };
               _context.next = 6;
-              return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("".concat(_this.url, "admin/active-bookings"), {
+              return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("".concat(_this.url, "active-bookings"), {
                 params: params
               });
             case 6:
@@ -32343,7 +32343,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
             case 0:
               _context2.prev = 0;
               _context2.next = 3;
-              return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("".concat(_this2.url, "admin/active-bookings"), {
+              return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("".concat(_this2.url, "active-bookings"), {
                 params: {
                   page: 1,
                   per_page: 1000,
@@ -32412,7 +32412,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
                 }
                 _context3.prev = 1;
                 _context3.next = 4;
-                return axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("".concat(_this4.url, "admin/bookings/").concat(r.id, "/schedule-leave"));
+                return axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("".concat(_this4.url, "bookings/").concat(r.id, "/schedule-leave"));
               case 4:
                 res = _context3.sent;
                 if (res.data.success) {
@@ -32462,7 +32462,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
                 }
                 _context4.prev = 1;
                 _context4.next = 4;
-                return axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("".concat(_this5.url, "admin/bookings/").concat(r.id, "/cancel-leave"));
+                return axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("".concat(_this5.url, "bookings/").concat(r.id, "/cancel-leave"));
               case 4:
                 res = _context4.sent;
                 if (res.data.success) {
@@ -32515,7 +32515,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
                 }
                 _context5.prev = 1;
                 _context5.next = 4;
-                return axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("".concat(_this6.url, "admin/bookings/").concat(r.id, "/instant-release"));
+                return axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("".concat(_this6.url, "bookings/").concat(r.id, "/instant-release"));
               case 4:
                 res = _context5.sent;
                 if (res.data.success) {
@@ -33441,7 +33441,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
               _this5.loading = true;
               _context.prev = 2;
               _context.next = 5;
-              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(_this5.endpoint("admin/active-bookings"), {
+              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(_this5.endpoint("active-bookings"), {
                 params: {
                   page: page,
                   per_page: _this5.perPage,
@@ -33482,7 +33482,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
             case 0:
               _context2.prev = 0;
               _context2.next = 3;
-              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(_this6.endpoint("admin/available-seats-tree"));
+              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(_this6.endpoint("available-seats-tree"));
             case 3:
               res = _context2.sent;
               if (res.data.status === "success") {
@@ -33536,7 +33536,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
               _this7.submitting = true;
               _context3.prev = 3;
               _context3.next = 6;
-              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].post(_this7.endpoint("admin/bookings/".concat(_this7.selectedResident.id, "/change-room-seat")), {
+              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].post(_this7.endpoint("bookings/".concat(_this7.selectedResident.id, "/change-room-seat")), {
                 new_seat_id: _this7.selectedSeatId
               });
             case 6:
@@ -41786,7 +41786,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "bg-light"
   }, "Payment Status:"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
     "class": "badge bg-success px-3 py-1 fs-6"
-  }, "PAID / পরিশোধিত")])], -1 /* HOISTED */))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Rules Section "), _cache[40] || (_cache[40] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"mt-4 pt-2 border-top\" data-v-3dff1dcc><div class=\"d-inline-block bg-danger text-white fw-bold px-3 py-1 rounded-pill mb-2\" style=\"font-size:13px;\" data-v-3dff1dcc> নিয়মাবলী </div><ul class=\"list-unstyled mb-3\" style=\"font-size:12.5px;line-height:1.8;color:#1f2937;\" data-v-3dff1dcc><li data-v-3dff1dcc>❖ প্রতি মাসের ভাড়া ঐ মাসের ৭ তারিখের মধ্যে দিতে হবে। অন্যথায় ১০০ টাকা জরিমানা দিতে হবে।</li><li data-v-3dff1dcc>❖ সীট ছাড়তে চাইলে অবশ্যই ২ মাস আগে লিখিত জানাতে হবে। অন্যথায় ২ মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</li><li data-v-3dff1dcc>❖ লাইট/ফ্যান/দেয়াল সহ অন্যান্য জিনিস নষ্ট করলে ক্ষতিপূরণ দিতে হবে।</li></ul></div><div class=\"d-flex justify-content-between align-items-end mt-4 pt-3\" data-v-3dff1dcc><div class=\"text-center\" style=\"width:200px;\" data-v-3dff1dcc><div style=\"border-top:1px solid #000;padding-top:4px;\" class=\"small fw-bold\" data-v-3dff1dcc> বোর্ডার / অভিভাবকের স্বাক্ষর </div></div><div class=\"text-center\" style=\"width:220px;\" data-v-3dff1dcc><div style=\"border-top:1px solid #000;padding-top:4px;\" class=\"small fw-bold\" data-v-3dff1dcc> অফিস কর্তৃপক্ষের স্বাক্ষর </div></div></div>", 2))])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_56, [_cache[42] || (_cache[42] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, "PAID / পরিশোধিত")])], -1 /* HOISTED */))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Rules Section "), _cache[40] || (_cache[40] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"mt-4 pt-2 border-top\" data-v-3dff1dcc><div class=\"d-inline-block bg-danger text-white fw-bold px-3 py-1 rounded-pill mb-2\" style=\"font-size:13px;\" data-v-3dff1dcc> নিয়মাবলী </div><ul class=\"list-unstyled mb-3\" style=\"font-size:12.5px;line-height:1.8;color:#1f2937;\" data-v-3dff1dcc><li data-v-3dff1dcc>❖ প্রতি মাসের ভাড়া ঐ মাসের ৭ তারিখের মধ্যে দিতে হবে। অন্যথায় ১০০ টাকা জরিমানা দিতে হবে।</li><li data-v-3dff1dcc>❖ সীট ছাড়তে চাইলে অবশ্যই ২ মাস আগে লিখিত জানাতে হবে। অন্যথায় ২ মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</li><li data-v-3dff1dcc>❖ লাইট/ফ্যান/দেয়াল সহ অন্যান্য জিনিস নষ্ট করলে ক্ষতিপূরণ দিতে হবে।</li></ul></div><div class=\"d-flex justify-content-between align-items-end mt-4 pt-3\" data-v-3dff1dcc><div class=\"text-center\" style=\"width:200px;\" data-v-3dff1dcc><!--    &lt;div style=&quot;border-top: 1px solid #000; padding-top: 4px;&quot; class=&quot;small fw-bold&quot;&gt;\n                    বোর্ডার / অভিভাবকের স্বাক্ষর\n                  &lt;/div&gt; --></div><div class=\"text-center\" style=\"width:220px;\" data-v-3dff1dcc><div style=\"border-top:1px solid #000;padding-top:4px;\" class=\"small fw-bold\" data-v-3dff1dcc> অফিস কর্তৃপক্ষের স্বাক্ষর </div></div></div>", 2))])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_56, [_cache[42] || (_cache[42] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "btn btn-secondary",
     "data-bs-dismiss": "modal"

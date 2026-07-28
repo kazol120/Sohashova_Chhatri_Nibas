@@ -298,9 +298,9 @@
 
               <div class="d-flex justify-content-between align-items-end mt-4 pt-3">
                 <div class="text-center" style="width: 200px;">
-                  <div style="border-top: 1px solid #000; padding-top: 4px;" class="small fw-bold">
+               <!--    <div style="border-top: 1px solid #000; padding-top: 4px;" class="small fw-bold">
                     বোর্ডার / অভিভাবকের স্বাক্ষর
-                  </div>
+                  </div> -->
                 </div>
 
                 <div class="text-center" style="width: 220px;">
@@ -423,7 +423,7 @@ export default {
     async fetchResidents(page = 1) {
       this.loading = true;
       try {
-        const res = await axios.get(this.endpoint("admin/development-fees/get"), {
+        const res = await axios.get(this.endpoint("development-fees/get"), {
           params: {
             page,
             per_page: this.perPage,
@@ -462,7 +462,7 @@ export default {
       this.submitting = true;
       try {
         const res = await axios.post(
-          this.endpoint(`admin/development-fees/${this.selectedResident.id}/pay`),
+          this.endpoint(`development-fees/${this.selectedResident.id}/pay`),
           {
             amount: this.payAmount,
           }
