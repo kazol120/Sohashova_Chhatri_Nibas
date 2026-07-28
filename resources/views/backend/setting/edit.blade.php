@@ -64,6 +64,25 @@
                 {{ !empty($filed['required']) ? 'required' : '' }}
             >
 
+        @elseif($filed['type'] == 'toggle')
+
+            <div class="mt-1">
+                <input type="hidden" name="{{$key}}" value="0">
+                <input
+                    data-toggle="toggle"
+                    data-onstyle="success"
+                    data-offstyle="danger"
+                    data-on="Active"
+                    data-off="Deactivated"
+                    data-width="100%"
+                    type="checkbox"
+                    name="{{$key}}"
+                    value="1"
+                    id="{{$key}}"
+                    {{ (string) old($key, $editData->$key ?? '1') === '1' ? 'checked' : '' }}
+                >
+            </div>
+
         @elseif($filed['type'] == 'select')
 
             <select
