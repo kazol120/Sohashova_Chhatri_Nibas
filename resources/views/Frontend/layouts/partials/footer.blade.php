@@ -8,7 +8,7 @@
       {{-- Col 1: Brand --}}
       <div class="footer-brand">
         <div class="footer-logo">
-          <span class="footer-logo-main notranslate site-name-text" data-lang-bn="টি এস এস ডিলা" data-lang-en="TSS Villa">{{ $wsTitle ?? 'টি এস এস ডিলা' }}</span>
+          <span class="footer-logo-main notranslate site-name-text" data-lang-bn="টি এস এস ডিলা" data-lang-en="">{{ $wsTitle ?? '' }}</span>
           <span class="footer-logo-sub">BOOKING</span>
         </div>
         <p class="footer-desc">
@@ -63,7 +63,7 @@
             <span class="footer-contact-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="#b8985a" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
             </span>
-            <span>{{ $wsAddress ?? 'Jahaj Company Mor, Rangpur, Bangladesh' }}</span>
+            <span>{{ $wsAddress ?? '' }}</span>
           </li>
           <li>
             <span class="footer-contact-icon">

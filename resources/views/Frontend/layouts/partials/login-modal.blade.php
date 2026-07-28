@@ -75,7 +75,6 @@
                   placeholder="••••••••"
                   required
                 />
-
                 @error('password')
                   <span class="invalid-feedback d-block" role="alert">
                     <strong>{{ $message }}</strong>
