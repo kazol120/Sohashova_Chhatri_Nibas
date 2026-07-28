@@ -1557,50 +1557,6 @@ document.getElementById('phone')?.addEventListener('input', function () {
     }
 });
 
-    function bindOffcanvasFilter() {
-        const bookingCanvasEl = document.getElementById('bookingCanvas');
-        if (!bookingCanvasEl) return;
-
-        bookingCanvasEl.addEventListener('show.bs.offcanvas', function (e) {
-            const triggerEl = e.relatedTarget;
-            // Check if opened by a BOOK NOW button
-            if (triggerEl && triggerEl.classList.contains('bookNowBtn')) {
-                const targetRoomNo = triggerEl.getAttribute('data-room');
-
-                // Hide all room/seat boxes except the matching ones
-                document.querySelectorAll('#seatGridWrap .room-box').forEach(el => {
-                    const elRoomNo = el.getAttribute('data-room-no');
-                    if (elRoomNo === targetRoomNo) {
-                        el.style.setProperty('display', 'flex', 'important');
-                    } else {
-                        el.style.setProperty('display', 'none', 'important');
-                    }
-                });
-
-                // Find the floor name of this room
-                const firstMatchingSeat = document.querySelector(`#seatGridWrap .room-box[data-room-no="${targetRoomNo}"]`);
-                const targetFloorName = firstMatchingSeat ? firstMatchingSeat.getAttribute('data-floor') : '';
-
-                // Hide all floor headers except the matching floor header
-                document.querySelectorAll('#seatGridWrap .floor-header-section').forEach(header => {
-                    const headerFloorName = header.getAttribute('data-floor-name');
-                    if (headerFloorName === targetFloorName) {
-                        header.style.setProperty('display', 'block', 'important');
-                    } else {
-                        header.style.setProperty('display', 'none', 'important');
-                    }
-                });
-            } else {
-                // Opened by the floating button -> show all floors and all rooms/seats
-                document.querySelectorAll('#seatGridWrap .room-box').forEach(el => {
-                    el.style.display = '';
-                });
-                document.querySelectorAll('#seatGridWrap .floor-header-section').forEach(header => {
-                    header.style.display = '';
-    const resetOpt = document.getElementById('resetPasswordOption');
-    if (resetOpt) resetOpt.style.display = 'none';
-});
-
 function bindResetPasswordToggle() {
     const resetCb = document.getElementById('is_reset_password');
     const pwInput = document.getElementById('bookingPassword');
@@ -1646,6 +1602,8 @@ function bindOffcanvasFilter() {
         } else {
             document.querySelectorAll('#seatGridWrap .room-box').forEach(el => el.style.display = '');
             document.querySelectorAll('#seatGridWrap .floor-header-section').forEach(header => header.style.display = '');
+            const resetOpt = document.getElementById('resetPasswordOption');
+            if (resetOpt) resetOpt.style.display = 'none';
         }
     });
 }
