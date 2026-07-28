@@ -41587,22 +41587,6 @@ var _hoisted_56 = {
   "class": "fw-bold fs-5 text-success"
 };
 var _hoisted_57 = {
-  "class": "d-flex justify-content-between align-items-end mt-4 pt-3"
-};
-var _hoisted_58 = {
-  "class": "text-center",
-  style: {
-    "width": "200px"
-  }
-};
-var _hoisted_59 = {
-  style: {
-    "border-top": "1px solid #000",
-    "padding-top": "4px"
-  },
-  "class": "small fw-bold"
-};
-var _hoisted_60 = {
   "class": "modal-footer bg-light py-2"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -41768,7 +41752,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "fa fa-spinner fa-spin me-1"
   }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Saving...")]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_46, _cache[26] || (_cache[26] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "ti ti-check me-1"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Confirm & Collect")])))], 8 /* PROPS */, _hoisted_44)])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Printable Receipt Modal "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_47, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_48, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_49, [_cache[44] || (_cache[44] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Confirm & Collect")])))], 8 /* PROPS */, _hoisted_44)])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Printable Receipt Modal "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_47, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_48, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_49, [_cache[43] || (_cache[43] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "modal-header bg-dark text-white py-2 px-3"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h6", {
     "class": "modal-title text-white mb-0 fw-bold"
@@ -41778,7 +41762,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     type: "button",
     "class": "btn-close btn-close-white",
     "data-bs-dismiss": "modal"
-  })], -1 /* HOISTED */)), $data.receiptResident ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_50, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Receipt Template Box "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_51, [_cache[40] || (_cache[40] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  })], -1 /* HOISTED */)), $data.receiptResident ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_50, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Receipt Template Box "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_51, [_cache[39] || (_cache[39] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "text-center border-bottom pb-3 mb-3"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", {
     "class": "fw-bold mb-1",
@@ -41810,32 +41794,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "bg-light"
   }, "Payment Status:"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
     "class": "badge bg-success px-3 py-1 fs-6"
-  }, "PAID / পরিশোধিত")])], -1 /* HOISTED */))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Rules Section "), _cache[41] || (_cache[41] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-    "class": "mt-4 pt-2 border-top"
-  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-    "class": "d-inline-block bg-danger text-white fw-bold px-3 py-1 rounded-pill mb-2",
-    style: {
-      "font-size": "13px"
-    }
-  }, " নিয়মাবলী "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", {
-    "class": "list-unstyled mb-3",
-    style: {
-      "font-size": "12.5px",
-      "line-height": "1.8",
-      "color": "#1f2937"
-    }
-  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", null, "❖ প্রতি মাসের ভাড়া ঐ মাসের ৭ তারিখের মধ্যে দিতে হবে। অন্যথায় ১০০ টাকা জরিমানা দিতে হবে।"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", null, "❖ সীট ছাড়তে চাইলে অবশ্যই ২ মাস আগে লিখিত জানাতে হবে। অন্যথায় ২ মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", null, "❖ লাইট/ফ্যান/দেয়াল সহ অন্যান্য জিনিস নষ্ট করলে ক্ষতিপূরণ দিতে হবে।")])], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_57, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_58, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_59, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent($data.receiptResident) ? 'বোর্ডার / অভিভাবকের স্বাক্ষর' : 'বোর্ডারের স্বাক্ষর'), 1 /* TEXT */)]), _cache[39] || (_cache[39] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-    "class": "text-center",
-    style: {
-      "width": "220px"
-    }
-  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-    style: {
-      "border-top": "1px solid #000",
-      "padding-top": "4px"
-    },
-    "class": "small fw-bold"
-  }, " অফিস কর্তৃপক্ষের স্বাক্ষর ")], -1 /* HOISTED */))])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_60, [_cache[43] || (_cache[43] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, "PAID / পরিশোধিত")])], -1 /* HOISTED */))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Rules Section "), _cache[40] || (_cache[40] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"mt-4 pt-2 border-top\" data-v-3dff1dcc><div class=\"d-inline-block bg-danger text-white fw-bold px-3 py-1 rounded-pill mb-2\" style=\"font-size:13px;\" data-v-3dff1dcc> নিয়মাবলী </div><ul class=\"list-unstyled mb-3\" style=\"font-size:12.5px;line-height:1.8;color:#1f2937;\" data-v-3dff1dcc><li data-v-3dff1dcc>❖ প্রতি মাসের ভাড়া ঐ মাসের ৭ তারিখের মধ্যে দিতে হবে। অন্যথায় ১০০ টাকা জরিমানা দিতে হবে।</li><li data-v-3dff1dcc>❖ সীট ছাড়তে চাইলে অবশ্যই ২ মাস আগে লিখিত জানাতে হবে। অন্যথায় ২ মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</li><li data-v-3dff1dcc>❖ লাইট/ফ্যান/দেয়াল সহ অন্যান্য জিনিস নষ্ট করলে ক্ষতিপূরণ দিতে হবে।</li></ul></div><div class=\"d-flex justify-content-end align-items-end mt-4 pt-3\" data-v-3dff1dcc><div class=\"text-center\" style=\"width:220px;\" data-v-3dff1dcc><div style=\"border-top:1px solid #000;padding-top:4px;\" class=\"small fw-bold\" data-v-3dff1dcc> অফিস কর্তৃপক্ষের স্বাক্ষর </div></div></div>", 2))])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_57, [_cache[42] || (_cache[42] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "btn btn-secondary",
     "data-bs-dismiss": "modal"
@@ -41845,7 +41804,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[9] || (_cache[9] = function () {
       return $options.printReceiptNow && $options.printReceiptNow.apply($options, arguments);
     })
-  }, _cache[42] || (_cache[42] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, _cache[41] || (_cache[41] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "ti ti-printer me-1"
   }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Print Receipt Now ")]))])])])])]);
 }

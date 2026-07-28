@@ -296,13 +296,7 @@
                 </ul>
               </div>
 
-              <div class="d-flex justify-content-between align-items-end mt-4 pt-3">
-                <div class="text-center" style="width: 200px;">
-                  <div style="border-top: 1px solid #000; padding-top: 4px;" class="small fw-bold">
-                    {{ isStudent(receiptResident) ? 'বোর্ডার / অভিভাবকের স্বাক্ষর' : 'বোর্ডারের স্বাক্ষর' }}
-                  </div>
-                </div>
-
+              <div class="d-flex justify-content-end align-items-end mt-4 pt-3">
                 <div class="text-center" style="width: 220px;">
                   <div style="border-top: 1px solid #000; padding-top: 4px;" class="small fw-bold">
                     অফিস কর্তৃপক্ষের স্বাক্ষর
