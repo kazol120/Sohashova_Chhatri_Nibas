@@ -128,69 +128,52 @@ class MonthlyPaymentController extends Controller
                     continue;
                 }
 
-                // Determine start month for this booking based on check_in
-                $startMonthCarbon = $targetCarbon->copy();
-                if ($booking->check_in) {
-                    try {
-                        $checkInCarbon = Carbon::parse($booking->check_in)->startOfMonth();
-                        if ($checkInCarbon->lessThan($targetCarbon)) {
-                            $startMonthCarbon = $checkInCarbon;
-                        }
-                    } catch (\Throwable $e) {
-                        // Keep targetCarbon if parse fails
-                    }
-                }
+                // Check if payment record already exists for this exact target month
+                $existingPayment = MonthlyPayment::where('room_booking_history_id', $booking->id)
+                    ->where('payment_month', $targetMonth)
+                    ->first();
 
-                // Loop through all months from startMonthCarbon up to targetCarbon
-                $currCarbon = $startMonthCarbon->copy();
-                while ($currCarbon->lessThanOrEqualTo($targetCarbon)) {
-                    $mStr = $currCarbon->format('Y-m');
-
-                    $existingPayment = MonthlyPayment::where('room_booking_history_id', $booking->id)
-                        ->where('payment_month', $mStr)
-                        ->first();
-
-                    if ($existingPayment) {
-                        // If bill was generated before but unpaid, sync amount with monthly_amount
-                        if ((float) $existingPayment->paid_amount == 0 && (float) $existingPayment->amount != $totalMonthlyRent) {
-                            $carriedForwardDue = (float) $existingPayment->carried_forward_due;
-                            $existingPayment->update([
-                                'amount'     => $totalMonthlyRent,
-                                'due_amount' => $totalMonthlyRent + $carriedForwardDue,
-                            ]);
-                            $generatedCount++;
-                        }
-                    } else {
-                        // Calculate carried forward due from previous unpaid months
-                        $carriedForwardDue = (float) MonthlyPayment::where('room_booking_history_id', $booking->id)
-                            ->where('payment_month', '<', $mStr)
-                            ->whereIn('status', ['pending', 'partial', 'overdue'])
-                            ->sum('due_amount');
-
-                        $totalDue = $totalMonthlyRent + $carriedForwardDue;
-
-                        MonthlyPayment::create([
-                            'room_booking_history_id' => $booking->id,
-                            'payment_month'           => $mStr,
-                            'amount'                  => $totalMonthlyRent,
-                            'carried_forward_due'     => $carriedForwardDue,
-                            'paid_amount'             => 0,
-                            'due_amount'              => $totalDue,
-                            'payment_method'          => 'unpaid',
-                            'status'                  => $carriedForwardDue > 0 ? 'overdue' : 'pending',
+                if ($existingPayment) {
+                    // If bill was generated before but unpaid, sync amount with monthly_amount
+                    if ((float) $existingPayment->paid_amount == 0 && (float) $existingPayment->amount != $totalMonthlyRent) {
+                        $carriedForwardDue = (float) $existingPayment->carried_forward_due;
+                        $existingPayment->update([
+                            'amount'     => $totalMonthlyRent,
+                            'due_amount' => $totalMonthlyRent + $carriedForwardDue,
                         ]);
-
                         $generatedCount++;
                     }
+                } else {
+                    // Calculate carried forward due from existing previous unpaid months
+                    $carriedForwardDue = (float) MonthlyPayment::where('room_booking_history_id', $booking->id)
+                        ->where('payment_month', '<', $targetMonth)
+                        ->whereIn('status', ['pending', 'partial', 'overdue'])
+                        ->sum('due_amount');
 
-                    $currCarbon->addMonth();
+                    $totalDue = $totalMonthlyRent + $carriedForwardDue;
+
+                    MonthlyPayment::create([
+                        'room_booking_history_id' => $booking->id,
+                        'payment_month'           => $targetMonth,
+                        'amount'                  => $totalMonthlyRent,
+                        'carried_forward_due'     => $carriedForwardDue,
+                        'paid_amount'             => 0,
+                        'due_amount'              => $totalDue,
+                        'payment_method'          => 'unpaid',
+                        'status'                  => $carriedForwardDue > 0 ? 'overdue' : 'pending',
+                    ]);
+
+                    $generatedCount++;
                 }
+
+                // Sync all future dues
+                self::syncFutureDues($booking->id);
             }
 
             DB::commit();
             return response()->json([
                 'status'  => true,
-                'message' => "Successfully generated/updated {$generatedCount} billing records up to {$targetMonth}.",
+                'message' => "Successfully generated {$generatedCount} bills for {$targetMonth}.",
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
