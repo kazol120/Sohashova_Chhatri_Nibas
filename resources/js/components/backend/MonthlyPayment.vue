@@ -741,18 +741,19 @@ export default {
                     <td class="text-end text-danger font-monospace">৳ ${carriedForward.toFixed(2)}</td>
                   </tr>
                   <tr class="table-light">
-                    <th>Total Payable Bill (মোট বিল):</th>
+                    <th>Total Payable Bill (সর্বমোট দেয় বিল):</th>
                     <td class="text-end fw-bold">৳ ${totalBill.toFixed(2)}</td>
                   </tr>` : ''}
                   <tr class="table-success">
-                    <th>Amount Paid So Far (মোট আদায়):</th>
-                    <td class="text-end text-success font-monospace fw-bold">৳ ${paidAmount.toFixed(2)}</td>
+                    <th>Amount Paid So Far (সর্বমোট আদায়):</th>
+                    <td class="text-end text-success font-monospace fw-bold">৳ ${(pay.status === 'paid' && carriedForward > 0 && paidAmount < totalBill) ? totalBill.toFixed(2) : paidAmount.toFixed(2)}</td>
                   </tr>
-                  ${dueAmount > 0 ? `
-                  <tr class="table-danger">
+                  <tr class="${dueAmount > 0 ? 'table-danger' : 'table-light'}">
                     <th>Remaining Due Balance (অবশিষ্ট বকেয়া):</th>
-                    <td class="text-end text-danger font-monospace fw-bold">৳ ${dueAmount.toFixed(2)}</td>
-                  </tr>` : ''}
+                    <td class="text-end ${dueAmount > 0 ? 'text-danger' : 'text-success'} font-monospace fw-bold">
+                      ৳ ${dueAmount.toFixed(2)}
+                    </td>
+                  </tr>
                 </tbody>
               </table>
 

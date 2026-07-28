@@ -287,28 +287,34 @@ class MonthlyPaymentController extends Controller
         $runningPrevDue = 0;
 
         foreach ($payments as $index => $pay) {
-            if ($index === 0) {
-                $runningPrevDue = (float) $pay->due_amount;
-                continue;
-            }
-
             $totalMonthlyRent = (float) $pay->amount;
             $alreadyPaid      = (float) ($pay->paid_amount ?? 0);
 
-            $carriedForward = $runningPrevDue;
-            $totalBill      = $totalMonthlyRent + $carriedForward;
-            $newDue         = $totalBill - $alreadyPaid;
-            if ($newDue < 0.01) $newDue = 0;
+            if ($index === 0) {
+                $runningPrevDue = (float) $pay->due_amount;
+                $pay->update([
+                    'carried_forward_due' => 0,
+                ]);
+            } else {
+                $existingCarriedForward = (float) ($pay->carried_forward_due ?? 0);
+                $carriedForward = ($existingCarriedForward > 0 && $alreadyPaid > 0)
+                    ? $existingCarriedForward
+                    : $runningPrevDue;
 
-            $status = ($newDue <= 0) ? 'paid' : (($alreadyPaid > 0) ? 'partial' : ($carriedForward > 0 ? 'overdue' : 'pending'));
+                $totalBill = $totalMonthlyRent + $carriedForward;
+                $newDue    = $totalBill - $alreadyPaid;
+                if ($newDue < 0.01) $newDue = 0;
 
-            $pay->update([
-                'carried_forward_due' => $carriedForward,
-                'due_amount'          => $newDue,
-                'status'              => $status,
-            ]);
+                $status = ($newDue <= 0) ? 'paid' : (($alreadyPaid > 0) ? 'partial' : ($carriedForward > 0 ? 'overdue' : 'pending'));
 
-            $runningPrevDue = $newDue;
+                $pay->update([
+                    'carried_forward_due' => $carriedForward,
+                    'due_amount'          => $newDue,
+                    'status'              => $status,
+                ]);
+
+                $runningPrevDue = $newDue;
+            }
         }
     }
 }
