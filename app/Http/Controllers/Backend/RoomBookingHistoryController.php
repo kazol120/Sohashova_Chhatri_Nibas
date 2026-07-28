@@ -963,4 +963,121 @@ public function getNameguet()
         return response()->json($paginator);
     }
 
+    public function changeManagerIndex()
+    {
+        return view('backend.room.change_room');
+    }
+
+    public function getAvailableSeatsTree()
+    {
+        $floors = Floor::with(['rooms' => function ($rq) {
+            $rq->with(['seats' => function ($sq) {
+                $sq->where('status', 0);
+            }]);
+        }])->get()->map(function ($floor) {
+            $rooms = $floor->rooms->map(function ($room) {
+                $availableSeats = $room->seats->map(function ($seat) {
+                    return [
+                        'id'            => $seat->id,
+                        'seat_no'       => $seat->seat_no,
+                        'price'         => $seat->price,
+                        'advance_price' => $seat->advance_price,
+                    ];
+                })->values();
+
+                return [
+                    'id'              => $room->id,
+                    'room_no'         => $room->room_no,
+                    'available_seats' => $availableSeats,
+                ];
+            })->filter(function ($room) {
+                return count($room['available_seats']) > 0;
+            })->values();
+
+            return [
+                'id'         => $floor->id,
+                'name'       => $floor->name,
+                'rooms_list' => $rooms,
+            ];
+        })->filter(function ($floor) {
+            return count($floor['rooms_list']) > 0;
+        })->values();
+
+        return response()->json(['status' => 'success', 'data' => $floors]);
+    }
+
+    public function changeRoomSeat(Request $request, $id)
+    {
+        $request->validate([
+            'new_seat_id' => 'required|numeric',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $booking = RoomBookingHistory::where('id', $id)->where('status', 0)->firstOrFail();
+
+            $newSeat = RoomSeat::with('room.floor')->where('id', $request->new_seat_id)->lockForUpdate()->firstOrFail();
+
+            if ((int) $newSeat->status === 1) {
+                return response()->json(['success' => false, 'message' => 'The selected seat is already booked.'], 422);
+            }
+
+            $items = is_string($booking->floor_number_room_number_roomprice)
+                ? (json_decode($booking->floor_number_room_number_roomprice, true) ?? [])
+                : ($booking->floor_number_room_number_roomprice ?? []);
+
+            // 1. Release old seat(s)
+            foreach ($items as $item) {
+                $rawRoomNo = $item['roomnumber'] ?? '';
+                $parts = explode('-', $rawRoomNo, 2);
+                $oldRoomNo = $parts[0] ?? '';
+                $oldSeatNo = $parts[1] ?? '';
+
+                if ($oldRoomNo && $oldSeatNo) {
+                    $oldRoom = Room::where('room_no', $oldRoomNo)->first();
+                    if ($oldRoom) {
+                        $oldSeat = RoomSeat::where('room_id', $oldRoom->id)->where('seat_no', $oldSeatNo)->first();
+                        if ($oldSeat) {
+                            $oldSeat->update(['status' => 0]);
+                            Room::syncRoomStatus($oldRoom->id);
+                        }
+                    }
+                }
+            }
+
+            // 2. Book new seat
+            $newSeat->update(['status' => 1]);
+            $newRoom = $newSeat->room;
+            $newFloor = $newRoom->floor;
+            Room::syncRoomStatus($newRoom->id);
+
+            $newRoomNumberString = $newRoom->room_no . '-' . $newSeat->seat_no;
+            $newPrice = (float) ($newSeat->price ?? $newRoom->price ?? 0);
+
+            $newItems = [
+                [
+                    'floornumber'   => (string) ($newFloor->name ?? ''),
+                    'roomnumber'    => (string) $newRoomNumberString,
+                    'price'         => $newPrice,
+                    'advance_price' => (float) ($newSeat->advance_price ?? 0),
+                ]
+            ];
+
+            $booking->update([
+                'floor_number_room_number_roomprice' => $newItems,
+                'monthly_amount'                     => $newPrice,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Room & Seat changed successfully to ' . ($newFloor->name ?? '') . ' - ' . $newRoomNumberString,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
 }

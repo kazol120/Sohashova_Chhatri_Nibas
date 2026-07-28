@@ -249,6 +249,11 @@
     Route::get('admin/rooms/release-history', [RoomBookingHistoryController::class, 'releaseHistoryIndex'])->name('room-release.history');
     Route::get('admin/released-bookings', [RoomBookingHistoryController::class, 'getReleaseHistory']);
 
+    // room change / seat transfer routes
+    Route::get('admin/rooms/change-manager', [RoomBookingHistoryController::class, 'changeManagerIndex'])->name('room-change.index');
+    Route::get('admin/available-seats-tree', [RoomBookingHistoryController::class, 'getAvailableSeatsTree']);
+    Route::post('admin/bookings/{id}/change-room-seat', [RoomBookingHistoryController::class, 'changeRoomSeat']);
+
     // monthly payment controller //
     Route::get('monthly-payments', [MonthlyPaymentController::class, 'index'])->name('monthly-payments.index');
     Route::get('monthly-payments/get', [MonthlyPaymentController::class, 'getPayments']);

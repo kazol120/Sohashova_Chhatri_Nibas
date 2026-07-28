@@ -166,7 +166,7 @@
 
               {{-- Room --}}
               @role('admin')
-              <li class="menu-item {{ Route::currentRouteNamed('room-list.index') || Request::is('room-booking-history') || Route::currentRouteNamed('room-release.index') || Route::currentRouteNamed('room-release.history') ? 'active open' : '' }}">
+              <li class="menu-item {{ Route::currentRouteNamed('room-list.index') || Request::is('room-booking-history') || Route::currentRouteNamed('room-release.index') || Route::currentRouteNamed('room-release.history') || Route::currentRouteNamed('room-change.index') ? 'active open' : '' }}">
                 <a href="javascript:void(0)" class="menu-link menu-toggle fs-5">
                   <i class="fas fa-clipboard-list" style="background-color: white; padding: 5px; border-radius: 50%;"></i>
                   <div data-i18n="prescription" class="ms-3">Room</div>
@@ -180,6 +180,11 @@
                   <li class="menu-item {{ Request::is('room-booking-history') ? 'active' : '' }}">
                     <a href="{{ url('room-booking-history') }}" class="menu-link">
                       <div class="fs-5">Booking History</div>
+                    </a>
+                  </li>
+                  <li class="menu-item {{ Route::currentRouteNamed('room-change.index') ? 'active' : '' }}">
+                    <a href="{{ route('room-change.index') }}" class="menu-link">
+                      <div class="fs-5">Change Room/Seat</div>
                     </a>
                   </li>
                   <li class="menu-item {{ Route::currentRouteNamed('room-release.index') ? 'active' : '' }}">
