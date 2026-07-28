@@ -83,14 +83,26 @@
                     <th style="width: 70px">Sl</th>
                     <th style="width: 130px">Image</th>
                     <th style="width: 160px">Name</th>
-                    <th style="width: 140px">Floor</th>
-                    <th style="width: 160px">Seat</th>
+                    <th style="width: 130px">User Type</th>
+                    <th style="width: 130px">Floor</th>
+                    <th style="width: 100px">Room</th>
+                    <th style="width: 120px">Seat</th>
                     <th style="width: 180px">Booking Date & Time</th>
                     <th style="width: 150px">Monthly Amount</th>
                     <th style="width: 140px">Check In</th>
                     <th style="width: 140px">Check Out</th>
                     <th style="width: 180px">Email</th>
-                    <th style="width: 120px">NID</th>
+                    <th v-if="showFamilyColumns" style="width: 160px">Institution Name</th>
+                    <th v-if="showFamilyColumns" style="width: 140px">Education System</th>
+                    <th v-if="showFamilyColumns" style="width: 140px">Class / Semester</th>
+                    <th v-if="showFamilyColumns" style="width: 150px">Father Name</th>
+                    <th v-if="showFamilyColumns" style="width: 150px">Mother Name</th>
+                    <th v-if="showFamilyColumns" style="width: 140px">Father NID</th>
+                    <th v-if="showFamilyColumns" style="width: 140px">NID / Mother NID</th>
+                    <th v-if="showFamilyColumns" style="width: 140px">Father Phone</th>
+                    <th v-if="showFamilyColumns" style="width: 140px">Mother Phone</th>
+                    <th v-if="showNidColumn" style="width: 160px">Workplace Name</th>
+                    <th v-if="showNidColumn" style="width: 140px">NID</th>
                     <th style="width: 140px">Phone</th>
                     <th style="width: 120px">Division</th>
                     <th style="width: 120px">District</th>
@@ -112,23 +124,34 @@
                       <div class="fw-semibold">{{ r.full_name || "-" }}</div>
                     </td>
 
-                    <td colspan="2">
-                      <div v-if="r.room_items && r.room_items.length" class="booking-card">
-                        <div
-                          v-for="(item, i) in r.room_items"
-                          :key="'row-' + r.id + '-' + i"
-                          class="booking-row"
-                        >
-                          <div class="booking-col floor">
-                            {{ item.floornumber || "-" }}
-                          </div>
+                    <td>
+                      <span class="badge bg-label-secondary fw-semibold">{{ r.user_type || 'Student' }}</span>
+                    </td>
 
-                          <div class="booking-col room">
-                            <span class="room-badge">{{ item.roomnumber }}</span>
-                          </div>
+                    <td>
+                      <div v-if="r.room_items && r.room_items.length">
+                        <div v-for="(item, i) in r.room_items" :key="'f-' + r.id + '-' + i" class="py-1 fw-semibold text-dark">
+                          {{ item.floornumber || "-" }}
                         </div>
                       </div>
+                      <span v-else>-</span>
+                    </td>
 
+                    <td>
+                      <div v-if="r.room_items && r.room_items.length">
+                        <div v-for="(item, i) in r.room_items" :key="'r-' + r.id + '-' + i" class="py-1">
+                          <span class="badge bg-primary font-monospace px-2 py-1 fs-6 fw-bold">{{ getRoomNo(item.roomnumber) }}</span>
+                        </div>
+                      </div>
+                      <span v-else>-</span>
+                    </td>
+
+                    <td>
+                      <div v-if="r.room_items && r.room_items.length">
+                        <div v-for="(item, i) in r.room_items" :key="'s-' + r.id + '-' + i" class="py-1">
+                          <span class="badge bg-danger font-monospace px-2 py-1 fs-6 fw-bold">{{ getSeatNo(item.roomnumber) }}</span>
+                        </div>
+                      </div>
                       <span v-else>-</span>
                     </td>
 
@@ -137,7 +160,7 @@
                     </td>
 
                     <td>
-                      <span class="fw-bold text-success">৳ {{ Number(r.monthly_amount || 0).toFixed(2) }}</span>
+                      <span class="fw-bold text-success">৳ {{ formatCurrency(r.monthly_amount) }}</span>
                     </td>
 
                     <td>
@@ -152,8 +175,48 @@
                       <span class="fw-semibold">{{ r.email || "-" }}</span>
                     </td>
 
-                    <td>
-                      <span class="fw-semibold">{{ r.nid || "-" }}</span>
+                    <td v-if="showFamilyColumns">
+                      <span class="fw-semibold">{{ isStudent(r) ? (r.institution_name || '-') : '—' }}</span>
+                    </td>
+
+                    <td v-if="showFamilyColumns">
+                      <span class="fw-semibold">{{ isStudent(r) ? (r.education_level || '-') : '—' }}</span>
+                    </td>
+
+                    <td v-if="showFamilyColumns">
+                      <span class="fw-semibold">{{ isStudent(r) ? (r.education_class || '-') : '—' }}</span>
+                    </td>
+
+                    <td v-if="showFamilyColumns">
+                      <span class="fw-semibold">{{ isStudent(r) ? (r.father_name || '-') : '—' }}</span>
+                    </td>
+
+                    <td v-if="showFamilyColumns">
+                      <span class="fw-semibold">{{ isStudent(r) ? (r.mother_name || '-') : '—' }}</span>
+                    </td>
+
+                    <td v-if="showFamilyColumns">
+                      <span class="fw-semibold">{{ isStudent(r) ? (r.father_nid || '-') : '—' }}</span>
+                    </td>
+
+                    <td v-if="showFamilyColumns">
+                      <span class="fw-semibold">{{ isStudent(r) ? (r.mother_nid || '-') : '—' }}</span>
+                    </td>
+
+                    <td v-if="showFamilyColumns">
+                      <span class="fw-semibold">{{ isStudent(r) ? (r.father_phone || '-') : '—' }}</span>
+                    </td>
+
+                    <td v-if="showFamilyColumns">
+                      <span class="fw-semibold">{{ isStudent(r) ? (r.mother_phone || '-') : '—' }}</span>
+                    </td>
+
+                    <td v-if="showNidColumn">
+                      <span class="fw-semibold">{{ isProfessional(r) ? (r.workplace_name || "-") : "—" }}</span>
+                    </td>
+
+                    <td v-if="showNidColumn">
+                      <span class="fw-semibold">{{ isProfessional(r) ? (r.nid || "-") : "—" }}</span>
                     </td>
 
                     <td>
@@ -269,6 +332,18 @@ export default {
     url() {
       return this.$store.state.url;
     },
+    showNidColumn() {
+      return this.rooms.some(r => this.isProfessional(r));
+    },
+    showFamilyColumns() {
+      return this.rooms.some(r => this.isStudent(r)) || !this.rooms.some(r => this.isProfessional(r));
+    },
+    totalColumns() {
+      let count = 18; // base columns
+      if (this.showFamilyColumns) count += 9;
+      if (this.showNidColumn) count += 2;
+      return count;
+    },
   },
 
   mounted() {
@@ -294,6 +369,36 @@ watch: {
   },
 
   methods: {
+    formatCurrency(val) {
+      if (val === null || val === undefined || isNaN(val)) return '0';
+      return Number(val).toLocaleString('en-US');
+    },
+
+    getRoomNo(str) {
+      if (!str) return '-';
+      const parts = String(str).split('-');
+      return parts[0] || str;
+    },
+
+    getSeatNo(str) {
+      if (!str) return '-';
+      const parts = String(str).split('-');
+      if (parts.length > 1) {
+        return parts.slice(1).join('-');
+      }
+      return '-';
+    },
+
+    isStudent(r) {
+      if (!r || !r.user_type) return true;
+      return r.user_type.toLowerCase() === 'student';
+    },
+
+    isProfessional(r) {
+      if (!r || !r.user_type) return false;
+      return r.user_type.toLowerCase() === 'working professional';
+    },
+
     async loadGuestNames() {
       try {
         const res = await axios.get(this.endpoint("get-select-guet"));

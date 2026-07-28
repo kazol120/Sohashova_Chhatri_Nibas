@@ -90,31 +90,26 @@ class RoomBookingHistoryController extends Controller
     if (empty($startDate) && empty($endDate)) {
         $query->whereDate('check_in', today());
     }
-
     if ($search !== '') {
         $query->where(function ($q) use ($search) {
             $q->orWhere('full_name', 'like', "%{$search}%")
               ->orWhere('phone', 'like', "%{$search}%");
         });
     }
-
     if (!empty($selectedGuest)) {
         $query->where('full_name', $selectedGuest);
     }
-
     if (!empty($startDate) && empty($endDate)) {
         $query->whereDate('check_in', '=', $startDate);
     } elseif (!empty($startDate) && !empty($endDate)) {
         $query->whereBetween('check_in', [$startDate, $endDate]);
     }
-
     $mapped = $query->orderByDesc('id')->get()->map(function ($row) {
         $items = is_string($row->floor_number_room_number_roomprice)
             ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
             : ($row->floor_number_room_number_roomprice ?? []);
 
         $c = collect($items);
-
         return array_merge($row->only([
             'id',
             'image',
@@ -152,7 +147,6 @@ class RoomBookingHistoryController extends Controller
             'thana_name'    => optional($row->thana)->name ?? '-',
         ]);
     })->values();
-
     $paginator = new LengthAwarePaginator(
         $mapped->slice(($page - 1) * $perPage, $perPage)->values(),
         $mapped->count(),
@@ -165,8 +159,6 @@ class RoomBookingHistoryController extends Controller
 }
     
     
-
-
 public function store(Request $request)
 
 {
@@ -633,6 +625,8 @@ public function getbookinghistory(Request $request)
                 'nid',
                 'mother_nid',
                 'father_nid',
+                'father_phone',
+                'mother_phone',
                 'room_number',
                 'monthly_amount',
                 'check_in',
@@ -701,6 +695,8 @@ public function getbookinghistory(Request $request)
                 'nid',
                 'mother_nid',
                 'father_nid',
+                'father_phone',
+                'mother_phone',
                 'room_number',
                 'monthly_amount',
                 'check_in',
