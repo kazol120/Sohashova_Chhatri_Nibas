@@ -988,6 +988,12 @@ public function getNameguet()
             // Dynamically calculate the outstanding due from monthly payments
             $dueAmount = \App\Models\Backend\MonthlyPayment::where('room_booking_history_id', $row->id)->sum('due_amount');
 
+            $noticeDate = $row->notice_date ? \Carbon\Carbon::parse($row->notice_date) : null;
+            $checkoutDate = $row->today_check_out ? \Carbon\Carbon::parse($row->today_check_out) : ($row->check_out ? \Carbon\Carbon::parse($row->check_out) : now());
+            $noticeDaysElapsed = $noticeDate ? (int) $noticeDate->diffInDays($checkoutDate) : 0;
+            $isNoticeFulfilled = $row->will_leave == 1 && $noticeDaysElapsed >= 60;
+            $totalAdv = $c->sum(function($i) { return (float)($i['advance_price'] ?? 0); });
+
             return array_merge($row->only([
                 'id',
                 'image',
@@ -1006,11 +1012,16 @@ public function getNameguet()
                 'created_at',
                 'user_type'
             ]), [
-                'floornumber'   => $c->pluck('floornumber')->filter()->unique()->implode(', '),
-                'roomnumber'    => $c->pluck('roomnumber')->filter()->implode(', '),
-                'price'         => $c->pluck('price')->filter()->implode(', '),
-                'room_items'    => $items,
-                'due_amount'    => (float) $dueAmount,
+                'floornumber'           => $c->pluck('floornumber')->filter()->unique()->implode(', '),
+                'roomnumber'            => $c->pluck('roomnumber')->filter()->implode(', '),
+                'price'                 => $c->pluck('price')->filter()->implode(', '),
+                'room_items'            => $items,
+                'due_amount'            => (float) $dueAmount,
+                'will_leave'            => (int) $row->will_leave,
+                'notice_date'           => $row->notice_date,
+                'notice_days_elapsed'   => $noticeDaysElapsed,
+                'is_notice_fulfilled'   => $isNoticeFulfilled,
+                'total_advance_deposit' => $totalAdv,
             ]);
         })->values();
 

@@ -32238,6 +32238,61 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
           background: type === "success" ? "linear-gradient(to right, #198754, #198754)" : "linear-gradient(to right, #dc3545, #dc3545)"
         }
       }).showToast();
+    },
+    printReleaseSlip: function printReleaseSlip(r) {
+      var isNoticeFulfilled = r.will_leave === 1 && r.is_notice_fulfilled;
+      var totalAdv = Number(r.total_advance_deposit || 0);
+      var fineVal = Number(r.monthly_amount || 0) * 2;
+      var uType = (r.user_type || 'student').toLowerCase().trim();
+      var nameLabel = 'আবাসিকের নাম:';
+      if (uType === 'student') {
+        nameLabel = 'ছাত্রীর নাম:';
+      } else if (uType === 'working professional' || uType === 'jobholder' || uType === 'job_holder') {
+        nameLabel = 'চাকরিজীবীর নাম:';
+      }
+      var noticeText = isNoticeFulfilled ? "\u09E6\u09E8 \u09AE\u09BE\u09B8\u09C7\u09B0 \u0985\u0997\u09CD\u09B0\u09BF\u09AE \u09A8\u09CB\u099F\u09BF\u09B6 \u09A8\u09BF\u09DF\u09AE \u09B8\u09AB\u09B2\u09AD\u09BE\u09AC\u09C7 \u09B8\u09AE\u09CD\u09AA\u09A8\u09CD\u09A8 \u09B9\u09DF\u09C7\u099B\u09C7 (".concat(r.notice_days_elapsed, " \u09A6\u09BF\u09A8)") : r.will_leave === 1 ? "\u09A8\u09CB\u099F\u09BF\u09B6 \u09A6\u09C7\u0993\u09DF\u09BE \u09B9\u09DF\u09C7\u099B\u09C7 ".concat(r.notice_days_elapsed, " \u09A6\u09BF\u09A8 (\u09EC\u09E6 \u09A6\u09BF\u09A8 / \u09E8 \u09AE\u09BE\u09B8 \u09AA\u09C2\u09B0\u09CD\u09A3 \u09B9\u09DF\u09A8\u09BF)") : 'কোনো অগ্রিম নোটিশ দেওয়া হয়নি';
+      var fineRowHtml = "";
+      var advRowHtml = "";
+      if (isNoticeFulfilled) {
+        advRowHtml = "\n          <tr>\n            <th>\u098F\u09A1\u09AD\u09BE\u09A8\u09CD\u09B8 \u099C\u09AE\u09BE \u09AB\u09C7\u09B0\u09A4:</th>\n            <td class=\"text-success\">\u09F3 ".concat(totalAdv.toLocaleString(), " (\u09AE\u09C7\u09B8 \u099B\u09BE\u09DC\u09BE\u09B0 \u0995\u09BE\u09B0\u09A3\u09C7 \u09AB\u09C7\u09B0\u09A4 \u09A6\u09C7\u0993\u09DF\u09BE \u09B9\u09B2\u09CB)</td>\n          </tr>\n        ");
+      } else {
+        fineRowHtml = "\n          <tr>\n            <th>\u099C\u09B0\u09C1\u09B0\u09BF \u09AE\u09C7\u09B8 \u099B\u09BE\u09DC\u09BE\u09B0 \u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE:</th>\n            <td class=\"text-danger\">\u09F3 ".concat(fineVal.toLocaleString(), " (\u09E8 \u09AE\u09BE\u09B8\u09C7\u09B0 \u09AD\u09BE\u09DC\u09BE \u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE)</td>\n          </tr>\n        ");
+        if (totalAdv > 0) {
+          var deductedAdv = Math.min(totalAdv, fineVal);
+          advRowHtml = "\n            <tr>\n              <th>\u098F\u09A1\u09AD\u09BE\u09A8\u09CD\u09B8 \u09A5\u09C7\u0995\u09C7 \u0995\u09B0\u09CD\u09A4\u09A8:</th>\n              <td class=\"text-danger\">\u09F3 ".concat(deductedAdv.toLocaleString(), " (\u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE \u09B9\u09BF\u09B8\u09C7\u09AC\u09C7 \u0995\u09C7\u099F\u09C7 \u09A8\u09C7\u0993\u09DF\u09BE \u09B9\u09DF\u09C7\u099B\u09C7)</td>\n            </tr>\n          ");
+        }
+      }
+      var floornumber = (r.room_items || []).map(function (i) {
+        return i.floornumber;
+      }).filter(Boolean).join(', ') || r.floornumber || '-';
+      var roomnumber = (r.room_items || []).map(function (i) {
+        return i.roomnumber;
+      }).filter(Boolean).join(', ') || r.roomnumber || r.room_number || '-';
+      var checkoutDateStr = r.today_check_out || r.check_out || new Date().toISOString();
+      var printDate = new Date().toLocaleDateString('bn-BD', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      var htmlContent = "\n        <!DOCTYPE html>\n        <html>\n        <head>\n          <title>Seat Release & Checkout Clearance - \u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE</title>\n          <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\">\n          <style>\n            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 25px; background: #fff; color: #222; }\n            .receipt-card { max-width: 720px; margin: auto; padding: 30px; border: 2px solid #033364; border-radius: 10px; }\n            .header-title { color: #033364; font-weight: 800; }\n            .table-details th { font-weight: 600; color: #444; width: 40%; }\n            .table-details td { font-weight: 700; color: #111; }\n            .badge-notice { background-color: ".concat(isNoticeFulfilled ? '#198754' : '#dc3545', "; color: #fff; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 4px; }\n            @media print {\n              body { padding: 0; }\n              .receipt-card { border: 2px solid #000 !important; max-width: 100%; border-radius: 0; padding: 20px; }\n              .no-print { display: none !important; }\n            }\n          </style>\n        </head>\n        <body>\n          <div class=\"receipt-card\">\n            <div class=\"d-flex justify-content-between align-items-center mb-3 no-print\">\n              <button class=\"btn btn-secondary btn-sm\" onclick=\"window.close()\">Close</button>\n              <button class=\"btn btn-primary btn-sm px-4 fw-bold\" onclick=\"window.print()\"><i class=\"bi bi-printer\"></i> Print Slip</button>\n            </div>\n\n            <div class=\"text-center border-bottom pb-3 mb-3\">\n              <h3 class=\"header-title mb-1\">\u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE</h3>\n              <p class=\"text-muted mb-1 small\">\u0995\u09B2\u09C7\u099C \u09B0\u09CB\u09A1, \u09A8\u09C7\u09B8\u0995\u09CB \u0997\u09C7\u099F \u09B8\u0982\u09B2\u0997\u09CD\u09A8, \u09B0\u0982\u09AA\u09C1\u09B0</p>\n              <span class=\"badge bg-primary text-white fs-6 px-3 py-1\">\u09AE\u09C7\u09B8 \u09A4\u09CD\u09AF\u09BE\u0997 \u0993 \u09B8\u09BF\u099F \u09B0\u09BF\u09B2\u09BF\u099C \u099B\u09BE\u09DC\u09AA\u09A4\u09CD\u09B0 (Seat Release Clearance Slip)</span>\n            </div>\n\n            <table class=\"table table-bordered align-middle table-details mb-3\">\n              <tbody>\n                <tr>\n                  <th>").concat(nameLabel, "</th>\n                  <td>").concat(r.full_name, " (").concat(r.user_type || 'student', ")</td>\n                </tr>\n                <tr>\n                  <th>\u09AF\u09CB\u0997\u09BE\u09AF\u09CB\u0997 (\u09AB\u09CB\u09A8):</th>\n                  <td>").concat(r.phone || '-', "</td>\n                </tr>\n                <tr>\n                  <th>\u09AB\u09CD\u09B2\u09CB\u09B0 / \u09B0\u09C1\u09AE / \u09B8\u09BF\u099F \u09A8\u0982:</th>\n                  <td>").concat(floornumber, " / ").concat(roomnumber, "</td>\n                </tr>\n                <tr>\n                  <th>\u09AE\u09C7\u09B8\u09C7 \u09AF\u09CB\u0997\u09A6\u09BE\u09A8\u09C7\u09B0 \u09A4\u09BE\u09B0\u09BF\u0996 (Check-in):</th>\n                  <td>").concat(this.formatDate(r.check_in), "</td>\n                </tr>\n                <tr>\n                  <th>\u09AE\u09C7\u09B8 \u09A4\u09CD\u09AF\u09BE\u0997\u09C7\u09B0 \u09A4\u09BE\u09B0\u09BF\u0996 (Check-out):</th>\n                  <td>").concat(this.formatDate(checkoutDateStr), "</td>\n                </tr>\n                <tr>\n                  <th>\u09E6\u09E8 \u09AE\u09BE\u09B8\u09C7\u09B0 \u09A8\u09CB\u099F\u09BF\u09B6 \u0985\u09AC\u09B8\u09CD\u09A5\u09BE:</th>\n                  <td><span class=\"badge-notice\">").concat(noticeText, "</span></td>\n                </tr>\n                <tr>\n                  <th>\u09AE\u09BE\u09B8\u09BF\u0995 \u09B0\u09C1\u09AE \u09AD\u09BE\u09DC\u09BE:</th>\n                  <td>\u09F3 ").concat(Number(r.monthly_amount || 0).toLocaleString(), "</td>\n                </tr>\n                ").concat(fineRowHtml, "\n                ").concat(advRowHtml, "\n              </tbody>\n            </table>\n\n            <div class=\"d-flex justify-content-between align-items-end mt-5 pt-4 border-top\">\n              <div class=\"text-center\" style=\"width: 200px;\">\n                <div class=\"border-top border-dark pt-1 fw-bold small\">\u09B0\u09C7\u09B8\u09BF\u09A1\u09C7\u09A8\u09CD\u099F\u09C7\u09B0 \u09B8\u09CD\u09AC\u09BE\u0995\u09CD\u09B7\u09B0</div>\n              </div>\n              <div class=\"text-center\" style=\"width: 200px;\">\n                <div class=\"border-top border-dark pt-1 fw-bold small\">\u09AE\u09C7\u09B8 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7\u09C7\u09B0 \u09B8\u09CD\u09AC\u09BE\u0995\u09CD\u09B7\u09B0</div>\n              </div>\n            </div>\n\n            <div class=\"text-center text-muted small mt-4 pt-2 border-top\">\n              \u09AA\u09CD\u09B0\u09BF\u09A8\u09CD\u099F\u09C7\u09B0 \u09B8\u09AE\u09DF: ").concat(printDate, " | \u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE \u09AE\u09C7\u09B8 \u09AE\u09CD\u09AF\u09BE\u09A8\u09C7\u099C\u09AE\u09C7\u09A8\u09CD\u099F \u09B8\u09BF\u09B8\u09CD\u099F\u09C7\u09AE\n            </div>\n          </div>\n        </body>\n        </html>\n      ");
+      var iframe = document.getElementById("release-history-print-iframe");
+      if (!iframe) {
+        iframe = document.createElement("iframe");
+        iframe.id = "release-history-print-iframe";
+        iframe.style.position = "absolute";
+        iframe.style.width = "0px";
+        iframe.style.height = "0px";
+        iframe.style.border = "none";
+        document.body.appendChild(iframe);
+      }
+      var doc = iframe.contentWindow.document;
+      doc.open();
+      doc.write(htmlContent);
+      doc.close();
+      setTimeout(function () {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      }, 500);
     }
   }
 });
@@ -45874,6 +45929,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   render: () => (/* binding */ render)
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 
 var _hoisted_1 = {
   "class": "container-xxl flex-grow-1 container-p-y"
@@ -46017,34 +46078,38 @@ var _hoisted_39 = {
   "class": "badge bg-success-light text-success fw-bold border border-success px-3 py-1 shadow-sm"
 };
 var _hoisted_40 = {
+  "class": "text-center"
+};
+var _hoisted_41 = ["onClick"];
+var _hoisted_42 = {
   key: 1
 };
-var _hoisted_41 = {
-  colspan: "7",
+var _hoisted_43 = {
+  colspan: "8",
   "class": "text-center py-5 text-muted"
 };
-var _hoisted_42 = {
+var _hoisted_44 = {
   key: 0
 };
-var _hoisted_43 = {
+var _hoisted_45 = {
   key: 1,
   "class": "py-4"
 };
-var _hoisted_44 = {
+var _hoisted_46 = {
   key: 0,
   "class": "pagination-footer border-top bg-light-50"
 };
-var _hoisted_45 = {
+var _hoisted_47 = {
   "class": "pagination-info text-muted"
 };
-var _hoisted_46 = {
+var _hoisted_48 = {
   "class": "pagination-actions"
 };
-var _hoisted_47 = ["disabled"];
-var _hoisted_48 = ["onClick"];
 var _hoisted_49 = ["disabled"];
+var _hoisted_50 = ["onClick"];
+var _hoisted_51 = ["disabled"];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Header "), _cache[13] || (_cache[13] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Header "), _cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "card-header d-flex flex-wrap gap-2 justify-content-between align-items-center py-3 bg-light-orange-gradient"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
     "class": "card-title mb-0 fw-bold text-dark-orange"
@@ -46078,7 +46143,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onInput: _cache[1] || (_cache[1] = function () {
       return $options.onSearchInput && $options.onSearchInput.apply($options, arguments);
     })
-  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.search]])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Table "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_19, [_cache[12] || (_cache[12] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", {
+  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.search]])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Table "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_19, [_cache[13] || (_cache[13] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", {
     "class": "bg-orange-header text-white"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     "class": "text-center",
@@ -46093,7 +46158,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "text-center"
   }, "Checkout Date"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     "class": "text-center"
-  }, "Outstanding Due")])], -1 /* HOISTED */)), !$data.loading && $data.history.length ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tbody", _hoisted_20, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.history, function (r, idx) {
+  }, "Outstanding Due"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+    "class": "text-center"
+  }, "Action")])], -1 /* HOISTED */)), !$data.loading && $data.history.length ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tbody", _hoisted_20, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.history, function (r, idx) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
       key: r.id,
       "class": "transition-all hover-row"
@@ -46112,35 +46179,43 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         key: i,
         "class": "d-inline-flex align-items-center gap-1 justify-content-center"
       }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_31, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.floornumber), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_32, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)((item.roomnumber || '').split('-')[0]), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_33, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)((item.roomnumber || '').split('-').slice(1).join('-') || '-'), 1 /* TEXT */)]);
-    }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_34, "-"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_35, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatDate(r.check_in)), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_36, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatDateTime(r.today_check_out || r.check_out)), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_37, [r.due_amount > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_38, " ৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.due_amount.toFixed(2)) + " (Due) ", 1 /* TEXT */)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_39, " ৳ 0.00 (No Due) "))])]);
-  }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tbody", _hoisted_40, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_41, [$data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_42, _cache[10] || (_cache[10] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+    }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_34, "-"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_35, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatDate(r.check_in)), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_36, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatDateTime(r.today_check_out || r.check_out)), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_37, [r.due_amount > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_38, " ৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.due_amount.toFixed(2)) + " (Due) ", 1 /* TEXT */)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_39, " ৳ 0.00 (No Due) "))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_40, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+      "class": "btn btn-sm btn-outline-primary fw-bold",
+      title: "Print Clearance Slip",
+      onClick: function onClick($event) {
+        return $options.printReleaseSlip(r);
+      }
+    }, _toConsumableArray(_cache[10] || (_cache[10] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+      "class": "ti ti-printer me-1"
+    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Print Slip ")])), 8 /* PROPS */, _hoisted_41)])]);
+  }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tbody", _hoisted_42, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_43, [$data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_44, _cache[11] || (_cache[11] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "spinner-border spinner-border-sm text-warning me-2",
     role: "status"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Loading release history...", -1 /* HOISTED */)]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_43, _cache[11] || (_cache[11] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Loading release history...", -1 /* HOISTED */)]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_45, _cache[12] || (_cache[12] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "ti ti-folder-off fs-1 text-muted"
   }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h6", {
     "class": "mt-2 text-muted fw-semibold"
-  }, "No release history records found", -1 /* HOISTED */)])))])])]))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Pagination "), $data.history.length && $data.pagination.last_page > 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_44, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_45, " Showing entries " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(($data.pagination.current_page - 1) * $data.pagination.per_page + 1) + " to " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(Math.min($data.pagination.current_page * $data.pagination.per_page, $data.pagination.total)) + " of " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pagination.total), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_46, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, "No release history records found", -1 /* HOISTED */)])))])])]))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Pagination "), $data.history.length && $data.pagination.last_page > 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_46, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_47, " Showing entries " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(($data.pagination.current_page - 1) * $data.pagination.per_page + 1) + " to " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(Math.min($data.pagination.current_page * $data.pagination.per_page, $data.pagination.total)) + " of " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pagination.total), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_48, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-outline-secondary btn-sm",
     disabled: $data.pagination.current_page <= 1,
     onClick: _cache[2] || (_cache[2] = function ($event) {
       return $options.goToPage($data.pagination.current_page - 1);
     })
-  }, " Previous ", 8 /* PROPS */, _hoisted_47), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.pagination.last_page, function (page) {
+  }, " Previous ", 8 /* PROPS */, _hoisted_49), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.pagination.last_page, function (page) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
       key: page,
       "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["btn btn-sm mx-1", page === $data.pagination.current_page ? 'btn-warning text-white fw-bold' : 'btn-outline-secondary']),
       onClick: function onClick($event) {
         return $options.goToPage(page);
       }
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(page), 11 /* TEXT, CLASS, PROPS */, _hoisted_48);
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(page), 11 /* TEXT, CLASS, PROPS */, _hoisted_50);
   }), 128 /* KEYED_FRAGMENT */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-outline-secondary btn-sm",
     disabled: $data.pagination.current_page >= $data.pagination.last_page,
     onClick: _cache[3] || (_cache[3] = function ($event) {
       return $options.goToPage($data.pagination.current_page + 1);
     })
-  }, " Next ", 8 /* PROPS */, _hoisted_49)])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])])])])]);
+  }, " Next ", 8 /* PROPS */, _hoisted_51)])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])])])])]);
 }
 
 /***/ }),
