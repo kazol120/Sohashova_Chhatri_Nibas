@@ -45,7 +45,8 @@ class RoomBookingHistory extends Model
         'password',
         'floor_number_room_number_roomprice',
         'today_check_out',
-        'will_leave'
+        'will_leave',
+        'notice_date'
     ];
 
 
@@ -54,6 +55,7 @@ class RoomBookingHistory extends Model
         'check_in'  => 'date',
         'check_out' => 'date',
         'today_check_out' => 'date',
+        'notice_date' => 'date',
         'floor_number_room_number_roomprice' => 'array',
         'monthly_amount' => 'float',
         'development_fee' => 'float',

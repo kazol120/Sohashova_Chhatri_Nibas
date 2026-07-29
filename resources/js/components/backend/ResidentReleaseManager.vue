@@ -42,7 +42,7 @@
                     <i class="ti ti-calendar-off text-warning fs-3"></i>
                   </div>
                   <div>
-                    <h6 class="mb-0 text-muted fs-6">Leaving Next Month</h6>
+                    <h6 class="mb-0 text-muted fs-6">2 Months Notice Given</h6>
                     <h4 class="mb-0 fw-bold text-dark mt-1">{{ leavingSoonCount }}</h4>
                   </div>
                 </div>
@@ -75,7 +75,7 @@
                   :class="filter === 'leaving' ? 'btn-danger text-white fw-bold px-3 shadow-sm' : 'btn-outline-danger text-dark px-3'"
                   @click="changeFilter('leaving')"
                 >
-                  Leaving Next Month
+                  2 Months Notice Given
                 </button>
               </div>
 
@@ -109,8 +109,8 @@
                     <th>Contact</th>
                     <th class="text-center">Floor / Room / Seat</th>
                     <th class="text-center">Booking Date</th>
-                    <th class="text-center">Status</th>
-                    <th class="text-center" style="width: 280px;">Actions</th>
+                    <th class="text-center">Notice Status</th>
+                    <th class="text-center" style="width: 300px;">Actions</th>
                   </tr>
                 </thead>
 
@@ -162,11 +162,16 @@
                     </td>
                     <td class="text-center text-muted fw-semibold">{{ formatDate(r.created_at) }}</td>
                     <td class="text-center">
-                      <span v-if="r.will_leave === 1" class="badge bg-warning text-white fw-bold border-0 px-3 py-1 shadow-sm animated-badge">
-                        <i class="ti ti-calendar-off me-1"></i> Leaving Next Month
-                      </span>
-                      <span v-else class="badge bg-success text-white fw-bold border-0 px-3 py-1 shadow-sm">
-                        <i class="ti ti-circle-check me-1"></i> Staying
+                      <template v-if="r.will_leave === 1">
+                        <span v-if="r.is_notice_fulfilled" class="badge bg-success text-white fw-bold border-0 px-3 py-1 shadow-sm">
+                          <i class="ti ti-calendar-check me-1"></i> Notice Fulfilled ({{ r.notice_days_elapsed }} Days)
+                        </span>
+                        <span v-else class="badge bg-warning text-white fw-bold border-0 px-3 py-1 shadow-sm">
+                          <i class="ti ti-clock me-1"></i> 2 Months Notice ({{ r.notice_days_elapsed }} Days Ago)
+                        </span>
+                      </template>
+                      <span v-else class="badge bg-secondary text-white fw-bold border-0 px-3 py-1 shadow-sm">
+                        <i class="ti ti-circle-check me-1"></i> Staying (No Notice)
                       </span>
                     </td>
                     <td class="text-center">
@@ -176,9 +181,9 @@
                           <button 
                             class="btn btn-outline-warning btn-sm hover-orange fw-semibold px-2 py-1"
                             @click="confirmScheduleLeave(r)"
-                            title="Schedule departure for next month"
+                            title="Schedule 2 months advance notice"
                           >
-                            <i class="ti ti-calendar-off me-1"></i> Leave Next Month
+                            <i class="ti ti-calendar-off me-1"></i> Give 2 Months Notice
                           </button>
                           <button 
                             class="btn btn-outline-danger btn-sm hover-red fw-semibold px-2 py-1"
@@ -194,9 +199,9 @@
                           <button 
                             class="btn btn-outline-success btn-sm hover-green fw-semibold px-2 py-1"
                             @click="confirmCancelLeave(r)"
-                            title="Cancel leave schedule"
+                            title="Cancel leave notice"
                           >
-                            <i class="ti ti-refresh me-1"></i> Cancel Leave
+                            <i class="ti ti-refresh me-1"></i> Cancel Notice
                           </button>
                           <button 
                             class="btn btn-danger btn-sm fw-semibold px-2 py-1 shadow-sm"
@@ -370,23 +375,23 @@ export default {
       this.fetchData(page);
     },
 
-    // Confirm Schedule Leave
+    // Confirm Schedule 2 Months Leave Notice
     confirmScheduleLeave(r) {
       Swal.fire({
-        title: "Schedule Leaving Next Month?",
-        text: `Are you sure you want to mark ${r.full_name} as leaving next month?`,
+        title: "Give 2 Months Leave Notice?",
+        text: `Are you sure you want to record a 2-month advance leave notice for ${r.full_name}?`,
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#f59e0b",
         cancelButtonColor: "#6c757d",
-        confirmButtonText: "Yes, Schedule",
+        confirmButtonText: "Yes, Record 2 Months Notice",
         cancelButtonText: "Cancel"
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
             const res = await axios.post(`${this.url}bookings/${r.id}/schedule-leave`);
             if (res.data.success) {
-              this.toast(res.data.message || "Scheduled successfully!", "success");
+              this.toast(res.data.message || "Notice recorded successfully!", "success");
               this.fetchData(this.pagination.current_page);
             } else {
               this.toast(res.data.message || "Action failed", "error");
@@ -398,23 +403,23 @@ export default {
       });
     },
 
-    // Confirm Cancel Leave Schedule
+    // Confirm Cancel Leave Notice
     confirmCancelLeave(r) {
       Swal.fire({
-        title: "Cancel Leaving Schedule",
-        text: `Are you sure you want to cancel the leaving schedule for ${r.full_name}?`,
+        title: "Cancel 2 Months Leave Notice",
+        text: `Are you sure you want to cancel the leave notice for ${r.full_name}?`,
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#198754",
         cancelButtonColor: "#6c757d",
-        confirmButtonText: "Yes, Cancel Schedule",
-        cancelButtonText: "No, Keep Schedule"
+        confirmButtonText: "Yes, Cancel Notice",
+        cancelButtonText: "No, Keep Notice"
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
             const res = await axios.post(`${this.url}bookings/${r.id}/cancel-leave`);
             if (res.data.success) {
-              this.toast(res.data.message || "Schedule cancelled successfully!", "success");
+              this.toast(res.data.message || "Notice cancelled successfully!", "success");
               this.fetchData(this.pagination.current_page);
             } else {
               this.toast(res.data.message || "Action failed", "error");
@@ -428,19 +433,73 @@ export default {
 
     // Confirm Instant Release or Checkout
     confirmInstantRelease(r, isScheduledCheckout = false) {
-      const title = isScheduledCheckout ? "Confirm Checkout" : "Confirm Instant Release";
-      const text = isScheduledCheckout 
-        ? `Are you sure you want to check out ${r.full_name}? This will release the seat.`
-        : `Are you sure you want to release ${r.full_name} immediately? This will release the seat.`;
+      const isNoticeFulfilled = r.will_leave === 1 && r.is_notice_fulfilled;
+      const totalAdv = Number(r.total_advance_deposit || 0);
+      const fineVal = Number(r.monthly_amount || 0) * 2;
+      const remainingAdvAfterFine = Math.max(0, totalAdv - fineVal);
+      const netDueAfterAdv = fineVal > totalAdv ? fineVal - totalAdv : 0;
+
+      let title = "Confirm Release & Checkout";
+      let htmlContent = "";
+      let iconType = "warning";
+
+      if (!isNoticeFulfilled) {
+        iconType = "error";
+        title = "⚠️ 2 Months Notice Requirement Not Met!";
+        const noticeStatusText = r.will_leave === 1 
+          ? `নোটিশ দেওয়ার বয়স ${r.notice_days_elapsed} দিন (৬০ দিন / ২ মাস পূর্ণ হয়নি)` 
+          : "কোনো অগ্রিম নোটিশ দেওয়া হয়নি";
+
+        let advAdjustmentSummary = "";
+        if (totalAdv > 0) {
+          if (totalAdv >= fineVal) {
+            const remainingText = remainingAdvAfterFine > 0 ? ` (অবশিষ্ট এডভান্স জমা থাকবে: ৳ ${remainingAdvAfterFine.toLocaleString()})` : '';
+            advAdjustmentSummary = `<li class="text-warning mt-1"><strong>এডভান্স থেকে কেটে নেওয়া হবে:</strong> ৳ ${fineVal.toLocaleString()}${remainingText}</li>`;
+          } else {
+            advAdjustmentSummary = `<li class="text-danger mt-1"><strong>এডভান্স থেকে কেটে নেওয়া হবে:</strong> ৳ ${totalAdv.toLocaleString()} (সম্পূর্ণ কেটে নেওয়া হবে)</li>
+            <li class="text-danger"><strong>অবশিষ্ট ২ মাসের জরিমানা বকেয়া:</strong> ৳ ${netDueAfterAdv.toLocaleString()}</li>`;
+          }
+        } else {
+          advAdjustmentSummary = `<li class="text-muted mt-1"><strong>এডভান্স জমা:</strong> ৳ 0 (কোনো এডভান্স জমা নেই)</li>`;
+        }
+
+        htmlContent = `
+          <div class="text-start fs-6 p-3 rounded" style="background-color: #fff5f5; border: 1px solid #feb2b2;">
+            <p class="text-danger fw-bold mb-2">মেস ছাড়ার ০২ মাস পূর্বে মেস কর্তৃপক্ষকে জানানো হয়নি!</p>
+            <ul class="mb-2 text-dark ps-3" style="font-size: 14px; line-height: 1.6;">
+              <li><strong>আবাসিকের নাম:</strong> ${r.full_name}</li>
+              <li><strong>নোটিশ অবস্থা:</strong> ${noticeStatusText}</li>
+              <li><strong>বর্তমান এডভান্স জমা:</strong> ৳ ${totalAdv.toLocaleString()}</li>
+              <li class="text-danger"><strong>জরুরি মেস ছাড়ার জরিমানা (২ মাসের ভাড়া):</strong> ৳ ${fineVal.toLocaleString()}</li>
+              ${advAdjustmentSummary}
+            </ul>
+            <p class="text-muted mb-0 small">কনফার্ম করলে এডভান্স (advance_price) থেকে জরিমানা কেটে নিয়ে সিট রিলিজ ও চেকআউট সম্পন্ন করা হবে। আপনি কি রাজি আছেন?</p>
+          </div>
+        `;
+      } else {
+        iconType = "success";
+        title = "Confirm Seat Release & Checkout";
+        htmlContent = `
+          <div class="text-start fs-6 p-3 rounded" style="background-color: #f0fff4; border: 1px solid #9ae6b4;">
+            <p class="text-success fw-bold mb-2">০২ মাসের অগ্রিম নোটিশ নিয়ম সফলভাবে সম্পন্ন হয়েছে (${r.notice_days_elapsed} দিন)।</p>
+            <ul class="mb-2 text-dark ps-3" style="font-size: 14px; line-height: 1.6;">
+              <li><strong>আবাসিকের নাম:</strong> ${r.full_name}</li>
+              <li class="text-success"><strong>বাড়তি জরিমানা:</strong> কোনো জরিমানা প্রযোজ্য নয়</li>
+              <li class="text-primary"><strong>এডভান্স জমা ফেরত দেওয়া হবে:</strong> ৳ ${totalAdv.toLocaleString()}</li>
+            </ul>
+            <p class="text-muted mb-0 small">এডভান্স জমা টাকা ফেরত প্রদান সাপেক্ষে সিট রিলিজ ও চেকআউট সম্পন্ন করা হবে। আপনি কি কনফার্ম করতে চান?</p>
+          </div>
+        `;
+      }
 
       Swal.fire({
         title: title,
-        text: text,
-        icon: "warning",
+        html: htmlContent,
+        icon: iconType,
         showCancelButton: true,
         confirmButtonColor: "#dc3545",
         cancelButtonColor: "#6c757d",
-        confirmButtonText: "Yes, Release & Checkout",
+        confirmButtonText: isNoticeFulfilled ? "Yes, Confirm Checkout" : "Yes, Deduct Advance & Checkout",
         cancelButtonText: "Cancel"
       }).then(async (result) => {
         if (result.isConfirmed) {
@@ -448,7 +507,6 @@ export default {
             const res = await axios.post(`${this.url}bookings/${r.id}/instant-release`);
             if (res.data.success) {
               this.toast(res.data.message || "Checkout completed successfully!", "success");
-              // Fetch page again
               this.fetchData(this.pagination.current_page);
             } else {
               this.toast(res.data.message || "Action failed", "error");

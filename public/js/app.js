@@ -32413,17 +32413,17 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       if (page < 1 || page > this.pagination.last_page) return;
       this.fetchData(page);
     },
-    // Confirm Schedule Leave
+    // Confirm Schedule 2 Months Leave Notice
     confirmScheduleLeave: function confirmScheduleLeave(r) {
       var _this4 = this;
       sweetalert2__WEBPACK_IMPORTED_MODULE_0___default().fire({
-        title: "Schedule Leaving Next Month?",
-        text: "Are you sure you want to mark ".concat(r.full_name, " as leaving next month?"),
+        title: "Give 2 Months Leave Notice?",
+        text: "Are you sure you want to record a 2-month advance leave notice for ".concat(r.full_name, "?"),
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#f59e0b",
         cancelButtonColor: "#6c757d",
-        confirmButtonText: "Yes, Schedule",
+        confirmButtonText: "Yes, Record 2 Months Notice",
         cancelButtonText: "Cancel"
       }).then(/*#__PURE__*/function () {
         var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(result) {
@@ -32441,7 +32441,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
               case 4:
                 res = _context3.sent;
                 if (res.data.success) {
-                  _this4.toast(res.data.message || "Scheduled successfully!", "success");
+                  _this4.toast(res.data.message || "Notice recorded successfully!", "success");
                   _this4.fetchData(_this4.pagination.current_page);
                 } else {
                   _this4.toast(res.data.message || "Action failed", "error");
@@ -32463,18 +32463,18 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
         };
       }());
     },
-    // Confirm Cancel Leave Schedule
+    // Confirm Cancel Leave Notice
     confirmCancelLeave: function confirmCancelLeave(r) {
       var _this5 = this;
       sweetalert2__WEBPACK_IMPORTED_MODULE_0___default().fire({
-        title: "Cancel Leaving Schedule",
-        text: "Are you sure you want to cancel the leaving schedule for ".concat(r.full_name, "?"),
+        title: "Cancel 2 Months Leave Notice",
+        text: "Are you sure you want to cancel the leave notice for ".concat(r.full_name, "?"),
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#198754",
         cancelButtonColor: "#6c757d",
-        confirmButtonText: "Yes, Cancel Schedule",
-        cancelButtonText: "No, Keep Schedule"
+        confirmButtonText: "Yes, Cancel Notice",
+        cancelButtonText: "No, Keep Notice"
       }).then(/*#__PURE__*/function () {
         var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(result) {
           var res;
@@ -32491,7 +32491,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
               case 4:
                 res = _context4.sent;
                 if (res.data.success) {
-                  _this5.toast(res.data.message || "Schedule cancelled successfully!", "success");
+                  _this5.toast(res.data.message || "Notice cancelled successfully!", "success");
                   _this5.fetchData(_this5.pagination.current_page);
                 } else {
                   _this5.toast(res.data.message || "Action failed", "error");
@@ -32517,16 +32517,43 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     confirmInstantRelease: function confirmInstantRelease(r) {
       var _this6 = this;
       var isScheduledCheckout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      var title = isScheduledCheckout ? "Confirm Checkout" : "Confirm Instant Release";
-      var text = isScheduledCheckout ? "Are you sure you want to check out ".concat(r.full_name, "? This will release the seat.") : "Are you sure you want to release ".concat(r.full_name, " immediately? This will release the seat.");
+      var isNoticeFulfilled = r.will_leave === 1 && r.is_notice_fulfilled;
+      var totalAdv = Number(r.total_advance_deposit || 0);
+      var fineVal = Number(r.monthly_amount || 0) * 2;
+      var remainingAdvAfterFine = Math.max(0, totalAdv - fineVal);
+      var netDueAfterAdv = fineVal > totalAdv ? fineVal - totalAdv : 0;
+      var title = "Confirm Release & Checkout";
+      var htmlContent = "";
+      var iconType = "warning";
+      if (!isNoticeFulfilled) {
+        iconType = "error";
+        title = "⚠️ 2 Months Notice Requirement Not Met!";
+        var noticeStatusText = r.will_leave === 1 ? "\u09A8\u09CB\u099F\u09BF\u09B6 \u09A6\u09C7\u0993\u09DF\u09BE\u09B0 \u09AC\u09DF\u09B8 ".concat(r.notice_days_elapsed, " \u09A6\u09BF\u09A8 (\u09EC\u09E6 \u09A6\u09BF\u09A8 / \u09E8 \u09AE\u09BE\u09B8 \u09AA\u09C2\u09B0\u09CD\u09A3 \u09B9\u09DF\u09A8\u09BF)") : "কোনো অগ্রিম নোটিশ দেওয়া হয়নি";
+        var advAdjustmentSummary = "";
+        if (totalAdv > 0) {
+          if (totalAdv >= fineVal) {
+            var remainingText = remainingAdvAfterFine > 0 ? " (\u0985\u09AC\u09B6\u09BF\u09B7\u09CD\u099F \u098F\u09A1\u09AD\u09BE\u09A8\u09CD\u09B8 \u099C\u09AE\u09BE \u09A5\u09BE\u0995\u09AC\u09C7: \u09F3 ".concat(remainingAdvAfterFine.toLocaleString(), ")") : '';
+            advAdjustmentSummary = "<li class=\"text-warning mt-1\"><strong>\u098F\u09A1\u09AD\u09BE\u09A8\u09CD\u09B8 \u09A5\u09C7\u0995\u09C7 \u0995\u09C7\u099F\u09C7 \u09A8\u09C7\u0993\u09DF\u09BE \u09B9\u09AC\u09C7:</strong> \u09F3 ".concat(fineVal.toLocaleString()).concat(remainingText, "</li>");
+          } else {
+            advAdjustmentSummary = "<li class=\"text-danger mt-1\"><strong>\u098F\u09A1\u09AD\u09BE\u09A8\u09CD\u09B8 \u09A5\u09C7\u0995\u09C7 \u0995\u09C7\u099F\u09C7 \u09A8\u09C7\u0993\u09DF\u09BE \u09B9\u09AC\u09C7:</strong> \u09F3 ".concat(totalAdv.toLocaleString(), " (\u09B8\u09AE\u09CD\u09AA\u09C2\u09B0\u09CD\u09A3 \u0995\u09C7\u099F\u09C7 \u09A8\u09C7\u0993\u09DF\u09BE \u09B9\u09AC\u09C7)</li>\n            <li class=\"text-danger\"><strong>\u0985\u09AC\u09B6\u09BF\u09B7\u09CD\u099F \u09E8 \u09AE\u09BE\u09B8\u09C7\u09B0 \u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE \u09AC\u0995\u09C7\u09DF\u09BE:</strong> \u09F3 ").concat(netDueAfterAdv.toLocaleString(), "</li>");
+          }
+        } else {
+          advAdjustmentSummary = "<li class=\"text-muted mt-1\"><strong>\u098F\u09A1\u09AD\u09BE\u09A8\u09CD\u09B8 \u099C\u09AE\u09BE:</strong> \u09F3 0 (\u0995\u09CB\u09A8\u09CB \u098F\u09A1\u09AD\u09BE\u09A8\u09CD\u09B8 \u099C\u09AE\u09BE \u09A8\u09C7\u0987)</li>";
+        }
+        htmlContent = "\n          <div class=\"text-start fs-6 p-3 rounded\" style=\"background-color: #fff5f5; border: 1px solid #feb2b2;\">\n            <p class=\"text-danger fw-bold mb-2\">\u09AE\u09C7\u09B8 \u099B\u09BE\u09DC\u09BE\u09B0 \u09E6\u09E8 \u09AE\u09BE\u09B8 \u09AA\u09C2\u09B0\u09CD\u09AC\u09C7 \u09AE\u09C7\u09B8 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7\u0995\u09C7 \u099C\u09BE\u09A8\u09BE\u09A8\u09CB \u09B9\u09DF\u09A8\u09BF!</p>\n            <ul class=\"mb-2 text-dark ps-3\" style=\"font-size: 14px; line-height: 1.6;\">\n              <li><strong>\u0986\u09AC\u09BE\u09B8\u09BF\u0995\u09C7\u09B0 \u09A8\u09BE\u09AE:</strong> ".concat(r.full_name, "</li>\n              <li><strong>\u09A8\u09CB\u099F\u09BF\u09B6 \u0985\u09AC\u09B8\u09CD\u09A5\u09BE:</strong> ").concat(noticeStatusText, "</li>\n              <li><strong>\u09AC\u09B0\u09CD\u09A4\u09AE\u09BE\u09A8 \u098F\u09A1\u09AD\u09BE\u09A8\u09CD\u09B8 \u099C\u09AE\u09BE:</strong> \u09F3 ").concat(totalAdv.toLocaleString(), "</li>\n              <li class=\"text-danger\"><strong>\u099C\u09B0\u09C1\u09B0\u09BF \u09AE\u09C7\u09B8 \u099B\u09BE\u09DC\u09BE\u09B0 \u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE (\u09E8 \u09AE\u09BE\u09B8\u09C7\u09B0 \u09AD\u09BE\u09DC\u09BE):</strong> \u09F3 ").concat(fineVal.toLocaleString(), "</li>\n              ").concat(advAdjustmentSummary, "\n            </ul>\n            <p class=\"text-muted mb-0 small\">\u0995\u09A8\u09AB\u09BE\u09B0\u09CD\u09AE \u0995\u09B0\u09B2\u09C7 \u098F\u09A1\u09AD\u09BE\u09A8\u09CD\u09B8 (advance_price) \u09A5\u09C7\u0995\u09C7 \u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE \u0995\u09C7\u099F\u09C7 \u09A8\u09BF\u09DF\u09C7 \u09B8\u09BF\u099F \u09B0\u09BF\u09B2\u09BF\u099C \u0993 \u099A\u09C7\u0995\u0986\u0989\u099F \u09B8\u09AE\u09CD\u09AA\u09A8\u09CD\u09A8 \u0995\u09B0\u09BE \u09B9\u09AC\u09C7\u0964 \u0986\u09AA\u09A8\u09BF \u0995\u09BF \u09B0\u09BE\u099C\u09BF \u0986\u099B\u09C7\u09A8?</p>\n          </div>\n        ");
+      } else {
+        iconType = "success";
+        title = "Confirm Seat Release & Checkout";
+        htmlContent = "\n          <div class=\"text-start fs-6 p-3 rounded\" style=\"background-color: #f0fff4; border: 1px solid #9ae6b4;\">\n            <p class=\"text-success fw-bold mb-2\">\u09E6\u09E8 \u09AE\u09BE\u09B8\u09C7\u09B0 \u0985\u0997\u09CD\u09B0\u09BF\u09AE \u09A8\u09CB\u099F\u09BF\u09B6 \u09A8\u09BF\u09DF\u09AE \u09B8\u09AB\u09B2\u09AD\u09BE\u09AC\u09C7 \u09B8\u09AE\u09CD\u09AA\u09A8\u09CD\u09A8 \u09B9\u09DF\u09C7\u099B\u09C7 (".concat(r.notice_days_elapsed, " \u09A6\u09BF\u09A8)\u0964</p>\n            <ul class=\"mb-2 text-dark ps-3\" style=\"font-size: 14px; line-height: 1.6;\">\n              <li><strong>\u0986\u09AC\u09BE\u09B8\u09BF\u0995\u09C7\u09B0 \u09A8\u09BE\u09AE:</strong> ").concat(r.full_name, "</li>\n              <li class=\"text-success\"><strong>\u09AC\u09BE\u09DC\u09A4\u09BF \u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE:</strong> \u0995\u09CB\u09A8\u09CB \u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE \u09AA\u09CD\u09B0\u09AF\u09CB\u099C\u09CD\u09AF \u09A8\u09DF</li>\n              <li class=\"text-primary\"><strong>\u098F\u09A1\u09AD\u09BE\u09A8\u09CD\u09B8 \u099C\u09AE\u09BE \u09AB\u09C7\u09B0\u09A4 \u09A6\u09C7\u0993\u09DF\u09BE \u09B9\u09AC\u09C7:</strong> \u09F3 ").concat(totalAdv.toLocaleString(), "</li>\n            </ul>\n            <p class=\"text-muted mb-0 small\">\u098F\u09A1\u09AD\u09BE\u09A8\u09CD\u09B8 \u099C\u09AE\u09BE \u099F\u09BE\u0995\u09BE \u09AB\u09C7\u09B0\u09A4 \u09AA\u09CD\u09B0\u09A6\u09BE\u09A8 \u09B8\u09BE\u09AA\u09C7\u0995\u09CD\u09B7\u09C7 \u09B8\u09BF\u099F \u09B0\u09BF\u09B2\u09BF\u099C \u0993 \u099A\u09C7\u0995\u0986\u0989\u099F \u09B8\u09AE\u09CD\u09AA\u09A8\u09CD\u09A8 \u0995\u09B0\u09BE \u09B9\u09AC\u09C7\u0964 \u0986\u09AA\u09A8\u09BF \u0995\u09BF \u0995\u09A8\u09AB\u09BE\u09B0\u09CD\u09AE \u0995\u09B0\u09A4\u09C7 \u099A\u09BE\u09A8?</p>\n          </div>\n        ");
+      }
       sweetalert2__WEBPACK_IMPORTED_MODULE_0___default().fire({
         title: title,
-        text: text,
-        icon: "warning",
+        html: htmlContent,
+        icon: iconType,
         showCancelButton: true,
         confirmButtonColor: "#dc3545",
         cancelButtonColor: "#6c757d",
-        confirmButtonText: "Yes, Release & Checkout",
+        confirmButtonText: isNoticeFulfilled ? "Yes, Confirm Checkout" : "Yes, Deduct Advance & Checkout",
         cancelButtonText: "Cancel"
       }).then(/*#__PURE__*/function () {
         var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(result) {
@@ -32545,7 +32572,6 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
                 res = _context5.sent;
                 if (res.data.success) {
                   _this6.toast(res.data.message || "Checkout completed successfully!", "success");
-                  // Fetch page again
                   _this6.fetchData(_this6.pagination.current_page);
                 } else {
                   _this6.toast(res.data.message || "Action failed", "error");
@@ -46218,51 +46244,55 @@ var _hoisted_40 = {
 };
 var _hoisted_41 = {
   key: 0,
-  "class": "badge bg-warning text-white fw-bold border-0 px-3 py-1 shadow-sm animated-badge"
+  "class": "badge bg-success text-white fw-bold border-0 px-3 py-1 shadow-sm"
 };
 var _hoisted_42 = {
   key: 1,
-  "class": "badge bg-success text-white fw-bold border-0 px-3 py-1 shadow-sm"
+  "class": "badge bg-warning text-white fw-bold border-0 px-3 py-1 shadow-sm"
 };
 var _hoisted_43 = {
-  "class": "text-center"
+  key: 1,
+  "class": "badge bg-secondary text-white fw-bold border-0 px-3 py-1 shadow-sm"
 };
 var _hoisted_44 = {
+  "class": "text-center"
+};
+var _hoisted_45 = {
   "class": "d-flex gap-2 justify-content-center"
 };
-var _hoisted_45 = ["onClick"];
 var _hoisted_46 = ["onClick"];
 var _hoisted_47 = ["onClick"];
 var _hoisted_48 = ["onClick"];
-var _hoisted_49 = {
+var _hoisted_49 = ["onClick"];
+var _hoisted_50 = {
   key: 1
 };
-var _hoisted_50 = {
+var _hoisted_51 = {
   colspan: "7",
   "class": "text-center py-5 text-muted"
 };
-var _hoisted_51 = {
+var _hoisted_52 = {
   key: 0
 };
-var _hoisted_52 = {
+var _hoisted_53 = {
   key: 1,
   "class": "py-4"
 };
-var _hoisted_53 = {
+var _hoisted_54 = {
   key: 0,
   "class": "pagination-footer border-top bg-light-50"
 };
-var _hoisted_54 = {
+var _hoisted_55 = {
   "class": "pagination-info text-muted"
 };
-var _hoisted_55 = {
+var _hoisted_56 = {
   "class": "pagination-actions"
 };
-var _hoisted_56 = ["disabled"];
-var _hoisted_57 = ["onClick"];
-var _hoisted_58 = ["disabled"];
+var _hoisted_57 = ["disabled"];
+var _hoisted_58 = ["onClick"];
+var _hoisted_59 = ["disabled"];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Header "), _cache[23] || (_cache[23] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Header "), _cache[24] || (_cache[24] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "card-header d-flex flex-wrap gap-2 justify-content-between align-items-center py-3 bg-light-orange-gradient"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
     "class": "card-title mb-0 fw-bold text-dark-orange"
@@ -46286,7 +46316,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "ti ti-calendar-off text-warning fs-3"
   })], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_cache[11] || (_cache[11] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h6", {
     "class": "mb-0 text-muted fs-6"
-  }, "Leaving Next Month", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h4", _hoisted_15, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.leavingSoonCount), 1 /* TEXT */)])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Filters & Search "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Tab Filters "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, "2 Months Notice Given", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h4", _hoisted_15, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.leavingSoonCount), 1 /* TEXT */)])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Filters & Search "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Tab Filters "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["btn btn-sm rounded-pill transition-all", $data.filter === 'all' ? 'btn-warning text-white fw-bold px-3 shadow-sm' : 'btn-outline-warning text-dark px-3']),
     onClick: _cache[0] || (_cache[0] = function ($event) {
       return $options.changeFilter('all');
@@ -46301,7 +46331,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[2] || (_cache[2] = function ($event) {
       return $options.changeFilter('leaving');
     })
-  }, " Leaving Next Month ", 2 /* CLASS */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Search Input "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [_cache[13] || (_cache[13] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+  }, " 2 Months Notice Given ", 2 /* CLASS */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Search Input "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [_cache[13] || (_cache[13] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
     "class": "input-group-text bg-white border-end-0"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "ti ti-search text-muted"
@@ -46315,7 +46345,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onInput: _cache[4] || (_cache[4] = function () {
       return $options.onSearchInput && $options.onSearchInput.apply($options, arguments);
     })
-  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.search]])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Table "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_23, [_cache[22] || (_cache[22] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", {
+  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.search]])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Table "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_23, [_cache[23] || (_cache[23] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", {
     "class": "bg-orange-header text-white"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     "class": "text-center",
@@ -46328,10 +46358,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "text-center"
   }, "Booking Date"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     "class": "text-center"
-  }, "Status"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Notice Status"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     "class": "text-center",
     style: {
-      "width": "280px"
+      "width": "300px"
     }
   }, "Actions")])], -1 /* HOISTED */)), !$data.loading && $data.residents.length ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tbody", _hoisted_24, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.residents, function (r, idx) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
@@ -46352,75 +46382,79 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         key: i,
         "class": "d-inline-flex align-items-center gap-1 justify-content-center"
       }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_35, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.floornumber), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_36, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)((item.roomnumber || '').split('-')[0]), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_37, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)((item.roomnumber || '').split('-').slice(1).join('-') || '-'), 1 /* TEXT */)]);
-    }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_38, "-"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_39, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatDate(r.created_at)), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_40, [r.will_leave === 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_41, _toConsumableArray(_cache[14] || (_cache[14] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
-      "class": "ti ti-calendar-off me-1"
-    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Leaving Next Month ")])))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_42, _toConsumableArray(_cache[15] || (_cache[15] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_38, "-"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_39, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatDate(r.created_at)), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_40, [r.will_leave === 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+      key: 0
+    }, [r.is_notice_fulfilled ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_41, [_cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+      "class": "ti ti-calendar-check me-1"
+    }, null, -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Notice Fulfilled (" + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.notice_days_elapsed) + " Days) ", 1 /* TEXT */)])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_42, [_cache[15] || (_cache[15] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+      "class": "ti ti-clock me-1"
+    }, null, -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" 2 Months Notice (" + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.notice_days_elapsed) + " Days Ago) ", 1 /* TEXT */)]))], 64 /* STABLE_FRAGMENT */)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_43, _toConsumableArray(_cache[16] || (_cache[16] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "ti ti-circle-check me-1"
-    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Staying ")]))))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_43, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_44, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" If staying "), r.will_leave !== 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Staying (No Notice) ")]))))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_44, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_45, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" If staying "), r.will_leave !== 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
       key: 0
     }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
       "class": "btn btn-outline-warning btn-sm hover-orange fw-semibold px-2 py-1",
       onClick: function onClick($event) {
         return $options.confirmScheduleLeave(r);
       },
-      title: "Schedule departure for next month"
-    }, _toConsumableArray(_cache[16] || (_cache[16] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+      title: "Schedule 2 months advance notice"
+    }, _toConsumableArray(_cache[17] || (_cache[17] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "ti ti-calendar-off me-1"
-    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Leave Next Month ")])), 8 /* PROPS */, _hoisted_45), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Give 2 Months Notice ")])), 8 /* PROPS */, _hoisted_46), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
       "class": "btn btn-outline-danger btn-sm hover-red fw-semibold px-2 py-1",
       onClick: function onClick($event) {
         return $options.confirmInstantRelease(r);
       },
       title: "Release seat immediately"
-    }, _toConsumableArray(_cache[17] || (_cache[17] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    }, _toConsumableArray(_cache[18] || (_cache[18] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "ti ti-door-exit me-1"
-    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Instant Release ")])), 8 /* PROPS */, _hoisted_46)], 64 /* STABLE_FRAGMENT */)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
+    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Instant Release ")])), 8 /* PROPS */, _hoisted_47)], 64 /* STABLE_FRAGMENT */)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
       key: 1
     }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" If scheduled to leave "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
       "class": "btn btn-outline-success btn-sm hover-green fw-semibold px-2 py-1",
       onClick: function onClick($event) {
         return $options.confirmCancelLeave(r);
       },
-      title: "Cancel leave schedule"
-    }, _toConsumableArray(_cache[18] || (_cache[18] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+      title: "Cancel leave notice"
+    }, _toConsumableArray(_cache[19] || (_cache[19] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "ti ti-refresh me-1"
-    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Cancel Leave ")])), 8 /* PROPS */, _hoisted_47), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Cancel Notice ")])), 8 /* PROPS */, _hoisted_48), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
       "class": "btn btn-danger btn-sm fw-semibold px-2 py-1 shadow-sm",
       onClick: function onClick($event) {
         return $options.confirmInstantRelease(r, true);
       },
       title: "Confirm checkout and release seat"
-    }, _toConsumableArray(_cache[19] || (_cache[19] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    }, _toConsumableArray(_cache[20] || (_cache[20] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "ti ti-circle-check-filled me-1"
-    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Confirm Checkout ")])), 8 /* PROPS */, _hoisted_48)], 64 /* STABLE_FRAGMENT */))])])]);
-  }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tbody", _hoisted_49, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_50, [$data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_51, _cache[20] || (_cache[20] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Confirm Checkout ")])), 8 /* PROPS */, _hoisted_49)], 64 /* STABLE_FRAGMENT */))])])]);
+  }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tbody", _hoisted_50, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_51, [$data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_52, _cache[21] || (_cache[21] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "spinner-border spinner-border-sm text-warning me-2",
     role: "status"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Loading active residents...", -1 /* HOISTED */)]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_52, _cache[21] || (_cache[21] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Loading active residents...", -1 /* HOISTED */)]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_53, _cache[22] || (_cache[22] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "ti ti-folder-off fs-1 text-muted"
   }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h6", {
     "class": "mt-2 text-muted fw-semibold"
-  }, "No active residents found", -1 /* HOISTED */)])))])])]))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Pagination "), $data.residents.length && $data.pagination.last_page > 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_53, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_54, " Showing residents " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(($data.pagination.current_page - 1) * $data.pagination.per_page + 1) + " to " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(Math.min($data.pagination.current_page * $data.pagination.per_page, $data.pagination.total)) + " of " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pagination.total), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_55, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, "No active residents found", -1 /* HOISTED */)])))])])]))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Pagination "), $data.residents.length && $data.pagination.last_page > 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_54, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_55, " Showing residents " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(($data.pagination.current_page - 1) * $data.pagination.per_page + 1) + " to " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(Math.min($data.pagination.current_page * $data.pagination.per_page, $data.pagination.total)) + " of " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pagination.total), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_56, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-outline-secondary btn-sm",
     disabled: $data.pagination.current_page <= 1,
     onClick: _cache[5] || (_cache[5] = function ($event) {
       return $options.goToPage($data.pagination.current_page - 1);
     })
-  }, " Previous ", 8 /* PROPS */, _hoisted_56), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.pagination.last_page, function (page) {
+  }, " Previous ", 8 /* PROPS */, _hoisted_57), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.pagination.last_page, function (page) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
       key: page,
       "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["btn btn-sm mx-1", page === $data.pagination.current_page ? 'btn-warning text-white fw-bold' : 'btn-outline-secondary']),
       onClick: function onClick($event) {
         return $options.goToPage(page);
       }
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(page), 11 /* TEXT, CLASS, PROPS */, _hoisted_57);
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(page), 11 /* TEXT, CLASS, PROPS */, _hoisted_58);
   }), 128 /* KEYED_FRAGMENT */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-outline-secondary btn-sm",
     disabled: $data.pagination.current_page >= $data.pagination.last_page,
     onClick: _cache[6] || (_cache[6] = function ($event) {
       return $options.goToPage($data.pagination.current_page + 1);
     })
-  }, " Next ", 8 /* PROPS */, _hoisted_58)])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])])])])]);
+  }, " Next ", 8 /* PROPS */, _hoisted_59)])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])])])])]);
 }
 
 /***/ }),

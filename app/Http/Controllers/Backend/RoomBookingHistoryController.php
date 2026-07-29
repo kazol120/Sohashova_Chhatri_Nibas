@@ -804,6 +804,10 @@ public function getNameguet()
 
             $c = collect($items);
 
+            $totalAdvance = collect($items)->sum(function($item) {
+                return (float) ($item['advance_price'] ?? 0);
+            });
+
             return array_merge($row->only([
                 'id',
                 'image',
@@ -824,13 +828,19 @@ public function getNameguet()
                 'pay_cash_in',
                 'pay_online',
                 'user_type',
-                'will_leave'
+                'will_leave',
+                'notice_date'
             ]), [
-                'group_key'     => 'booking_' . $row->id,
-                'floornumber'   => $c->pluck('floornumber')->filter()->unique()->implode(', '),
-                'roomnumber'    => $c->pluck('roomnumber')->filter()->implode(', '),
-                'price'         => $c->pluck('price')->filter()->implode(', '),
-                'room_items'    => $items,
+                'group_key'             => 'booking_' . $row->id,
+                'floornumber'           => $c->pluck('floornumber')->filter()->unique()->implode(', '),
+                'roomnumber'            => $c->pluck('roomnumber')->filter()->implode(', '),
+                'price'                 => $c->pluck('price')->filter()->implode(', '),
+                'room_items'            => $items,
+                'total_advance_deposit' => $totalAdvance,
+                'notice_date_formatted' => $row->notice_date ? \Carbon\Carbon::parse($row->notice_date)->format('Y-m-d') : null,
+                'notice_days_elapsed'   => $row->notice_date ? (int) \Carbon\Carbon::parse($row->notice_date)->diffInDays(now()) : 0,
+                'is_notice_fulfilled'   => $row->will_leave == 1 && $row->notice_date && \Carbon\Carbon::parse($row->notice_date)->diffInDays(now()) >= 60,
+                'fine_amount'           => ($row->will_leave == 1 && $row->notice_date && \Carbon\Carbon::parse($row->notice_date)->diffInDays(now()) >= 60) ? 0 : ((float) ($row->monthly_amount ?? 0) * 2)
             ]);
         })->values();
 
@@ -849,8 +859,11 @@ public function getNameguet()
     {
         try {
             $booking = RoomBookingHistory::findOrFail($id);
-            $booking->update(['will_leave' => 1]);
-            return response()->json(['success' => true, 'message' => 'Successfully scheduled to leave next month.']);
+            $booking->update([
+                'will_leave'  => 1,
+                'notice_date' => now()
+            ]);
+            return response()->json(['success' => true, 'message' => 'Successfully recorded 2 months leave notice.']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
@@ -860,8 +873,11 @@ public function getNameguet()
     {
         try {
             $booking = RoomBookingHistory::findOrFail($id);
-            $booking->update(['will_leave' => 0]);
-            return response()->json(['success' => true, 'message' => 'Leaving schedule cancelled successfully.']);
+            $booking->update([
+                'will_leave'  => 0,
+                'notice_date' => null
+            ]);
+            return response()->json(['success' => true, 'message' => 'Leave notice cancelled successfully.']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
@@ -872,7 +888,44 @@ public function getNameguet()
         DB::beginTransaction();
         try {
             $booking = RoomBookingHistory::findOrFail($id);
-            $rawItems = $booking->floor_number_room_number_roomprice ?? [];
+
+            $noticeDaysElapsed = $booking->notice_date ? (int) \Carbon\Carbon::parse($booking->notice_date)->diffInDays(now()) : 0;
+            $isNoticeFulfilled = $booking->will_leave == 1 && $noticeDaysElapsed >= 60;
+
+            $rawItems = is_string($booking->floor_number_room_number_roomprice)
+                ? (json_decode($booking->floor_number_room_number_roomprice, true) ?? [])
+                : ($booking->floor_number_room_number_roomprice ?? []);
+
+            // Update advance_price in floor_number_room_number_roomprice JSON array:
+            // 1) If notice was fulfilled: Advance is refunded to resident upon checkout, so set advance_price = 0.
+            // 2) If notice was NOT fulfilled: Penalty (2 months rent) is deducted from advance_price.
+            if ($isNoticeFulfilled) {
+                $updatedItems = array_map(function ($item) {
+                    $item['advance_price'] = 0;
+                    return $item;
+                }, $rawItems);
+                $booking->floor_number_room_number_roomprice = $updatedItems;
+            } else {
+                $penaltyAmount = (float) ($booking->monthly_amount ?? 0) * 2;
+                $remainingPenaltyToDeduct = $penaltyAmount;
+
+                $updatedItems = array_map(function ($item) use (&$remainingPenaltyToDeduct) {
+                    $adv = (float) ($item['advance_price'] ?? 0);
+                    if ($adv > 0 && $remainingPenaltyToDeduct > 0) {
+                        if ($adv >= $remainingPenaltyToDeduct) {
+                            $item['advance_price'] = $adv - $remainingPenaltyToDeduct;
+                            $remainingPenaltyToDeduct = 0;
+                        } else {
+                            $remainingPenaltyToDeduct -= $adv;
+                            $item['advance_price'] = 0;
+                        }
+                    }
+                    return $item;
+                }, $rawItems);
+
+                $booking->floor_number_room_number_roomprice = $updatedItems;
+            }
+
             foreach ($rawItems as $item) {
                 $rn = $item['roomnumber'] ?? $item['room_number'] ?? null;
                 if ($rn) {
