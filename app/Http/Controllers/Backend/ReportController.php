@@ -35,21 +35,33 @@ public function profitLossReport(Request $request)
     if ($mode === 'monthly') {
         $year = (int) ($request->year ?? date('Y'));
 
+        $calcRoomBookingAdvance = function($bookings) {
+            return (float) $bookings->sum(function($row) {
+                $items = is_string($row->floor_number_room_number_roomprice)
+                    ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
+                    : ($row->floor_number_room_number_roomprice ?? []);
+
+                $noticeDate = $row->notice_date ? \Carbon\Carbon::parse($row->notice_date) : null;
+                $checkoutDate = $row->today_check_out ? \Carbon\Carbon::parse($row->today_check_out) : ($row->check_out ? \Carbon\Carbon::parse($row->check_out) : now());
+                $noticeDaysElapsed = $noticeDate ? (int) $noticeDate->diffInDays($checkoutDate) : 0;
+                $isNoticeFulfilled = $row->will_leave == 1 && $noticeDaysElapsed >= 60;
+
+                return collect($items)->sum(function($i) use ($row, $isNoticeFulfilled) {
+                    if ($row->status == 1 && !$isNoticeFulfilled) {
+                        return (float)($i['advance_price'] ?? 0);
+                    }
+                    return (float)($i['original_advance_price'] ?? $i['advance_price'] ?? 0);
+                });
+            });
+        };
+
         foreach ($months as $num => $name) {
             // ====== INCOME ======
             // 1) Advance booking fee from floor_number_room_number_roomprice
             $bookingsInMonth = RoomBookingHistory::whereYear('check_in', $year)
                 ->whereMonth('check_in', $num)->get();
 
-            $roomBooking = (float) $bookingsInMonth->sum(function($row) {
-                $items = is_string($row->floor_number_room_number_roomprice)
-                    ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
-                    : ($row->floor_number_room_number_roomprice ?? []);
-                $advSum = collect($items)->sum(function($i) {
-                    return (float)($i['original_advance_price'] ?? $i['advance_price'] ?? 0);
-                });
-                return $advSum > 0 ? $advSum : (float)($row->monthly_amount ?? 0);
-            });
+            $roomBooking = $calcRoomBookingAdvance($bookingsInMonth);
 
             $monthlyPayment = (float) MonthlyPayment::whereYear('created_at', $year)
                 ->whereMonth('created_at', $num)->sum('paid_amount');
@@ -125,18 +137,30 @@ public function profitLossReport(Request $request)
             (int) (ProductPurchase::min(DB::raw('YEAR(created_at)')) ?: $currentYear),
         );
 
-        foreach (range($currentYear, $oldestYear) as $year) {
-            // ====== INCOME ======
-            $bookingsInYear = RoomBookingHistory::whereYear('check_in', $year)->get();
-            $roomBooking = (float) $bookingsInYear->sum(function($row) {
+        $calcRoomBookingAdvance = function($bookings) {
+            return (float) $bookings->sum(function($row) {
                 $items = is_string($row->floor_number_room_number_roomprice)
                     ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
                     : ($row->floor_number_room_number_roomprice ?? []);
-                $advSum = collect($items)->sum(function($i) {
+
+                $noticeDate = $row->notice_date ? \Carbon\Carbon::parse($row->notice_date) : null;
+                $checkoutDate = $row->today_check_out ? \Carbon\Carbon::parse($row->today_check_out) : ($row->check_out ? \Carbon\Carbon::parse($row->check_out) : now());
+                $noticeDaysElapsed = $noticeDate ? (int) $noticeDate->diffInDays($checkoutDate) : 0;
+                $isNoticeFulfilled = $row->will_leave == 1 && $noticeDaysElapsed >= 60;
+
+                return collect($items)->sum(function($i) use ($row, $isNoticeFulfilled) {
+                    if ($row->status == 1 && !$isNoticeFulfilled) {
+                        return (float)($i['advance_price'] ?? 0);
+                    }
                     return (float)($i['original_advance_price'] ?? $i['advance_price'] ?? 0);
                 });
-                return $advSum > 0 ? $advSum : (float)($row->monthly_amount ?? 0);
             });
+        };
+
+        foreach (range($currentYear, $oldestYear) as $year) {
+            // ====== INCOME ======
+            $bookingsInYear = RoomBookingHistory::whereYear('check_in', $year)->get();
+            $roomBooking = $calcRoomBookingAdvance($bookingsInYear);
 
             $monthlyPayment = (float) MonthlyPayment::whereYear('created_at', $year)->sum('paid_amount');
             $productSales   = (float) ProductDistribution::whereYear('created_at', $year)->sum('total_price_available');
@@ -180,15 +204,7 @@ public function profitLossReport(Request $request)
             $monthlyBreakdown = [];
             foreach ($months as $num => $name) {
                 $mBookings = RoomBookingHistory::whereYear('check_in', $year)->whereMonth('check_in', $num)->get();
-                $mRoomBooking = (float) $mBookings->sum(function($row) {
-                    $items = is_string($row->floor_number_room_number_roomprice)
-                        ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
-                        : ($row->floor_number_room_number_roomprice ?? []);
-                    $advSum = collect($items)->sum(function($i) {
-                        return (float)($i['original_advance_price'] ?? $i['advance_price'] ?? 0);
-                    });
-                    return $advSum > 0 ? $advSum : (float)($row->monthly_amount ?? 0);
-                });
+                $mRoomBooking = $calcRoomBookingAdvance($mBookings);
 
                 $mMonthlyPayment = (float) MonthlyPayment::whereYear('created_at', $year)->whereMonth('created_at', $num)->sum('paid_amount');
                 $mProductSales   = (float) ProductDistribution::whereYear('created_at', $year)->whereMonth('created_at', $num)->sum('total_price_available');
