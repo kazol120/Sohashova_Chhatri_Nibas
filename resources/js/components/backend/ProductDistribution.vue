@@ -398,150 +398,71 @@ export default {
         let pricesHtml = parseFloat(item.total_price_available || 0).toFixed(2) + ' ৳';
 
         if (item.items && item.items.length) {
-          const totalItems = item.items.length;
-          prodNamesHtml = item.items.map((sub, i) => `<div class="sub-item ${i < totalItems - 1 ? 'has-border' : ''}">${sub.product_name}</div>`).join('');
-          unitPricesHtml = item.items.map((sub, i) => `<div class="sub-item ${i < totalItems - 1 ? 'has-border' : ''}">${sub.single_price} ৳</div>`).join('');
-          qtysHtml = item.items.map((sub, i) => `<div class="sub-item ${i < totalItems - 1 ? 'has-border' : ''}">${sub.quantity} pcs</div>`).join('');
-          pricesHtml = item.items.map((sub, i) => `<div class="sub-item ${i < totalItems - 1 ? 'has-border' : ''}">${sub.total_price} ৳</div>`).join('');
+          prodNamesHtml = item.items.map(sub => `<div>${sub.product_name}</div>`).join('');
+          unitPricesHtml = item.items.map(sub => `<div>${sub.single_price} ৳</div>`).join('');
+          qtysHtml = item.items.map(sub => `<div>${sub.quantity} pcs</div>`).join('');
+          pricesHtml = item.items.map(sub => `<div>${sub.total_price} ৳</div>`).join('');
         }
 
         return `
           <tr>
-            <td class="text-center fw-semibold">${fromIndex + index}</td>
+            <td class="text-center">${fromIndex + index}</td>
             <td class="text-center">${item.purchase_date || '—'}</td>
             <td>${item.floor_name || '—'}</td>
             <td class="text-center">${item.room_no || '—'}</td>
             <td class="text-center">${item.seat_no ? 'Seat ' + item.seat_no : '—'}</td>
-            <td class="fw-semibold">${item.customer_name || '—'}</td>
+            <td>${item.customer_name || '—'}</td>
             <td>${prodNamesHtml}</td>
-            <td class="text-end fw-semibold">${unitPricesHtml}</td>
-            <td class="text-center fw-semibold text-primary">${qtysHtml}</td>
-            <td class="text-end fw-bold">${pricesHtml}</td>
+            <td class="text-end">${unitPricesHtml}</td>
+            <td class="text-center">${qtysHtml}</td>
+            <td class="text-end">${pricesHtml}</td>
           </tr>
         `;
       }).join('');
-
       const totalRow = `
         <tr class="grand-total-row">
-          <td colspan="8" class="text-end fw-bold" style="font-size: 12px;">Grand Total :</td>
-          <td class="text-center fw-bold" style="font-size: 12px; background: #e2e8f0 !important;">${this.grandTotalQuantity || 0} pcs</td>
-          <td class="text-end fw-bold" style="font-size: 12px; background: #e2e8f0 !important;">${parseFloat(this.grandTotal || 0).toFixed(2)} ৳</td>
+          <td colspan="8" class="text-end fw-bold">Grand Total :</td>
+          <td class="text-center fw-bold">${this.grandTotalQuantity || 0}</td>
+          <td class="text-end fw-bold">${parseFloat(this.grandTotal || 0).toFixed(2)} ৳</td>
         </tr>
       `;
-
       const html = `
         <!DOCTYPE html>
         <html>
         <head>
-          <title>Product Distribution Report - টি এস এস ভিলা</title>
+          <title>Product Distribution Report</title>
           <style>
             @page { size: A4 landscape; margin: 10mm; }
             * { box-sizing: border-box; margin: 0; padding: 0; }
-            body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; color: #1e293b; background: #fff; line-height: 1.5; }
-            
-            .header-container {
-              text-align: center;
-              margin-bottom: 16px;
-              border-bottom: 2px solid #0f172a;
-              padding-bottom: 10px;
-            }
-            .header-title {
-              font-size: 24px;
-              font-weight: 800;
-              color: #0f172a;
-              margin-bottom: 3px;
-              letter-spacing: 0.5px;
-            }
-            .header-address {
-              font-size: 12px;
-              color: #475569;
-              margin-bottom: 8px;
-              font-weight: 500;
-            }
-            .report-badge {
-              display: inline-block;
-              background: #0f172a;
-              color: #ffffff;
-              padding: 4px 18px;
-              border-radius: 20px;
-              font-size: 11px;
-              font-weight: 700;
-              letter-spacing: 0.5px;
-            }
-            .print-meta {
-              font-size: 10px;
-              color: #64748b;
-              margin-top: 6px;
-            }
-
-            table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-top: 12px; }
+            body { font-family: Arial, sans-serif; font-size: 10px; color: #000; background: #fff; }
+            h2 { text-align: center; margin-bottom: 4px; font-size: 16px; font-weight: 700; }
+            p.sub { text-align: center; margin-bottom: 12px; font-size: 12px; font-weight: 400;}
+            table { width: 100%; border-collapse: collapse; table-layout: fixed; }
             th, td {
-              border: 1px solid #cbd5e1;
-              padding: 8px 10px;
+              border: 1px solid #999;
+              padding: 5px 6px;
               vertical-align: middle;
               word-break: break-word;
             }
-            th {
-              background: #f1f5f9 !important;
-              color: #0f172a !important;
-              font-weight: 700;
-              text-align: center;
-              font-size: 11px;
-              padding: 10px 8px;
-              border: 1px solid #cbd5e1 !important;
-            }
-            tbody tr:nth-child(even) td { background: #f8fafc; }
-            
-            .sub-item {
-              padding: 5px 0;
-              line-height: 1.5;
-            }
-            .sub-item.has-border {
-              border-bottom: 1px dashed #cbd5e1;
-            }
-
+            th { background: #e9e9e9; font-weight: 700; text-align: center; }
+            tbody tr:nth-child(even) td { background: #f9f9f9; }
             .text-center { text-align: center !important; }
             .text-end { text-align: right !important; }
-            .fw-bold { font-weight: 700 !important; }
-            .fw-semibold { font-weight: 600 !important; }
-            .text-primary { color: #2563eb !important; }
-            
+            .fw-bold { font-weight: 700; }
             .grand-total-row td {
               font-weight: 700;
-              background: #f1f5f9 !important;
-              border-top: 2px solid #0f172a !important;
-              border-bottom: 2px solid #0f172a !important;
-              padding: 10px 8px !important;
+              background: #f1f1f1 !important;
             }
-
             col.sl-col    { width: 4%; }
             col.date-col  { width: 9%; }
             col.floor-col { width: 10%; }
             col.room-col  { width: 6%; }
-            col.seat-col  { width: 8%; }
-            col.guest-col { width: 15%; }
+            col.seat-col  { width: 6%; }
+            col.guest-col { width: 14%; }
             col.prod-col  { width: 20%; }
-            col.unit-col  { width: 9%; }
-            col.qty-col   { width: 6%; }
-            col.total-col { width: 13%; }
-
-            .signature-area {
-              margin-top: 45px;
-              display: flex;
-              justify-content: space-between;
-              padding: 0 40px;
-              page-break-inside: avoid;
-            }
-            .sig-line {
-              border-top: 1.5px dashed #475569;
-              width: 200px;
-              text-align: center;
-              padding-top: 6px;
-              font-size: 11px;
-              font-weight: 600;
-              color: #334155;
-            }
-
+            col.unit-col  { width: 10%; }
+            col.qty-col   { width: 7%; }
+            col.total-col { width: 14%; }
             @media print {
               thead { display: table-header-group; }
               tr { page-break-inside: avoid; }
@@ -549,13 +470,8 @@ export default {
           </style>
         </head>
         <body>
-          <div class="header-container">
-            <div class="header-title">টি এস এস ভিলা</div>
-            <div class="header-address">কলেজ রোড, নেসকো গেট সংলগ্ন, রংপুর</div>
-            <div class="report-badge">প্রোডাক্ট ডিস্ট্রিবিউশন রিপোর্ট (Product Distribution Report)</div>
-            <div class="print-meta">প্রিন্টের তারিখ: ${new Date().toLocaleString('bn-BD', { dateStyle: 'medium', timeStyle: 'short' })}</div>
-          </div>
-
+          <h2>Product Distribution Report</h2>
+          <p class="sub">Printed: ${new Date().toLocaleString()}</p>
           <table>
             <colgroup>
               <col class="sl-col">
@@ -588,11 +504,6 @@ export default {
               ${totalRow}
             </tbody>
           </table>
-
-          <div class="signature-area">
-            <div class="sig-line">প্রস্তুতকারীর স্বাক্ষর</div>
-            <div class="sig-line">ম্যানেজার / কর্তৃপক্ষের স্বাক্ষর</div>
-          </div>
         </body>
         </html>
       `;
