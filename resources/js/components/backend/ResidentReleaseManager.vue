@@ -586,8 +586,8 @@ export default {
             </div>
 
             <div class="text-center border-bottom pb-3 mb-3">
-              <h3 class="header-title mb-1">টি এস এস ভিলা (সোহাশোভা ছাত্রী নিবাস)</h3>
-              <p class="text-muted mb-1 small">রংপুরের প্রাণকেন্দ্রে ছাত্রীদের জন্য একটি আদর্শ আবাসন</p>
+              <h3 class="header-title mb-1">টি এস এস ভিলা</h3>
+              <p class="text-muted mb-1 small">কলেজ রোড, নেসকো গেট সংলগ্ন, রংপুর</p>
               <span class="badge bg-primary text-white fs-6 px-3 py-1">মেস ত্যাগ ও সিট রিলিজ ছাড়পত্র (Seat Release Clearance Slip)</span>
             </div>
 
