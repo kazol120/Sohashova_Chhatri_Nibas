@@ -32535,7 +32535,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       if (!isNoticeFulfilled) {
         iconType = "error";
         title = "⚠️ 2 Months Notice Requirement Not Met!";
-        var noticeStatusText = r.will_leave === 1 ? "\u09A8\u09CB\u099F\u09BF\u09B6 \u09A6\u09C7\u0993\u09DF\u09BE\u09B0 \u09AC\u09DF\u09B8 ".concat(r.notice_days_elapsed, " \u09A6\u09BF\u09A8 (\u09EC\u09E6 \u09A6\u09BF\u09A8 / \u09E8 \u09AE\u09BE\u09B8 \u09AA\u09C2\u09B0\u09CD\u09A3 \u09B9\u09DF\u09A8\u09BF)") : "কোনো অগ্রিম নোটিশ দেওয়া হয়নি";
+        var noticeStatusText = r.will_leave === 1 ? "\u09A8\u09CB\u099F\u09BF\u09B6 \u09A6\u09C7\u0993\u09DF\u09BE \u09B9\u09DF\u09C7\u099B\u09C7 ".concat(r.notice_days_elapsed, " \u09A6\u09BF\u09A8 (\u09EC\u09E6 \u09A6\u09BF\u09A8 / \u09E8 \u09AE\u09BE\u09B8 \u09AA\u09C2\u09B0\u09CD\u09A3 \u09B9\u09DF\u09A8\u09BF)") : "কোনো অগ্রিম নোটিশ দেওয়া হয়নি";
         var advAdjustmentSummary = "";
         if (totalAdv > 0) {
           if (totalAdv >= fineVal) {
@@ -32579,6 +32579,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
                 res = _context5.sent;
                 if (res.data.success) {
                   _this6.toast(res.data.message || "Checkout completed successfully!", "success");
+                  _this6.printCheckoutReceipt(r);
                   _this6.fetchData(_this6.pagination.current_page);
                 } else {
                   _this6.toast(res.data.message || "Action failed", "error");
@@ -32599,6 +32600,51 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
           return _ref3.apply(this, arguments);
         };
       }());
+    },
+    printCheckoutReceipt: function printCheckoutReceipt(r) {
+      var isNoticeFulfilled = r.will_leave === 1 && r.is_notice_fulfilled;
+      var totalAdv = Number(r.total_advance_deposit || 0);
+      var fineVal = Number(r.monthly_amount || 0) * 2;
+      var uType = (r.user_type || 'student').toLowerCase().trim();
+      var nameLabel = 'আবাসিকের নাম:';
+      if (uType === 'student') {
+        nameLabel = 'ছাত্রীর নাম:';
+      } else if (uType === 'working professional' || uType === 'jobholder' || uType === 'job_holder') {
+        nameLabel = 'চাকরিজীবীর নাম:';
+      }
+      var noticeText = isNoticeFulfilled ? "\u09E6\u09E8 \u09AE\u09BE\u09B8\u09C7\u09B0 \u0985\u0997\u09CD\u09B0\u09BF\u09AE \u09A8\u09CB\u099F\u09BF\u09B6 \u09A8\u09BF\u09DF\u09AE \u09B8\u09AB\u09B2\u09AD\u09BE\u09AC\u09C7 \u09B8\u09AE\u09CD\u09AA\u09A8\u09CD\u09A8 \u09B9\u09DF\u09C7\u099B\u09C7 (".concat(r.notice_days_elapsed, " \u09A6\u09BF\u09A8)") : r.will_leave === 1 ? "\u09A8\u09CB\u099F\u09BF\u09B6 \u09A6\u09C7\u0993\u09DF\u09BE \u09B9\u09DF\u09C7\u099B\u09C7 ".concat(r.notice_days_elapsed, " \u09A6\u09BF\u09A8 (\u09EC\u09E6 \u09A6\u09BF\u09A8 / \u09E8 \u09AE\u09BE\u09B8 \u09AA\u09C2\u09B0\u09CD\u09A3 \u09B9\u09DF\u09A8\u09BF)") : 'কোনো অগ্রিম নোটিশ দেওয়া হয়নি';
+      var fineText = isNoticeFulfilled ? '৳ 0.00 (কোনো জরিমানা প্রযোজ্য নয়)' : "\u09F3 ".concat(fineVal.toLocaleString(), " (\u09E8 \u09AE\u09BE\u09B8\u09C7\u09B0 \u09AD\u09BE\u09DC\u09BE \u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE)");
+      var advText = isNoticeFulfilled ? "\u09F3 ".concat(totalAdv.toLocaleString(), " (\u09AE\u09C7\u09B8 \u099B\u09BE\u09DC\u09BE\u09B0 \u0995\u09BE\u09B0\u09A3\u09C7 \u098F\u09A1\u09AD\u09BE\u09A8\u09CD\u09B8 \u09AB\u09C7\u09B0\u09A4 \u09A6\u09C7\u0993\u09DF\u09BE \u09B9\u09B2\u09CB)") : totalAdv >= fineVal ? "\u09F3 ".concat(fineVal.toLocaleString(), " (\u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE \u09B9\u09BF\u09B8\u09C7\u09AC\u09C7 \u0995\u09C7\u099F\u09C7 \u09A8\u09C7\u0993\u09DF\u09BE \u09B9\u09DF\u09C7\u099B\u09C7)") : "\u09F3 ".concat(totalAdv.toLocaleString(), " (\u09B8\u09AE\u09CD\u09AA\u09C2\u09B0\u09CD\u09A3 \u098F\u09A1\u09AD\u09BE\u09A8\u09CD\u09B8 \u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE \u09B9\u09BF\u09B8\u09C7\u09AC\u09C7 \u0995\u09C7\u099F\u09C7 \u09A8\u09C7\u0993\u09DF\u09BE \u09B9\u09DF\u09C7\u099B\u09C7)");
+      var floornumber = (r.room_items || []).map(function (i) {
+        return i.floornumber;
+      }).filter(Boolean).join(', ') || '-';
+      var roomnumber = (r.room_items || []).map(function (i) {
+        return i.roomnumber;
+      }).filter(Boolean).join(', ') || r.room_number || '-';
+      var printDate = new Date().toLocaleDateString('bn-BD', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      var htmlContent = "\n        <!DOCTYPE html>\n        <html>\n        <head>\n          <title>Seat Release & Checkout Clearance - \u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE</title>\n          <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\">\n          <style>\n            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 25px; background: #fff; color: #222; }\n            .receipt-card { max-width: 720px; margin: auto; padding: 30px; border: 2px solid #033364; border-radius: 10px; }\n            .header-title { color: #033364; font-weight: 800; }\n            .table-details th { font-weight: 600; color: #444; width: 40%; }\n            .table-details td { font-weight: 700; color: #111; }\n            .badge-notice { background-color: ".concat(isNoticeFulfilled ? '#198754' : '#dc3545', "; color: #fff; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 4px; }\n            @media print {\n              body { padding: 0; }\n              .receipt-card { border: 2px solid #000 !important; max-width: 100%; border-radius: 0; padding: 20px; }\n              .no-print { display: none !important; }\n            }\n          </style>\n        </head>\n        <body>\n          <div class=\"receipt-card\">\n            <div class=\"d-flex justify-content-between align-items-center mb-3 no-print\">\n              <button class=\"btn btn-secondary btn-sm\" onclick=\"window.close()\">Close</button>\n              <button class=\"btn btn-primary btn-sm px-4 fw-bold\" onclick=\"window.print()\"><i class=\"bi bi-printer\"></i> Print Slip</button>\n            </div>\n\n            <div class=\"text-center border-bottom pb-3 mb-3\">\n              <h3 class=\"header-title mb-1\">\u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE (\u09B8\u09CB\u09B9\u09BE\u09B6\u09CB\u09AD\u09BE \u099B\u09BE\u09A4\u09CD\u09B0\u09C0 \u09A8\u09BF\u09AC\u09BE\u09B8)</h3>\n              <p class=\"text-muted mb-1 small\">\u09B0\u0982\u09AA\u09C1\u09B0\u09C7\u09B0 \u09AA\u09CD\u09B0\u09BE\u09A3\u0995\u09C7\u09A8\u09CD\u09A6\u09CD\u09B0\u09C7 \u099B\u09BE\u09A4\u09CD\u09B0\u09C0\u09A6\u09C7\u09B0 \u099C\u09A8\u09CD\u09AF \u098F\u0995\u099F\u09BF \u0986\u09A6\u09B0\u09CD\u09B6 \u0986\u09AC\u09BE\u09B8\u09A8</p>\n              <span class=\"badge bg-primary text-white fs-6 px-3 py-1\">\u09AE\u09C7\u09B8 \u09A4\u09CD\u09AF\u09BE\u0997 \u0993 \u09B8\u09BF\u099F \u09B0\u09BF\u09B2\u09BF\u099C \u099B\u09BE\u09DC\u09AA\u09A4\u09CD\u09B0 (Seat Release Clearance Slip)</span>\n            </div>\n\n            <table class=\"table table-bordered align-middle table-details mb-3\">\n              <tbody>\n                <tr>\n                  <th>").concat(nameLabel, "</th>\n                  <td>").concat(r.full_name, " (").concat(r.user_type || 'student', ")</td>\n                </tr>\n                <tr>\n                  <th>\u09AF\u09CB\u0997\u09BE\u09AF\u09CB\u0997 (\u09AB\u09CB\u09A8):</th>\n                  <td>").concat(r.phone || '-', "</td>\n                </tr>\n                <tr>\n                  <th>\u09AB\u09CD\u09B2\u09CB\u09B0 / \u09B0\u09C1\u09AE / \u09B8\u09BF\u099F \u09A8\u0982:</th>\n                  <td>").concat(floornumber, " / ").concat(roomnumber, "</td>\n                </tr>\n                <tr>\n                  <th>\u09AE\u09C7\u09B8\u09C7 \u09AF\u09CB\u0997\u09A6\u09BE\u09A8\u09C7\u09B0 \u09A4\u09BE\u09B0\u09BF\u0996 (Check-in):</th>\n                  <td>").concat(this.formatDate(r.check_in), "</td>\n                </tr>\n                <tr>\n                  <th>\u09AE\u09C7\u09B8 \u09A4\u09CD\u09AF\u09BE\u0997\u09C7\u09B0 \u09A4\u09BE\u09B0\u09BF\u0996 (Check-out):</th>\n                  <td>").concat(this.formatDate(new Date().toISOString()), "</td>\n                </tr>\n                <tr>\n                  <th>\u09E6\u09E8 \u09AE\u09BE\u09B8\u09C7\u09B0 \u09A8\u09CB\u099F\u09BF\u09B6 \u0985\u09AC\u09B8\u09CD\u09A5\u09BE:</th>\n                  <td><span class=\"badge-notice\">").concat(noticeText, "</span></td>\n                </tr>\n                <tr>\n                  <th>\u09AE\u09BE\u09B8\u09BF\u0995 \u09B0\u09C1\u09AE \u09AD\u09BE\u09DC\u09BE:</th>\n                  <td>\u09F3 ").concat(Number(r.monthly_amount || 0).toLocaleString(), "</td>\n                </tr>\n                <tr>\n                  <th>\u099C\u09B0\u09C1\u09B0\u09BF \u09AE\u09C7\u09B8 \u099B\u09BE\u09DC\u09BE\u09B0 \u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE:</th>\n                  <td class=\"").concat(isNoticeFulfilled ? 'text-success' : 'text-danger', "\">").concat(fineText, "</td>\n                </tr>\n                <tr>\n                  <th>\u098F\u09A1\u09AD\u09BE\u09A8\u09CD\u09B8 \u099C\u09AE\u09BE \u09B8\u09CD\u09A5\u09BF\u09A4\u09BF:</th>\n                  <td>").concat(advText, "</td>\n                </tr>\n              </tbody>\n            </table>\n\n            <div class=\"d-flex justify-content-between align-items-end mt-5 pt-4 border-top\">\n              <div class=\"text-center\" style=\"width: 200px;\">\n                <div class=\"border-top border-dark pt-1 fw-bold small\">\u09B0\u09C7\u09B8\u09BF\u09A1\u09C7\u09A8\u09CD\u099F\u09C7\u09B0 \u09B8\u09CD\u09AC\u09BE\u0995\u09CD\u09B7\u09B0</div>\n              </div>\n              <div class=\"text-center\" style=\"width: 200px;\">\n                <div class=\"border-top border-dark pt-1 fw-bold small\">\u09AE\u09C7\u09B8 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7\u09C7\u09B0 \u09B8\u09CD\u09AC\u09BE\u0995\u09CD\u09B7\u09B0</div>\n              </div>\n            </div>\n\n            <div class=\"text-center text-muted small mt-4 pt-2 border-top\">\n              \u09AA\u09CD\u09B0\u09BF\u09A8\u09CD\u099F\u09C7\u09B0 \u09B8\u09AE\u09DF: ").concat(printDate, " | \u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE \u09AE\u09C7\u09B8 \u09AE\u09CD\u09AF\u09BE\u09A8\u09C7\u099C\u09AE\u09C7\u09A8\u09CD\u099F \u09B8\u09BF\u09B8\u09CD\u099F\u09C7\u09AE\n            </div>\n          </div>\n        </body>\n        </html>\n      ");
+      var iframe = document.getElementById("release-print-iframe");
+      if (!iframe) {
+        iframe = document.createElement("iframe");
+        iframe.id = "release-print-iframe";
+        iframe.style.position = "absolute";
+        iframe.style.width = "0px";
+        iframe.style.height = "0px";
+        iframe.style.border = "none";
+        document.body.appendChild(iframe);
+      }
+      var doc = iframe.contentWindow.document;
+      doc.open();
+      doc.write(htmlContent);
+      doc.close();
+      setTimeout(function () {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      }, 500);
     },
     formatDate: function formatDate(d) {
       if (!d) return "-";

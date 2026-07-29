@@ -455,7 +455,7 @@ export default {
         iconType = "error";
         title = "⚠️ 2 Months Notice Requirement Not Met!";
         const noticeStatusText = r.will_leave === 1 
-          ? `নোটিশ দেওয়ার বয়স ${r.notice_days_elapsed} দিন (৬০ দিন / ২ মাস পূর্ণ হয়নি)` 
+          ? `নোটিশ দেওয়া হয়েছে ${r.notice_days_elapsed} দিন (৬০ দিন / ২ মাস পূর্ণ হয়নি)` 
           : "কোনো অগ্রিম নোটিশ দেওয়া হয়নি";
 
         let advAdjustmentSummary = "";
@@ -515,6 +515,7 @@ export default {
             const res = await axios.post(`${this.url}bookings/${r.id}/instant-release`);
             if (res.data.success) {
               this.toast(res.data.message || "Checkout completed successfully!", "success");
+              this.printCheckoutReceipt(r);
               this.fetchData(this.pagination.current_page);
             } else {
               this.toast(res.data.message || "Action failed", "error");
@@ -524,6 +525,150 @@ export default {
           }
         }
       });
+    },
+
+    printCheckoutReceipt(r) {
+      const isNoticeFulfilled = r.will_leave === 1 && r.is_notice_fulfilled;
+      const totalAdv = Number(r.total_advance_deposit || 0);
+      const fineVal = Number(r.monthly_amount || 0) * 2;
+
+      const uType = (r.user_type || 'student').toLowerCase().trim();
+      let nameLabel = 'আবাসিকের নাম:';
+      if (uType === 'student') {
+        nameLabel = 'ছাত্রীর নাম:';
+      } else if (uType === 'working professional' || uType === 'jobholder' || uType === 'job_holder') {
+        nameLabel = 'চাকরিজীবীর নাম:';
+      }
+
+      let noticeText = isNoticeFulfilled
+        ? `০২ মাসের অগ্রিম নোটিশ নিয়ম সফলভাবে সম্পন্ন হয়েছে (${r.notice_days_elapsed} দিন)`
+        : (r.will_leave === 1 ? `নোটিশ দেওয়া হয়েছে ${r.notice_days_elapsed} দিন (৬০ দিন / ২ মাস পূর্ণ হয়নি)` : 'কোনো অগ্রিম নোটিশ দেওয়া হয়নি');
+
+      let fineText = isNoticeFulfilled ? '৳ 0.00 (কোনো জরিমানা প্রযোজ্য নয়)' : `৳ ${fineVal.toLocaleString()} (২ মাসের ভাড়া জরিমানা)`;
+      let advText = isNoticeFulfilled 
+        ? `৳ ${totalAdv.toLocaleString()} (মেস ছাড়ার কারণে এডভান্স ফেরত দেওয়া হলো)`
+        : (totalAdv >= fineVal 
+            ? `৳ ${fineVal.toLocaleString()} (জরিমানা হিসেবে কেটে নেওয়া হয়েছে)` 
+            : `৳ ${totalAdv.toLocaleString()} (সম্পূর্ণ এডভান্স জরিমানা হিসেবে কেটে নেওয়া হয়েছে)`);
+
+      const floornumber = (r.room_items || []).map(i => i.floornumber).filter(Boolean).join(', ') || '-';
+      const roomnumber = (r.room_items || []).map(i => i.roomnumber).filter(Boolean).join(', ') || r.room_number || '-';
+
+      const printDate = new Date().toLocaleDateString('bn-BD', {
+        year: 'numeric', month: 'long', day: 'numeric'
+      });
+
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Seat Release & Checkout Clearance - টি এস এস ভিলা</title>
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+          <style>
+            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 25px; background: #fff; color: #222; }
+            .receipt-card { max-width: 720px; margin: auto; padding: 30px; border: 2px solid #033364; border-radius: 10px; }
+            .header-title { color: #033364; font-weight: 800; }
+            .table-details th { font-weight: 600; color: #444; width: 40%; }
+            .table-details td { font-weight: 700; color: #111; }
+            .badge-notice { background-color: ${isNoticeFulfilled ? '#198754' : '#dc3545'}; color: #fff; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 4px; }
+            @media print {
+              body { padding: 0; }
+              .receipt-card { border: 2px solid #000 !important; max-width: 100%; border-radius: 0; padding: 20px; }
+              .no-print { display: none !important; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="receipt-card">
+            <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+              <button class="btn btn-secondary btn-sm" onclick="window.close()">Close</button>
+              <button class="btn btn-primary btn-sm px-4 fw-bold" onclick="window.print()"><i class="bi bi-printer"></i> Print Slip</button>
+            </div>
+
+            <div class="text-center border-bottom pb-3 mb-3">
+              <h3 class="header-title mb-1">টি এস এস ভিলা (সোহাশোভা ছাত্রী নিবাস)</h3>
+              <p class="text-muted mb-1 small">রংপুরের প্রাণকেন্দ্রে ছাত্রীদের জন্য একটি আদর্শ আবাসন</p>
+              <span class="badge bg-primary text-white fs-6 px-3 py-1">মেস ত্যাগ ও সিট রিলিজ ছাড়পত্র (Seat Release Clearance Slip)</span>
+            </div>
+
+            <table class="table table-bordered align-middle table-details mb-3">
+              <tbody>
+                <tr>
+                  <th>${nameLabel}</th>
+                  <td>${r.full_name} (${r.user_type || 'student'})</td>
+                </tr>
+                <tr>
+                  <th>যোগাযোগ (ফোন):</th>
+                  <td>${r.phone || '-'}</td>
+                </tr>
+                <tr>
+                  <th>ফ্লোর / রুম / সিট নং:</th>
+                  <td>${floornumber} / ${roomnumber}</td>
+                </tr>
+                <tr>
+                  <th>মেসে যোগদানের তারিখ (Check-in):</th>
+                  <td>${this.formatDate(r.check_in)}</td>
+                </tr>
+                <tr>
+                  <th>মেস ত্যাগের তারিখ (Check-out):</th>
+                  <td>${this.formatDate(new Date().toISOString())}</td>
+                </tr>
+                <tr>
+                  <th>০২ মাসের নোটিশ অবস্থা:</th>
+                  <td><span class="badge-notice">${noticeText}</span></td>
+                </tr>
+                <tr>
+                  <th>মাসিক রুম ভাড়া:</th>
+                  <td>৳ ${Number(r.monthly_amount || 0).toLocaleString()}</td>
+                </tr>
+                <tr>
+                  <th>জরুরি মেস ছাড়ার জরিমানা:</th>
+                  <td class="${isNoticeFulfilled ? 'text-success' : 'text-danger'}">${fineText}</td>
+                </tr>
+                <tr>
+                  <th>এডভান্স জমা স্থিতি:</th>
+                  <td>${advText}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="d-flex justify-content-between align-items-end mt-5 pt-4 border-top">
+              <div class="text-center" style="width: 200px;">
+                <div class="border-top border-dark pt-1 fw-bold small">রেসিডেন্টের স্বাক্ষর</div>
+              </div>
+              <div class="text-center" style="width: 200px;">
+                <div class="border-top border-dark pt-1 fw-bold small">মেস কর্তৃপক্ষের স্বাক্ষর</div>
+              </div>
+            </div>
+
+            <div class="text-center text-muted small mt-4 pt-2 border-top">
+              প্রিন্টের সময়: ${printDate} | টি এস এস ভিলা মেস ম্যানেজমেন্ট সিস্টেম
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      let iframe = document.getElementById("release-print-iframe");
+      if (!iframe) {
+        iframe = document.createElement("iframe");
+        iframe.id = "release-print-iframe";
+        iframe.style.position = "absolute";
+        iframe.style.width = "0px";
+        iframe.style.height = "0px";
+        iframe.style.border = "none";
+        document.body.appendChild(iframe);
+      }
+
+      const doc = iframe.contentWindow.document;
+      doc.open();
+      doc.write(htmlContent);
+      doc.close();
+
+      setTimeout(() => {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      }, 500);
     },
 
     formatDate(d) {
