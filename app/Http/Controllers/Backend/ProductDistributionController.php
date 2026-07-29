@@ -288,6 +288,24 @@ class ProductDistributionController extends Controller
                 $total = $items->sum('total_price_available');
                 return $productName . '=' . number_format($total, 2);
             })->values()->implode(', ');
+
+            $itemsList = $group->map(function ($g) {
+                $qty = (float) $g->customer_quantity;
+                $totalPrice = (float) $g->total_price_available;
+                $unitPrice = (float) ($g->single_price ?? ($qty > 0 ? $totalPrice / $qty : 0));
+                return [
+                    'id'           => $g->id,
+                    'product_name' => $g->product_name,
+                    'quantity'     => $qty,
+                    'single_price' => number_format($unitPrice, 2, '.', ''),
+                    'total_price'  => number_format($totalPrice, 2, '.', ''),
+                ];
+            })->values()->toArray();
+
+            $firstQty = (float) $first->customer_quantity;
+            $firstTotal = (float) $first->total_price_available;
+            $firstUnitPrice = (float) ($first->single_price ?? ($firstQty > 0 ? $firstTotal / $firstQty : 0));
+
             return [
                 'id'                    => $first->id,
                 'purchase_date'         => $first->purchase_date,
@@ -303,6 +321,8 @@ class ProductDistributionController extends Controller
                 'product_price_details' => $productPriceDetails,
                 'total_quantity'        => $group->sum('customer_quantity'),
                 'total_price_available' => $group->sum('total_price_available'),
+                'single_price'          => number_format($firstUnitPrice, 2, '.', ''),
+                'items'                 => $itemsList,
             ];
         });
 
@@ -367,6 +387,24 @@ class ProductDistributionController extends Controller
             $total = $items->sum('total_price_available');
             return $productName . '=' . number_format($total, 2);
         })->values()->implode(', ');
+
+        $itemsList = $group->map(function ($g) {
+            $qty = (float) $g->customer_quantity;
+            $totalPrice = (float) $g->total_price_available;
+            $unitPrice = (float) ($g->single_price ?? ($qty > 0 ? $totalPrice / $qty : 0));
+            return [
+                'id'           => $g->id,
+                'product_name' => $g->product_name,
+                'quantity'     => $qty,
+                'single_price' => number_format($unitPrice, 2, '.', ''),
+                'total_price'  => number_format($totalPrice, 2, '.', ''),
+            ];
+        })->values()->toArray();
+
+        $firstQty = (float) $first->customer_quantity;
+        $firstTotal = (float) $first->total_price_available;
+        $firstUnitPrice = (float) ($first->single_price ?? ($firstQty > 0 ? $firstTotal / $firstQty : 0));
+
         return [
             'id'                    => $first->id,
             'purchase_date'         => $first->purchase_date,
@@ -382,6 +420,8 @@ class ProductDistributionController extends Controller
             'product_price_details' => $productPriceDetails,
             'total_quantity'        => $group->sum('customer_quantity'),
             'total_price_available' => $group->sum('total_price_available'),
+            'single_price'          => number_format($firstUnitPrice, 2, '.', ''),
+            'items'                 => $itemsList,
         ];
     });
 
