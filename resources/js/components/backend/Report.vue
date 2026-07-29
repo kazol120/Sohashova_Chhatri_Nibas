@@ -6,7 +6,7 @@
 
           <!-- Header -->
           <div class="card-header d-flex flex-wrap gap-2 justify-content-between align-items-center py-3">
-            <h5 class="card-title mb-0">Profit / Loss Report</h5>
+            <h5 class="card-title mb-0">Profit / Loss Report </h5>
             <button class="btn btn-primary" type="button" @click="printTable">
               <i class="ti ti-printer me-1"></i> Print
             </button>
@@ -74,18 +74,19 @@
                     <!-- Income -->
                     <th colspan="4" style="background:#16a34a; color:#fff;">আয় (Income)</th>
                     <!-- Cost -->
-                    <th colspan="4" style="background:#dc2626; color:#fff;">ব্যয় (Expense)</th>
+                    <th colspan="5" style="background:#dc2626; color:#fff;">ব্যয় (Expense)</th>
                     <!-- Result -->
                     <th rowspan="2" style="vertical-align:middle; background:#1d4ed8; color:#fff;">Profit / Loss</th>
                   </tr>
                   <tr>
-                    <th style="background:#dcfce7; color:#166534;">Room Booking</th>
+                    <th style="background:#dcfce7; color:#166534;">advance booking fee</th>
                     <th style="background:#dcfce7; color:#166534;">Monthly Rent</th>
                     <th style="background:#dcfce7; color:#166534;">Product Sales</th>
                     <th style="background:#bbf7d0; color:#166534; font-weight:700;">Total Income</th>
                     <th style="background:#fee2e2; color:#991b1b;">General Expense</th>
                     <th style="background:#fee2e2; color:#991b1b;">Staff Salary</th>
                     <th style="background:#fee2e2; color:#991b1b;">Product Purchase</th>
+                    <th style="background:#fee2e2; color:#991b1b;">Advance Refund</th>
                     <th style="background:#fecaca; color:#991b1b; font-weight:700;">Total Cost</th>
                   </tr>
                 </thead>
@@ -109,6 +110,7 @@
                       <td class="text-danger fw-semibold">{{ formatAmount(row.expense) }}</td>
                       <td class="text-danger fw-semibold">{{ formatAmount(row.salary) }}</td>
                       <td class="text-danger fw-semibold">{{ formatAmount(row.product_purchase) }}</td>
+                      <td class="text-danger fw-semibold">{{ formatAmount(row.advance_refund) }}</td>
                       <td class="fw-bold" style="background:#fff1f2;">{{ formatAmount(row.total_cost) }}</td>
                       <!-- Profit/Loss -->
                       <td class="fw-bold">
@@ -122,20 +124,21 @@
 
                     <!-- Yearly monthly breakdown -->
                     <tr v-if="profitViewMode === 'yearly' && expandedYear === row.label" :key="row.label + '-expand'">
-                      <td colspan="10" class="p-0">
+                      <td colspan="11" class="p-0">
                         <div class="detail-box-profit">
                           <div class="detail-title">📅 {{ row.label }} - Monthly Breakdown</div>
                           <table class="table table-sm table-bordered mb-0 text-center">
                             <thead style="background:#fff8e1;">
                               <tr>
                                 <th>Month</th>
-                                <th style="color:#16a34a;">Room Booking</th>
+                                <th style="color:#16a34a;">advance booking fee </th>
                                 <th style="color:#16a34a;">Monthly Rent</th>
                                 <th style="color:#16a34a;">Product Sales</th>
                                 <th style="color:#166534; font-weight:700;">Total Income</th>
                                 <th style="color:#dc2626;">Expense</th>
                                 <th style="color:#dc2626;">Salary</th>
                                 <th style="color:#dc2626;">Product Purchase</th>
+                                <th style="color:#dc2626;">Advance Refund</th>
                                 <th style="color:#991b1b; font-weight:700;">Total Cost</th>
                                 <th>Profit / Loss</th>
                               </tr>
@@ -150,6 +153,7 @@
                                 <td class="text-danger">{{ formatAmount(m.expense) }}</td>
                                 <td class="text-danger">{{ formatAmount(m.salary) }}</td>
                                 <td class="text-danger">{{ formatAmount(m.product_purchase) }}</td>
+                                <td class="text-danger">{{ formatAmount(m.advance_refund) }}</td>
                                 <td class="fw-bold" style="background:#fff1f2;">{{ formatAmount(m.total_cost) }}</td>
                                 <td>
                                   <span class="badge px-2 py-1"
@@ -161,7 +165,7 @@
                               </tr>
                             </tbody>
                             <tbody v-else>
-                              <tr><td colspan="10" class="text-center text-muted">No data</td></tr>
+                              <tr><td colspan="11" class="text-center text-muted">No data</td></tr>
                             </tbody>
                           </table>
                         </div>
@@ -179,6 +183,7 @@
                     <td class="text-danger">{{ formatAmount(profitGrand.expense) }}</td>
                     <td class="text-danger">{{ formatAmount(profitGrand.salary) }}</td>
                     <td class="text-danger">{{ formatAmount(profitGrand.product_purchase) }}</td>
+                    <td class="text-danger">{{ formatAmount(profitGrand.advance_refund) }}</td>
                     <td style="background:#fff1f2;">{{ formatAmount(profitGrand.total_cost) }}</td>
                     <td>
                       <span class="badge px-3 py-2" style="font-size:0.82rem;"
@@ -192,7 +197,7 @@
 
                 <tbody v-else>
                   <tr>
-                    <td colspan="10" class="text-center py-5 text-muted">
+                    <td colspan="11" class="text-center py-5 text-muted">
                       <span v-if="profitLoading"><i class="fa fa-spinner fa-spin me-2"></i>Loading...</span>
                       <span v-else>No data found</span>
                     </td>
@@ -230,12 +235,13 @@ export default {
           acc.expense          += row.expense          || 0;
           acc.salary           += row.salary           || 0;
           acc.product_purchase += row.product_purchase || 0;
+          acc.advance_refund   += row.advance_refund   || 0;
           acc.total_cost       += row.total_cost       || 0;
           acc.profit_loss      += row.profit_loss      || 0;
           return acc;
         },
         { room_booking: 0, monthly_payment: 0, product_sales: 0, total_income: 0,
-          expense: 0, salary: 0, product_purchase: 0, total_cost: 0, profit_loss: 0 }
+          expense: 0, salary: 0, product_purchase: 0, advance_refund: 0, total_cost: 0, profit_loss: 0 }
       );
     },
   },

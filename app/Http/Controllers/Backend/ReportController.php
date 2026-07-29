@@ -37,8 +37,19 @@ public function profitLossReport(Request $request)
 
         foreach ($months as $num => $name) {
             // ====== INCOME ======
-            $roomBooking    = (float) RoomBookingHistory::whereYear('check_in', $year)
-                ->whereMonth('check_in', $num)->sum('monthly_amount');
+            // 1) Advance booking fee from floor_number_room_number_roomprice
+            $bookingsInMonth = RoomBookingHistory::whereYear('check_in', $year)
+                ->whereMonth('check_in', $num)->get();
+
+            $roomBooking = (float) $bookingsInMonth->sum(function($row) {
+                $items = is_string($row->floor_number_room_number_roomprice)
+                    ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
+                    : ($row->floor_number_room_number_roomprice ?? []);
+                $advSum = collect($items)->sum(function($i) {
+                    return (float)($i['original_advance_price'] ?? $i['advance_price'] ?? 0);
+                });
+                return $advSum > 0 ? $advSum : (float)($row->monthly_amount ?? 0);
+            });
 
             $monthlyPayment = (float) MonthlyPayment::whereYear('created_at', $year)
                 ->whereMonth('created_at', $num)->sum('paid_amount');
@@ -58,7 +69,35 @@ public function profitLossReport(Request $request)
             $productPurchase = (float) ProductPurchase::whereYear('created_at', $year)
                 ->whereMonth('created_at', $num)->sum('total_price');
 
-            $totalCost = $expense + $salary + $productPurchase;
+            // Advance Refund for residents checked out in this month with 2 months notice fulfilled
+            $refundedBookings = RoomBookingHistory::where('status', 1)
+                ->where('will_leave', 1)
+                ->whereNotNull('notice_date')
+                ->where(function($query) use ($year, $num) {
+                    $query->where(function($q) use ($year, $num) {
+                        $q->whereYear('today_check_out', $year)->whereMonth('today_check_out', $num);
+                    })->orWhere(function($q) use ($year, $num) {
+                        $q->whereNull('today_check_out')
+                          ->whereYear('check_out', $year)
+                          ->whereMonth('check_out', $num);
+                    });
+                })->get()->filter(function($row) {
+                    $noticeDate = \Carbon\Carbon::parse($row->notice_date);
+                    $checkoutDate = $row->today_check_out ? \Carbon\Carbon::parse($row->today_check_out) : ($row->check_out ? \Carbon\Carbon::parse($row->check_out) : now());
+                    return (int) $noticeDate->diffInDays($checkoutDate) >= 60;
+                });
+
+            $advanceRefund = (float) $refundedBookings->sum(function($row) {
+                $items = is_string($row->floor_number_room_number_roomprice)
+                    ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
+                    : ($row->floor_number_room_number_roomprice ?? []);
+                $adv = collect($items)->sum(function($i) {
+                    return (float)($i['original_advance_price'] ?? $i['advance_price'] ?? 0);
+                });
+                return $adv > 0 ? $adv : ((float)($row->monthly_amount ?? 0) * 2);
+            });
+
+            $totalCost = $expense + $salary + $productPurchase + $advanceRefund;
 
             $rows[] = [
                 'label'            => $name . ' ' . $year,
@@ -69,6 +108,7 @@ public function profitLossReport(Request $request)
                 'expense'          => $expense,
                 'salary'           => $salary,
                 'product_purchase' => $productPurchase,
+                'advance_refund'   => $advanceRefund,
                 'total_cost'       => $totalCost,
                 'profit_loss'      => $totalIncome - $totalCost,
             ];
@@ -87,7 +127,17 @@ public function profitLossReport(Request $request)
 
         foreach (range($currentYear, $oldestYear) as $year) {
             // ====== INCOME ======
-            $roomBooking    = (float) RoomBookingHistory::whereYear('check_in', $year)->sum('monthly_amount');
+            $bookingsInYear = RoomBookingHistory::whereYear('check_in', $year)->get();
+            $roomBooking = (float) $bookingsInYear->sum(function($row) {
+                $items = is_string($row->floor_number_room_number_roomprice)
+                    ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
+                    : ($row->floor_number_room_number_roomprice ?? []);
+                $advSum = collect($items)->sum(function($i) {
+                    return (float)($i['original_advance_price'] ?? $i['advance_price'] ?? 0);
+                });
+                return $advSum > 0 ? $advSum : (float)($row->monthly_amount ?? 0);
+            });
+
             $monthlyPayment = (float) MonthlyPayment::whereYear('created_at', $year)->sum('paid_amount');
             $productSales   = (float) ProductDistribution::whereYear('created_at', $year)->sum('total_price_available');
             $totalIncome    = $roomBooking + $monthlyPayment + $productSales;
@@ -96,15 +146,50 @@ public function profitLossReport(Request $request)
             $expense         = (float) Expense::whereYear('created_at', $year)->sum('expense_amount');
             $salary          = (float) StaffSalaryPayment::whereYear('created_at', $year)->sum('amount');
             $productPurchase = (float) ProductPurchase::whereYear('created_at', $year)->sum('total_price');
-            $totalCost       = $expense + $salary + $productPurchase;
+
+            $refundedBookingsYear = RoomBookingHistory::where('status', 1)
+                ->where('will_leave', 1)
+                ->whereNotNull('notice_date')
+                ->where(function($query) use ($year) {
+                    $query->whereYear('today_check_out', $year)
+                          ->orWhere(function($q) use ($year) {
+                              $q->whereNull('today_check_out')->whereYear('check_out', $year);
+                          });
+                })->get()->filter(function($row) {
+                    $noticeDate = \Carbon\Carbon::parse($row->notice_date);
+                    $checkoutDate = $row->today_check_out ? \Carbon\Carbon::parse($row->today_check_out) : ($row->check_out ? \Carbon\Carbon::parse($row->check_out) : now());
+                    return (int) $noticeDate->diffInDays($checkoutDate) >= 60;
+                });
+
+            $advanceRefund = (float) $refundedBookingsYear->sum(function($row) {
+                $items = is_string($row->floor_number_room_number_roomprice)
+                    ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
+                    : ($row->floor_number_room_number_roomprice ?? []);
+                $adv = collect($items)->sum(function($i) {
+                    return (float)($i['original_advance_price'] ?? $i['advance_price'] ?? 0);
+                });
+                return $adv > 0 ? $adv : ((float)($row->monthly_amount ?? 0) * 2);
+            });
+
+            $totalCost = $expense + $salary + $productPurchase + $advanceRefund;
 
             if ($roomBooking == 0 && $monthlyPayment == 0 && $productSales == 0
-                && $expense == 0 && $salary == 0 && $productPurchase == 0) continue;
+                && $expense == 0 && $salary == 0 && $productPurchase == 0 && $advanceRefund == 0) continue;
 
             // Monthly breakdown
             $monthlyBreakdown = [];
             foreach ($months as $num => $name) {
-                $mRoomBooking    = (float) RoomBookingHistory::whereYear('check_in', $year)->whereMonth('check_in', $num)->sum('monthly_amount');
+                $mBookings = RoomBookingHistory::whereYear('check_in', $year)->whereMonth('check_in', $num)->get();
+                $mRoomBooking = (float) $mBookings->sum(function($row) {
+                    $items = is_string($row->floor_number_room_number_roomprice)
+                        ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
+                        : ($row->floor_number_room_number_roomprice ?? []);
+                    $advSum = collect($items)->sum(function($i) {
+                        return (float)($i['original_advance_price'] ?? $i['advance_price'] ?? 0);
+                    });
+                    return $advSum > 0 ? $advSum : (float)($row->monthly_amount ?? 0);
+                });
+
                 $mMonthlyPayment = (float) MonthlyPayment::whereYear('created_at', $year)->whereMonth('created_at', $num)->sum('paid_amount');
                 $mProductSales   = (float) ProductDistribution::whereYear('created_at', $year)->whereMonth('created_at', $num)->sum('total_price_available');
                 $mTotalIncome    = $mRoomBooking + $mMonthlyPayment + $mProductSales;
@@ -112,10 +197,38 @@ public function profitLossReport(Request $request)
                 $mExpense         = (float) Expense::whereYear('created_at', $year)->whereMonth('created_at', $num)->sum('expense_amount');
                 $mSalary          = (float) StaffSalaryPayment::whereYear('created_at', $year)->whereMonth('created_at', $num)->sum('amount');
                 $mProductPurchase = (float) ProductPurchase::whereYear('created_at', $year)->whereMonth('created_at', $num)->sum('total_price');
-                $mTotalCost       = $mExpense + $mSalary + $mProductPurchase;
+
+                $mRefundedBookings = RoomBookingHistory::where('status', 1)
+                    ->where('will_leave', 1)
+                    ->whereNotNull('notice_date')
+                    ->where(function($query) use ($year, $num) {
+                        $query->where(function($q) use ($year, $num) {
+                            $q->whereYear('today_check_out', $year)->whereMonth('today_check_out', $num);
+                        })->orWhere(function($q) use ($year, $num) {
+                            $q->whereNull('today_check_out')
+                              ->whereYear('check_out', $year)
+                              ->whereMonth('check_out', $num);
+                        });
+                    })->get()->filter(function($row) {
+                        $noticeDate = \Carbon\Carbon::parse($row->notice_date);
+                        $checkoutDate = $row->today_check_out ? \Carbon\Carbon::parse($row->today_check_out) : ($row->check_out ? \Carbon\Carbon::parse($row->check_out) : now());
+                        return (int) $noticeDate->diffInDays($checkoutDate) >= 60;
+                    });
+
+                $mAdvanceRefund = (float) $mRefundedBookings->sum(function($row) {
+                    $items = is_string($row->floor_number_room_number_roomprice)
+                        ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
+                        : ($row->floor_number_room_number_roomprice ?? []);
+                    $adv = collect($items)->sum(function($i) {
+                        return (float)($i['original_advance_price'] ?? $i['advance_price'] ?? 0);
+                    });
+                    return $adv > 0 ? $adv : ((float)($row->monthly_amount ?? 0) * 2);
+                });
+
+                $mTotalCost       = $mExpense + $mSalary + $mProductPurchase + $mAdvanceRefund;
 
                 if ($mRoomBooking == 0 && $mMonthlyPayment == 0 && $mProductSales == 0
-                    && $mExpense == 0 && $mSalary == 0 && $mProductPurchase == 0) continue;
+                    && $mExpense == 0 && $mSalary == 0 && $mProductPurchase == 0 && $mAdvanceRefund == 0) continue;
 
                 $monthlyBreakdown[] = [
                     'month'            => $name,
@@ -126,6 +239,7 @@ public function profitLossReport(Request $request)
                     'expense'          => $mExpense,
                     'salary'           => $mSalary,
                     'product_purchase' => $mProductPurchase,
+                    'advance_refund'   => $mAdvanceRefund,
                     'total_cost'       => $mTotalCost,
                     'profit_loss'      => $mTotalIncome - $mTotalCost,
                 ];
@@ -140,6 +254,7 @@ public function profitLossReport(Request $request)
                 'expense'           => $expense,
                 'salary'            => $salary,
                 'product_purchase'  => $productPurchase,
+                'advance_refund'    => $advanceRefund,
                 'total_cost'        => $totalCost,
                 'profit_loss'       => $totalIncome - $totalCost,
                 'monthly_breakdown' => $monthlyBreakdown,

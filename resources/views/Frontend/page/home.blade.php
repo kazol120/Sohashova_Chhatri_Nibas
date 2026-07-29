@@ -39,6 +39,7 @@
 </section>
 
 <!-- ═══════════════ নিয়মাবলী (RULES & REGULATIONS SECTION) ═══════════════ -->
+
 <section class="rules-notice-section notranslate py-5" translate="no" style="background: #f6f6f6;">
   <div class="container">
     <div class="rules-notice-card notranslate position-relative p-4 p-md-5" translate="no" style="background-color: #fffbeb; border: 3px solid #f43f5e; border-radius: 28px; box-shadow: 0 15px 40px rgba(244, 63, 94, 0.15);">
