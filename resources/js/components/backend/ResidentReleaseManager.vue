@@ -544,12 +544,36 @@ export default {
         ? `০২ মাসের অগ্রিম নোটিশ নিয়ম সফলভাবে সম্পন্ন হয়েছে (${r.notice_days_elapsed} দিন)`
         : (r.will_leave === 1 ? `নোটিশ দেওয়া হয়েছে ${r.notice_days_elapsed} দিন (৬০ দিন / ২ মাস পূর্ণ হয়নি)` : 'কোনো অগ্রিম নোটিশ দেওয়া হয়নি');
 
-      let fineText = isNoticeFulfilled ? '৳ 0.00 (কোনো জরিমানা প্রযোজ্য নয়)' : `৳ ${fineVal.toLocaleString()} (২ মাসের ভাড়া জরিমানা)`;
-      let advText = isNoticeFulfilled 
-        ? `৳ ${totalAdv.toLocaleString()} (মেস ছাড়ার কারণে এডভান্স ফেরত দেওয়া হলো)`
-        : (totalAdv >= fineVal 
-            ? `৳ ${fineVal.toLocaleString()} (জরিমানা হিসেবে কেটে নেওয়া হয়েছে)` 
-            : `৳ ${totalAdv.toLocaleString()} (সম্পূর্ণ এডভান্স জরিমানা হিসেবে কেটে নেওয়া হয়েছে)`);
+      let fineRowHtml = "";
+      let advRowHtml = "";
+
+      if (isNoticeFulfilled) {
+        // Notice fulfilled: No fine row. Show advance refund row.
+        advRowHtml = `
+          <tr>
+            <th>এডভান্স জমা ফেরত:</th>
+            <td class="text-success">৳ ${totalAdv.toLocaleString()} (মেস ছাড়ার কারণে ফেরত দেওয়া হলো)</td>
+          </tr>
+        `;
+      } else {
+        // Notice not fulfilled: Show fine row and advance deduction row.
+        fineRowHtml = `
+          <tr>
+            <th>জরুরি মেস ছাড়ার জরিমানা:</th>
+            <td class="text-danger">৳ ${fineVal.toLocaleString()} (২ মাসের ভাড়া জরিমানা)</td>
+          </tr>
+        `;
+
+        if (totalAdv > 0) {
+          const deductedAdv = Math.min(totalAdv, fineVal);
+          advRowHtml = `
+            <tr>
+              <th>এডভান্স থেকে কর্তন:</th>
+              <td class="text-danger">৳ ${deductedAdv.toLocaleString()} (জরিমানা হিসেবে কেটে নেওয়া হয়েছে)</td>
+            </tr>
+          `;
+        }
+      }
 
       const floornumber = (r.room_items || []).map(i => i.floornumber).filter(Boolean).join(', ') || '-';
       const roomnumber = (r.room_items || []).map(i => i.roomnumber).filter(Boolean).join(', ') || r.room_number || '-';
@@ -621,14 +645,8 @@ export default {
                   <th>মাসিক রুম ভাড়া:</th>
                   <td>৳ ${Number(r.monthly_amount || 0).toLocaleString()}</td>
                 </tr>
-                <tr>
-                  <th>জরুরি মেস ছাড়ার জরিমানা:</th>
-                  <td class="${isNoticeFulfilled ? 'text-success' : 'text-danger'}">${fineText}</td>
-                </tr>
-                <tr>
-                  <th>এডভান্স জমা স্থিতি:</th>
-                  <td>${advText}</td>
-                </tr>
+                ${fineRowHtml}
+                ${advRowHtml}
               </tbody>
             </table>
 
