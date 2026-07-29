@@ -398,10 +398,11 @@ export default {
         let pricesHtml = parseFloat(item.total_price_available || 0).toFixed(2) + ' ৳';
 
         if (item.items && item.items.length) {
-          prodNamesHtml = item.items.map(sub => `<div style="padding: 2px 0;">${sub.product_name}</div>`).join('');
-          unitPricesHtml = item.items.map(sub => `<div style="padding: 2px 0;">${sub.single_price} ৳</div>`).join('');
-          qtysHtml = item.items.map(sub => `<div style="padding: 2px 0;">${sub.quantity} pcs</div>`).join('');
-          pricesHtml = item.items.map(sub => `<div style="padding: 2px 0;">${sub.total_price} ৳</div>`).join('');
+          const totalItems = item.items.length;
+          prodNamesHtml = item.items.map((sub, i) => `<div class="sub-item ${i < totalItems - 1 ? 'has-border' : ''}">${sub.product_name}</div>`).join('');
+          unitPricesHtml = item.items.map((sub, i) => `<div class="sub-item ${i < totalItems - 1 ? 'has-border' : ''}">${sub.single_price} ৳</div>`).join('');
+          qtysHtml = item.items.map((sub, i) => `<div class="sub-item ${i < totalItems - 1 ? 'has-border' : ''}">${sub.quantity} pcs</div>`).join('');
+          pricesHtml = item.items.map((sub, i) => `<div class="sub-item ${i < totalItems - 1 ? 'has-border' : ''}">${sub.total_price} ৳</div>`).join('');
         }
 
         return `
@@ -422,9 +423,9 @@ export default {
 
       const totalRow = `
         <tr class="grand-total-row">
-          <td colspan="8" class="text-end fw-bold" style="font-size: 11px;">Grand Total :</td>
-          <td class="text-center fw-bold" style="font-size: 11px; background: #e2e8f0 !important;">${this.grandTotalQuantity || 0} pcs</td>
-          <td class="text-end fw-bold" style="font-size: 11px; background: #e2e8f0 !important;">${parseFloat(this.grandTotal || 0).toFixed(2)} ৳</td>
+          <td colspan="8" class="text-end fw-bold" style="font-size: 12px;">Grand Total :</td>
+          <td class="text-center fw-bold" style="font-size: 12px; background: #e2e8f0 !important;">${this.grandTotalQuantity || 0} pcs</td>
+          <td class="text-end fw-bold" style="font-size: 12px; background: #e2e8f0 !important;">${parseFloat(this.grandTotal || 0).toFixed(2)} ৳</td>
         </tr>
       `;
 
@@ -434,63 +435,71 @@ export default {
         <head>
           <title>Product Distribution Report - টি এস এস ভিলা</title>
           <style>
-            @page { size: A4 landscape; margin: 8mm; }
+            @page { size: A4 landscape; margin: 10mm; }
             * { box-sizing: border-box; margin: 0; padding: 0; }
-            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 10px; color: #1e293b; background: #fff; line-height: 1.4; }
+            body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; color: #1e293b; background: #fff; line-height: 1.5; }
             
             .header-container {
               text-align: center;
-              margin-bottom: 12px;
-              border-bottom: 2px solid #1e293b;
-              padding-bottom: 8px;
+              margin-bottom: 16px;
+              border-bottom: 2px solid #0f172a;
+              padding-bottom: 10px;
             }
             .header-title {
-              font-size: 22px;
+              font-size: 24px;
               font-weight: 800;
-              color: #1e293b;
-              margin-bottom: 2px;
+              color: #0f172a;
+              margin-bottom: 3px;
               letter-spacing: 0.5px;
             }
             .header-address {
-              font-size: 11px;
+              font-size: 12px;
               color: #475569;
-              margin-bottom: 6px;
+              margin-bottom: 8px;
               font-weight: 500;
             }
             .report-badge {
               display: inline-block;
-              background: #1e293b;
+              background: #0f172a;
               color: #ffffff;
-              padding: 3px 14px;
-              border-radius: 15px;
+              padding: 4px 18px;
+              border-radius: 20px;
               font-size: 11px;
               font-weight: 700;
               letter-spacing: 0.5px;
             }
             .print-meta {
-              font-size: 9.5px;
+              font-size: 10px;
               color: #64748b;
-              margin-top: 5px;
+              margin-top: 6px;
             }
 
-            table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-top: 8px; }
+            table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-top: 12px; }
             th, td {
               border: 1px solid #cbd5e1;
-              padding: 6px 7px;
+              padding: 8px 10px;
               vertical-align: middle;
               word-break: break-word;
             }
             th {
-              background: #1e293b !important;
-              color: #ffffff !important;
+              background: #f1f5f9 !important;
+              color: #0f172a !important;
               font-weight: 700;
               text-align: center;
-              font-size: 10px;
-              letter-spacing: 0.3px;
-              border-color: #0f172a !important;
+              font-size: 11px;
+              padding: 10px 8px;
+              border: 1px solid #cbd5e1 !important;
             }
             tbody tr:nth-child(even) td { background: #f8fafc; }
             
+            .sub-item {
+              padding: 5px 0;
+              line-height: 1.5;
+            }
+            .sub-item.has-border {
+              border-bottom: 1px dashed #cbd5e1;
+            }
+
             .text-center { text-align: center !important; }
             .text-end { text-align: right !important; }
             .fw-bold { font-weight: 700 !important; }
@@ -502,6 +511,7 @@ export default {
               background: #f1f5f9 !important;
               border-top: 2px solid #0f172a !important;
               border-bottom: 2px solid #0f172a !important;
+              padding: 10px 8px !important;
             }
 
             col.sl-col    { width: 4%; }
@@ -516,18 +526,18 @@ export default {
             col.total-col { width: 13%; }
 
             .signature-area {
-              margin-top: 35px;
+              margin-top: 45px;
               display: flex;
               justify-content: space-between;
-              padding: 0 30px;
+              padding: 0 40px;
               page-break-inside: avoid;
             }
             .sig-line {
               border-top: 1.5px dashed #475569;
-              width: 180px;
+              width: 200px;
               text-align: center;
-              padding-top: 4px;
-              font-size: 10px;
+              padding-top: 6px;
+              font-size: 11px;
               font-weight: 600;
               color: #334155;
             }
