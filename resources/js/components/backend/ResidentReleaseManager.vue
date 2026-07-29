@@ -439,6 +439,14 @@ export default {
       const remainingAdvAfterFine = Math.max(0, totalAdv - fineVal);
       const netDueAfterAdv = fineVal > totalAdv ? fineVal - totalAdv : 0;
 
+      const uType = (r.user_type || 'student').toLowerCase().trim();
+      let nameLabel = 'আবাসিকের নাম:';
+      if (uType === 'student') {
+        nameLabel = 'ছাত্রীর নাম:';
+      } else if (uType === 'working professional' || uType === 'jobholder' || uType === 'job_holder') {
+        nameLabel = 'চাকরিজীবীর নাম:';
+      }
+
       let title = "Confirm Release & Checkout";
       let htmlContent = "";
       let iconType = "warning";
@@ -467,7 +475,7 @@ export default {
           <div class="text-start fs-6 p-3 rounded" style="background-color: #fff5f5; border: 1px solid #feb2b2;">
             <p class="text-danger fw-bold mb-2">মেস ছাড়ার ০২ মাস পূর্বে মেস কর্তৃপক্ষকে জানানো হয়নি!</p>
             <ul class="mb-2 text-dark ps-3" style="font-size: 14px; line-height: 1.6;">
-              <li><strong>আবাসিকের নাম:</strong> ${r.full_name}</li>
+              <li><strong>${nameLabel}</strong> ${r.full_name}</li>
               <li><strong>নোটিশ অবস্থা:</strong> ${noticeStatusText}</li>
               <li><strong>বর্তমান এডভান্স জমা:</strong> ৳ ${totalAdv.toLocaleString()}</li>
               <li class="text-danger"><strong>জরুরি মেস ছাড়ার জরিমানা (২ মাসের ভাড়া):</strong> ৳ ${fineVal.toLocaleString()}</li>
@@ -483,7 +491,7 @@ export default {
           <div class="text-start fs-6 p-3 rounded" style="background-color: #f0fff4; border: 1px solid #9ae6b4;">
             <p class="text-success fw-bold mb-2">০২ মাসের অগ্রিম নোটিশ নিয়ম সফলভাবে সম্পন্ন হয়েছে (${r.notice_days_elapsed} দিন)।</p>
             <ul class="mb-2 text-dark ps-3" style="font-size: 14px; line-height: 1.6;">
-              <li><strong>আবাসিকের নাম:</strong> ${r.full_name}</li>
+              <li><strong>${nameLabel}</strong> ${r.full_name}</li>
               <li class="text-success"><strong>বাড়তি জরিমানা:</strong> কোনো জরিমানা প্রযোজ্য নয়</li>
               <li class="text-primary"><strong>এডভান্স জমা ফেরত দেওয়া হবে:</strong> ৳ ${totalAdv.toLocaleString()}</li>
             </ul>
