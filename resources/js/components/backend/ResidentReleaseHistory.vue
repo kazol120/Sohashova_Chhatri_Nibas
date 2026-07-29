@@ -356,7 +356,6 @@ export default {
             <td class="text-danger">৳ ${fineVal.toLocaleString()} (২ মাসের ভাড়া জরিমানা)</td>
           </tr>
         `;
-
         if (totalAdv > 0) {
           const deductedAdv = Math.min(totalAdv, fineVal);
           advRowHtml = `
@@ -367,7 +366,6 @@ export default {
           `;
         }
       }
-
       const floornumber = (r.room_items || []).map(i => i.floornumber).filter(Boolean).join(', ') || r.floornumber || '-';
       const roomnumber = (r.room_items || []).map(i => i.roomnumber).filter(Boolean).join(', ') || r.roomnumber || r.room_number || '-';
       const checkoutDateStr = r.today_check_out || r.check_out || new Date().toISOString();
@@ -375,7 +373,6 @@ export default {
       const printDate = new Date().toLocaleDateString('bn-BD', {
         year: 'numeric', month: 'long', day: 'numeric'
       });
-
       const htmlContent = `
         <!DOCTYPE html>
         <html>
@@ -444,7 +441,7 @@ export default {
               </tbody>
             </table>
 
-            <div class="d-flex justify-content-between align-items-end mt-5 pt-4 border-top">
+            <div class="d-flex justify-content-between align-items-end mt-5 pt-4 ">
               <div class="text-center" style="width: 200px;">
                 <div class="border-top border-dark pt-1 fw-bold small">রেসিডেন্টের স্বাক্ষর</div>
               </div>

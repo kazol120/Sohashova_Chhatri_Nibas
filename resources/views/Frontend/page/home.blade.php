@@ -39,17 +39,15 @@
 </section>
 
 <!-- ═══════════════ নিয়মাবলী (RULES & REGULATIONS SECTION) ═══════════════ -->
-<section class="rules-notice-section notranslate py-5" translate="no" style="background: linear-gradient(135deg, #ffedd5 0%, #fecdd3 50%, #fef3c7 100%); margin-bottom: 10px;">
+<section class="rules-notice-section notranslate py-5" translate="no" style="background: #f6f6f6;">
   <div class="container">
     <div class="rules-notice-card notranslate position-relative p-4 p-md-5" translate="no" style="background-color: #fffbeb; border: 3px solid #f43f5e; border-radius: 28px; box-shadow: 0 15px 40px rgba(244, 63, 94, 0.15);">
-      
       <!-- Title Badge -->
       <div class="text-center" style="margin-top: -45px; margin-bottom: 25px;">
         <span class="d-inline-block px-5 py-2 text-white fw-bold fs-3 shadow notranslate" translate="no" style="background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); border-radius: 50px; letter-spacing: 1px; border: 3px solid #ffffff; min-width: 220px; box-shadow: 0 6px 18px rgba(225,29,72,0.35) !important;">
           নিয়মাবলী
         </span>
       </div>
-
       <!-- Rules List (Strictly Bengali - Never Translated) -->
       <ul class="rules-list notranslate list-unstyled mb-0 d-flex flex-column gap-3" translate="no" style="font-size: 17px; color: #1e293b; font-weight: 600; line-height: 1.8;">
         <li class="d-flex align-items-start gap-2">
@@ -68,30 +66,27 @@
           <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
           <span>রুম চেঞ্জ করতে চাইলে <strong class="text-danger">৫০০ টাকা</strong> প্রদান করতে হবে।</span>
         </li>
-        
-    <li class="d-flex align-items-start gap-2">
+        <li class="d-flex align-items-start gap-2">
           <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
           <span>ওয়াইফাই, ক্লিনার, বিদ্যুৎ - ভাড়ার সাথে ইনক্লুড (সংযুক্ত) থাকবে । </span>
         </li>
-    <li class="d-flex align-items-start gap-2">
+        <li class="d-flex align-items-start gap-2">
           <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
           <span> উন্নয়ন ফি ৩০০০/- (এককালীন) । </span>
         </li>
-    
-    <li class="d-flex align-items-start gap-2">
+        <li class="d-flex align-items-start gap-2">
           <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
           <span>একক রুম ভাড়া ৩০০০/- টাকা,দুই রুম ভাড়া ২৫০০/- টাকা  ।  </span> 
         </li>
-    <li class="d-flex align-items-start gap-2">
+        <li class="d-flex align-items-start gap-2">
           <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
           <span>সকল কিছু পরিবর্তন, পরিবর্ধন, যে কোন মুহূর্তে কর্তৃপক্ষ শিদান্ত নিতে পারিবে ।   </span> 
         </li>
-    <li class="d-flex align-items-start gap-2">
+        <li class="d-flex align-items-start gap-2">
           <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
           <span>মেসের নিয়ম-কানুন মেনে চলতে হবে। কারো বিরুদ্ধে কোনো অভিযোগ আসলে এবং তা প্রমাণিত হলে সিট বাতিলসহ যেকোনো ব্যবস্থা নেয়ার অধিকার কর্তৃপক্ষ রাখে।</span>
         </li>
       </ul>
-
     </div>
   </div>
 </section>

@@ -901,6 +901,9 @@ public function getNameguet()
             // 2) If notice was NOT fulfilled: Penalty (2 months rent) is deducted from advance_price.
             if ($isNoticeFulfilled) {
                 $updatedItems = array_map(function ($item) {
+                    if (!isset($item['original_advance_price'])) {
+                        $item['original_advance_price'] = (float)($item['advance_price'] ?? 0);
+                    }
                     $item['advance_price'] = 0;
                     return $item;
                 }, $rawItems);
@@ -911,6 +914,9 @@ public function getNameguet()
 
                 $updatedItems = array_map(function ($item) use (&$remainingPenaltyToDeduct) {
                     $adv = (float) ($item['advance_price'] ?? 0);
+                    if (!isset($item['original_advance_price'])) {
+                        $item['original_advance_price'] = $adv;
+                    }
                     if ($adv > 0 && $remainingPenaltyToDeduct > 0) {
                         if ($adv >= $remainingPenaltyToDeduct) {
                             $item['advance_price'] = $adv - $remainingPenaltyToDeduct;
@@ -944,7 +950,6 @@ public function getNameguet()
             }
 
             $booking->status = 1;
-            $booking->will_leave = 0;
             $booking->today_check_out = now();
             $booking->check_out = now()->toDateString();
             $booking->save();
@@ -992,7 +997,13 @@ public function getNameguet()
             $checkoutDate = $row->today_check_out ? \Carbon\Carbon::parse($row->today_check_out) : ($row->check_out ? \Carbon\Carbon::parse($row->check_out) : now());
             $noticeDaysElapsed = $noticeDate ? (int) $noticeDate->diffInDays($checkoutDate) : 0;
             $isNoticeFulfilled = $row->will_leave == 1 && $noticeDaysElapsed >= 60;
-            $totalAdv = $c->sum(function($i) { return (float)($i['advance_price'] ?? 0); });
+            
+            $totalAdv = $c->sum(function($i) { 
+                return (float)($i['original_advance_price'] ?? $i['advance_price'] ?? 0); 
+            });
+            if ($totalAdv == 0) {
+                $totalAdv = (float) ($row->monthly_amount ?? 0) * 2;
+            }
 
             return array_merge($row->only([
                 'id',

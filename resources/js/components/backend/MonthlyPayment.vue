@@ -642,13 +642,11 @@ export default {
         });
         logHtml += `</div>`;
       }
-
       const carriedForward = Number(pay.carried_forward_due || 0);
       const rentAmount = Number(pay.amount || 0);
       const totalBill = rentAmount + carriedForward;
       const paidAmount = Number(pay.paid_amount || 0);
       const dueAmount = Number(pay.due_amount || 0);
-
       const htmlContent = `
         <!DOCTYPE html>
         <html>
@@ -744,12 +742,14 @@ export default {
                     <th>Amount Paid So Far (সর্বমোট আদায়):</th>
                     <td class="text-end text-success font-monospace fw-bold">৳ ${(pay.status === 'paid' && carriedForward > 0 && paidAmount < totalBill) ? totalBill.toFixed(2) : paidAmount.toFixed(2)}</td>
                   </tr>
-                  <tr class="${dueAmount > 0 ? 'table-danger' : 'table-light'}">
-                    <th>Remaining Due Balance (অবশিষ্ট বকেয়া):</th>
-                    <td class="text-end ${dueAmount > 0 ? 'text-danger' : 'text-success'} font-monospace fw-bold">
-                      ৳ ${dueAmount.toFixed(2)}
-                    </td>
-                  </tr>
+                   ${dueAmount > 0 ? `
+                    <tr class="table-danger">
+                      <th>Remaining Due Balance (অবশিষ্ট বকেয়া):</th>
+                      <td class="text-end text-danger font-monospace fw-bold">
+                        ৳ ${dueAmount.toFixed(2)}
+                      </td>
+                    </tr>
+                    ` : ''}
                 </tbody>
               </table>
 
