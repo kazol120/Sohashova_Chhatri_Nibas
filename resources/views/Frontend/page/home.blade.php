@@ -9,7 +9,7 @@
   <div class="container">
     
     <div style="margin-bottom: 30px;">
-        <h1 style="font-size: 32px; margin-bottom: 5px; color: #fff;" class="notranslate site-name-text" data-lang-bn="টি এস এস ডিলা" data-lang-en="TSS Villa">টি এস এস ডিলা</h1>
+        <h1 style="font-size: 32px; margin-bottom: 5px; color: #fff;" class="notranslate site-name-text" data-lang-bn="টি এস এস ভিলা" data-lang-en="TSS Villa">টি এস এস ভিলা</h1>
         <p style="font-size: 16px; color: #d1d1d1;">নিরাপদ ও আরামদায়ক আবাসন | রংপুরের প্রাণকেন্দ্রে ছাত্রীদের জন্য একটি আদর্শ আবাস</p>
     </div>
 
@@ -140,7 +140,7 @@
   <div class="container">
     <div class="about-grid">
       <div class="about-content">
-        <h2 class="about-title notranslate site-name-text" data-lang-bn="টি এস এস ডিলা | মেধার বিকাশ | সমৃদ্ধ ভবিষ্যৎ" data-lang-en="TSS Villa | Intellectual Growth | Bright Future">টি এস এস ডিলা | মেধার বিকাশ | সমৃদ্ধ ভবিষ্যৎ</h2>
+        <h2 class="about-title notranslate site-name-text" data-lang-bn="টি এস এস ভিলা | মেধার বিকাশ | সমৃদ্ধ ভবিষ্যৎ" data-lang-en="TSS Villa | Intellectual Growth | Bright Future">টি এস এস ভিলা | মেধার বিকাশ | সমৃদ্ধ ভবিষ্যৎ</h2>
         <h5 class="about-subtitle">{{ $overview->title }}</h5>
         @foreach(preg_split("/\r\n|\n|\r/", $overview->description) as $line)
             @if(trim($line) !== '')
@@ -197,7 +197,7 @@
     <div class="gallery-header text-center">
       <h2 class="gallery-title" style="font-weight: 800; font-size: 32px; color: #033364; margin-bottom: 10px;">Our Gallery</h2>
       <p class="gallery-sub" style="font-size: 15px; color: #6b7280; max-width: 700px; margin: 0 auto 30px;">
-        <span class="notranslate site-name-text" data-lang-bn="টি এস এস ডিলার" data-lang-en="TSS Villa's">টি এস এস ডিলার</span> সুসজ্জিত, আরামদায়ক ও আধুনিক কক্ষগুলোর একটি ঝলক।
+        <span class="notranslate site-name-text" data-lang-bn="টি এস এস ভিলার" data-lang-en="TSS Villa's">টি এস এস ভিলার</span> সুসজ্জিত, আরামদায়ক ও আধুনিক কক্ষগুলোর একটি ঝলক।
       </p>
     </div>
 

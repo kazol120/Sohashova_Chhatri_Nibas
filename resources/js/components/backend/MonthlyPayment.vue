@@ -16,8 +16,7 @@
               <button 
                 class="btn btn-primary d-flex align-items-center gap-2 px-4 py-2 shadow-sm"
                 @click="confirmGenerateBills"
-                :disabled="generating"
-              >
+                :disabled="generating">
                 <span v-if="generating" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                 <i v-else class="ti ti-refresh fs-5"></i>
                 <span>Generate Bills</span>
@@ -621,13 +620,10 @@ export default {
       const due = Number(pay.due_amount);
       const paid = Number(pay.paid_amount || 0);
       const total = Number(pay.amount || 0);
-      // If status is not paid and due_amount is 0 and paid is also 0, then the whole rent amount is outstanding
       if (pay.status !== 'paid' && due === 0 && paid === 0) {
         return total;
       }
-      // If due_amount is correctly set
       if (due > 0) return due;
-      // Last fallback: total - paid
       const remaining = total - paid;
       return remaining > 0 ? remaining : 0;
     },
@@ -757,8 +753,6 @@ export default {
                 </tbody>
               </table>
 
-              <!-- Payment Log History -->
-              ${logHtml}
 
               <!-- Received By & Signatures -->
               <div class="mt-3 pt-2">
@@ -782,7 +776,6 @@ export default {
           </body>
         </html>
       `;
-
       let iframe = document.getElementById("monthlyReceiptPrintIframe");
       if (!iframe) {
         iframe = document.createElement("iframe");

@@ -14,7 +14,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>@yield('title', 'Home') | সোহাশোভা ছাত্রী নিবাস</title>
+  <title>@yield('title', 'Home') | টি এস এস ভিলা</title>
   <link rel="stylesheet" href="{{ asset('frontend/style.css') }}">
   <link rel="shortcut icon" href="{{ $wsFavicon }}" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">

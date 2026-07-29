@@ -15,17 +15,17 @@
               <img src="{{ $wsLogo }}" alt="Sohashova Chhatri Nibas Logo">
             </div>
             <div>
-              <div class="login-brand-title notranslate site-name-text" data-lang-bn="টি এস এস ডিলা" data-lang-en="TSS Villa">টি এস এস ডিলা</div>
+              <div class="login-brand-title notranslate site-name-text" data-lang-bn="টি এস এস ভিলা" data-lang-en="TSS Villa">টি এস এস ভিলা</div>
               <div class="login-brand-sub">Safe · Secure · Homely</div>
             </div>
           </div>
 
           <div class="login-hero">
-            <h2>স্বাগতম — <span class="notranslate site-name-text" data-lang-bn="টি এস এস ডিলা" data-lang-en="TSS Villa">টি এস এস ডিলা</span></h2>
+            <h2>স্বাগতম — <span class="notranslate site-name-text" data-lang-bn="টি এস এস ভিলা" data-lang-en="TSS Villa">টি এস এস ভিলা</span></h2>
             <p>নিরাপদ, পরিষ্কার ও বাড়ির মতো পরিবেশে আপনাকে স্বাগত জানাই। লগইন করুন এবং আপনার বুকিং ম্যানেজ করুন।</p>
           </div>
 
-          <div class="login-foot">© {{ date('Y') }} <span class="notranslate site-name-text" data-lang-bn="টি এস এস ডিলা" data-lang-en="TSS Villa">টি এস এস ডিলা</span> · সকল অধিকার সংরক্ষিত</div>
+          <div class="login-foot">© {{ date('Y') }} <span class="notranslate site-name-text" data-lang-bn="টি এস এস ভিলা" data-lang-en="TSS Villa">টি এস এস ভিলা</span> · সকল অধিকার সংরক্ষিত</div>
         </div>
 
         <!-- RIGHT -->
