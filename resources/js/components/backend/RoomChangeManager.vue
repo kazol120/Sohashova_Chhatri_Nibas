@@ -7,9 +7,32 @@
             <h5 class="card-title mb-0 text-primary fw-bold">
               <i class="ti ti-arrows-exchange me-2"></i>Change Room / Seat Manager (রুম ও সিট পরিবর্তন)
             </h5>
+
+            <!-- NAV TABS -->
+            <ul class="nav nav-pills card-header-pills">
+              <li class="nav-item">
+                <button
+                  class="nav-link fw-bold"
+                  :class="{ active: activeTab === 'residents' }"
+                  @click="switchTab('residents')"
+                >
+                  <i class="ti ti-users me-1"></i> Active Residents
+                </button>
+              </li>
+              <li class="nav-item">
+                <button
+                  class="nav-link fw-bold"
+                  :class="{ active: activeTab === 'history' }"
+                  @click="switchTab('history')"
+                >
+                  <i class="ti ti-history me-1"></i> Change History & Fees (৳ 500)
+                </button>
+              </li>
+            </ul>
           </div>
 
-          <div class="card-body mt-3">
+          <!-- TAB 1: ACTIVE RESIDENTS -->
+          <div class="card-body mt-3" v-if="activeTab === 'residents'">
             <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
               <div class="d-flex align-items-center gap-2">
                 <label class="small text-muted mb-0">Rows:</label>
@@ -117,6 +140,114 @@
               </div>
             </div>
           </div>
+
+          <!-- TAB 2: CHANGE HISTORY & FEES LOG -->
+          <div class="card-body mt-3" v-if="activeTab === 'history'">
+            <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
+              <div class="fw-bold text-dark fs-6">
+                <i class="ti ti-file-analytics me-1 text-primary"></i> Room Change & Fee Records
+              </div>
+
+              <div class="d-flex gap-2 align-items-center">
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  style="width: 280px"
+                  placeholder="Search history by name / phone / seat..."
+                  v-model="historiesSearch"
+                />
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th style="width: 50px">Sl</th>
+                    <th style="width: 170px">Resident</th>
+                    <th style="width: 160px">From (Old)</th>
+                    <th style="width: 160px">To (New)</th>
+                    <th style="width: 120px">Change Fee</th>
+                    <th style="width: 130px">Payment Method</th>
+                    <th style="width: 110px">Status</th>
+                    <th style="width: 140px">Date & Time</th>
+                  </tr>
+                </thead>
+
+                <tbody v-if="histories.length">
+                  <tr v-for="(h, idx) in histories" :key="h.id">
+                    <td>{{ (historiesPage - 1) * 10 + idx + 1 }}</td>
+                    <td>
+                      <div class="fw-bold text-dark">{{ h.resident_name }}</div>
+                      <small class="text-muted">{{ h.phone }}</small>
+                    </td>
+                    <td>
+                      <small class="text-secondary d-block">{{ h.old_floor || '-' }}</small>
+                      <span class="badge bg-secondary px-2 py-1">{{ h.old_room_seat || '-' }}</span>
+                      <small class="d-block text-muted">৳ {{ formatCurrency(h.old_monthly_amount) }}</small>
+                    </td>
+                    <td>
+                      <small class="text-primary d-block font-weight-bold">{{ h.new_floor || '-' }}</small>
+                      <span class="badge bg-success px-2 py-1">{{ h.new_room_seat || '-' }}</span>
+                      <small class="d-block text-success fw-bold">৳ {{ formatCurrency(h.new_monthly_amount) }}</small>
+                    </td>
+                    <td>
+                      <span class="fw-bold text-primary fs-6">৳ {{ formatCurrency(h.fee_amount) }}</span>
+                    </td>
+                    <td>
+                      <span class="badge bg-label-info text-capitalize">{{ h.payment_method || 'Cash' }}</span>
+                    </td>
+                    <td>
+                      <span
+                        class="badge"
+                        :class="h.payment_status === 'paid' ? 'bg-success' : 'bg-warning text-dark'"
+                      >
+                        {{ h.payment_status === 'paid' ? 'Paid' : 'Unpaid' }}
+                      </span>
+                    </td>
+                    <td>
+                      <small class="text-dark fw-semibold">{{ formatDate(h.created_at) }}</small>
+                    </td>
+                  </tr>
+                </tbody>
+
+                <tbody v-else>
+                  <tr>
+                    <td colspan="8" class="text-center py-4 text-muted">
+                      <span v-if="historiesLoading">
+                        <i class="fa fa-spinner fa-spin me-2"></i> Loading history records...
+                      </span>
+                      <span v-else>No room change records found</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+              <div class="small text-muted">
+                Page: {{ historiesPage }} / {{ historiesTotalPages }}
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <button
+                  class="btn btn-sm btn-secondary"
+                  :disabled="historiesPage <= 1 || historiesLoading"
+                  @click="fetchHistories(historiesPage - 1)"
+                >
+                  Previous
+                </button>
+
+                <button
+                  class="btn btn-sm btn-secondary"
+                  :disabled="historiesPage >= historiesTotalPages || historiesLoading"
+                  @click="fetchHistories(historiesPage + 1)"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -200,6 +331,23 @@
               </div>
             </div>
 
+            <!-- ROOM CHANGE FEE FIELD -->
+            <div class="row g-3 mt-1">
+              <div class="col-md-12">
+                <label class="form-label fw-bold">Change Fee (৳) <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <span class="input-group-text fw-bold bg-white text-primary">৳</span>
+                  <input
+                    type="number"
+                    class="form-control fw-bold fs-5 text-primary"
+                    v-model.number="feeAmount"
+                    min="0"
+                    placeholder="500"
+                  />
+                </div>
+              </div>
+            </div>
+
             <!-- Preview Transfer Details -->
             <div v-if="selectedSeatObj" class="alert alert-success border-success mt-4 mb-0">
               <div class="fw-bold text-success mb-1">
@@ -207,7 +355,7 @@
               </div>
               <div class="fs-6 text-dark">
                 <strong>New Location:</strong> {{ selectedFloorObj?.name }} &rarr; Room <strong>{{ selectedRoomObj?.room_no }}</strong> &rarr; Seat <strong>{{ selectedSeatObj?.seat_no }}</strong><br>
-                <strong>New Monthly Rate:</strong> ৳ {{ formatCurrency(selectedSeatObj?.price) }}
+                <strong>New Monthly Rate:</strong> ৳ {{ formatCurrency(selectedSeatObj?.price) }} | <strong>Room Change Fee:</strong> ৳ {{ formatCurrency(feeAmount) }}
               </div>
             </div>
           </div>
@@ -223,7 +371,7 @@
               @click="submitRoomChange"
             >
               <span v-if="submitting"><i class="fa fa-spinner fa-spin me-1"></i> Transferring...</span>
-              <span v-else><i class="ti ti-check me-1"></i> Confirm Room Change</span>
+              <span v-else><i class="ti ti-check me-1"></i> Confirm Room Change (৳ {{ feeAmount }})</span>
             </button>
           </div>
         </div>
@@ -242,6 +390,7 @@ export default {
 
   data() {
     return {
+      activeTab: "residents", // 'residents' or 'history'
       residents: [],
       loading: false,
       search: "",
@@ -251,14 +400,29 @@ export default {
       total: 0,
       from: 0,
       _t: null,
+      _ht: null,
 
       availableTree: [],
       selectedResident: null,
       selectedFloorId: "",
       selectedRoomId: "",
       selectedSeatId: "",
+
+      // Room Change Fee & Payment Fields
+      feeAmount: 500,
+      paymentMethod: "Cash",
+      paymentStatus: "paid",
+      remarks: "",
+
       submitting: false,
       modalInstance: null,
+
+      // History Tab Data
+      histories: [],
+      historiesLoading: false,
+      historiesPage: 1,
+      historiesTotalPages: 1,
+      historiesSearch: "",
     };
   },
 
@@ -306,16 +470,42 @@ export default {
     perPage() {
       this.fetchResidents(1);
     },
+    historiesSearch() {
+      clearTimeout(this._ht);
+      this._ht = setTimeout(() => this.fetchHistories(1), 300);
+    },
   },
 
   beforeUnmount() {
     clearTimeout(this._t);
+    clearTimeout(this._ht);
   },
 
   methods: {
+    switchTab(tab) {
+      this.activeTab = tab;
+      if (tab === "history" && !this.histories.length) {
+        this.fetchHistories(1);
+      }
+    },
+
     formatCurrency(val) {
       if (val === null || val === undefined || isNaN(val)) return "0";
       return Number(val).toLocaleString("en-US");
+    },
+
+    formatDate(dtStr) {
+      if (!dtStr) return "-";
+      const d = new Date(dtStr);
+      if (isNaN(d.getTime())) return dtStr;
+      return d.toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
     },
 
     getRoomNo(str) {
@@ -381,6 +571,28 @@ export default {
       }
     },
 
+    async fetchHistories(page = 1) {
+      this.historiesLoading = true;
+      try {
+        const res = await axios.get(this.endpoint("room-change-histories"), {
+          params: {
+            page,
+            per_page: 10,
+            search: this.historiesSearch,
+          },
+        });
+
+        this.histories = res.data.data || [];
+        this.historiesPage = res.data.current_page || 1;
+        this.historiesTotalPages = res.data.last_page || 1;
+      } catch (e) {
+        console.error(e);
+        this.toast("Failed to load room change history", "error");
+      } finally {
+        this.historiesLoading = false;
+      }
+    },
+
     async fetchAvailableTree() {
       try {
         const res = await axios.get(this.endpoint("available-seats-tree"));
@@ -397,6 +609,13 @@ export default {
       this.selectedFloorId = "";
       this.selectedRoomId = "";
       this.selectedSeatId = "";
+
+      // Reset Fee controls to default
+      this.feeAmount = 500;
+      this.paymentMethod = "Cash";
+      this.paymentStatus = "paid";
+      this.remarks = "";
+
       this.fetchAvailableTree();
 
       const modalEl = document.getElementById("changeRoomModal");
@@ -424,6 +643,10 @@ export default {
           this.endpoint(`bookings/${this.selectedResident.id}/change-room-seat`),
           {
             new_seat_id: this.selectedSeatId,
+            fee_amount: this.feeAmount,
+            payment_method: this.paymentMethod,
+            payment_status: this.paymentStatus,
+            remarks: this.remarks,
           }
         );
 
@@ -434,6 +657,9 @@ export default {
           }
           this.fetchResidents(this.currentPage);
           this.fetchAvailableTree();
+          if (this.activeTab === "history") {
+            this.fetchHistories(1);
+          }
         } else {
           this.toast(res.data.message || "Failed to change room.", "error");
         }

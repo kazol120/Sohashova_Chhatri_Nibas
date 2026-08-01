@@ -150,7 +150,7 @@
                       class="form-control"
                       style="max-width: 220px;"
                       v-model.trim="roomModal.input"
-                      placeholder="e.g. 202"
+                      placeholder="e.g. 202, g01"
                       @keyup.enter="addRoomChip"
                     />
 
@@ -267,17 +267,33 @@
                           </span>
                         </div>
 
+                        <!-- Add new room row in Edit Modal -->
+                        <div class="d-flex gap-2 mb-3">
+                          <input
+                            type="text"
+                            v-model="roomInput"
+                            class="form-control form-control-sm"
+                            placeholder="e.g. g01, 102"
+                            @keyup.enter.prevent="addRoom"
+                          />
+                          <button type="button" class="btn btn-sm btn-primary text-nowrap" @click="addRoom">
+                            <i class="ti ti-plus me-1"></i> Add Room
+                          </button>
+                        </div>
+                        <small v-if="errors.rooms" class="text-danger d-block mb-2">{{ errors.rooms }}</small>
+
                         <div class="row g-2 scroll-y" style="max-height: 200px; overflow-x: hidden;">
-                          <div class="col-6 col-sm-4" v-for="(room, index) in roomList" :key="room.id || index">
-                            <div class="room-input-group">
+                          <div class="col-6 col-sm-6" v-for="(room, index) in roomList" :key="room.id || index">
+                            <div class="room-input-group d-flex align-items-center gap-1">
                               <input
                                 type="text"
                                 v-model="room.room_no"
                                 class="form-control form-control-sm text-center fw-bold"
                                 placeholder="Room No"
-                                inputmode="numeric"
-                                pattern="[0-9]*"
                               />
+                              <button type="button" class="btn btn-sm btn-outline-danger p-1 border-0" @click="removeRoom(index)" title="Remove room" style="font-size: 1.1rem; line-height: 1;">
+                                ×
+                              </button>
                             </div>
                           </div>
 
@@ -589,6 +605,10 @@ export default {
     addRoom() {
       const val = String(this.roomInput || "").trim();
       if (!val) return;
+      if (this.roomList.some((r) => String(r.room_no).trim().toLowerCase() === val.toLowerCase())) {
+        this.toast(`Room "${val}" is already in the list`, "warning");
+        return;
+      }
       this.roomList.push({ id: null, room_no: val });
       this.roomInput    = "";
       this.errors.rooms = null;

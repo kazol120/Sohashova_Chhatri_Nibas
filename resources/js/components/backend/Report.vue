@@ -70,9 +70,8 @@
               <table class="table table-bordered table-hover align-middle text-center">
                 <thead style="background:#f59e0b; color:#fff;">
                   <tr>
-                    <th rowspan="2" style="width:120px; vertical-align:middle;">{{ profitViewMode === 'monthly' ? 'Month' : 'Year' }}</th>
-                    <!-- Income -->
-                    <th colspan="4" style="background:#16a34a; color:#fff;">আয় (Income)</th>
+                    <th rowspan="2" style="width:120px; vertical-align:middle;">{{ profitViewMode === 'monthly' ? 'Month' : 'Year' }}</th                    <!-- Income -->
+                    <th colspan="5" style="background:#16a34a; color:#fff;">আয় (Income)</th>
                     <!-- Cost -->
                     <th colspan="5" style="background:#dc2626; color:#fff;">ব্যয় (Expense)</th>
                     <!-- Result -->
@@ -82,6 +81,7 @@
                     <th style="background:#dcfce7; color:#166534;">advance booking fee</th>
                     <th style="background:#dcfce7; color:#166534;">Monthly Rent</th>
                     <th style="background:#dcfce7; color:#166534;">Product Sales</th>
+                    <th style="background:#dcfce7; color:#166534;">Room Change Fee</th>
                     <th style="background:#bbf7d0; color:#166534; font-weight:700;">Total Income</th>
                     <th style="background:#fee2e2; color:#991b1b;">General Expense</th>
                     <th style="background:#fee2e2; color:#991b1b;">Staff Salary</th>
@@ -105,6 +105,7 @@
                       <td class="text-success fw-semibold">{{ formatAmount(row.room_booking) }}</td>
                       <td class="text-success fw-semibold">{{ formatAmount(row.monthly_payment) }}</td>
                       <td class="text-success fw-semibold">{{ formatAmount(row.product_sales) }}</td>
+                      <td class="text-success fw-semibold">{{ formatAmount(row.room_change_fee) }}</td>
                       <td class="fw-bold" style="background:#f0fdf4;">{{ formatAmount(row.total_income) }}</td>
                       <!-- Cost -->
                       <td class="text-danger fw-semibold">{{ formatAmount(row.expense) }}</td>
@@ -124,7 +125,7 @@
 
                     <!-- Yearly monthly breakdown -->
                     <tr v-if="profitViewMode === 'yearly' && expandedYear === row.label" :key="row.label + '-expand'">
-                      <td colspan="11" class="p-0">
+                      <td colspan="12" class="p-0">
                         <div class="detail-box-profit">
                           <div class="detail-title">📅 {{ row.label }} - Monthly Breakdown</div>
                           <table class="table table-sm table-bordered mb-0 text-center">
@@ -134,6 +135,7 @@
                                 <th style="color:#16a34a;">advance booking fee </th>
                                 <th style="color:#16a34a;">Monthly Rent</th>
                                 <th style="color:#16a34a;">Product Sales</th>
+                                <th style="color:#16a34a;">Room Change Fee</th>
                                 <th style="color:#166534; font-weight:700;">Total Income</th>
                                 <th style="color:#dc2626;">Expense</th>
                                 <th style="color:#dc2626;">Salary</th>
@@ -149,6 +151,7 @@
                                 <td class="text-success">{{ formatAmount(m.room_booking) }}</td>
                                 <td class="text-success">{{ formatAmount(m.monthly_payment) }}</td>
                                 <td class="text-success">{{ formatAmount(m.product_sales) }}</td>
+                                <td class="text-success">{{ formatAmount(m.room_change_fee) }}</td>
                                 <td class="fw-bold" style="background:#f0fdf4;">{{ formatAmount(m.total_income) }}</td>
                                 <td class="text-danger">{{ formatAmount(m.expense) }}</td>
                                 <td class="text-danger">{{ formatAmount(m.salary) }}</td>
@@ -165,7 +168,7 @@
                               </tr>
                             </tbody>
                             <tbody v-else>
-                              <tr><td colspan="11" class="text-center text-muted">No data</td></tr>
+                              <tr><td colspan="12" class="text-center text-muted">No data</td></tr>
                             </tbody>
                           </table>
                         </div>
@@ -179,6 +182,7 @@
                     <td class="text-success">{{ formatAmount(profitGrand.room_booking) }}</td>
                     <td class="text-success">{{ formatAmount(profitGrand.monthly_payment) }}</td>
                     <td class="text-success">{{ formatAmount(profitGrand.product_sales) }}</td>
+                    <td class="text-success">{{ formatAmount(profitGrand.room_change_fee) }}</td>
                     <td style="background:#f0fdf4;">{{ formatAmount(profitGrand.total_income) }}</td>
                     <td class="text-danger">{{ formatAmount(profitGrand.expense) }}</td>
                     <td class="text-danger">{{ formatAmount(profitGrand.salary) }}</td>
@@ -197,7 +201,7 @@
 
                 <tbody v-else>
                   <tr>
-                    <td colspan="11" class="text-center py-5 text-muted">
+                    <td colspan="12" class="text-center py-5 text-muted">
                       <span v-if="profitLoading"><i class="fa fa-spinner fa-spin me-2"></i>Loading...</span>
                       <span v-else>No data found</span>
                     </td>
@@ -219,7 +223,7 @@ import Toastify from "toastify-js";
 import "toastify-js/src/toastify.css";
 
 export default {
-  name: "ProfitLossReport",
+  name: "Report",
 
   computed: {
     url() {
@@ -231,6 +235,7 @@ export default {
           acc.room_booking     += row.room_booking     || 0;
           acc.monthly_payment  += row.monthly_payment  || 0;
           acc.product_sales    += row.product_sales    || 0;
+          acc.room_change_fee  += row.room_change_fee  || 0;
           acc.total_income     += row.total_income     || 0;
           acc.expense          += row.expense          || 0;
           acc.salary           += row.salary           || 0;
@@ -240,7 +245,7 @@ export default {
           acc.profit_loss      += row.profit_loss      || 0;
           return acc;
         },
-        { room_booking: 0, monthly_payment: 0, product_sales: 0, total_income: 0,
+        { room_booking: 0, monthly_payment: 0, product_sales: 0, room_change_fee: 0, total_income: 0,
           expense: 0, salary: 0, product_purchase: 0, advance_refund: 0, total_cost: 0, profit_loss: 0 }
       );
     },

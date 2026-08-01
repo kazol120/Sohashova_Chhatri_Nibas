@@ -23,6 +23,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth; 
 use Spatie\Permission\Models\Role;  
 use App\Models\Backend\RoomSeat;
+use App\Models\Backend\RoomChangeHistory;
 
 
 
@@ -1093,7 +1094,11 @@ public function getNameguet()
     public function changeRoomSeat(Request $request, $id)
     {
         $request->validate([
-            'new_seat_id' => 'required|numeric',
+            'new_seat_id'    => 'required|numeric',
+            'fee_amount'     => 'nullable|numeric|min:0',
+            'payment_method' => 'nullable|string',
+            'payment_status' => 'nullable|string',
+            'remarks'        => 'nullable|string',
         ]);
 
         DB::beginTransaction();
@@ -1109,6 +1114,15 @@ public function getNameguet()
             $items = is_string($booking->floor_number_room_number_roomprice)
                 ? (json_decode($booking->floor_number_room_number_roomprice, true) ?? [])
                 : ($booking->floor_number_room_number_roomprice ?? []);
+
+            $oldFloorName = '';
+            $oldRoomSeatString = '';
+            $oldMonthlyAmount = (float) ($booking->monthly_amount ?? 0);
+
+            if (!empty($items) && is_array($items)) {
+                $oldFloorName = $items[0]['floornumber'] ?? '';
+                $oldRoomSeatString = $items[0]['roomnumber'] ?? '';
+            }
 
             // 1. Release old seat(s)
             foreach ($items as $item) {
@@ -1152,16 +1166,59 @@ public function getNameguet()
                 'monthly_amount'                     => $newPrice,
             ]);
 
+            // 3. Record Room Change History & Fee (default ৳ 500)
+            $feeAmount = $request->filled('fee_amount') ? (float) $request->fee_amount : 500.00;
+            $paymentMethod = $request->input('payment_method', 'Cash');
+            $paymentStatus = $request->input('payment_status', 'paid');
+            $remarks = $request->input('remarks', '');
+
+            RoomChangeHistory::create([
+                'room_booking_history_id' => $booking->id,
+                'resident_name'           => $booking->full_name ?? '',
+                'phone'                   => $booking->phone ?? '',
+                'old_floor'               => $oldFloorName,
+                'old_room_seat'           => $oldRoomSeatString,
+                'new_floor'               => (string) ($newFloor->name ?? ''),
+                'new_room_seat'           => (string) $newRoomNumberString,
+                'old_monthly_amount'      => $oldMonthlyAmount,
+                'new_monthly_amount'      => $newPrice,
+                'fee_amount'              => $feeAmount,
+                'payment_method'          => $paymentMethod,
+                'payment_status'          => $paymentStatus,
+                'remarks'                 => $remarks,
+                'changed_by'              => Auth::id() ?? null,
+            ]);
+
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Room & Seat changed successfully to ' . ($newFloor->name ?? '') . ' - ' . $newRoomNumberString,
+                'message' => 'Room & Seat changed successfully! Change Fee (৳ ' . number_format($feeAmount) . ') recorded.',
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
+    }
+
+    public function roomChangeHistories(Request $request)
+    {
+        $query = RoomChangeHistory::orderBy('id', 'desc');
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function($q) use ($s) {
+                $q->where('resident_name', 'like', "%{$s}%")
+                  ->orWhere('phone', 'like', "%{$s}%")
+                  ->orWhere('old_room_seat', 'like', "%{$s}%")
+                  ->orWhere('new_room_seat', 'like', "%{$s}%");
+            });
+        }
+
+        $perPage = (int) $request->input('per_page', 10);
+        $histories = $query->paginate($perPage);
+
+        return response()->json($histories);
     }
 
     public function devFeeIndex()

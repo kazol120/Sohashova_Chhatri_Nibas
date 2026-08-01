@@ -51,7 +51,7 @@
                           type="text"
                           v-model="roomInput"
                           class="form-control"
-                          placeholder="e.g. 202"
+                          placeholder="e.g. 202, g01"
                           style="max-width:220px;"
                           @keyup.enter="addRoom"
                         />
@@ -193,7 +193,7 @@ export default {
 
     addRoom() {
       const val = this.roomInput?.trim();
-      if (!val || val < 1) return;
+      if (!val) return;
 
       if (this.roomList.includes(val)) {
         this.duplicateMsg = `Room ${val} already added`;
@@ -203,7 +203,7 @@ export default {
       }
 
       this.roomList.push(val);
-      this.roomList.sort((a, b) => a - b);
+      this.roomList.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
       this.roomInput = "";
       this.errors.rooms = null;
       this.duplicateMsg = "";

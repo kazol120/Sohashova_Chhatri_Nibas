@@ -253,6 +253,7 @@
     Route::get('rooms/change-manager', [RoomBookingHistoryController::class, 'changeManagerIndex'])->name('room-change.index');
     Route::get('available-seats-tree', [RoomBookingHistoryController::class, 'getAvailableSeatsTree']);
     Route::post('bookings/{id}/change-room-seat', [RoomBookingHistoryController::class, 'changeRoomSeat']);
+    Route::get('room-change-histories', [RoomBookingHistoryController::class, 'roomChangeHistories']);
 
     // development fee management routes
     Route::get('development-fees', [RoomBookingHistoryController::class, 'devFeeIndex'])->name('development-fee.index');

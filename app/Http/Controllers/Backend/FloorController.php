@@ -80,7 +80,11 @@ public function floorget(Request $request)
     if (!is_array($rooms) || count($rooms) < 1) {
         return response()->json(['message' => 'Rooms list is required'], 422);
     }
-    $rooms = array_values(array_unique(array_map('intval', $rooms)));
+    $rooms = array_values(array_unique(array_filter(array_map(function ($r) {
+        return trim((string) $r);
+    }, $rooms), function ($r) {
+        return $r !== '';
+    })));
     return DB::transaction(function () use ($request, $rooms) {
         $dir = public_path('floor_image');
         if (!File::exists($dir)) {
@@ -102,7 +106,7 @@ public function floorget(Request $request)
         $now = now();
         $insert = [];
         foreach ($rooms as $roomNo) {
-            if (!$roomNo || $roomNo < 1) continue;
+            if ($roomNo === '') continue;
 
             $insert[] = [
                 'floor_id'    => $floor->id,

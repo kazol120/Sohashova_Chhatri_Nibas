@@ -156,7 +156,8 @@
     right: 0;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 9999;
+    z-index: 1030;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
   }
   .support-btn {
     display: flex;
