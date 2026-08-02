@@ -588,21 +588,20 @@ watch: {
 
             @page {
               size: A4 portrait;
-              margin: 6mm;
+              margin: 4mm;
             }
 
             * { box-sizing: border-box; margin: 0; padding: 0; }
 
             html, body {
-              height: 100%;
+              height: 100vh;
               width: 100%;
               background: #fff;
               font-family: 'Hind Siliguri', 'Tiro Bangla', sans-serif;
               padding: 0;
               margin: 0;
               color: #000;
-              display: flex;
-              flex-direction: column;
+              overflow: hidden;
               -webkit-print-color-adjust: exact;
               print-color-adjust: exact;
             }
@@ -611,20 +610,22 @@ watch: {
             .paper-frame {
               background: linear-gradient(165deg, #fef9e7 0%, #fef3cd 50%, #fef9e7 100%);
               border: 4px solid #27ae60;
-              border-radius: 12px;
-              padding: 16px 20px 14px 20px;
-              flex: 1;
+              border-radius: 10px;
+              padding: 12px 16px 10px 16px;
+              height: 100%;
+              box-sizing: border-box;
               display: flex;
               flex-direction: column;
-              min-height: calc(297mm - 12mm);
+              justify-content: space-between;
               position: relative;
+              page-break-inside: avoid;
             }
             .paper-frame::before {
               content: '';
               position: absolute;
-              inset: 5px;
+              inset: 4px;
               border: 1.5px solid #f39c12;
-              border-radius: 8px;
+              border-radius: 7px;
               pointer-events: none;
             }
 
@@ -633,23 +634,23 @@ watch: {
               display: flex;
               align-items: center;
               justify-content: center;
-              gap: 16px;
-              margin-bottom: 12px;
+              gap: 14px;
+              margin-bottom: 6px;
               padding: 0 4px;
             }
-            .logo-wrap img { width: 78px; height: 78px; object-fit: contain; }
+            .logo-wrap img { width: 68px; height: 68px; object-fit: contain; }
             .brand-center { text-align: center; flex: 1; }
             .brand-name {
-              font-size: 48px;
+              font-size: 44px;
               font-weight: 900;
               color: #c0392b;
               font-family: 'Tiro Bangla', serif;
-              line-height: 1.05;
+              line-height: 1;
               letter-spacing: 1px;
             }
             .photo-box {
-              width: 110px;
-              height: 128px;
+              width: 100px;
+              height: 115px;
               border: 2px solid #2c3e50;
               border-radius: 4px;
               display: flex;
@@ -660,72 +661,71 @@ watch: {
               flex-shrink: 0;
             }
             .photo-box img { width: 100%; height: 100%; object-fit: cover; }
-            .photo-placeholder { font-size: 12px; color: #888; text-align: center; }
+            .photo-placeholder { font-size: 11px; color: #888; text-align: center; }
 
             /* ======= ADDRESS BANNER ======= */
             .address-banner {
               background: #1a237e;
               color: #fff;
               text-align: center;
-              padding: 10px 14px;
-              font-size: 13px;
+              padding: 7px 12px;
+              font-size: 12.5px;
               font-weight: 600;
-              border-radius: 6px;
-              margin-top: 4px;
-              margin-bottom: 14px;
+              border-radius: 5px;
+              margin-bottom: 10px;
               letter-spacing: 0.2px;
             }
 
             /* ======= ROOM META ======= */
             .room-meta-row {
               display: flex;
-              gap: 14px;
-              margin-bottom: 18px;
+              gap: 10px;
+              margin-bottom: 10px;
             }
             .room-meta-box {
               flex: 1;
               border: 2px solid #27ae60;
-              border-radius: 8px;
-              padding: 9px 14px;
+              border-radius: 6px;
+              padding: 6px 10px;
               background: #fff;
-              font-size: 14px;
+              font-size: 13px;
               font-weight: 600;
               display: flex;
               align-items: center;
-              gap: 6px;
+              gap: 4px;
             }
-            .room-meta-box .lbl { color: #1a5c2e; font-weight: 700; }
-            .room-meta-box .val { color: #000; font-weight: 800; font-size: 15px; }
+            .room-meta-box .lbl { color: #1a5c2e; font-weight: 700; white-space: nowrap; }
+            .room-meta-box .val { color: #000; font-weight: 800; font-size: 13.5px; }
 
             /* ======= SECTION TITLES ======= */
             .section-title {
               text-align: center;
-              font-size: 22px;
+              font-size: 20px;
               font-weight: 800;
               color: #e74c3c;
               font-family: 'Tiro Bangla', serif;
-              border-bottom: 3px solid #f39c12;
-              padding-bottom: 4px;
-              margin: 18px 0 14px 0;
+              border-bottom: 2.5px solid #f39c12;
+              padding-bottom: 2px;
+              margin: 8px 0 8px 0;
               letter-spacing: 0.3px;
             }
 
             /* ======= PILL ROWS ======= */
             .form-pill-row {
               border: 2px solid #8e44ad;
-              border-radius: 28px;
+              border-radius: 25px;
               background: #fff;
               display: flex;
               overflow: hidden;
-              margin-bottom: 14px;
-              min-height: 46px;
+              margin-bottom: 8px;
+              min-height: 38px;
               align-items: stretch;
             }
             .pill-lbl {
               background: #7b1fa2;
               color: #fff;
-              padding: 10px 20px;
-              font-size: 14px;
+              padding: 6px 14px;
+              font-size: 13px;
               font-weight: 700;
               white-space: nowrap;
               display: flex;
@@ -734,8 +734,8 @@ watch: {
               flex-shrink: 0;
             }
             .pill-val {
-              padding: 10px 20px;
-              font-size: 14.5px;
+              padding: 6px 14px;
+              font-size: 13.5px;
               font-weight: 600;
               color: #111;
               flex-grow: 1;
@@ -752,17 +752,17 @@ watch: {
             /* ======= ADDRESS ======= */
             .address-row {
               border: 2px solid #8e44ad;
-              border-radius: 28px;
+              border-radius: 25px;
               background: #fff;
               display: flex;
               flex-wrap: wrap;
-              padding: 12px 22px;
-              font-size: 14px;
+              padding: 8px 16px;
+              font-size: 13px;
               font-weight: 600;
-              gap: 12px 32px;
-              margin-bottom: 16px;
+              gap: 8px 24px;
+              margin-bottom: 10px;
               align-items: center;
-              min-height: 46px;
+              min-height: 38px;
             }
             .akey { color: #7b1fa2; font-weight: 700; }
 
@@ -770,20 +770,20 @@ watch: {
             .rules-box {
               background: #fffde7;
               border: 2px solid #f48fb1;
-              border-radius: 14px;
-              padding: 16px 22px;
-              margin-top: 6px;
-              margin-bottom: 10px;
+              border-radius: 12px;
+              padding: 10px 16px;
+              margin-top: 4px;
+              margin-bottom: 6px;
             }
             .rules-list { list-style: none; padding: 0; margin: 0; }
             .rules-list li {
-              font-size: 13px;
+              font-size: 12px;
               font-weight: 600;
               color: #1a1a1a;
-              line-height: 2.0;
+              line-height: 1.65;
               border-bottom: 1px dashed #f8bbd0;
-              padding-bottom: 5px;
-              margin-bottom: 5px;
+              padding-bottom: 3px;
+              margin-bottom: 3px;
             }
             .rules-list li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 
@@ -793,24 +793,25 @@ watch: {
               justify-content: space-between;
               align-items: flex-end;
               margin-top: auto;
-              padding: 35px 36px 12px 36px;
+              padding: 16px 32px 6px 32px;
             }
-            .sig-box { text-align: center; min-width: 150px; }
-            .sig-line { border-top: 1.5px solid #2c3e50; margin-bottom: 6px; }
-            .sig-text { font-size: 14px; font-weight: 700; color: #1a1a1a; }
+            .sig-box { text-align: center; min-width: 140px; }
+            .sig-line { border-top: 1.5px solid #2c3e50; margin-bottom: 4px; }
+            .sig-text { font-size: 13px; font-weight: 700; color: #1a1a1a; }
 
             @media print {
               html, body {
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+                height: 100vh !important;
+                overflow: hidden !important;
               }
               .paper-frame {
-                flex: 1;
+                height: 100vh !important;
+                max-height: 100vh !important;
                 border-radius: 0;
-                min-height: calc(297mm - 12mm);
+                box-sizing: border-box;
+                page-break-inside: avoid !important;
+                page-break-after: avoid !important;
+                page-break-before: avoid !important;
               }
             }
           </style>
@@ -838,11 +839,12 @@ watch: {
               কলেজ রোড , নেসকো গেট সংলগ্ন , রংপুর &nbsp;|&nbsp; প্রয়োজনে: ০১৯৭৭২৭০৯২০ &nbsp;|&nbsp; Gmail: tssvilla2026@gmail.com
             </div>
 
-            <!-- ROOM / BLOCK / FLOOR -->
+            <!-- ROOM / BLOCK / FLOOR / BOOKING DATE -->
             <div class="room-meta-row">
               <div class="room-meta-box"><span class="lbl">রুম নং:</span>&nbsp;<span class="val">${roomNo}</span></div>
               <div class="room-meta-box"><span class="lbl">ব্লক নং:</span>&nbsp;<span class="val">${seatNo}</span></div>
               <div class="room-meta-box"><span class="lbl">ফ্লোর নং:</span>&nbsp;<span class="val">${floorNo}</span></div>
+              <div class="room-meta-box" style="flex: 1.5;"><span class="lbl">বুকিং তারিখ:</span>&nbsp;<span class="val" style="font-size:12px;">${bookingDate}</span></div>
             </div>
 
             <!-- SECTION: STUDENT INFO -->
@@ -878,11 +880,6 @@ watch: {
                 <div class="pill-lbl">মোবাইল নং :</div>
                 <div class="pill-val">${motherPhone}</div>
               </div>
-            </div>
-
-            <div class="form-pill-row">
-              <div class="pill-lbl">বুকিং তারিখ ও সময় :</div>
-              <div class="pill-val">${bookingDate}</div>
             </div>
 
             <!-- SECTION: ADDRESS -->
