@@ -566,6 +566,9 @@ watch: {
       const address = r.address || '-';
       const thanaName = r.thana_name || '-';
       const districtName = r.district_name || '-';
+      const bookingDate = r.created_at
+        ? new Date(r.created_at).toLocaleString('bn-BD', { dateStyle: 'long', timeStyle: 'short' })
+        : (r.booking_date || '-');
 
       const html = `
         <!DOCTYPE html>
@@ -574,48 +577,63 @@ watch: {
           <meta charset="UTF-8">
           <title>শিক্ষার্থীর তথ্য - টি এস এস ভিলা</title>
           <style>
-            @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Hind+Siliguri:wght@400;500;600;700&display=swap');
-            
+            @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Hind+Siliguri:wght@400;500;600;700;800&display=swap');
+
+            @page {
+              size: A4 portrait;
+              margin: 6mm;
+            }
+
             * { box-sizing: border-box; margin: 0; padding: 0; }
+
             html, body {
               height: 100%;
               width: 100%;
-              background: #ffffff;
-              font-family: 'Hind Siliguri', 'Tiro Bangla', 'Segoe UI', Arial, sans-serif;
+              background: #fff;
+              font-family: 'Hind Siliguri', 'Tiro Bangla', sans-serif;
               padding: 0;
               margin: 0;
               color: #000;
               display: flex;
               flex-direction: column;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
             }
 
+            /* ======= OUTER FRAME ======= */
             .paper-frame {
-              background: linear-gradient(160deg, #fef9e7 0%, #fef3cd 50%, #fef9e7 100%);
+              background: linear-gradient(165deg, #fef9e7 0%, #fef3cd 50%, #fef9e7 100%);
               border: 4px solid #27ae60;
-              border-radius: 10px;
-              padding: 10px 14px 8px 14px;
-              position: relative;
-              width: 100%;
-              max-width: 100%;
-              margin: 0;
+              border-radius: 12px;
+              padding: 16px 20px 14px 20px;
               flex: 1;
               display: flex;
               flex-direction: column;
               min-height: calc(297mm - 12mm);
+              position: relative;
+            }
+            .paper-frame::before {
+              content: '';
+              position: absolute;
+              inset: 5px;
+              border: 1.5px solid #f39c12;
+              border-radius: 8px;
+              pointer-events: none;
             }
 
-            /* Top Header */
+            /* ======= HEADER ======= */
             .top-header {
               display: flex;
               align-items: center;
               justify-content: center;
               gap: 16px;
-              margin-bottom: 6px;
+              margin-bottom: 12px;
+              padding: 0 4px;
             }
-            .logo-wrap img { width: 70px; height: 70px; object-fit: contain; }
+            .logo-wrap img { width: 78px; height: 78px; object-fit: contain; }
             .brand-center { text-align: center; flex: 1; }
             .brand-name {
-              font-size: 44px;
+              font-size: 48px;
               font-weight: 900;
               color: #c0392b;
               font-family: 'Tiro Bangla', serif;
@@ -623,207 +641,177 @@ watch: {
               letter-spacing: 1px;
             }
             .photo-box {
-              width: 105px;
-              height: 125px;
-              border: 2px solid #334155;
+              width: 110px;
+              height: 128px;
+              border: 2px solid #2c3e50;
               border-radius: 4px;
               display: flex;
               align-items: center;
               justify-content: center;
               overflow: hidden;
-              background: #fff;
+              background: #f0f0f0;
+              flex-shrink: 0;
             }
-            .photo-box img {
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
-            }
+            .photo-box img { width: 100%; height: 100%; object-fit: cover; }
+            .photo-placeholder { font-size: 12px; color: #888; text-align: center; }
 
-            /* Banner Bar */
+            /* ======= ADDRESS BANNER ======= */
             .address-banner {
               background: #1a237e;
-              color: #ffffff;
+              color: #fff;
               text-align: center;
-              padding: 7px 12px;
-              font-size: 12.5px;
+              padding: 10px 14px;
+              font-size: 13px;
               font-weight: 600;
-              border-radius: 4px;
-              margin-bottom: 12px;
-              margin-top: 6px;
+              border-radius: 6px;
+              margin-top: 4px;
+              margin-bottom: 14px;
+              letter-spacing: 0.2px;
             }
 
-            /* Room/Block/Floor Boxes */
+            /* ======= ROOM META ======= */
             .room-meta-row {
               display: flex;
-              justify-content: space-between;
-              gap: 12px;
-              margin-bottom: 16px;
+              gap: 14px;
+              margin-bottom: 18px;
             }
             .room-meta-box {
               flex: 1;
-              border: 2px solid #10b981;
-              border-radius: 6px;
-              padding: 5px 10px;
+              border: 2px solid #27ae60;
+              border-radius: 8px;
+              padding: 9px 14px;
               background: #fff;
               font-size: 14px;
-              font-weight: 700;
-              color: #065f46;
+              font-weight: 600;
               display: flex;
               align-items: center;
               gap: 6px;
             }
-            .room-meta-box span.val {
-              font-weight: 700;
-              color: #000;
-            }
+            .room-meta-box .lbl { color: #1a5c2e; font-weight: 700; }
+            .room-meta-box .val { color: #000; font-weight: 800; font-size: 15px; }
 
-            /* Section Titles */
-            .section-pill-title {
-              display: block;
+            /* ======= SECTION TITLES ======= */
+            .section-title {
               text-align: center;
-              margin: 10px 0 10px 0;
               font-size: 22px;
               font-weight: 800;
               color: #e74c3c;
               font-family: 'Tiro Bangla', serif;
               border-bottom: 3px solid #f39c12;
-              padding-bottom: 2px;
+              padding-bottom: 4px;
+              margin: 18px 0 14px 0;
+              letter-spacing: 0.3px;
             }
 
-            /* Form Rows (Purple Pills) */
+            /* ======= PILL ROWS ======= */
             .form-pill-row {
               border: 2px solid #8e44ad;
-              border-radius: 25px;
-              background: #ffffff;
+              border-radius: 28px;
+              background: #fff;
               display: flex;
               overflow: hidden;
-              margin-bottom: 9px;
+              margin-bottom: 14px;
+              min-height: 46px;
               align-items: stretch;
-              min-height: 36px;
             }
             .pill-lbl {
               background: #7b1fa2;
-              color: #ffffff;
-              padding: 6px 14px;
-              font-size: 13px;
+              color: #fff;
+              padding: 10px 20px;
+              font-size: 14px;
               font-weight: 700;
               white-space: nowrap;
               display: flex;
               align-items: center;
               border-right: 2px solid #8e44ad;
+              flex-shrink: 0;
             }
             .pill-val {
-              padding: 6px 14px;
-              font-size: 13.5px;
+              padding: 10px 20px;
+              font-size: 14.5px;
               font-weight: 600;
               color: #111;
               flex-grow: 1;
               display: flex;
               align-items: center;
             }
-            .pill-split {
+            .pill-right {
               border-left: 2px solid #8e44ad;
               display: flex;
               align-items: stretch;
-              flex-grow: 1;
+              flex-shrink: 0;
             }
 
-            /* Address Row */
-            .address-grid {
-              border: 2px solid #8b5cf6;
-              border-radius: 20px;
-              background: #ffffff;
+            /* ======= ADDRESS ======= */
+            .address-row {
+              border: 2px solid #8e44ad;
+              border-radius: 28px;
+              background: #fff;
               display: flex;
               flex-wrap: wrap;
-              padding: 8px 14px;
+              padding: 12px 22px;
               font-size: 14px;
               font-weight: 600;
-              gap: 15px;
-              margin-bottom: 14px;
+              gap: 12px 32px;
+              margin-bottom: 16px;
+              align-items: center;
+              min-height: 46px;
             }
+            .akey { color: #7b1fa2; font-weight: 700; }
 
-            /* Rules Box */
-            .rules-container {
+            /* ======= RULES ======= */
+            .rules-box {
               background: #fffde7;
               border: 2px solid #f48fb1;
               border-radius: 14px;
-              padding: 10px 16px;
-              margin-top: 10px;
-              margin-bottom: 20px;
+              padding: 16px 22px;
+              margin-top: 6px;
+              margin-bottom: 10px;
             }
-            .rules-list {
-              list-style: none;
-              padding: 0;
-              margin: 0;
-            }
+            .rules-list { list-style: none; padding: 0; margin: 0; }
             .rules-list li {
-              font-size: 12px;
+              font-size: 13px;
               font-weight: 600;
-              color: #1e293b;
-              line-height: 1.7;
+              color: #1a1a1a;
+              line-height: 2.0;
               border-bottom: 1px dashed #f8bbd0;
-              padding-bottom: 2px;
-              margin-bottom: 2px;
+              padding-bottom: 5px;
+              margin-bottom: 5px;
             }
-            .rules-list li:last-child { border-bottom: none; }
+            .rules-list li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 
-            /* Signatures */
+            /* ======= SIGNATURE ======= */
             .signature-row {
               display: flex;
               justify-content: space-between;
               align-items: flex-end;
               margin-top: auto;
-              padding: 0 24px 10px 24px;
+              padding: 35px 36px 12px 36px;
             }
-            .sig-box {
-              text-align: center;
-              min-width: 150px;
-            }
-            .sig-line {
-              border-top: 1.5px solid #475569;
-              margin-bottom: 4px;
-              width: 100%;
-            }
-            .sig-text {
-              font-size: 13px;
-              font-weight: 700;
-              color: #1e293b;
-            }
+            .sig-box { text-align: center; min-width: 150px; }
+            .sig-line { border-top: 1.5px solid #2c3e50; margin-bottom: 6px; }
+            .sig-text { font-size: 14px; font-weight: 700; color: #1a1a1a; }
 
-            @page {
-              size: A4 portrait;
-              margin: 6mm;
-            }
             @media print {
               html, body {
-                width: 100%;
                 height: 100%;
-                padding: 0;
-                margin: 0;
-                background: #fff;
                 display: flex;
                 flex-direction: column;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
               }
               .paper-frame {
-                border-radius: 0;
-                width: 100%;
-                max-width: 100%;
-                margin: 0;
-                padding: 8px 10px 6px 10px;
                 flex: 1;
-                display: flex;
-                flex-direction: column;
+                border-radius: 0;
                 min-height: calc(297mm - 12mm);
-                page-break-inside: avoid;
               }
             }
           </style>
         </head>
         <body>
           <div class="paper-frame">
-            <!-- Top Header -->
+
+            <!-- HEADER -->
             <div class="top-header">
               <div class="logo-wrap">
                 <img src="${logoUrl}" alt="Logo" onerror="this.style.display='none'">
@@ -832,43 +820,45 @@ watch: {
                 <div class="brand-name">টি এস এস ভিলা</div>
               </div>
               <div class="photo-box">
-                ${userImgUrl ? `<img src="${userImgUrl}" alt="Student Photo">` : '<span style="font-size:12px;color:#94a3b8">ছবি</span>'}
+                ${userImgUrl
+                  ? `<img src="${userImgUrl}" alt="Photo">`
+                  : `<div class="photo-placeholder">ছবি<br>Photo</div>`}
               </div>
             </div>
 
-            <!-- Banner Bar -->
+            <!-- BANNER -->
             <div class="address-banner">
-              কলেজ রোড, নেসকো গেট সংলগ্ন, রংপুর। প্রয়োজনে: ০১৯৭৭২৭০৯২০ &nbsp; Gmail: tssvilla2026@gmail.com
+              কলেজ রোড , নেসকো গেট সংলগ্ন , রংপুর &nbsp;|&nbsp; প্রয়োজনে: ০১৯৭৭২৭০৯২০ &nbsp;|&nbsp; Gmail: tssvilla2026@gmail.com
             </div>
 
-            <!-- Room Meta -->
+            <!-- ROOM / BLOCK / FLOOR -->
             <div class="room-meta-row">
-              <div class="room-meta-box">রুম নং: <span class="val">${roomNo}</span></div>
-              <div class="room-meta-box">ব্লক নং: <span class="val">${seatNo}</span></div>
-              <div class="room-meta-box">ফ্লোর নং: <span class="val">${floorNo}</span></div>
+              <div class="room-meta-box"><span class="lbl">রুম নং:</span>&nbsp;<span class="val">${roomNo}</span></div>
+              <div class="room-meta-box"><span class="lbl">ব্লক নং:</span>&nbsp;<span class="val">${seatNo}</span></div>
+              <div class="room-meta-box"><span class="lbl">ফ্লোর নং:</span>&nbsp;<span class="val">${floorNo}</span></div>
             </div>
 
-            <!-- Section 1: Student Info -->
-            <div class="section-pill-title">শিক্ষার্থীর তথ্য</div>
+            <!-- SECTION: STUDENT INFO -->
+            <div class="section-title">শিক্ষার্থীর তথ্য</div>
 
             <div class="form-pill-row">
               <div class="pill-lbl">শিক্ষার্থীর পূর্ণ নাম :</div>
               <div class="pill-val">${fullName}</div>
-              <div class="pill-split">
+              <div class="pill-right">
                 <div class="pill-lbl">মোবাইল নং :</div>
                 <div class="pill-val">${phone}</div>
               </div>
             </div>
 
             <div class="form-pill-row">
-              <div class="pill-lbl">অধ্যয়নরত শিক্ষা প্রতিষ্ঠানের নাম:</div>
+              <div class="pill-lbl">অধ্যয়নরত শিক্ষা প্রতিষ্ঠানের নাম:</div>
               <div class="pill-val">${institutionName}</div>
             </div>
 
             <div class="form-pill-row">
               <div class="pill-lbl">পিতার নাম:</div>
               <div class="pill-val">${fatherName}</div>
-              <div class="pill-split">
+              <div class="pill-right">
                 <div class="pill-lbl">মোবাইল নং :</div>
                 <div class="pill-val">${fatherPhone}</div>
               </div>
@@ -877,36 +867,41 @@ watch: {
             <div class="form-pill-row">
               <div class="pill-lbl">মাতার নাম:</div>
               <div class="pill-val">${motherName}</div>
-              <div class="pill-split">
+              <div class="pill-right">
                 <div class="pill-lbl">মোবাইল নং :</div>
                 <div class="pill-val">${motherPhone}</div>
               </div>
             </div>
 
-            <!-- Section 2: Address -->
-            <div class="section-pill-title" style="margin-top: 14px;">স্থায়ী ঠিকানা</div>
-
-            <div class="address-grid">
-              <div>গ্রাম: <span style="font-weight:700">${address}</span></div>
-              <div>থানা: <span style="font-weight:700">${thanaName}</span></div>
-              <div>উপজেলা: <span style="font-weight:700">${thanaName}</span></div>
-              <div>জেলা: <span style="font-weight:700">${districtName}</span></div>
+            <div class="form-pill-row">
+              <div class="pill-lbl">বুকিং তারিখ ও সময় :</div>
+              <div class="pill-val">${bookingDate}</div>
             </div>
 
-            <!-- Section 3: Rules -->
-            <div class="section-pill-title" style="margin-top: 10px;">নিয়মাবলী</div>
+            <!-- SECTION: ADDRESS -->
+            <div class="section-title">স্থায়ী ঠিকানা</div>
 
-            <div class="rules-container">
+            <div class="address-row">
+              <span><span class="akey">গ্রাম/রাস্তা:</span> ${address}</span>
+              <span><span class="akey">থানা:</span> ${thanaName}</span>
+              <span><span class="akey">উপজেলা:</span> ${thanaName}</span>
+              <span><span class="akey">জেলা:</span> ${districtName}</span>
+            </div>
+
+            <!-- SECTION: RULES -->
+            <div class="section-title">নিয়মাবলী</div>
+
+            <div class="rules-box">
               <ul class="rules-list">
-                <li>* মেসের ভাড়া ০৭ তারিখের মধ্যে পরিশোধ করতে হবে। ০৭ তারিখ পার হলে ২৪ ঘণ্টা পর পর ৫০ টাকা করে জরিমানা।</li>
-                <li>* মেস ছাড়লে ০২ মাস পূর্বেই মেস কর্তৃপক্ষকে জানাতে হবে। অন্যথায় দুই মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</li>
-                <li>* মাগরিবের আযানের পর মেসের বাহিরে থাকলে অভিভাবককে জানিয়ে দিতে হবে।</li>
+                <li>* মেসের ভাড়া ০৭ তারিখের মধ্যে পরিশোধ করতে হবে। ০৭ তারিখ পার হলে ২৪ ঘন্টা পর পর ৫০ টাকা করে জরিমানা।</li>
+                <li>* মেস ছাড়লে ০২ মাস পূর্বেই মেস কর্তৃপক্ষকে জানাতে হবে। অন্যথায় দুই মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</li>
+                <li>* মাগরিবের আযানের পর মেসের বাহিরে থাকলে অভিভাবককে জানিয়ে দিতে হবে।</li>
                 <li>* রুম চেঞ্জ করতে চাইলে ৫০০ টাকা জরিমানা প্রদান করতে হবে।</li>
-                <li>* মেসের নিয়ম-কানুন মেনে চলতে হবে। কারও বিরুদ্ধে কোনো অভিযোগ আসলে এবং তা প্রমাণিত হলে সিট বাতিলসহ যেকোন ব্যবস্থা নেয়া অধিকার কর্তৃপক্ষ রাখে।</li>
+                <li>* মেসের নিয়ম-কানুন মেনে চলতে হবে। কারও বিরুদ্ধে কোনো অভিযোগ আসলে এবং তা প্রমাণিত হলে সিট বাতিলসহ যেকোন ব্যবস্থা নেয়া অধিকার কর্তৃপক্ষ রাখে।</li>
               </ul>
             </div>
 
-            <!-- Footers -->
+            <!-- SIGNATURE -->
             <div class="signature-row">
               <div class="sig-box">
                 <div class="sig-line"></div>
