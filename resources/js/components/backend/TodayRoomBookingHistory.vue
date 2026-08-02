@@ -580,18 +580,20 @@ watch: {
             body {
               background: #ffffff;
               font-family: 'Hind Siliguri', 'Tiro Bangla', 'Segoe UI', Arial, sans-serif;
-              padding: 10px;
+              padding: 0;
+              margin: 0;
               color: #000;
             }
 
             .paper-frame {
               background: linear-gradient(160deg, #fef9e7 0%, #fef3cd 50%, #fef9e7 100%);
               border: 4px solid #27ae60;
-              border-radius: 14px;
-              padding: 14px 16px 10px 16px;
+              border-radius: 10px;
+              padding: 10px 14px 8px 14px;
               position: relative;
-              max-width: 800px;
-              margin: 0 auto;
+              width: 100%;
+              max-width: 100%;
+              margin: 0;
             }
 
             /* Top Header */
@@ -780,9 +782,30 @@ watch: {
               color: #1e293b;
             }
 
+            @page {
+              size: A4 portrait;
+              margin: 6mm;
+            }
             @media print {
-              body { padding: 0; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-              .paper-frame { border-radius: 0; max-width: 100%; width: 100%; margin: 0; }
+              html, body {
+                width: 100%;
+                height: 100%;
+                padding: 0;
+                margin: 0;
+                background: #fff;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+              .paper-frame {
+                border-radius: 0;
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+                padding: 8px 10px 6px 10px;
+                page-break-inside: avoid;
+                page-break-after: avoid;
+                page-break-before: avoid;
+              }
             }
           </style>
         </head>
