@@ -39,37 +39,26 @@
                       </small>
                     </div>
 
-                    <div class="row g-3">
-                      <div class="col-6">
-                        <label class="form-label fw-semibold">Price <code class="req">*</code></label>
-                        <div class="input-group">
-                          <span class="input-group-text">$</span>
-                          <input type="number" class="form-control" v-model.number="form.price" min="0" required />
-                        </div>
-                      </div>
-                      <div class="col-6">
-                        <label class="form-label fw-semibold">Room Size <code class="req">*</code></label>
-                        <input type="text" class="form-control" v-model.trim="form.room_size" placeholder="e.g. 12x14" required />
+                    <div class="mb-3">
+                      <label class="form-label fw-semibold">Price <code class="req">*</code></label>
+                      <div class="input-group">
+                        <span class="input-group-text">৳</span>
+                        <input type="number" class="form-control border-2-focus" v-model.number="form.price" min="0" required />
                       </div>
                     </div>
 
-                    <div class="mt-3 p-3 bg-light-subtle rounded border border-dashed">
-                      <label class="form-label fw-semibold d-block">Breakfast Included?</label>
-                      <div class="d-flex gap-4 mt-1">
-                        <div class="form-check">
-                          <input class="form-check-input" type="radio" v-model="form.breakfast" value="yes" id="bfYes" required>
-                          <label class="form-check-label" for="bfYes">Yes</label>
-                        </div>
-                        <div class="form-check">
-                          <input class="form-check-input" type="radio" v-model="form.breakfast" value="no" id="bfNo">
-                          <label class="form-check-label" for="bfNo">No</label>
-                        </div>
-                      </div>
+                    <div class="mb-3">
+                      <label class="form-label fw-semibold">Windows <code class="req">*</code></label>
+                      <select class="form-select border-2-focus" v-model="form.windows" required>
+                        <option value="">Select</option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                      </select>
                     </div>
                   </div>
 
                   <div class="col-12 col-lg-6">
-                    <div class="mb-4">
+                    <div class="mb-3">
                       <label class="form-label fw-semibold">
                         Room Images <code class="req">*</code>
                         <span class="text-muted fw-normal small ms-1">(Multiple select)</span>
@@ -132,47 +121,15 @@
                       <small v-if="errors.images" class="text-danger small d-block mt-1">{{ errors.images }}</small>
                     </div>
 
-                    <div class="row g-3">
-                      <div class="col-6">
-                        <label class="form-label small fw-bold text-uppercase text-muted">Attached Bathroom</label>
-                        <select class="form-select border-2-focus" v-model="form.attached_bathroom" required>
-                          <option value="">Select</option>
-                          <option value="yes">Yes</option>
-                          <option value="no">No</option>
-                        </select>
-                      </div>
-                      <div class="col-6">
-                        <label class="form-label small fw-bold text-uppercase text-muted">AC Status</label>
-                        <select class="form-select border-2-focus" v-model.number="form.acstatus" required>
-                          <option value="">Select</option>
-                          <option :value="1">AC Room</option>
-                          <option :value="2">Non AC</option>
-                        </select>
-                      </div>
-                      <div class="col-6">
-                        <label class="form-label small fw-bold text-uppercase text-muted">Windows</label>
-                        <select class="form-select border-2-focus" v-model="form.windows" required>
-                          <option value="">Select</option>
-                          <option value="yes">Yes</option>
-                          <option value="no">No</option>
-                        </select>
-                      </div>
-                      <div class="col-6">
-                        <label class="form-label small fw-bold text-uppercase text-muted">Room Type</label>
-                        <select class="form-select border-2-focus" v-model="form.room_type" required>
-                          <option value="">Select</option>
-                          <option value="Singel">Single Room</option>
-                          <option value="Doubel">Double Sharing Room</option>
-                        </select>
-                      </div>
-                      <div class="col-12">
-                        <label class="form-label small fw-bold text-uppercase text-muted">Balcony</label>
-                        <select class="form-select border-2-focus" v-model="form.balcony" required>
-                          <option value="">Select</option>
-                          <option value="yes">Yes</option>
-                          <option value="no">No</option>
-                        </select>
-                      </div>
+                    <div class="mb-3">
+                      <label class="form-label fw-semibold">Room Type <code class="req">*</code></label>
+                      <select class="form-select border-2-focus" v-model="form.room_type" required>
+                        <option value="">Select Room Type</option>
+                        <option value="Seat A - Single Room">Seat A - Single Room</option>
+                        <option value="Seat A - Double Room">Seat A - Double Room</option>
+                        <option value="Seat B - Single Room">Seat B - Single Room</option>
+                        <option value="Seat B - Double Room">Seat B - Double Room</option>
+                      </select>
                     </div>
                   </div>
                   <!-- Seats Management Section -->
@@ -181,7 +138,7 @@
                       <h6 class="fw-bold text-dark mb-0">
                         <i class="fa fa-bed me-1 text-primary"></i> Seats Configuration (সিট সমূহের বিবরণ)
                       </h6>
-                      <button type="button" class="btn btn-sm btn-primary" @click="addSeat" :disabled="form.room_type === 'Singel'">
+                      <button type="button" class="btn btn-sm btn-primary" @click="addSeat" :disabled="form.room_type.includes('Single') || form.room_type === 'Singel'">
                         <i class="fa fa-plus me-1"></i> Add Seat
                       </button>
                     </div>
@@ -285,27 +242,20 @@ export default {
     },
 
     "form.room_type"(newVal) {
-      if (newVal === "Singel") {
-        if (this.form.seats.length > 1) {
-          this.form.seats = this.form.seats.slice(0, 1);
-        }
-        if (this.form.seats[0] && !this.form.seats[0].price) {
-          this.form.seats[0].price = this.form.price;
-        }
-      } else if (newVal === "Doubel") {
-        if (this.form.seats.length === 1) {
-          this.form.seats.push({
-            seat_no: "Seat-B",
-            price: this.form.price || "",
-            advance_price: 0
-          });
-        }
-        if (this.form.seats[0] && !this.form.seats[0].price) {
-          this.form.seats[0].price = this.form.price;
-        }
-        if (this.form.seats[1] && !this.form.seats[1].price) {
-          this.form.seats[1].price = this.form.price;
-        }
+      if (!newVal) return;
+      let prefix = "Seat A";
+      if (newVal.includes("Seat B")) {
+        prefix = "Seat B";
+      }
+      if (newVal.includes("Single") || newVal === "Singel") {
+        this.form.seats = [
+          { seat_no: prefix, price: this.form.price || "", advance_price: 0 }
+        ];
+      } else if (newVal.includes("Double") || newVal === "Doubel") {
+        this.form.seats = [
+          { seat_no: `${prefix}-1`, price: this.form.price || "", advance_price: 0 },
+          { seat_no: `${prefix}-2`, price: this.form.price || "", advance_price: 0 }
+        ];
       }
     },
 
@@ -313,16 +263,6 @@ export default {
       this.form.room_id = "";
       this.rooms = [];
       if (v) this.loadRoomsByFloor(v);
-    },
-
-    "form.acstatus"(v) {
-      if (v === 1) {
-        this.form.ac_status = "Ac";
-      } else if (v === 2) {
-        this.form.ac_status = "Non Ac";
-      } else {
-        this.form.ac_status = "";
-      }
     },
   },
 
@@ -337,18 +277,12 @@ export default {
         floor_id: "",
         room_id: "",
         price: "",
-        room_size: "",
         max_people: "",
-        breakfast: "",
-        attached_bathroom: "",
         room_type: "",
-        ac_status: "",
         windows: "",
-        balcony: "",
-        acstatus: "",
-        images: [],   // ✅ array
+        images: [],
         seats: [
-          { seat_no: "Seat-A", price: "", advance_price: 0 }
+          { seat_no: "Seat A", price: "", advance_price: 0 }
         ],
       };
     },
@@ -444,14 +378,8 @@ export default {
       if (!this.form.floor_id) this.errors.floor_id = "Floor is required";
       if (!this.form.room_id) this.errors.room_id = "Room is required";
       if (this.form.price === "" || this.form.price === null) this.errors.price = "Price is required";
-      if (!this.form.room_size) this.errors.room_size = "Room size is required";
-      if (!this.form.breakfast) this.errors.breakfast = "Breakfast is required";
-      if (!this.form.attached_bathroom) this.errors.attached_bathroom = "Attached bathroom is required";
       if (!this.form.room_type) this.errors.room_type = "Room type is required";
-      if (!this.form.ac_status) this.errors.ac_status = "AC status is required";
       if (!this.form.windows) this.errors.windows = "Windows is required";
-      if (!this.form.balcony) this.errors.balcony = "Balcony is required";
-      if (!this.form.acstatus) this.errors.acstatus = "AC status is required";
       if (!this.form.images.length) this.errors.images = "At least one image is required"; // ✅
       if (!this.form.seats || !this.form.seats.length) {
         this.errors.seats = "At least one seat is required";
@@ -476,15 +404,9 @@ export default {
         fd.append("floor_id", this.form.floor_id);
         fd.append("room_id", this.form.room_id);
         fd.append("price", this.form.price);
-        fd.append("room_size", this.form.room_size);
-        fd.append("max_people", this.form.max_people);
-        fd.append("breakfast", this.form.breakfast);
-        fd.append("attached_bathroom", this.form.attached_bathroom);
+        fd.append("max_people", this.form.max_people || "");
         fd.append("room_type", this.form.room_type);
-        fd.append("ac_status", this.form.ac_status);
         fd.append("windows", this.form.windows);
-        fd.append("balcony", this.form.balcony);
-        fd.append("acstatus", this.form.acstatus);
         fd.append("seats", JSON.stringify(this.form.seats));
 
         // ✅ Multiple images

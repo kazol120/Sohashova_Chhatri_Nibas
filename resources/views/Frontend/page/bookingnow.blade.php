@@ -10,20 +10,7 @@
 <section class="stepbar-wrap">
   <div class="stepbar">
     <span class="stepbar-item is-active">Select Type of Room</span>
-    <form id="filterForm" method="GET" class="d-flex align-items-center gap-3 ms-3">
-      <label class="d-flex align-items-center gap-2 mb-0">
-        <input type="checkbox" name="ac" value="1"
-               onchange="document.getElementById('filterForm').submit()"
-               {{ request()->has('ac') ? 'checked' : '' }}>
-        <span>Ac</span>
-      </label>
-      <label class="d-flex align-items-center gap-2 mb-0">
-        <input type="checkbox" name="nonac" value="1"
-               onchange="document.getElementById('filterForm').submit()"
-               {{ request()->has('nonac') ? 'checked' : '' }}>
-        <span>Non Ac</span>
-      </label>
-    </form>
+
     @if(request()->has('ac') || request()->has('nonac'))
       <a href="{{ url()->current() }}" class="ms-3 small text-decoration-underline"></a>
     @endif

@@ -572,27 +572,32 @@ public function store(Request $request)
             ]);
         }
 
+        $appSettings = \App\Services\SettingService::getSettingContentBySlug('app_setting');
+        $devFeeActive = ($appSettings['development_fee_status'] ?? '1') == '1';
+        $devFee = $devFeeActive ? (float) ($appSettings['development_fee'] ?? 3000) : 0.00;
+
         RoomBookingHistory::create([
-        'image'                              => $imagePath,
-        'floor_number_room_number_roomprice' => $roomJsonData,
-        'full_name'                          => $request->full_name,
-        'email'                              => $request->email,
-        'phone'                              => '+88' . ltrim($request->phone, '+88'),
-        'nid'                                => $request->nid,
-        'password'                           => $existingUser ? $request->password : $tempPassword,
-        'division_id'                        => $request->division_id,
-        'district_id'                        => $request->district_id,
-        'thana_id'                           => $request->thana_id,
-        'address'                            => $request->address,
-        'pay_cash_in'                        => $request->payment === 'cash' ? 'cash' : null,
-        'pay_online'                         => $request->payment === 'online'
-                                                ? (($request->pay_method ?? 'Online') . ' | TRX: ' . ($request->trx ?? ''))
-                                                : null,
-        'monthly_amount'                     => $totalAmount,
-        'check_in'                           => $request->check_in,
-        'check_out'                          => $request->check_out,
-        'status'                             => 0,
-    ]);
+            'image'                              => $imagePath,
+            'floor_number_room_number_roomprice' => $roomJsonData,
+            'full_name'                          => $request->full_name,
+            'email'                              => $request->email,
+            'phone'                              => '+88' . ltrim($request->phone, '+88'),
+            'nid'                                => $request->nid,
+            'password'                           => $existingUser ? $request->password : $tempPassword,
+            'division_id'                        => $request->division_id,
+            'district_id'                        => $request->district_id,
+            'thana_id'                           => $request->thana_id,
+            'address'                            => $request->address,
+            'pay_cash_in'                        => $request->payment === 'cash' ? 'cash' : null,
+            'pay_online'                         => $request->payment === 'online'
+                                                    ? (($request->pay_method ?? 'Online') . ' | TRX: ' . ($request->trx ?? ''))
+                                                    : null,
+            'monthly_amount'                     => $totalAmount,
+            'development_fee'                    => $devFee,
+            'check_in'                           => $request->check_in,
+            'check_out'                          => $request->check_out,
+            'status'                             => 0,
+        ]);
 
         Auth::guard('web')->login($user);
         $request->session()->regenerate();

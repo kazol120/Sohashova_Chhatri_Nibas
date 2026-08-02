@@ -113,26 +113,28 @@ class RoomController extends Controller
             $data = $request->validate([
                 'floor_id'          => ['required', 'exists:floors,id'],
                 'room_id'           => ['required', 'exists:rooms,id'],
-                'acstatus'          => 'required|in:1,2',
+                'acstatus'          => ['nullable'],
                 'price'             => ['required', 'numeric', 'min:0'],
-                'room_size'         => ['required', 'string', 'max:50'],
+                'room_size'         => ['nullable', 'string', 'max:50'],
                 'max_people'        => ['nullable'],
-                'breakfast'         => ['required', Rule::in(['yes','no'])],
-                'attached_bathroom' => ['required', Rule::in(['yes','no'])],
-                'room_type'         => ['required', Rule::in(['Singel','Doubel'])],
-                'ac_status'         => ['required', Rule::in(['Ac','Non Ac'])],
+                'breakfast'         => ['nullable'],
+                'attached_bathroom' => ['nullable'],
+                'room_type'         => ['required', 'string', 'max:100'],
+                'ac_status'         => ['nullable'],
                 'windows'           => ['required', Rule::in(['yes','no'])],
-                'balcony'           => ['required', Rule::in(['yes','no'])],
+                'balcony'           => ['nullable'],
                 'images'            => ['required', 'array', 'min:1'],
                 'images.*'          => ['file', 'mimes:jpg,jpeg,png,webp,gif,svg,jfif,heic,heif,avif,bmp', 'max:9096'],
             ]);
 
-            $expected = ((int)$request->acstatus === 1) ? 'Ac' : 'Non Ac';
-            if ($request->ac_status !== $expected) {
-                return response()->json([
-                    'message' => 'Room type mismatch',
-                    'errors'  => ['acstatus' => ['Invalid selection']],
-                ], 422);
+            if ($request->filled('acstatus') && $request->filled('ac_status')) {
+                $expected = ((int)$request->acstatus === 1) ? 'Ac' : 'Non Ac';
+                if ($request->ac_status !== $expected) {
+                    return response()->json([
+                        'message' => 'Room type mismatch',
+                        'errors'  => ['acstatus' => ['Invalid selection']],
+                    ], 422);
+                }
             }
 
             $room = Room::where('id', $data['room_id'])
@@ -149,15 +151,15 @@ class RoomController extends Controller
             }
             $room->update([
                 'price'             => $data['price'],
-                'room_size'         => $data['room_size'],
+                'room_size'         => $data['room_size'] ?? null,
                 'max_people'        => $data['max_people'] ?? null,
-                'breakfast'         => $data['breakfast'],
-                'attached_bathroom' => $data['attached_bathroom'],
+                'breakfast'         => $data['breakfast'] ?? null,
+                'attached_bathroom' => $data['attached_bathroom'] ?? null,
                 'room_type'         => $data['room_type'],
-                'ac_status'         => $data['ac_status'],
+                'ac_status'         => $data['ac_status'] ?? null,
                 'windows'           => $data['windows'],
-                'balcony'           => $data['balcony'],
-                'acstatus'          => $data['acstatus'],
+                'balcony'           => $data['balcony'] ?? null,
+                'acstatus'          => $data['acstatus'] ?? null,
                 'image'             => $imageNames, 
                 'status'            => 0,
             ]);
@@ -195,15 +197,15 @@ class RoomController extends Controller
     {
         $data = $request->validate([
             'price'             => ['required', 'numeric', 'min:0'],
-            'room_size'         => ['required', 'string', 'max:50'],
+            'room_size'         => ['nullable', 'string', 'max:50'],
             'max_people'        => ['nullable'],
-            'acstatus'          => ['required', 'integer', 'in:1,2'],
-            'breakfast'         => ['required', Rule::in(['yes','no'])],
-            'attached_bathroom' => ['required', Rule::in(['yes','no'])],
-            'room_type'         => ['required', Rule::in(['Singel','Doubel'])],
-            'ac_status'         => ['required', Rule::in(['Ac','Non Ac'])],
+            'acstatus'          => ['nullable'],
+            'breakfast'         => ['nullable'],
+            'attached_bathroom' => ['nullable'],
+            'room_type'         => ['required', 'string', 'max:100'],
+            'ac_status'         => ['nullable'],
             'windows'           => ['required', Rule::in(['yes','no'])],
-            'balcony'           => ['required', Rule::in(['yes','no'])],
+            'balcony'           => ['nullable'],
             'new_images.*'      => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,gif,svg,jfif,heic,heif,avif,bmp', 'max:9096'],
             'keep_images'       => ['nullable', 'array'],
         ]);
@@ -218,15 +220,15 @@ class RoomController extends Controller
         }
 
         $room->price             = $data['price'];
-        $room->room_size         = $data['room_size'];
+        $room->room_size         = $data['room_size'] ?? null;
         $room->max_people        = $data['max_people'] ?? null;
-        $room->breakfast         = $data['breakfast'];
-        $room->attached_bathroom = $data['attached_bathroom'];
+        $room->breakfast         = $data['breakfast'] ?? null;
+        $room->attached_bathroom = $data['attached_bathroom'] ?? null;
         $room->room_type         = $data['room_type'];
-        $room->ac_status         = $data['ac_status'];
+        $room->ac_status         = $data['ac_status'] ?? null;
         $room->windows           = $data['windows'];
-        $room->balcony           = $data['balcony'];
-        $room->acstatus          = $data['acstatus'];  
+        $room->balcony           = $data['balcony'] ?? null;
+        $room->acstatus          = $data['acstatus'] ?? null;  
         $room->image             = $imageNames;        
         $room->save();
 

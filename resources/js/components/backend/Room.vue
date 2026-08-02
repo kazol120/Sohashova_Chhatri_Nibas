@@ -42,13 +42,8 @@
                     <th style="width:130px">Image</th>
                     <th>Room</th>
                     <th style="width:180px">Floor</th>
-                    <th style="width:110px">Room Size</th>
-                    <th style="width:120px">Breakfast</th>
-                    <th style="width:120px">Attached Bathroom</th>
-                    <th style="width:120px">Balcony</th>
                     <th style="width:120px">Windows</th>
                     <th style="width:120px">Room Type</th>
-                    <th style="width:120px">AC Status</th>
                     <th style="width:120px">Booking Status</th>
                     <th style="width:140px">Actions</th>
                   </tr>
@@ -69,13 +64,8 @@
                       </div>
                     </td>
                     <td><div class="fw-semibold">{{ r.floor?.name || "-" }}</div></td>
-                    <td><span class="fw-semibold">{{ r.room_size ?? "-" }}</span></td>
-                    <td><span class="fw-semibold">{{ r.breakfast ?? "-" }}</span></td>
-                    <td><span class="fw-semibold">{{ r.attached_bathroom ?? "-" }}</span></td>
-                    <td><span class="fw-semibold">{{ r.balcony ?? "-" }}</span></td>
                     <td><span class="fw-semibold">{{ r.windows ?? "-" }}</span></td>
                     <td><span class="fw-semibold">{{ r.room_type ?? "-" }}</span></td>
-                    <td><span class="fw-semibold">{{ r.ac_status ?? "-" }}</span></td>
                   <td>
                     <span v-if="r.status == 0" class="fw-semibold text-success">
                       Available Room
@@ -105,7 +95,7 @@
                 </tbody>
                 <tbody v-else>
                   <tr>
-                    <td colspan="14" class="text-center py-4 text-muted">
+                    <td colspan="8" class="text-center py-4 text-muted">
                       <span v-if="loading"><i class="fa fa-spinner fa-spin me-2"></i>Loading...</span>
                       <span v-else>No rooms found</span>
                     </td>
@@ -162,17 +152,13 @@
                         <input type="number" class="form-control" v-model.number="edit.form.price" required />
                         <small v-if="errors.price" class="text-danger">{{ errors.price }}</small>
                       </div>
+
                       <div class="mb-3">
-                        <label class="form-label fw-bold">Room Size <code>*</code></label>
-                        <input type="text" class="form-control" v-model.trim="edit.form.room_size" required />
-                        <small v-if="errors.room_size" class="text-danger">{{ errors.room_size }}</small>
-                      </div>
-                      <div class="mb-3">
-                        <label class="form-label fw-bold">Breakfast <code>*</code></label>
-                        <select class="form-select" v-model="edit.form.breakfast" required>
-                          <option value="">select</option>
-                          <option value="yes">yes</option>
-                          <option value="no">no</option>
+                        <label class="form-label fw-bold">Windows <code>*</code></label>
+                        <select class="form-select" v-model="edit.form.windows" required>
+                          <option value="">Select</option>
+                          <option value="yes">Yes</option>
+                          <option value="no">No</option>
                         </select>
                       </div>
                     </div>
@@ -181,7 +167,7 @@
                     <div class="col-12 col-lg-6">
 
                       <!--  MULTIPLE IMAGE SECTION -->
-                      <div class="mb-4">
+                      <div class="mb-3">
                         <label class="form-label fw-bold">
                           Room Images
                           <span class="text-muted fw-normal small ms-1"></span>
@@ -234,46 +220,15 @@
                       </div>
                       <!-- END IMAGE SECTION -->
 
-                      <div class="row g-2">
-                        <div class="col-6">
-                          <label class="form-label small fw-bold text-uppercase">Attached Bathroom <code>*</code></label>
-                          <select class="form-select" v-model="edit.form.attached_bathroom" required>
-                            <option value="">select</option>
-                            <option value="yes">yes</option>
-                            <option value="no">no</option>
-                          </select>
-                        </div>
-                        <div class="col-6">
-                          <label class="form-label small fw-bold text-uppercase">Room Type <code>*</code></label>
-                          <select class="form-select" v-model="edit.form.room_type" required>
-                            <option value="">Select</option>
-                            <option value="Singel">Single Room</option>
-                            <option value="Doubel">Double Sharing Room</option>
-                          </select>
-                        </div>
-                        <div class="col-6">
-                          <label class="form-label small fw-bold text-uppercase">AC Status <code>*</code></label>
-                          <select class="form-select" v-model.number="edit.form.acstatus" required>
-                            <option value="">select</option>
-                            <option :value="1">Ac</option>
-                            <option :value="2">Non Ac</option>
-                          </select>
-                        </div>
-                        <div class="col-6">
-                          <label class="form-label small fw-bold text-uppercase">Windows <code>*</code></label>
-                          <select class="form-select" v-model="edit.form.windows" required>
-                            <option value="">select</option>
-                            <option value="yes">yes</option>
-                            <option value="no">no</option>
-                          </select>
-                        </div>
-                        <div class="col-12 mt-2">
-                          <label class="form-label small fw-bold text-uppercase">Balcony <code>*</code></label>
-                          <select class="form-select" v-model="edit.form.balcony" required>
-                            <option value="">select</option>
-                            <option value="yes">yes</option>
-                          </select>
-                        </div>
+                      <div class="mb-3">
+                        <label class="form-label fw-bold">Room Type <code>*</code></label>
+                        <select class="form-select" v-model="edit.form.room_type" required>
+                          <option value="">Select Room Type</option>
+                          <option value="Seat A - Single Room">Seat A - Single Room</option>
+                          <option value="Seat A - Double Room">Seat A - Double Room</option>
+                          <option value="Seat B - Single Room">Seat B - Single Room</option>
+                          <option value="Seat B - Double Room">Seat B - Double Room</option>
+                        </select>
                       </div>
                     </div>
 
@@ -283,7 +238,7 @@
                         <label class="form-label small fw-bold text-uppercase mb-0">
                           <i class="fa fa-bed me-1 text-primary"></i> Seats Configuration (সিট সমূহের বিবরণ)
                         </label>
-                        <button type="button" class="btn btn-sm btn-primary py-0 px-2" style="font-size:11px" @click="addEditSeat" :disabled="edit.form.room_type === 'Singel'">
+                        <button type="button" class="btn btn-sm btn-primary py-0 px-2" style="font-size:11px" @click="addEditSeat" :disabled="edit.form.room_type.includes('Single') || edit.form.room_type === 'Singel'">
                           <i class="fa fa-plus me-1"></i> Add Seat
                         </button>
                       </div>
@@ -404,15 +359,9 @@ export default {
           id: null,
           room_no: "",
           price: "",
-          room_size: "",
           max_people: "",
-          breakfast: "",
-          attached_bathroom: "",
           room_type: "",
-          ac_status: "",
-          acstatus: "",
           windows: "",
-          balcony: "",
           newImages: [],    //  file objects
           keepImages: [],   //  filenames 
           seats: [],
@@ -450,11 +399,6 @@ export default {
     showCreateModal() { this.syncBodyOverflow(); },
     "edit.open"()     { this.syncBodyOverflow(); },
     "del.open"()      { this.syncBodyOverflow(); },
-    "edit.form.acstatus"(v) {
-      if (v === 1) this.edit.form.ac_status = "Ac";
-      else if (v === 2) this.edit.form.ac_status = "Non Ac";
-      else this.edit.form.ac_status = "";
-    },
     "edit.form.price"(newVal) {
       if (this.isEditInitializing) return;
       if (this.edit.form && this.edit.form.seats) {
@@ -466,27 +410,20 @@ export default {
     "edit.form.room_type"(newVal) {
       if (this.isEditInitializing) return;
       if (!this.edit.form || !this.edit.form.seats) return;
-      if (newVal === "Singel") {
-        if (this.edit.form.seats.length > 1) {
-          this.edit.form.seats = this.edit.form.seats.slice(0, 1);
-        }
-        if (this.edit.form.seats[0] && !this.edit.form.seats[0].price) {
-          this.edit.form.seats[0].price = this.edit.form.price;
-        }
-      } else if (newVal === "Doubel") {
-        if (this.edit.form.seats.length === 1) {
-          this.edit.form.seats.push({
-            seat_no: "Seat-B",
-            price: this.edit.form.price || "",
-            advance_price: 0
-          });
-        }
-        if (this.edit.form.seats[0] && !this.edit.form.seats[0].price) {
-          this.edit.form.seats[0].price = this.edit.form.price;
-        }
-        if (this.edit.form.seats[1] && !this.edit.form.seats[1].price) {
-          this.edit.form.seats[1].price = this.edit.form.price;
-        }
+      if (!newVal) return;
+      let prefix = "Seat A";
+      if (newVal.includes("Seat B")) {
+        prefix = "Seat B";
+      }
+      if (newVal.includes("Single") || newVal === "Singel") {
+        this.edit.form.seats = [
+          { seat_no: prefix, price: this.edit.form.price || "", advance_price: 0 }
+        ];
+      } else if (newVal.includes("Double") || newVal === "Doubel") {
+        this.edit.form.seats = [
+          { seat_no: `${prefix}-1`, price: this.edit.form.price || "", advance_price: 0 },
+          { seat_no: `${prefix}-2`, price: this.edit.form.price || "", advance_price: 0 }
+        ];
       }
     },
   },
@@ -563,21 +500,15 @@ export default {
       this.edit.newPreviews    = [];
 
       this.edit.form = {
-        id:                r.id,
-        room_no:           r.room_no,
-        price:             r.price             ?? "",
-        room_size:         r.room_size         ?? "",
-        max_people:        r.max_people        ?? "",
-        breakfast:         r.breakfast         ?? "",
-        attached_bathroom: r.attached_bathroom ?? "",
-        room_type:         r.room_type         ?? "",
-        acstatus:          r.acstatus          ?? (r.ac_status === "Ac" ? 1 : r.ac_status === "Non Ac" ? 2 : ""),
-        ac_status:         r.ac_status         ?? "",
-        windows:           r.windows           ?? "",
-        balcony:           r.balcony           ?? "",
-        newImages:         [],
-        keepImages:        [...existingFilenames],
-        seats:             r.seats ? JSON.parse(JSON.stringify(r.seats)) : [
+        id:         r.id,
+        room_no:    r.room_no,
+        price:      r.price      ?? "",
+        max_people: r.max_people ?? "",
+        room_type:  r.room_type  ?? "",
+        windows:    r.windows    ?? "",
+        newImages:  [],
+        keepImages: [...existingFilenames],
+        seats:      r.seats ? JSON.parse(JSON.stringify(r.seats)) : [
           { seat_no: "Seat-A", price: r.price || "", advance_price: 0 }
         ],
       };
@@ -633,17 +564,11 @@ export default {
       this.savingEdit = true;
       try {
         const fd = new FormData();
-        fd.append("price",             this.edit.form.price);
-        fd.append("room_size",         this.edit.form.room_size);
-        fd.append("max_people",        this.edit.form.max_people);
-        fd.append("breakfast",         this.edit.form.breakfast);
-        fd.append("attached_bathroom", this.edit.form.attached_bathroom);
-        fd.append("room_type",         this.edit.form.room_type);
-        fd.append("ac_status",         this.edit.form.ac_status);
-        fd.append("windows",           this.edit.form.windows);
-        fd.append("balcony",           this.edit.form.balcony);
-        fd.append("acstatus",          this.edit.form.acstatus);
-        fd.append("seats",             JSON.stringify(this.edit.form.seats));
+        fd.append("price",      this.edit.form.price);
+        fd.append("max_people", this.edit.form.max_people || "");
+        fd.append("room_type",  this.edit.form.room_type);
+        fd.append("windows",    this.edit.form.windows);
+        fd.append("seats",      JSON.stringify(this.edit.form.seats));
 
         // old image
         this.edit.form.keepImages.forEach(name => {
@@ -682,8 +607,13 @@ export default {
       if (!this.edit.form.seats) {
         this.edit.form.seats = [];
       }
+      let prefix = "Seat A";
+      if (this.edit.form.room_type && this.edit.form.room_type.includes("Seat B")) {
+        prefix = "Seat B";
+      }
+      const num = this.edit.form.seats.length + 1;
       this.edit.form.seats.push({
-        seat_no: "Seat-" + String.fromCharCode(65 + this.edit.form.seats.length),
+        seat_no: `${prefix}-${num}`,
         price: this.edit.form.price || "",
         advance_price: 0
       });

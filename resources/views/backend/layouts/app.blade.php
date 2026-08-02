@@ -83,7 +83,7 @@
       <!-- Drag Target Area To SlideIn Menu On Small Screens -->
       <div class="drag-target"></div>
     </div>
-    <script src="{{$baseurl.'/js/app.js'}}"></script>
+    <script src="{{$baseurl.'/js/app.js?v='.time()}}"></script>
     <script src="{{$baseurl.'/backend/vendor/libs/jquery/jquery.js'}}"></script>
     <script src="{{$baseurl.'/backend/vendor/libs/popper/popper.js'}}"></script>
     <script src="{{$baseurl.'/backend/vendor/js/bootstrap.js'}}"></script>

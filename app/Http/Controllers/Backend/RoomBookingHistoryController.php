@@ -106,7 +106,10 @@ class RoomBookingHistoryController extends Controller
     } elseif (!empty($startDate) && !empty($endDate)) {
         $query->whereBetween('check_in', [$startDate, $endDate]);
     }
-    $mapped = $query->orderByDesc('id')->get()->map(function ($row) {
+    $appSettings = \App\Services\SettingService::getSettingContentBySlug('app_setting');
+    $defaultDevFee = (float) ($appSettings['development_fee'] ?? 3000);
+
+    $mapped = $query->orderByDesc('id')->get()->map(function ($row) use ($defaultDevFee) {
         $items = is_string($row->floor_number_room_number_roomprice)
             ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
             : ($row->floor_number_room_number_roomprice ?? []);
@@ -127,7 +130,6 @@ class RoomBookingHistoryController extends Controller
             'mother_phone',
             'room_number',
             'monthly_amount',
-            'development_fee',
             'check_in',
             'check_out',
             'status',
@@ -140,6 +142,7 @@ class RoomBookingHistoryController extends Controller
             'education_class',
             'workplace_name',
         ]), [
+            'development_fee' => ((float) $row->development_fee > 0) ? (float) $row->development_fee : $defaultDevFee,
             'group_key'     => 'booking_' . $row->id,
             'floornumber'   => $c->pluck('floornumber')->filter()->unique()->implode(', '),
             'roomnumber'    => $c->pluck('roomnumber')->filter()->implode(', '),
@@ -625,7 +628,10 @@ public function getbookinghistory(Request $request)
             $query->whereBetween('check_in', [$startDate, $endDate]);
         }
 
-        $mapped = $query->orderByDesc('id')->get()->map(function ($row) {
+        $appSettings = \App\Services\SettingService::getSettingContentBySlug('app_setting');
+        $defaultDevFee = (float) ($appSettings['development_fee'] ?? 3000);
+
+        $mapped = $query->orderByDesc('id')->get()->map(function ($row) use ($defaultDevFee) {
             $items = is_string($row->floor_number_room_number_roomprice)
                 ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
                 : ($row->floor_number_room_number_roomprice ?? []);
@@ -647,7 +653,6 @@ public function getbookinghistory(Request $request)
                 'mother_phone',
                 'room_number',
                 'monthly_amount',
-                'development_fee',
                 'check_in',
                 'check_out',
                 'status',
@@ -661,6 +666,7 @@ public function getbookinghistory(Request $request)
                 'workplace_name',
                 'address',
             ]), [
+                'development_fee' => ((float) $row->development_fee > 0) ? (float) $row->development_fee : $defaultDevFee,
                 'group_key'     => 'booking_' . $row->id,
                 'floornumber'   => $c->pluck('floornumber')->filter()->unique()->implode(', '),
                 'roomnumber'    => $c->pluck('roomnumber')->filter()->implode(', '),

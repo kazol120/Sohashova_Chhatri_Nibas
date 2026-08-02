@@ -360,8 +360,16 @@
                                 @endphp
                                 <div class="text-center small mt-1 fw-bold text-dark" style="border-top: 1px dashed #ddd; padding-top: 4px;">Occupant: {{ $uTypeLabel }}</div>
                               @else
-                                <div><strong>Room Type:</strong> {{ $room->room_type }}</div>
-                                <div><strong>Ac Status:</strong> {{ $room->ac_status }}</div>
+                                @php
+                                  $displayRoomType = $room->room_type;
+                                  $rawType = trim($displayRoomType ?? '');
+                                  if (in_array($rawType, ['Singel', 'Single'])) {
+                                      $displayRoomType = 'Single Room';
+                                  } elseif (in_array($rawType, ['Doubel', 'Double'])) {
+                                      $displayRoomType = 'Double Room';
+                                  }
+                                @endphp
+                                <div><strong>Room Type:</strong> {{ $displayRoomType }}</div>
                                 <div><strong>Monthly Rent:</strong> ৳{{ $seat->price }}</div>
                                 @if((int)$seat->advance_price > 0)
                                   <div><strong>Advance Deposit:</strong> ৳{{ $seat->advance_price }}</div>
@@ -409,8 +417,16 @@
                                 @endphp
                                 <div class="text-center small mt-1 fw-bold text-dark" style="border-top: 1px dashed #ddd; padding-top: 4px;">Occupant: {{ $uTypeLabel }}</div>
                               @else
-                                <div><strong>Room Type:</strong> {{ $room->room_type }}</div>
-                                <div><strong>Ac Status:</strong> {{ $room->ac_status }}</div>
+                                @php
+                                  $displayRoomType = $room->room_type;
+                                  $rawType = trim($displayRoomType ?? '');
+                                  if (in_array($rawType, ['Singel', 'Single'])) {
+                                      $displayRoomType = 'Single Room';
+                                  } elseif (in_array($rawType, ['Doubel', 'Double'])) {
+                                      $displayRoomType = 'Double Room';
+                                  }
+                                @endphp
+                                <div><strong>Room Type:</strong> {{ $displayRoomType }}</div>
                                 <div><strong>Monthly Rent:</strong> ৳{{ $seat->price }}</div>
                                 @if((int)$seat->advance_price > 0)
                                   <div><strong>Advance Deposit:</strong> ৳{{ $seat->advance_price }}</div>

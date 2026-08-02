@@ -77,7 +77,7 @@ $baseurl = url('/');
 <!-- alert js -->
 <script src="{{$baseurl.'/backend/vendor/libs/sweetalert2/sweetalert2.js'}}"></script>
 <script src="{{$baseurl.'/backend/js/extended-ui-sweetalert2.js'}}"></script>
-<script src="{{$baseurl.'/js/app.js'}}"></script>
+<script src="{{$baseurl.'/js/app.js?v='.time()}}"></script>
 
 
 

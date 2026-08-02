@@ -165,7 +165,10 @@
                     </td>
 
                     <td>
-                      <span v-if="r.development_fee && Number(r.development_fee) > 0" class="fw-bold text-warning">
+                      <span v-if="r.development_fee !== null && r.development_fee !== undefined && Number(r.development_fee) > 0" class="fw-bold text-warning">
+                        ৳ {{ formatCurrency(r.development_fee) }}
+                      </span>
+                      <span v-else-if="r.development_fee !== null && r.development_fee !== undefined" class="fw-semibold text-muted">
                         ৳ {{ formatCurrency(r.development_fee) }}
                       </span>
                       <span v-else class="text-muted">-</span>
