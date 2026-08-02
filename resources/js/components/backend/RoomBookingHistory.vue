@@ -114,6 +114,7 @@
                     <th style="width: 120px">Thana</th>
                     <th style="width: 160px">Address</th>
                     <th style="width: 120px">Payment</th>
+                    <th style="width: 110px">Action</th>
                   </tr>
                 </thead>
 
@@ -261,6 +262,17 @@
                       </div>
                       <div v-else>-</div>
                     </td>
+
+                    <td class="text-center">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-primary fw-bold text-nowrap"
+                        @click="printResidentForm(r)"
+                        title="Print Form"
+                      >
+                        <i class="fa fa-print me-1"></i> Print
+                      </button>
+                    </td>
                   </tr>
                 </tbody>
 
@@ -352,7 +364,7 @@ export default {
       return this.rooms.some(r => this.isStudent(r)) || !this.rooms.some(r => this.isProfessional(r));
     },
     totalColumns() {
-      let count = 16; // base columns
+      let count = 17; // base columns
       if (this.showFamilyColumns) count += 9;
       if (this.showNidColumn) count += 2;
       return count;
@@ -543,6 +555,362 @@ watch: {
 
     printTable() {
       window.print();
+    },
+
+    printResidentForm(r) {
+      const logoUrl = this.url + '/backend/img/logo.png';
+      const userImgUrl = r.image ? this.imageSrc(r.image) : '';
+      const roomNo = this.getRoomNo(r.roomnumber) || (r.room_number || '-');
+      const seatNo = this.getSeatNo(r.roomnumber) || '-';
+      const floorNo = r.floornumber || '-';
+      const fullName = r.full_name || '-';
+      const phone = r.phone || '-';
+      const institutionName = r.institution_name || (r.workplace_name || '-');
+      const fatherName = r.father_name || '-';
+      const fatherPhone = r.father_phone || '-';
+      const motherName = r.mother_name || '-';
+      const motherPhone = r.mother_phone || '-';
+      const address = r.address || '-';
+      const thanaName = r.thana_name || '-';
+      const districtName = r.district_name || '-';
+
+      const html = `
+        <!DOCTYPE html>
+        <html lang="bn">
+        <head>
+          <meta charset="UTF-8">
+          <title>শিক্ষার্থীর তথ্য - টি এস এস ভিলা</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+            
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+            body {
+              background: #ffffff;
+              font-family: 'Hind Siliguri', 'Tiro Bangla', 'Segoe UI', Arial, sans-serif;
+              padding: 10px;
+              color: #000;
+            }
+
+            .paper-frame {
+              background: #fffdf2;
+              border: 3px solid #f472b6;
+              border-radius: 16px;
+              padding: 16px;
+              position: relative;
+              max-width: 800px;
+              margin: 0 auto;
+            }
+
+            /* Top Header */
+            .top-header {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 8px;
+            }
+            .brand-logo-title {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+            }
+            .brand-logo-title img {
+              width: 55px;
+              height: 55px;
+              object-fit: contain;
+            }
+            .brand-name {
+              font-size: 38px;
+              font-weight: 800;
+              color: #e11d48;
+              font-family: 'Tiro Bangla', serif;
+              line-height: 1;
+            }
+            .photo-box {
+              width: 105px;
+              height: 125px;
+              border: 2px solid #334155;
+              border-radius: 4px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              overflow: hidden;
+              background: #fff;
+            }
+            .photo-box img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+
+            /* Banner Bar */
+            .address-banner {
+              background: #0e2680;
+              color: #ffffff;
+              text-align: center;
+              padding: 6px 10px;
+              font-size: 13px;
+              font-weight: 500;
+              border-radius: 4px;
+              margin-bottom: 14px;
+            }
+
+            /* Room/Block/Floor Boxes */
+            .room-meta-row {
+              display: flex;
+              justify-content: space-between;
+              gap: 12px;
+              margin-bottom: 16px;
+            }
+            .room-meta-box {
+              flex: 1;
+              border: 2px solid #10b981;
+              border-radius: 6px;
+              padding: 5px 10px;
+              background: #fff;
+              font-size: 14px;
+              font-weight: 700;
+              color: #065f46;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+            }
+            .room-meta-box span.val {
+              font-weight: 700;
+              color: #000;
+            }
+
+            /* Section Titles */
+            .section-pill-title {
+              display: table;
+              margin: 0 auto 12px auto;
+              background: #f97316;
+              color: #ffffff;
+              font-size: 18px;
+              font-weight: 700;
+              padding: 4px 28px;
+              border-radius: 20px;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            /* Form Rows (Purple Pills) */
+            .form-pill-row {
+              border: 2px solid #8b5cf6;
+              border-radius: 20px;
+              background: #ffffff;
+              display: flex;
+              overflow: hidden;
+              margin-bottom: 10px;
+              align-items: center;
+              min-height: 38px;
+            }
+            .pill-lbl {
+              background: #6b21a8;
+              color: #ffffff;
+              padding: 6px 14px;
+              font-size: 14px;
+              font-weight: 600;
+              white-space: nowrap;
+              display: flex;
+              align-items: center;
+            }
+            .pill-val {
+              padding: 6px 14px;
+              font-size: 14px;
+              font-weight: 600;
+              color: #0f172a;
+              flex-grow: 1;
+            }
+            .pill-split {
+              border-left: 2px solid #8b5cf6;
+              display: flex;
+              align-items: center;
+              flex-grow: 1;
+            }
+
+            /* Address Row */
+            .address-grid {
+              border: 2px solid #8b5cf6;
+              border-radius: 20px;
+              background: #ffffff;
+              display: flex;
+              flex-wrap: wrap;
+              padding: 8px 14px;
+              font-size: 14px;
+              font-weight: 600;
+              gap: 15px;
+              margin-bottom: 14px;
+            }
+
+            /* Rules Box */
+            .rules-container {
+              background: #fef08a;
+              border: 1.5px solid #f472b6;
+              border-radius: 20px;
+              padding: 12px 20px;
+              margin-top: 10px;
+              margin-bottom: 25px;
+            }
+            .rules-list {
+              list-style: none;
+              padding: 0;
+              margin: 0;
+            }
+            .rules-list li {
+              font-size: 12.5px;
+              font-weight: 600;
+              color: #1e293b;
+              line-height: 1.6;
+            }
+
+            /* Signatures */
+            .signature-row {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-end;
+              margin-top: 35px;
+              padding: 0 20px 10px 20px;
+            }
+            .sig-box {
+              text-align: center;
+              min-width: 150px;
+            }
+            .sig-line {
+              border-top: 1.5px solid #475569;
+              margin-bottom: 4px;
+              width: 100%;
+            }
+            .sig-text {
+              font-size: 13px;
+              font-weight: 700;
+              color: #1e293b;
+            }
+
+            @media print {
+              body { padding: 0; background: #fff; }
+              .paper-frame { border-radius: 0; max-width: 100%; width: 100%; margin: 0; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="paper-frame">
+            <!-- Top Header -->
+            <div class="top-header">
+              <div class="brand-logo-title">
+                <img src="${logoUrl}" alt="Logo" onerror="this.style.display='none'">
+                <div class="brand-name">টি এস এস ভিলা</div>
+              </div>
+              <div class="photo-box">
+                ${userImgUrl ? `<img src="${userImgUrl}" alt="Student Photo">` : '<span style="font-size:12px;color:#94a3b8">ছবি</span>'}
+              </div>
+            </div>
+
+            <!-- Banner Bar -->
+            <div class="address-banner">
+              কলেজ রোড, নেসকো গেট সংলগ্ন, রংপুর। প্রয়োজনে: ০১৯৭৭২৭০৯২০ &nbsp; Gmail: tssvilla2026@gmail.com
+            </div>
+
+            <!-- Room Meta -->
+            <div class="room-meta-row">
+              <div class="room-meta-box">রুম নং: <span class="val">${roomNo}</span></div>
+              <div class="room-meta-box">ব্লক নং: <span class="val">${seatNo}</span></div>
+              <div class="room-meta-box">ফ্লোর নং: <span class="val">${floorNo}</span></div>
+            </div>
+
+            <!-- Section 1: Student Info -->
+            <div class="section-pill-title">শিক্ষার্থীর তথ্য</div>
+
+            <div class="form-pill-row">
+              <div class="pill-lbl">শিক্ষার্থীর পূর্ণ নাম :</div>
+              <div class="pill-val">${fullName}</div>
+              <div class="pill-split">
+                <div class="pill-lbl">মোবাইল নং :</div>
+                <div class="pill-val">${phone}</div>
+              </div>
+            </div>
+
+            <div class="form-pill-row">
+              <div class="pill-lbl">অধ্যয়নরত শিক্ষা প্রতিষ্ঠানের নাম:</div>
+              <div class="pill-val">${institutionName}</div>
+            </div>
+
+            <div class="form-pill-row">
+              <div class="pill-lbl">পিতার নাম:</div>
+              <div class="pill-val">${fatherName}</div>
+              <div class="pill-split">
+                <div class="pill-lbl">মোবাইল নং :</div>
+                <div class="pill-val">${fatherPhone}</div>
+              </div>
+            </div>
+
+            <div class="form-pill-row">
+              <div class="pill-lbl">মাতার নাম:</div>
+              <div class="pill-val">${motherName}</div>
+              <div class="pill-split">
+                <div class="pill-lbl">মোবাইল নং :</div>
+                <div class="pill-val">${motherPhone}</div>
+              </div>
+            </div>
+
+            <!-- Section 2: Address -->
+            <div class="section-pill-title" style="margin-top: 14px;">স্থায়ী ঠিকানা</div>
+
+            <div class="address-grid">
+              <div>গ্রাম: <span style="font-weight:700">${address}</span></div>
+              <div>থানা: <span style="font-weight:700">${thanaName}</span></div>
+              <div>উপজেলা: <span style="font-weight:700">${thanaName}</span></div>
+              <div>জেলা: <span style="font-weight:700">${districtName}</span></div>
+            </div>
+
+            <!-- Section 3: Rules -->
+            <div class="section-pill-title" style="margin-top: 10px;">নিয়মাবলী</div>
+
+            <div class="rules-container">
+              <ul class="rules-list">
+                <li>* মেসের ভাড়া ০৭ তারিখের মধ্যে পরিশোধ করতে হবে। ০৭ তারিখ পার হলে ২৪ ঘণ্টা পর পর ৫০ টাকা করে জরিমানা।</li>
+                <li>* মেস ছাড়লে ০২ মাস পূর্বেই মেস কর্তৃপক্ষকে জানাতে হবে। অন্যথায় দুই মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</li>
+                <li>* মাগরিবের আযানের পর মেসের বাহিরে থাকলে অভিভাবককে জানিয়ে দিতে হবে।</li>
+                <li>* রুম চেঞ্জ করতে চাইলে ৫০০ টাকা জরিমানা প্রদান করতে হবে।</li>
+                <li>* মেসের নিয়ম-কানুন মেনে চলতে হবে। কারও বিরুদ্ধে কোনো অভিযোগ আসলে এবং তা প্রমাণিত হলে সিট বাতিলসহ যেকোন ব্যবস্থা নেয়া অধিকার কর্তৃপক্ষ রাখে।</li>
+              </ul>
+            </div>
+
+            <!-- Footers -->
+            <div class="signature-row">
+              <div class="sig-box">
+                <div class="sig-line"></div>
+                <div class="sig-text">অনুমোদিত স্বাক্ষর</div>
+              </div>
+              <div class="sig-box">
+                <div class="sig-line"></div>
+                <div class="sig-text">শিক্ষার্থীর স্বাক্ষর</div>
+              </div>
+            </div>
+
+          </div>
+        </body>
+        </html>
+      `;
+
+      let iframe = document.getElementById("print-resident-iframe");
+      if (!iframe) {
+        iframe = document.createElement("iframe");
+        iframe.id = "print-resident-iframe";
+        iframe.style.position = "absolute";
+        iframe.style.width = "0";
+        iframe.style.height = "0";
+        iframe.style.border = "none";
+        document.body.appendChild(iframe);
+      }
+
+      const doc = iframe.contentWindow.document;
+      doc.open();
+      doc.write(html);
+      doc.close();
+
+      setTimeout(() => {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      }, 400);
     },
   },
 };
