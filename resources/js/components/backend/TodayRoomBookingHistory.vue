@@ -551,7 +551,7 @@ watch: {
     },
 
     printResidentForm(r) {
-      const logoUrl = this.url + '/backend/img/logo.png';
+      const logoUrl = window.location.origin + '/logo/logoimage (2).png';
       const userImgUrl = r.image ? this.imageSrc(r.image) : '';
       const roomNo = this.getRoomNo(r.roomnumber) || (r.room_number || '-');
       const seatNo = this.getSeatNo(r.roomnumber) || '-';
@@ -585,10 +585,10 @@ watch: {
             }
 
             .paper-frame {
-              background: #fffdf2;
-              border: 3px solid #f472b6;
-              border-radius: 16px;
-              padding: 16px;
+              background: linear-gradient(160deg, #fef9e7 0%, #fef3cd 50%, #fef9e7 100%);
+              border: 4px solid #27ae60;
+              border-radius: 14px;
+              padding: 14px 16px 10px 16px;
               position: relative;
               max-width: 800px;
               margin: 0 auto;
@@ -598,25 +598,19 @@ watch: {
             .top-header {
               display: flex;
               align-items: center;
-              justify-content: space-between;
-              margin-bottom: 8px;
+              justify-content: center;
+              gap: 16px;
+              margin-bottom: 6px;
             }
-            .brand-logo-title {
-              display: flex;
-              align-items: center;
-              gap: 10px;
-            }
-            .brand-logo-title img {
-              width: 55px;
-              height: 55px;
-              object-fit: contain;
-            }
+            .logo-wrap img { width: 70px; height: 70px; object-fit: contain; }
+            .brand-center { text-align: center; flex: 1; }
             .brand-name {
-              font-size: 38px;
-              font-weight: 800;
-              color: #e11d48;
+              font-size: 44px;
+              font-weight: 900;
+              color: #c0392b;
               font-family: 'Tiro Bangla', serif;
-              line-height: 1;
+              line-height: 1.05;
+              letter-spacing: 1px;
             }
             .photo-box {
               width: 105px;
@@ -637,14 +631,15 @@ watch: {
 
             /* Banner Bar */
             .address-banner {
-              background: #0e2680;
+              background: #1a237e;
               color: #ffffff;
               text-align: center;
-              padding: 6px 10px;
-              font-size: 13px;
-              font-weight: 500;
+              padding: 7px 12px;
+              font-size: 12.5px;
+              font-weight: 600;
               border-radius: 4px;
-              margin-bottom: 14px;
+              margin-bottom: 12px;
+              margin-top: 6px;
             }
 
             /* Room/Block/Floor Boxes */
@@ -674,49 +669,52 @@ watch: {
 
             /* Section Titles */
             .section-pill-title {
-              display: table;
-              margin: 0 auto 12px auto;
-              background: #f97316;
-              color: #ffffff;
-              font-size: 18px;
-              font-weight: 700;
-              padding: 4px 28px;
-              border-radius: 20px;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+              display: block;
+              text-align: center;
+              margin: 10px 0 10px 0;
+              font-size: 22px;
+              font-weight: 800;
+              color: #e74c3c;
+              font-family: 'Tiro Bangla', serif;
+              border-bottom: 3px solid #f39c12;
+              padding-bottom: 2px;
             }
 
             /* Form Rows (Purple Pills) */
             .form-pill-row {
-              border: 2px solid #8b5cf6;
-              border-radius: 20px;
+              border: 2px solid #8e44ad;
+              border-radius: 25px;
               background: #ffffff;
               display: flex;
               overflow: hidden;
-              margin-bottom: 10px;
-              align-items: center;
-              min-height: 38px;
+              margin-bottom: 9px;
+              align-items: stretch;
+              min-height: 36px;
             }
             .pill-lbl {
-              background: #6b21a8;
+              background: #7b1fa2;
               color: #ffffff;
               padding: 6px 14px;
-              font-size: 14px;
-              font-weight: 600;
+              font-size: 13px;
+              font-weight: 700;
               white-space: nowrap;
               display: flex;
               align-items: center;
+              border-right: 2px solid #8e44ad;
             }
             .pill-val {
               padding: 6px 14px;
-              font-size: 14px;
+              font-size: 13.5px;
               font-weight: 600;
-              color: #0f172a;
+              color: #111;
               flex-grow: 1;
-            }
-            .pill-split {
-              border-left: 2px solid #8b5cf6;
               display: flex;
               align-items: center;
+            }
+            .pill-split {
+              border-left: 2px solid #8e44ad;
+              display: flex;
+              align-items: stretch;
               flex-grow: 1;
             }
 
@@ -736,12 +734,12 @@ watch: {
 
             /* Rules Box */
             .rules-container {
-              background: #fef08a;
-              border: 1.5px solid #f472b6;
-              border-radius: 20px;
-              padding: 12px 20px;
+              background: #fffde7;
+              border: 2px solid #f48fb1;
+              border-radius: 14px;
+              padding: 10px 16px;
               margin-top: 10px;
-              margin-bottom: 25px;
+              margin-bottom: 20px;
             }
             .rules-list {
               list-style: none;
@@ -749,11 +747,15 @@ watch: {
               margin: 0;
             }
             .rules-list li {
-              font-size: 12.5px;
+              font-size: 12px;
               font-weight: 600;
               color: #1e293b;
-              line-height: 1.6;
+              line-height: 1.7;
+              border-bottom: 1px dashed #f8bbd0;
+              padding-bottom: 2px;
+              margin-bottom: 2px;
             }
+            .rules-list li:last-child { border-bottom: none; }
 
             /* Signatures */
             .signature-row {
@@ -779,7 +781,7 @@ watch: {
             }
 
             @media print {
-              body { padding: 0; background: #fff; }
+              body { padding: 0; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
               .paper-frame { border-radius: 0; max-width: 100%; width: 100%; margin: 0; }
             }
           </style>
@@ -788,8 +790,10 @@ watch: {
           <div class="paper-frame">
             <!-- Top Header -->
             <div class="top-header">
-              <div class="brand-logo-title">
+              <div class="logo-wrap">
                 <img src="${logoUrl}" alt="Logo" onerror="this.style.display='none'">
+              </div>
+              <div class="brand-center">
                 <div class="brand-name">টি এস এস ভিলা</div>
               </div>
               <div class="photo-box">
