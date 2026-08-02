@@ -588,20 +588,17 @@ watch: {
 
             @page {
               size: A4 portrait;
-              margin: 4mm;
+              margin: 5mm;
             }
 
             * { box-sizing: border-box; margin: 0; padding: 0; }
 
             html, body {
-              height: 100vh;
-              width: 100%;
               background: #fff;
               font-family: 'Hind Siliguri', 'Tiro Bangla', sans-serif;
               padding: 0;
               margin: 0;
               color: #000;
-              overflow: hidden;
               -webkit-print-color-adjust: exact;
               print-color-adjust: exact;
             }
@@ -611,12 +608,10 @@ watch: {
               background: linear-gradient(165deg, #fef9e7 0%, #fef3cd 50%, #fef9e7 100%);
               border: 4px solid #27ae60;
               border-radius: 10px;
-              padding: 12px 16px 10px 16px;
-              height: 100%;
+              padding: 14px 18px 12px 18px;
               box-sizing: border-box;
               display: flex;
               flex-direction: column;
-              justify-content: space-between;
               position: relative;
               page-break-inside: avoid;
             }
@@ -634,14 +629,14 @@ watch: {
               display: flex;
               align-items: center;
               justify-content: center;
-              gap: 14px;
-              margin-bottom: 6px;
+              gap: 16px;
+              margin-bottom: 8px;
               padding: 0 4px;
             }
-            .logo-wrap img { width: 68px; height: 68px; object-fit: contain; }
+            .logo-wrap img { width: 72px; height: 72px; object-fit: contain; }
             .brand-center { text-align: center; flex: 1; }
             .brand-name {
-              font-size: 44px;
+              font-size: 46px;
               font-weight: 900;
               color: #c0392b;
               font-family: 'Tiro Bangla', serif;
@@ -649,8 +644,8 @@ watch: {
               letter-spacing: 1px;
             }
             .photo-box {
-              width: 100px;
-              height: 115px;
+              width: 105px;
+              height: 120px;
               border: 2px solid #2c3e50;
               border-radius: 4px;
               display: flex;
@@ -668,45 +663,45 @@ watch: {
               background: #1a237e;
               color: #fff;
               text-align: center;
-              padding: 7px 12px;
-              font-size: 12.5px;
+              padding: 8px 12px;
+              font-size: 13px;
               font-weight: 600;
               border-radius: 5px;
-              margin-bottom: 10px;
+              margin-bottom: 12px;
               letter-spacing: 0.2px;
             }
 
             /* ======= ROOM META ======= */
             .room-meta-row {
               display: flex;
-              gap: 10px;
-              margin-bottom: 10px;
+              gap: 12px;
+              margin-bottom: 12px;
             }
             .room-meta-box {
               flex: 1;
               border: 2px solid #27ae60;
               border-radius: 6px;
-              padding: 6px 10px;
+              padding: 7px 12px;
               background: #fff;
-              font-size: 13px;
+              font-size: 13.5px;
               font-weight: 600;
               display: flex;
               align-items: center;
-              gap: 4px;
+              gap: 5px;
             }
             .room-meta-box .lbl { color: #1a5c2e; font-weight: 700; white-space: nowrap; }
-            .room-meta-box .val { color: #000; font-weight: 800; font-size: 13.5px; }
+            .room-meta-box .val { color: #000; font-weight: 800; font-size: 14px; }
 
             /* ======= SECTION TITLES ======= */
             .section-title {
               text-align: center;
-              font-size: 20px;
+              font-size: 21px;
               font-weight: 800;
               color: #e74c3c;
               font-family: 'Tiro Bangla', serif;
               border-bottom: 2.5px solid #f39c12;
-              padding-bottom: 2px;
-              margin: 8px 0 8px 0;
+              padding-bottom: 3px;
+              margin: 12px 0 10px 0;
               letter-spacing: 0.3px;
             }
 
@@ -717,15 +712,15 @@ watch: {
               background: #fff;
               display: flex;
               overflow: hidden;
-              margin-bottom: 8px;
-              min-height: 38px;
+              margin-bottom: 10px;
+              min-height: 42px;
               align-items: stretch;
             }
             .pill-lbl {
               background: #7b1fa2;
               color: #fff;
-              padding: 6px 14px;
-              font-size: 13px;
+              padding: 8px 16px;
+              font-size: 13.5px;
               font-weight: 700;
               white-space: nowrap;
               display: flex;
@@ -734,8 +729,8 @@ watch: {
               flex-shrink: 0;
             }
             .pill-val {
-              padding: 6px 14px;
-              font-size: 13.5px;
+              padding: 8px 16px;
+              font-size: 14px;
               font-weight: 600;
               color: #111;
               flex-grow: 1;
@@ -756,13 +751,13 @@ watch: {
               background: #fff;
               display: flex;
               flex-wrap: wrap;
-              padding: 8px 16px;
-              font-size: 13px;
+              padding: 10px 18px;
+              font-size: 13.5px;
               font-weight: 600;
-              gap: 8px 24px;
-              margin-bottom: 10px;
+              gap: 10px 28px;
+              margin-bottom: 12px;
               align-items: center;
-              min-height: 38px;
+              min-height: 42px;
             }
             .akey { color: #7b1fa2; font-weight: 700; }
 
@@ -771,19 +766,19 @@ watch: {
               background: #fffde7;
               border: 2px solid #f48fb1;
               border-radius: 12px;
-              padding: 10px 16px;
+              padding: 12px 18px;
               margin-top: 4px;
-              margin-bottom: 6px;
+              margin-bottom: 8px;
             }
             .rules-list { list-style: none; padding: 0; margin: 0; }
             .rules-list li {
-              font-size: 12px;
+              font-size: 12.5px;
               font-weight: 600;
               color: #1a1a1a;
-              line-height: 1.65;
+              line-height: 1.8;
               border-bottom: 1px dashed #f8bbd0;
-              padding-bottom: 3px;
-              margin-bottom: 3px;
+              padding-bottom: 4px;
+              margin-bottom: 4px;
             }
             .rules-list li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 
@@ -792,21 +787,18 @@ watch: {
               display: flex;
               justify-content: space-between;
               align-items: flex-end;
-              margin-top: auto;
-              padding: 16px 32px 6px 32px;
+              margin-top: 28px;
+              padding: 0 32px 10px 32px;
             }
             .sig-box { text-align: center; min-width: 140px; }
-            .sig-line { border-top: 1.5px solid #2c3e50; margin-bottom: 4px; }
-            .sig-text { font-size: 13px; font-weight: 700; color: #1a1a1a; }
+            .sig-line { border-top: 1.5px solid #2c3e50; margin-bottom: 5px; }
+            .sig-text { font-size: 13.5px; font-weight: 700; color: #1a1a1a; }
 
             @media print {
               html, body {
-                height: 100vh !important;
-                overflow: hidden !important;
+                background: #fff;
               }
               .paper-frame {
-                height: 100vh !important;
-                max-height: 100vh !important;
                 border-radius: 0;
                 box-sizing: border-box;
                 page-break-inside: avoid !important;
