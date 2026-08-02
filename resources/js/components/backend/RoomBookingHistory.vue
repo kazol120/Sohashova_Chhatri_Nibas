@@ -584,12 +584,16 @@ watch: {
             @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Hind+Siliguri:wght@400;500;600;700&display=swap');
             
             * { box-sizing: border-box; margin: 0; padding: 0; }
-            body {
+            html, body {
+              height: 100%;
+              width: 100%;
               background: #ffffff;
               font-family: 'Hind Siliguri', 'Tiro Bangla', 'Segoe UI', Arial, sans-serif;
               padding: 0;
               margin: 0;
               color: #000;
+              display: flex;
+              flex-direction: column;
             }
 
             .paper-frame {
@@ -601,6 +605,10 @@ watch: {
               width: 100%;
               max-width: 100%;
               margin: 0;
+              flex: 1;
+              display: flex;
+              flex-direction: column;
+              min-height: calc(297mm - 12mm);
             }
 
             /* Top Header */
@@ -773,8 +781,8 @@ watch: {
               display: flex;
               justify-content: space-between;
               align-items: flex-end;
-              margin-top: 35px;
-              padding: 0 20px 10px 20px;
+              margin-top: auto;
+              padding: 0 24px 10px 24px;
             }
             .sig-box {
               text-align: center;
@@ -802,6 +810,8 @@ watch: {
                 padding: 0;
                 margin: 0;
                 background: #fff;
+                display: flex;
+                flex-direction: column;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
               }
@@ -811,9 +821,11 @@ watch: {
                 max-width: 100%;
                 margin: 0;
                 padding: 8px 10px 6px 10px;
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                min-height: calc(297mm - 12mm);
                 page-break-inside: avoid;
-                page-break-after: avoid;
-                page-break-before: avoid;
               }
             }
           </style>
