@@ -73,22 +73,17 @@
                 </div>
                 <div class="t-box">
                   <div class="t-new">Room Type : <span class="spanstatus">{{ $room->room_type }}</span></div>
-                  <div class="t-new">Room Size : <span class="spanstatus">{{ $room->room_size }}</span></div>
-                </div>
-                <div class="t-left-info">
-                  <div class="t-new">Attached Bathroom : <span class="spanstatus">{{ $room->attached_bathroom }}</span></div>
-                  <div class="t-new">Balcony : <span class="spanstatus">{{ $room->balcony }}</span></div>
                 </div>
                 <div class="t-left-info">
                   <div class="t-new">Windows : <span class="spanstatus">{{ $room->windows }}</span></div>
                   <div class="t-new">Total Seats : <span class="spanstatus">{{ $room->seats->count() }}</span></div>
                 </div>
                 <div class="t-left-info">
-                  <div class="t-new">Recommended : <span class="spanstatus">{{ $room->recommended }}</span></div>
-                  <div class="t-new">Breakfast : <span class="spanstatus">{{ $room->breakfast }}</span></div>
-                </div>
-                <div class="t-left-info">
                   <div class="t-new inportent">Price : <span class="spanstatus">{{ $room->price }}</span></div>
+                  @php $advancePrice = $room->seats->first()?->advance_price ?? 0; @endphp
+                  @if((int)$advancePrice > 0)
+                  <div class="t-new">Advance : <span class="spanstatus" style="color:#033364;font-weight:bold;">৳{{ number_format($advancePrice) }}</span></div>
+                  @endif
                 </div>
                 <div class="t-actions">
                   <button

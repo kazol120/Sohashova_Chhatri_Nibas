@@ -1172,28 +1172,48 @@ public function getNameguet()
                 'monthly_amount'                     => $newPrice,
             ]);
 
-            // 3. Record Room Change History & Fee (default ৳ 500)
+            // 3. Record or Update Room Change History & Fee per resident
             $feeAmount = $request->filled('fee_amount') ? (float) $request->fee_amount : 500.00;
             $paymentMethod = $request->input('payment_method', 'Cash');
             $paymentStatus = $request->input('payment_status', 'paid');
             $remarks = $request->input('remarks', '');
 
-            RoomChangeHistory::create([
-                'room_booking_history_id' => $booking->id,
-                'resident_name'           => $booking->full_name ?? '',
-                'phone'                   => $booking->phone ?? '',
-                'old_floor'               => $oldFloorName,
-                'old_room_seat'           => $oldRoomSeatString,
-                'new_floor'               => (string) ($newFloor->name ?? ''),
-                'new_room_seat'           => (string) $newRoomNumberString,
-                'old_monthly_amount'      => $oldMonthlyAmount,
-                'new_monthly_amount'      => $newPrice,
-                'fee_amount'              => $feeAmount,
-                'payment_method'          => $paymentMethod,
-                'payment_status'          => $paymentStatus,
-                'remarks'                 => $remarks,
-                'changed_by'              => Auth::id() ?? null,
-            ]);
+            $existingHistory = RoomChangeHistory::where('room_booking_history_id', $booking->id)->first();
+
+            if ($existingHistory) {
+                $existingHistory->update([
+                    'resident_name'      => $booking->full_name ?? $existingHistory->resident_name,
+                    'phone'              => $booking->phone ?? $existingHistory->phone,
+                    'old_floor'          => $oldFloorName,
+                    'old_room_seat'      => $oldRoomSeatString,
+                    'new_floor'          => (string) ($newFloor->name ?? ''),
+                    'new_room_seat'      => (string) $newRoomNumberString,
+                    'old_monthly_amount' => $oldMonthlyAmount,
+                    'new_monthly_amount' => $newPrice,
+                    'fee_amount'         => (float)$existingHistory->fee_amount + $feeAmount,
+                    'payment_method'     => $paymentMethod,
+                    'payment_status'     => $paymentStatus,
+                    'remarks'            => $remarks,
+                    'changed_by'         => Auth::id() ?? null,
+                ]);
+            } else {
+                RoomChangeHistory::create([
+                    'room_booking_history_id' => $booking->id,
+                    'resident_name'           => $booking->full_name ?? '',
+                    'phone'                   => $booking->phone ?? '',
+                    'old_floor'               => $oldFloorName,
+                    'old_room_seat'           => $oldRoomSeatString,
+                    'new_floor'               => (string) ($newFloor->name ?? ''),
+                    'new_room_seat'           => (string) $newRoomNumberString,
+                    'old_monthly_amount'      => $oldMonthlyAmount,
+                    'new_monthly_amount'      => $newPrice,
+                    'fee_amount'              => $feeAmount,
+                    'payment_method'          => $paymentMethod,
+                    'payment_status'          => $paymentStatus,
+                    'remarks'                 => $remarks,
+                    'changed_by'              => Auth::id() ?? null,
+                ]);
+            }
 
             DB::commit();
 
@@ -1209,7 +1229,12 @@ public function getNameguet()
 
     public function roomChangeHistories(Request $request)
     {
-        $query = RoomChangeHistory::orderBy('id', 'desc');
+        // Group by resident to ensure only 1 unique row per resident showing their latest change
+        $latestIds = RoomChangeHistory::select(DB::raw('MAX(id) as max_id'))
+            ->groupBy(DB::raw('COALESCE(room_booking_history_id, resident_name)'))
+            ->pluck('max_id');
+
+        $query = RoomChangeHistory::whereIn('id', $latestIds)->orderBy('id', 'desc');
 
         if ($request->filled('search')) {
             $s = $request->search;

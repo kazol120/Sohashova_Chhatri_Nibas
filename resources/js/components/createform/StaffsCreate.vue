@@ -165,27 +165,20 @@
                           rows="2" placeholder="Full address..."></textarea>
                       </div>
 
-                      <div class="row g-3 mb-3">
-                        <div class="col-6">
-                          <label class="form-label fw-semibold">Designation</label>
-                          <select class="form-select" v-model="form.designation">
-                            <option value="">Select</option>
-                            <option value="Manager">Manager</option>
-                            <option value="Receptionist">Receptionist</option>
-                            <option value="Cleaner">Cleaner</option>
-                            <option value="Chef">Chef</option>
-                          </select>
-                        </div>
-                        <div class="col-6">
-                          <label class="form-label fw-semibold">Department</label>
-                          <select class="form-select" v-model="form.department">
-                            <option value="">Select</option>
-                            <option value="Front Desk">Front Desk</option>
-                            <option value="Housekeeping">Housekeeping</option>
-                            <option value="Security">Security</option>
-                            <option value="Kitchen">Kitchen</option>
-                          </select>
-                        </div>
+                      <div class="mb-3">
+                        <label class="form-label fw-semibold">Designation (পদবী)</label>
+                        <select class="form-select" v-model="form.designation">
+                          <option value="">Select Designation (পদবী নির্বাচন করুন)</option>
+                          <option value="Hostel Super / In-Charge">Hostel Super / In-Charge (হোস্টেল সুপার / ইনচার্জ)</option>
+                          <option value="Manager">Manager (ম্যানেজার)</option>
+                          <option value="Receptionist / Desk Executive">Receptionist / Desk Executive (রিসেপশনিস্ট / ডেস্ক এক্সিকিউটিভ)</option>
+                          <option value="Head Cook">Head Cook / Radhuni (প্রধান রাঁধুনি / বাবুর্চি)</option>
+                          <option value="Assistant Cook / Helper">Assistant Cook / Helper (সহকারী রাঁধুনি / হেলপার)</option>
+                          <option value="Housekeeper / Cleaner">Housekeeper / Cleaner (পরিচ্ছন্নতাকর্মী / বুয়া / আয়া)</option>
+                          <option value="Security Guard">Security Guard (নিরাপত্তারক্ষী / দারোয়ান)</option>
+                          <option value="Maintenance / Technician">Maintenance / Technician (মেইনটেন্যান্স / কারিগর)</option>
+                          <option value="Accountant / Cashier">Accountant / Cashier (হিসাবরক্ষক / ক্যাশিয়ার)</option>
+                        </select>
                       </div>
 
                       <div class="row g-3 mb-3">
@@ -278,6 +271,7 @@ export default {
   },
   methods: {
     emptyForm() {
+      const today = new Date().toISOString().split("T")[0];
       return {
         employee_id:"",
         name:"",
@@ -293,7 +287,7 @@ export default {
         designation:"",
         department:"",
         salary:"",
-        joining_date:"",
+        joining_date: today,
         shift_time:"",
         password:"",
         photo:null,

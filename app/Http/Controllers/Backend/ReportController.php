@@ -368,4 +368,224 @@ class ReportController extends Controller
             'years'  => array_values($allYears),
         ]);
     }
+
+    public function getMonthlyDetailReport(Request $request)
+    {
+        $year = (int) ($request->year ?? date('Y'));
+        $month = (int) ($request->month ?? date('n'));
+
+        $monthName = date('M', mktime(0, 0, 0, $month, 10));
+
+        // ====== INCOME ======
+        // 1. Room Booking Advance
+        $bookingsInMonth = RoomBookingHistory::whereYear('check_in', $year)
+            ->whereMonth('check_in', $month)
+            ->get();
+
+        $calcRoomBookingAdvanceItems = function ($bookings) {
+            $itemsList = [];
+            foreach ($bookings as $row) {
+                $items = is_string($row->floor_number_room_number_roomprice)
+                    ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
+                    : ($row->floor_number_room_number_roomprice ?? []);
+
+                $noticeDate = $row->notice_date ? \Carbon\Carbon::parse($row->notice_date) : null;
+                $checkoutDate = $row->today_check_out ? \Carbon\Carbon::parse($row->today_check_out) : ($row->check_out ? \Carbon\Carbon::parse($row->check_out) : now());
+                $noticeDaysElapsed = $noticeDate ? (int) $noticeDate->diffInDays($checkoutDate) : 0;
+                $isNoticeFulfilled = $row->will_leave == 1 && $noticeDaysElapsed >= 60;
+
+                $totalAdv = collect($items)->sum(function ($i) use ($row, $isNoticeFulfilled) {
+                    if ($row->status == 1 && !$isNoticeFulfilled) {
+                        return (float)($i['advance_price'] ?? 0);
+                    }
+                    return (float)($i['original_advance_price'] ?? $i['advance_price'] ?? 0);
+                });
+
+                if ($totalAdv > 0) {
+                    $itemsList[] = [
+                        'id'            => $row->id,
+                        'name'          => $row->full_name ?? $row->name ?? 'N/A',
+                        'phone'         => $row->phone ?? 'N/A',
+                        'check_in'      => $row->check_in ? Carbon::parse($row->check_in)->format('d M Y') : 'N/A',
+                        'advance_price' => $totalAdv,
+                    ];
+                }
+            }
+            return $itemsList;
+        };
+
+        $roomBookingsList = $calcRoomBookingAdvanceItems($bookingsInMonth);
+        $totalRoomBooking = (float) collect($roomBookingsList)->sum('advance_price');
+
+        // 2. Monthly Payments
+        $monthlyPaymentsList = MonthlyPayment::with('booking')
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->get()
+            ->map(function ($mp) {
+                return [
+                    'id'             => $mp->id,
+                    'resident_name'  => $mp->booking->full_name ?? $mp->booking->name ?? 'N/A',
+                    'phone'          => $mp->booking->phone ?? 'N/A',
+                    'payment_month'  => $mp->payment_month ?? $mp->months_name ?? 'N/A',
+                    'paid_amount'    => (float) $mp->paid_amount,
+                    'payment_method' => $mp->payment_method ?? 'N/A',
+                    'date'           => $mp->created_at ? $mp->created_at->format('d M Y') : 'N/A',
+                ];
+            });
+        $totalMonthlyPayment = (float) $monthlyPaymentsList->sum('paid_amount');
+
+        // 3. Product Sales
+        $productSalesList = ProductDistribution::with('customer')
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->get()
+            ->map(function ($ps) {
+                return [
+                    'id'            => $ps->id,
+                    'memo_number'   => $ps->memo_number ?? 'N/A',
+                    'customer_name' => $ps->customer->full_name ?? $ps->customer->name ?? $ps->customer_name ?? 'N/A',
+                    'product_name'  => $ps->product_name ?? 'N/A',
+                    'quantity'      => $ps->customer_quantity ?? 1,
+                    'amount'        => (float) $ps->total_price_available,
+                    'date'          => $ps->created_at ? $ps->created_at->format('d M Y') : 'N/A',
+                ];
+            });
+        $totalProductSales = (float) $productSalesList->sum('amount');
+
+        // 4. Room Change Fee
+        $roomChangeList = RoomChangeHistory::with('booking')
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->get()
+            ->map(function ($rc) {
+                return [
+                    'id'            => $rc->id,
+                    'resident_name' => $rc->resident_name ?? $rc->booking->full_name ?? 'N/A',
+                    'phone'         => $rc->phone ?? 'N/A',
+                    'old_room'      => ($rc->old_floor ? $rc->old_floor . ' - ' : '') . ($rc->old_room_seat ?? 'N/A'),
+                    'new_room'      => ($rc->new_floor ? $rc->new_floor . ' - ' : '') . ($rc->new_room_seat ?? 'N/A'),
+                    'fee_amount'    => (float) $rc->fee_amount,
+                    'date'          => $rc->created_at ? $rc->created_at->format('d M Y') : 'N/A',
+                ];
+            });
+        $totalRoomChangeFee = (float) $roomChangeList->sum('fee_amount');
+
+        $totalIncome = $totalRoomBooking + $totalMonthlyPayment + $totalProductSales + $totalRoomChangeFee;
+
+        // ====== COSTS ======
+        // 5. General Expenses
+        $expenseList = Expense::with('expensetype')
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->get()
+            ->map(function ($ex) {
+                return [
+                    'id'             => $ex->id,
+                    'category'       => $ex->expensetype->name ?? $ex->expense_category ?? 'General',
+                    'note'           => $ex->expense_note ?? 'N/A',
+                    'expense_amount' => (float) $ex->expense_amount,
+                    'date'           => $ex->date ? Carbon::parse($ex->date)->format('d M Y') : ($ex->created_at ? $ex->created_at->format('d M Y') : 'N/A'),
+                ];
+            });
+        $totalExpense = (float) $expenseList->sum('expense_amount');
+
+        // 6. Staff Salary
+        $salaryList = StaffSalaryPayment::with('staff')
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->get()
+            ->map(function ($sal) {
+                return [
+                    'id'           => $sal->id,
+                    'staff_name'   => $sal->staff->name ?? 'N/A',
+                    'designation'  => $sal->staff->designation ?? 'Staff',
+                    'salary_month' => $sal->salary_month ? date('F', mktime(0, 0, 0, $sal->salary_month, 10)) : 'N/A',
+                    'amount'       => (float) $sal->amount,
+                    'payment_date' => $sal->payment_date ? Carbon::parse($sal->payment_date)->format('d M Y') : ($sal->created_at ? $sal->created_at->format('d M Y') : 'N/A'),
+                ];
+            });
+        $totalSalary = (float) $salaryList->sum('amount');
+
+        // 7. Product Purchase
+        $purchaseList = ProductPurchase::with('supplier')
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->get()
+            ->map(function ($pur) {
+                return [
+                    'id'            => $pur->id,
+                    'memo_number'   => $pur->memo_number ?? 'N/A',
+                    'supplier_name' => $pur->supplier->name ?? 'N/A',
+                    'product_name'  => $pur->product_name ?? 'N/A',
+                    'quantity'      => $pur->quantity ?? 1,
+                    'total_price'   => (float) $pur->total_price,
+                    'date'          => $pur->purchase_date ? Carbon::parse($pur->purchase_date)->format('d M Y') : ($pur->created_at ? $pur->created_at->format('d M Y') : 'N/A'),
+                ];
+            });
+        $totalProductPurchase = (float) $purchaseList->sum('total_price');
+
+        // 8. Advance Refund
+        $refundedBookings = RoomBookingHistory::where('status', 1)
+            ->where('will_leave', 1)
+            ->whereNotNull('notice_date')
+            ->where(function ($query) use ($year, $month) {
+                $query->where(function ($q) use ($year, $month) {
+                    $q->whereYear('today_check_out', $year)->whereMonth('today_check_out', $month);
+                })->orWhere(function ($q) use ($year, $month) {
+                    $q->whereNull('today_check_out')
+                        ->whereYear('check_out', $year)
+                        ->whereMonth('check_out', $month);
+                });
+            })->get()->filter(function ($row) {
+                $noticeDate = \Carbon\Carbon::parse($row->notice_date);
+                $checkoutDate = $row->today_check_out ? \Carbon\Carbon::parse($row->today_check_out) : ($row->check_out ? \Carbon\Carbon::parse($row->check_out) : now());
+                return (int) $noticeDate->diffInDays($checkoutDate) >= 60;
+            });
+
+        $advanceRefundList = $refundedBookings->map(function ($row) {
+            $items = is_string($row->floor_number_room_number_roomprice)
+                ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
+                : ($row->floor_number_room_number_roomprice ?? []);
+            $adv = collect($items)->sum(function ($i) {
+                return (float)($i['original_advance_price'] ?? $i['advance_price'] ?? 0);
+            });
+            $refundAmount = $adv > 0 ? $adv : ((float)($row->monthly_amount ?? 0) * 2);
+            $checkoutDateStr = $row->today_check_out ? Carbon::parse($row->today_check_out)->format('d M Y') : ($row->check_out ? Carbon::parse($row->check_out)->format('d M Y') : 'N/A');
+
+            return [
+                'id'            => $row->id,
+                'name'          => $row->full_name ?? $row->name ?? 'N/A',
+                'phone'         => $row->phone ?? 'N/A',
+                'checkout_date' => $checkoutDateStr,
+                'refund_amount' => (float) $refundAmount,
+            ];
+        })->values();
+
+        $totalAdvanceRefund = (float) collect($advanceRefundList)->sum('refund_amount');
+
+        $totalCost = $totalExpense + $totalSalary + $totalProductPurchase + $totalAdvanceRefund;
+
+        return response()->json([
+            'status' => true,
+            'period' => $monthName . ' ' . $year,
+            'year'   => $year,
+            'month'  => $month,
+            'income' => [
+                'room_bookings'    => $roomBookingsList,
+                'monthly_payments' => $monthlyPaymentsList,
+                'product_sales'    => $productSalesList,
+                'room_change_fees' => $roomChangeList,
+                'total_income'     => $totalIncome,
+            ],
+            'cost' => [
+                'general_expenses'  => $expenseList,
+                'staff_salaries'    => $salaryList,
+                'product_purchases' => $purchaseList,
+                'advance_refunds'   => $advanceRefundList,
+                'total_cost'        => $totalCost,
+            ],
+            'profit_loss' => $totalIncome - $totalCost,
+        ]);
+    }
 }

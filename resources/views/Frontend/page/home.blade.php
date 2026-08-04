@@ -53,7 +53,7 @@
       <ul class="rules-list notranslate list-unstyled mb-0 d-flex flex-column gap-3" translate="no" style="font-size: 17px; color: #1e293b; font-weight: 600; line-height: 1.8;">
         <li class="d-flex align-items-start gap-2">
           <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>
-          <span>মেসের ভাড়া <strong class="text-danger">০৭ তারিখের</strong> মধ্যে পরিশোধ করতে হবে। ০৭ তারিখ পার হলে <strong class="text-danger">১০০ টাকা</strong> জরিমানা।</span>
+          <span>মেসের ভাড়া <strong class="text-danger">০৭ তারিখের</strong> মধ্যে পরিশোধ করতে হবে।</span>
         </li>
         <li class="d-flex align-items-start gap-2">
           <span class="text-danger fw-bold fs-4 mt-0" style="line-height: 1;">*</span>

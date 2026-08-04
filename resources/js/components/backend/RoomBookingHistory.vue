@@ -71,7 +71,16 @@
                 </select>
               </div>
 
-              <div class="d-flex gap-2 align-items-center">
+              <div class="d-flex flex-column align-items-end gap-2">
+                <button
+                  v-if="!isAdmin"
+                  type="button"
+                  class="btn btn-primary btn-sm fw-bold"
+                  @click="printTable"
+                  title="Confirm Booking Document"
+                >
+                  <i class="fa fa-print me-1"></i> Confirm Booking Document
+                </button>
                 <input
                   type="text"
                   class="form-control form-control-sm"
@@ -83,6 +92,7 @@
             </div>
 
             <div class="table-responsive">
+              
               <table class="table table-bordered table-hover align-middle">
                 <thead class="table-light">
                   <tr>
@@ -268,9 +278,9 @@
                         type="button"
                         class="btn btn-sm btn-primary fw-bold text-nowrap"
                         @click="printResidentForm(r)"
-                        title="Print Form"
+                        title="Confirm Booking Document"
                       >
-                        <i class="fa fa-print me-1"></i> Print
+                        <i class="fa fa-print me-1"></i> Confirm Booking Document
                       </button>
                     </td>
                   </tr>
@@ -554,22 +564,27 @@ watch: {
 },
 
     printTable() {
-      window.print();
+      if (this.rooms && this.rooms.length > 0) {
+        this.printResidentForm(this.rooms[0]);
+      } else {
+        this.toast("প্রিন্ট করার মতো কোনো বুকিং ডাটা পাওয়া যায়নি", "warning");
+      }
     },
 
     printResidentForm(r) {
       const logoUrl = window.location.origin + '/logo/logoimage (2).png';
       const userImgUrl = r.image ? this.imageSrc(r.image) : '';
-      const roomNo = this.getRoomNo(r.roomnumber) || (r.room_number || '-');
-      const seatNo = this.getSeatNo(r.roomnumber) || '-';
-      const floorNo = r.floornumber || '-';
+      const roomNo = (r.room_items && r.room_items.length)
+        ? r.room_items.map(i => this.getRoomNo(i.roomnumber)).join(', ')
+        : (this.getRoomNo(r.roomnumber) || r.room_number || '-');
+      const seatNo = (r.room_items && r.room_items.length)
+        ? r.room_items.map(i => this.getSeatNo(i.roomnumber)).join(', ')
+        : (this.getSeatNo(r.roomnumber) || '-');
+      const floorNo = (r.room_items && r.room_items.length)
+        ? [...new Set(r.room_items.map(i => i.floornumber))].filter(Boolean).join(', ')
+        : (r.floornumber || '-');
       const fullName = r.full_name || '-';
       const phone = r.phone || '-';
-      const institutionName = r.institution_name || (r.workplace_name || '-');
-      const fatherName = r.father_name || '-';
-      const fatherPhone = r.father_phone || '-';
-      const motherName = r.mother_name || '-';
-      const motherPhone = r.mother_phone || '-';
       const address = r.address || '-';
       const thanaName = r.thana_name || '-';
       const districtName = r.district_name || '-';
@@ -577,12 +592,105 @@ watch: {
         ? new Date(r.created_at).toLocaleString('bn-BD', { dateStyle: 'long', timeStyle: 'short' })
         : (r.booking_date || '-');
 
+      const isProf = r.user_type && (
+        r.user_type.toLowerCase().includes('professional') ||
+        r.user_type.toLowerCase().includes('job') ||
+        r.user_type.toLowerCase().includes('passenger')
+      );
+
+      const docTitle = isProf ? 'কর্মজীবীর তথ্য - টি এস এস ভিলা' : 'শিক্ষার্থীর তথ্য - টি এস এস ভিলা';
+      const sectionTitleText = isProf ? 'কর্মজীবীর তথ্য' : 'শিক্ষার্থীর তথ্য';
+      const signatureLabelText = isProf ? 'বোর্ডারের স্বাক্ষর' : 'শিক্ষার্থীর স্বাক্ষর';
+
+      const institutionName = r.institution_name || '-';
+      const fatherName = r.father_name || '-';
+      const fatherPhone = r.father_phone || '-';
+      const motherName = r.mother_name || '-';
+      const motherPhone = r.mother_phone || '-';
+
+      let infoSectionHtml = '';
+      if (isProf) {
+        infoSectionHtml = `
+          <div class="form-pill-row">
+            <div class="pill-lbl">কর্মজীবীর পূর্ণ নাম :</div>
+            <div class="pill-val">${fullName}</div>
+            <div class="pill-right">
+              <div class="pill-lbl">মোবাইল নং :</div>
+              <div class="pill-val">${phone}</div>
+            </div>
+          </div>
+
+          <div class="form-pill-row">
+            <div class="pill-lbl">কর্মপ্রতিষ্ঠানের নাম:</div>
+            <div class="pill-val">${r.workplace_name || '-'}</div>
+            <div class="pill-right">
+              <div class="pill-lbl">NID নম্বর :</div>
+              <div class="pill-val">${r.nid || '-'}</div>
+            </div>
+          </div>
+
+          <div class="form-pill-row">
+            <div class="pill-lbl">ইমেইল ঠিকানা:</div>
+            <div class="pill-val">${r.email || '-'}</div>
+            <div class="pill-right">
+              <div class="pill-lbl">পেশা/টাইপ:</div>
+              <div class="pill-val">${r.user_type || 'Working Professional'}</div>
+            </div>
+          </div>
+
+          ${(fatherName !== '-' || motherName !== '-') ? `
+          <div class="form-pill-row">
+            <div class="pill-lbl">পিতার নাম:</div>
+            <div class="pill-val">${fatherName}</div>
+            <div class="pill-right">
+              <div class="pill-lbl">মাতার নাম:</div>
+              <div class="pill-val">${motherName}</div>
+            </div>
+          </div>
+          ` : ''}
+        `;
+      } else {
+        infoSectionHtml = `
+          <div class="form-pill-row">
+            <div class="pill-lbl">শিক্ষার্থীর পূর্ণ নাম :</div>
+            <div class="pill-val">${fullName}</div>
+            <div class="pill-right">
+              <div class="pill-lbl">মোবাইল নং :</div>
+              <div class="pill-val">${phone}</div>
+            </div>
+          </div>
+
+          <div class="form-pill-row">
+            <div class="pill-lbl">অধ্যয়নরত শিক্ষা প্রতিষ্ঠানের নাম:</div>
+            <div class="pill-val">${institutionName}</div>
+          </div>
+
+          <div class="form-pill-row">
+            <div class="pill-lbl">পিতার নাম:</div>
+            <div class="pill-val">${fatherName}</div>
+            <div class="pill-right">
+              <div class="pill-lbl">মোবাইল নং :</div>
+              <div class="pill-val">${fatherPhone}</div>
+            </div>
+          </div>
+
+          <div class="form-pill-row">
+            <div class="pill-lbl">মাতার নাম:</div>
+            <div class="pill-val">${motherName}</div>
+            <div class="pill-right">
+              <div class="pill-lbl">মোবাইল নং :</div>
+              <div class="pill-val">${motherPhone}</div>
+            </div>
+          </div>
+        `;
+      }
+
       const html = `
         <!DOCTYPE html>
         <html lang="bn">
         <head>
           <meta charset="UTF-8">
-          <title>শিক্ষার্থীর তথ্য - টি এস এস ভিলা</title>
+          <title>${docTitle}</title>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Hind+Siliguri:wght@400;500;600;700;800&display=swap');
 
@@ -594,6 +702,8 @@ watch: {
             * { box-sizing: border-box; margin: 0; padding: 0; }
 
             html, body {
+              height: 100%;
+              width: 100%;
               background: #fff;
               font-family: 'Hind Siliguri', 'Tiro Bangla', sans-serif;
               padding: 0;
@@ -608,10 +718,13 @@ watch: {
               background: linear-gradient(165deg, #fef9e7 0%, #fef3cd 50%, #fef9e7 100%);
               border: 4px solid #27ae60;
               border-radius: 10px;
-              padding: 14px 18px 12px 18px;
+              padding: 18px 22px 16px 22px;
               box-sizing: border-box;
+              height: calc(297mm - 10mm);
+              min-height: calc(297mm - 10mm);
               display: flex;
               flex-direction: column;
+              justify-content: space-between;
               position: relative;
               page-break-inside: avoid;
             }
@@ -624,16 +737,23 @@ watch: {
               pointer-events: none;
             }
 
+            .main-content-wrap {
+              display: flex;
+              flex-direction: column;
+              flex-grow: 1;
+              justify-content: space-evenly;
+            }
+
             /* ======= HEADER ======= */
             .top-header {
               display: flex;
               align-items: center;
               justify-content: center;
-              gap: 16px;
-              margin-bottom: 8px;
+              gap: 18px;
+              margin-bottom: 10px;
               padding: 0 4px;
             }
-            .logo-wrap img { width: 72px; height: 72px; object-fit: contain; }
+            .logo-wrap img { width: 78px; height: 78px; object-fit: contain; }
             .brand-center { text-align: center; flex: 1; }
             .brand-name {
               font-size: 46px;
@@ -644,8 +764,8 @@ watch: {
               letter-spacing: 1px;
             }
             .photo-box {
-              width: 105px;
-              height: 120px;
+              width: 110px;
+              height: 125px;
               border: 2px solid #2c3e50;
               border-radius: 4px;
               display: flex;
@@ -663,8 +783,8 @@ watch: {
               background: #1a237e;
               color: #fff;
               text-align: center;
-              padding: 8px 12px;
-              font-size: 13px;
+              padding: 9px 14px;
+              font-size: 13.5px;
               font-weight: 600;
               border-radius: 5px;
               margin-bottom: 12px;
@@ -681,27 +801,66 @@ watch: {
               flex: 1;
               border: 2px solid #27ae60;
               border-radius: 6px;
-              padding: 7px 12px;
+              padding: 8px 12px;
               background: #fff;
-              font-size: 13.5px;
+              font-size: 14px;
               font-weight: 600;
               display: flex;
               align-items: center;
               gap: 5px;
             }
             .room-meta-box .lbl { color: #1a5c2e; font-weight: 700; white-space: nowrap; }
-            .room-meta-box .val { color: #000; font-weight: 800; font-size: 14px; }
+            .room-meta-box .val { color: #000; font-weight: 800; font-size: 14.5px; }
 
             /* ======= SECTION TITLES ======= */
+            .section-title-container {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              border-bottom: 2.5px solid #f39c12;
+              padding-bottom: 3px;
+              margin: 10px 0 8px 0;
+            }
+            .title-side-dummy {
+              flex: 1;
+            }
+            .section-title-container .section-title {
+              text-align: center;
+              font-size: 21.5px;
+              font-weight: 800;
+              color: #e74c3c;
+              font-family: 'Tiro Bangla', serif;
+              letter-spacing: 0.3px;
+              flex: 2;
+              margin: 0;
+              padding-bottom: 0;
+              border-bottom: none;
+            }
+            .booking-date-right-box {
+              flex: 1;
+              text-align: right;
+              font-size: 13px;
+              font-weight: 700;
+              white-space: nowrap;
+            }
+            .booking-date-right-box .lbl {
+              color: #1a5c2e;
+              font-weight: 800;
+            }
+            .booking-date-right-box .val {
+              color: #000;
+              font-weight: 800;
+            }
+
             .section-title {
               text-align: center;
-              font-size: 21px;
+              font-size: 21.5px;
               font-weight: 800;
               color: #e74c3c;
               font-family: 'Tiro Bangla', serif;
               border-bottom: 2.5px solid #f39c12;
               padding-bottom: 3px;
-              margin: 12px 0 10px 0;
+              margin: 10px 0 8px 0;
               letter-spacing: 0.3px;
             }
 
@@ -719,8 +878,8 @@ watch: {
             .pill-lbl {
               background: #7b1fa2;
               color: #fff;
-              padding: 8px 16px;
-              font-size: 13.5px;
+              padding: 9px 18px;
+              font-size: 14px;
               font-weight: 700;
               white-space: nowrap;
               display: flex;
@@ -729,8 +888,8 @@ watch: {
               flex-shrink: 0;
             }
             .pill-val {
-              padding: 8px 16px;
-              font-size: 14px;
+              padding: 9px 18px;
+              font-size: 14.5px;
               font-weight: 600;
               color: #111;
               flex-grow: 1;
@@ -751,11 +910,11 @@ watch: {
               background: #fff;
               display: flex;
               flex-wrap: wrap;
-              padding: 10px 18px;
-              font-size: 13.5px;
+              padding: 11px 20px;
+              font-size: 14px;
               font-weight: 600;
-              gap: 10px 28px;
-              margin-bottom: 12px;
+              gap: 10px 30px;
+              margin-bottom: 10px;
               align-items: center;
               min-height: 42px;
             }
@@ -766,13 +925,13 @@ watch: {
               background: #fffde7;
               border: 2px solid #f48fb1;
               border-radius: 12px;
-              padding: 12px 18px;
+              padding: 14px 20px;
               margin-top: 4px;
-              margin-bottom: 8px;
+              margin-bottom: 10px;
             }
             .rules-list { list-style: none; padding: 0; margin: 0; }
             .rules-list li {
-              font-size: 12.5px;
+              font-size: 13px;
               font-weight: 600;
               color: #1a1a1a;
               line-height: 1.8;
@@ -787,18 +946,23 @@ watch: {
               display: flex;
               justify-content: space-between;
               align-items: flex-end;
-              margin-top: 28px;
-              padding: 0 32px 10px 32px;
+              margin-top: auto;
+              padding: 16px 36px 8px 36px;
             }
-            .sig-box { text-align: center; min-width: 140px; }
+            .sig-box { text-align: center; min-width: 150px; }
             .sig-line { border-top: 1.5px solid #2c3e50; margin-bottom: 5px; }
-            .sig-text { font-size: 13.5px; font-weight: 700; color: #1a1a1a; }
+            .sig-text { font-size: 14px; font-weight: 700; color: #1a1a1a; }
 
             @media print {
               html, body {
-                background: #fff;
+                height: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #fff !important;
               }
               .paper-frame {
+                height: calc(297mm - 10mm) !important;
+                min-height: calc(297mm - 10mm) !important;
                 border-radius: 0;
                 box-sizing: border-box;
                 page-break-inside: avoid !important;
@@ -811,90 +975,76 @@ watch: {
         <body>
           <div class="paper-frame">
 
-            <!-- HEADER -->
-            <div class="top-header">
-              <div class="logo-wrap">
-                <img src="${logoUrl}" alt="Logo" onerror="this.style.display='none'">
+            <div class="main-content-wrap">
+              <!-- HEADER -->
+              <div class="top-header">
+                <div class="logo-wrap">
+                  <img src="${logoUrl}" alt="Logo" onerror="this.style.display='none'">
+                </div>
+                <div class="brand-center">
+                  <div class="brand-name">টি এস এস ভিলা</div>
+                </div>
+                <div class="photo-box">
+                  ${userImgUrl
+                    ? `<img src="${userImgUrl}" alt="Photo">`
+                    : `<div class="photo-placeholder">ছবি<br>Photo</div>`}
+                </div>
               </div>
-              <div class="brand-center">
-                <div class="brand-name">টি এস এস ভিলা</div>
+
+              <!-- BANNER -->
+              <div class="address-banner">
+                কলেজ রোড , নেসকো গেট সংলগ্ন , রংপুর &nbsp;|&nbsp; প্রয়োজনে: ০১৯৭৭২৭০৯২০ &nbsp;|&nbsp; Gmail: tssvilla2026@gmail.com
               </div>
-              <div class="photo-box">
-                ${userImgUrl
-                  ? `<img src="${userImgUrl}" alt="Photo">`
-                  : `<div class="photo-placeholder">ছবি<br>Photo</div>`}
+
+              <!-- ROOM / BLOCK / FLOOR -->
+              <div class="room-meta-row">
+                <div class="room-meta-box"><span class="lbl">রুম নং:</span>&nbsp;<span class="val">${roomNo}</span></div>
+                <div class="room-meta-box"><span class="lbl">ব্লক নং:</span>&nbsp;<span class="val">${seatNo}</span></div>
+                <div class="room-meta-box"><span class="lbl">ফ্লোর নং:</span>&nbsp;<span class="val">${floorNo}</span></div>
               </div>
-            </div>
 
-            <!-- BANNER -->
-            <div class="address-banner">
-              কলেজ রোড , নেসকো গেট সংলগ্ন , রংপুর &nbsp;|&nbsp; প্রয়োজনে: ০১৯৭৭২৭০৯২০ &nbsp;|&nbsp; Gmail: tssvilla2026@gmail.com
-            </div>
-
-            <!-- ROOM / BLOCK / FLOOR / BOOKING DATE -->
-            <div class="room-meta-row">
-              <div class="room-meta-box"><span class="lbl">রুম নং:</span>&nbsp;<span class="val">${roomNo}</span></div>
-              <div class="room-meta-box"><span class="lbl">ব্লক নং:</span>&nbsp;<span class="val">${seatNo}</span></div>
-              <div class="room-meta-box"><span class="lbl">ফ্লোর নং:</span>&nbsp;<span class="val">${floorNo}</span></div>
-              <div class="room-meta-box" style="flex: 1.5;"><span class="lbl">বুকিং তারিখ:</span>&nbsp;<span class="val" style="font-size:12px;">${bookingDate}</span></div>
-            </div>
-
-            <!-- SECTION: STUDENT INFO -->
-            <div class="section-title">শিক্ষার্থীর তথ্য</div>
-
-            <div class="form-pill-row">
-              <div class="pill-lbl">শিক্ষার্থীর পূর্ণ নাম :</div>
-              <div class="pill-val">${fullName}</div>
-              <div class="pill-right">
-                <div class="pill-lbl">মোবাইল নং :</div>
-                <div class="pill-val">${phone}</div>
+              <!-- SECTION: INFO HEADER WITH BOOKING DATE ON RIGHT -->
+              <div class="section-title-container">
+                <div class="title-side-dummy"></div>
+                <div class="section-title">${sectionTitleText}</div>
+                <div class="booking-date-right-box">
+                  <span class="lbl">বুকিং তারিখ:</span> <span class="val">${bookingDate}</span>
+                </div>
               </div>
-            </div>
 
-            <div class="form-pill-row">
-              <div class="pill-lbl">অধ্যয়নরত শিক্ষা প্রতিষ্ঠানের নাম:</div>
-              <div class="pill-val">${institutionName}</div>
-            </div>
+              ${infoSectionHtml}
 
-            <div class="form-pill-row">
-              <div class="pill-lbl">পিতার নাম:</div>
-              <div class="pill-val">${fatherName}</div>
-              <div class="pill-right">
-                <div class="pill-lbl">মোবাইল নং :</div>
-                <div class="pill-val">${fatherPhone}</div>
+              <!-- SECTION: ADDRESS -->
+              <div class="section-title">স্থায়ী ঠিকানা</div>
+
+              <div class="address-row">
+                <span><span class="akey">গ্রাম/রাস্তা:</span> ${address}</span>
+                <span><span class="akey">থানা:</span> ${thanaName}</span>
+                <span><span class="akey">উপজেলা:</span> ${thanaName}</span>
+                <span><span class="akey">জেলা:</span> ${districtName}</span>
               </div>
-            </div>
 
-            <div class="form-pill-row">
-              <div class="pill-lbl">মাতার নাম:</div>
-              <div class="pill-val">${motherName}</div>
-              <div class="pill-right">
-                <div class="pill-lbl">মোবাইল নং :</div>
-                <div class="pill-val">${motherPhone}</div>
+              <!-- SECTION: RULES -->
+              <div class="section-title">নিয়মাবলী</div>
+
+              <div class="rules-box">
+                ${isProf ? `
+                <ul class="rules-list">
+                  <li>* মেসের ভাড়া ০৭ তারিখের মধ্যে পরিশোধ করতে হবে।</li>
+                  <li>* মেস ছাড়লে ০২ মাস পূর্বেই মেস কর্তৃপক্ষকে জানাতে হবে। অন্যথায় দুই মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</li>
+                  <li>* রুম চেঞ্জ করতে চাইলে ৫০০ টাকা জরিমানা প্রদান করতে হবে।</li>
+                  <li>* মেসের নিয়ম-কানুন মেনে চলতে হবে। কারো বিরুদ্ধে কোনো অভিযোগ আসলে এবং তা প্রমাণিত হলে সিট বাতিলসহ যেকোনো ব্যবস্থা নেয়ার অধিকার কর্তৃপক্ষ রাখে।</li>
+                </ul>
+                ` : `
+                <ul class="rules-list">
+                  <li>* মেসের ভাড়া ০৭ তারিখের মধ্যে পরিশোধ করতে হবে।</li>
+                  <li>* মেস ছাড়লে ০২ মাস পূর্বেই মেস কর্তৃপক্ষকে জানাতে হবে। অন্যথায় দুই মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</li>
+                  <li>* মাগরিবের আযানের পর মেসের বাহিরে থাকলে অভিভাবককে জানিয়ে দিতে হবে।</li>
+                  <li>* রুম চেঞ্জ করতে চাইলে ৫০০ টাকা জরিমানা প্রদান করতে হবে।</li>
+                  <li>* মেসের নিয়ম-কানুন মেনে চলতে হবে। কারো বিরুদ্ধে কোনো অভিযোগ আসলে এবং তা প্রমাণিত হলে সিট বাতিলসহ যেকোনো ব্যবস্থা নেয়ার অধিকার কর্তৃপক্ষ রাখে।</li>
+                </ul>
+                `}
               </div>
-            </div>
-
-            <!-- SECTION: ADDRESS -->
-            <div class="section-title">স্থায়ী ঠিকানা</div>
-
-            <div class="address-row">
-              <span><span class="akey">গ্রাম/রাস্তা:</span> ${address}</span>
-              <span><span class="akey">থানা:</span> ${thanaName}</span>
-              <span><span class="akey">উপজেলা:</span> ${thanaName}</span>
-              <span><span class="akey">জেলা:</span> ${districtName}</span>
-            </div>
-
-            <!-- SECTION: RULES -->
-            <div class="section-title">নিয়মাবলী</div>
-
-            <div class="rules-box">
-              <ul class="rules-list">
-                <li>* মেসের ভাড়া ০৭ তারিখের মধ্যে পরিশোধ করতে হবে। ০৭ তারিখ পার হলে ২৪ ঘন্টা পর পর ৫০ টাকা করে জরিমানা।</li>
-                <li>* মেস ছাড়লে ০২ মাস পূর্বেই মেস কর্তৃপক্ষকে জানাতে হবে। অন্যথায় দুই মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</li>
-                <li>* মাগরিবের আযানের পর মেসের বাহিরে থাকলে অভিভাবককে জানিয়ে দিতে হবে।</li>
-                <li>* রুম চেঞ্জ করতে চাইলে ৫০০ টাকা জরিমানা প্রদান করতে হবে।</li>
-                <li>* মেসের নিয়ম-কানুন মেনে চলতে হবে। কারও বিরুদ্ধে কোনো অভিযোগ আসলে এবং তা প্রমাণিত হলে সিট বাতিলসহ যেকোন ব্যবস্থা নেয়া অধিকার কর্তৃপক্ষ রাখে।</li>
-              </ul>
             </div>
 
             <!-- SIGNATURE -->
@@ -905,7 +1055,7 @@ watch: {
               </div>
               <div class="sig-box">
                 <div class="sig-line"></div>
-                <div class="sig-text">শিক্ষার্থীর স্বাক্ষর</div>
+                <div class="sig-text">${signatureLabelText}</div>
               </div>
             </div>
 

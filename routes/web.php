@@ -231,6 +231,7 @@
     // report controller //
     Route::get('report', [ReportController::class, 'index'])->name('report.index');
     Route::get('get-profit-loss-report', [ReportController::class, 'profitLossReport']);
+    Route::get('get-monthly-detail-report', [ReportController::class, 'getMonthlyDetailReport']);
     Route::get('get-available-years', [ReportController::class, 'availableYears']);
     Route::get('get-productstock', [ReportController::class, 'getproductStock']);
 

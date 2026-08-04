@@ -333,54 +333,74 @@
                           <i class="bi bi-layers-half me-1"></i> {{ $floorName }}
                         </h6>
                       </div>
-                      @foreach($floorRooms as $room)
-                        @foreach($room->seats as $seat)
-                          @php
-                            $seatUniqueName = $room->room_no . '-' . $seat->seat_no;
-                            $isSeatBooked = (isset($bookedRoomNumbers) && in_array($seatUniqueName, $bookedRoomNumbers)) || $seat->status == 1;
-                          @endphp
-                          <div
-                            class="seat room-box {{ $isSeatBooked ? 'is-disabled' : '' }}"
-                            data-room="{{ $seatUniqueName }}"
-                            data-floor="{{ $floorName }}"
-                            data-room-no="{{ $room->room_no }}"
-                            data-price="{{ (int)$seat->price }}"
-                            data-advance-price="{{ (int)$seat->advance_price }}"
-                            data-status="{{ $isSeatBooked ? 1 : 0 }}"
-                            data-room-type="{{ $room->room_type }}"
-                            data-ac-status="{{ $room->ac_status }}"
-                            title="">
-                            {{ $seatUniqueName }}
-                            <div class="room-hover-info">
-                               @if($isSeatBooked)
-                                <div class="text-center fw-bold" style="color: #ea580c;">Already Booked</div>
-                                @php
-                                  $uType = $bookedSeatsUserTypes[$seatUniqueName] ?? 'student';
-                                  $uTypeLabel = ($uType === 'passenger' || $uType === 'Working Professional') ? 'Working Professional (চাকরিজীবী/পেশাজীবী)' : 'Student (ছাত্রী)';
-                                @endphp
-                                <div class="text-center small mt-1 fw-bold text-dark" style="border-top: 1px dashed #ddd; padding-top: 4px;">Occupant: {{ $uTypeLabel }}</div>
-                              @else
-                                @php
-                                  $displayRoomType = $room->room_type;
-                                  $rawType = trim($displayRoomType ?? '');
-                                  if (in_array($rawType, ['Singel', 'Single'])) {
-                                      $displayRoomType = 'Single Room';
-                                  } elseif (in_array($rawType, ['Doubel', 'Double'])) {
-                                      $displayRoomType = 'Double Room';
-                                  }
-                                @endphp
-                                <div><strong>Room Type:</strong> {{ $displayRoomType }}</div>
-                                <div><strong>Monthly Rent:</strong> ৳{{ $seat->price }}</div>
-                                @if((int)$seat->advance_price > 0)
-                                  <div><strong>Advance Deposit:</strong> ৳{{ $seat->advance_price }}</div>
-                                @endif
-                                @if($devFeeActive)
-                                  <div><strong>Development Fee:</strong> ৳{{ number_format($devFeeAmount) }}</div>
-                                @endif
-                              @endif
-                            </div>
+                      @php
+                        $seatsCollection = collect();
+                        foreach($floorRooms as $room) {
+                            foreach($room->seats as $seat) {
+                                $seatsCollection->push(['room' => $room, 'seat' => $seat]);
+                            }
+                        }
+                        $seatSections = [
+                            'Section A' => $seatsCollection->filter(fn($item) => stripos(str_ireplace('seat', '', $item['seat']->seat_no), 'A') !== false),
+                            'Section B' => $seatsCollection->filter(fn($item) => stripos(str_ireplace('seat', '', $item['seat']->seat_no), 'B') !== false),
+                            'Other Seats' => $seatsCollection->filter(fn($item) => stripos(str_ireplace('seat', '', $item['seat']->seat_no), 'A') === false && stripos(str_ireplace('seat', '', $item['seat']->seat_no), 'B') === false)
+                        ];
+                      @endphp
+                      @foreach($seatSections as $sectionName => $secSeats)
+                        @if($secSeats->count() > 0)
+                          <div class="w-100 mb-2 mt-2">
+                            <h6 class="fw-bold text-center text-secondary mb-1" style="font-size: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px;">{{ $sectionName }}</h6>
                           </div>
-                        @endforeach
+                          @foreach($secSeats as $item)
+                            @php
+                              $room = $item['room'];
+                              $seat = $item['seat'];
+                              $seatUniqueName = $room->room_no . '-' . $seat->seat_no;
+                              $isSeatBooked = (isset($bookedRoomNumbers) && in_array($seatUniqueName, $bookedRoomNumbers)) || $seat->status == 1;
+                            @endphp
+                            <div
+                              class="seat room-box {{ $isSeatBooked ? 'is-disabled' : '' }}"
+                              data-room="{{ $seatUniqueName }}"
+                              data-floor="{{ $floorName }}"
+                              data-room-no="{{ $room->room_no }}"
+                              data-price="{{ (int)$seat->price }}"
+                              data-advance-price="{{ (int)$seat->advance_price }}"
+                              data-status="{{ $isSeatBooked ? 1 : 0 }}"
+                              data-room-type="{{ $room->room_type }}"
+                              data-ac-status="{{ $room->ac_status }}"
+                              title="">
+                              {{ $seatUniqueName }}
+                              <div class="room-hover-info">
+                                 @if($isSeatBooked)
+                                  <div class="text-center fw-bold" style="color: #ea580c;">Already Booked</div>
+                                  @php
+                                    $uType = $bookedSeatsUserTypes[$seatUniqueName] ?? 'student';
+                                    $uTypeLabel = ($uType === 'passenger' || $uType === 'Working Professional') ? 'Working Professional (চাকরিজীবী/পেশাজীবী)' : 'Student (ছাত্রী)';
+                                  @endphp
+                                  <div class="text-center small mt-1 fw-bold text-dark" style="border-top: 1px dashed #ddd; padding-top: 4px;">Occupant: {{ $uTypeLabel }}</div>
+                                @else
+                                  @php
+                                    $displayRoomType = $room->room_type;
+                                    $rawType = trim($displayRoomType ?? '');
+                                    if (in_array($rawType, ['Singel', 'Single'])) {
+                                        $displayRoomType = 'Single Room';
+                                    } elseif (in_array($rawType, ['Doubel', 'Double'])) {
+                                        $displayRoomType = 'Double Room';
+                                    }
+                                  @endphp
+                                  <div><strong>Room Type:</strong> {{ $displayRoomType }}</div>
+                                  <div><strong>Monthly Rent:</strong> ৳{{ $seat->price }}</div>
+                                  @if((int)$seat->advance_price > 0)
+                                    <div><strong>Advance Deposit:</strong> ৳{{ $seat->advance_price }}</div>
+                                  @endif
+                                  @if($devFeeActive)
+                                    <div><strong>Development Fee:</strong> ৳{{ number_format($devFeeAmount) }}</div>
+                                  @endif
+                                @endif
+                              </div>
+                            </div>
+                          @endforeach
+                        @endif
                       @endforeach
                     @endforeach
                   @elseif(isset($floors) && count($floors) > 0)
@@ -390,54 +410,74 @@
                           <i class="bi bi-layers-half me-1"></i> {{ $floor->name }}
                         </h6>
                       </div>
-                      @foreach(($floor->rooms ?? collect()) as $room)
-                        @foreach(($room->seats ?? collect()) as $seat)
-                          @php
-                            $seatUniqueName = $room->room_no . '-' . $seat->seat_no;
-                            $isSeatBooked = (isset($bookedRoomNumbers) && in_array($seatUniqueName, $bookedRoomNumbers)) || $seat->status == 1;
-                          @endphp
-                          <div
-                            class="seat room-box {{ $isSeatBooked ? 'is-disabled' : '' }}"
-                            data-room="{{ $seatUniqueName }}"
-                            data-floor="{{ $floor->name }}"
-                            data-room-no="{{ $room->room_no }}"
-                            data-price="{{ (int)$seat->price }}"
-                            data-advance-price="{{ (int)$seat->advance_price }}"
-                            data-status="{{ $isSeatBooked ? 1 : 0 }}"
-                            data-room-type="{{ $room->room_type }}"
-                            data-ac-status="{{ $room->ac_status }}"
-                            title="">
-                            {{ $seatUniqueName }}
-                            <div class="room-hover-info">
-                               @if($isSeatBooked)
-                                <div class="text-center fw-bold" style="color: #ea580c;">Already Booked</div>
-                                @php
-                                  $uType = $bookedSeatsUserTypes[$seatUniqueName] ?? 'student';
-                                  $uTypeLabel = ($uType === 'passenger' || $uType === 'Working Professional') ? 'Working Professional (চাকরিজীবী/পেশাজীবী)' : 'Student (ছাত্রী)';
-                                @endphp
-                                <div class="text-center small mt-1 fw-bold text-dark" style="border-top: 1px dashed #ddd; padding-top: 4px;">Occupant: {{ $uTypeLabel }}</div>
-                              @else
-                                @php
-                                  $displayRoomType = $room->room_type;
-                                  $rawType = trim($displayRoomType ?? '');
-                                  if (in_array($rawType, ['Singel', 'Single'])) {
-                                      $displayRoomType = 'Single Room';
-                                  } elseif (in_array($rawType, ['Doubel', 'Double'])) {
-                                      $displayRoomType = 'Double Room';
-                                  }
-                                @endphp
-                                <div><strong>Room Type:</strong> {{ $displayRoomType }}</div>
-                                <div><strong>Monthly Rent:</strong> ৳{{ $seat->price }}</div>
-                                @if((int)$seat->advance_price > 0)
-                                  <div><strong>Advance Deposit:</strong> ৳{{ $seat->advance_price }}</div>
-                                @endif
-                                @if($devFeeActive)
-                                  <div><strong>Development Fee:</strong> ৳{{ number_format($devFeeAmount) }}</div>
-                                @endif
-                              @endif
-                            </div>
+                      @php
+                        $seatsCollection = collect();
+                        foreach($floor->rooms ?? collect() as $room) {
+                            foreach($room->seats ?? collect() as $seat) {
+                                $seatsCollection->push(['room' => $room, 'seat' => $seat]);
+                            }
+                        }
+                        $seatSections = [
+                            'Section A' => $seatsCollection->filter(fn($item) => stripos(str_ireplace('seat', '', $item['seat']->seat_no), 'A') !== false),
+                            'Section B' => $seatsCollection->filter(fn($item) => stripos(str_ireplace('seat', '', $item['seat']->seat_no), 'B') !== false),
+                            'Other Seats' => $seatsCollection->filter(fn($item) => stripos(str_ireplace('seat', '', $item['seat']->seat_no), 'A') === false && stripos(str_ireplace('seat', '', $item['seat']->seat_no), 'B') === false)
+                        ];
+                      @endphp
+                      @foreach($seatSections as $sectionName => $secSeats)
+                        @if($secSeats->count() > 0)
+                          <div class="w-100 mb-2 mt-2">
+                            <h6 class="fw-bold text-center text-secondary mb-1" style="font-size: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px;">{{ $sectionName }}</h6>
                           </div>
-                        @endforeach
+                          @foreach($secSeats as $item)
+                            @php
+                              $room = $item['room'];
+                              $seat = $item['seat'];
+                              $seatUniqueName = $room->room_no . '-' . $seat->seat_no;
+                              $isSeatBooked = (isset($bookedRoomNumbers) && in_array($seatUniqueName, $bookedRoomNumbers)) || $seat->status == 1;
+                            @endphp
+                            <div
+                              class="seat room-box {{ $isSeatBooked ? 'is-disabled' : '' }}"
+                              data-room="{{ $seatUniqueName }}"
+                              data-floor="{{ $floor->name }}"
+                              data-room-no="{{ $room->room_no }}"
+                              data-price="{{ (int)$seat->price }}"
+                              data-advance-price="{{ (int)$seat->advance_price }}"
+                              data-status="{{ $isSeatBooked ? 1 : 0 }}"
+                              data-room-type="{{ $room->room_type }}"
+                              data-ac-status="{{ $room->ac_status }}"
+                              title="">
+                              {{ $seatUniqueName }}
+                              <div class="room-hover-info">
+                                 @if($isSeatBooked)
+                                  <div class="text-center fw-bold" style="color: #ea580c;">Already Booked</div>
+                                  @php
+                                    $uType = $bookedSeatsUserTypes[$seatUniqueName] ?? 'student';
+                                    $uTypeLabel = ($uType === 'passenger' || $uType === 'Working Professional') ? 'Working Professional (চাকরিজীবী/পেশাজীবী)' : 'Student (ছাত্রী)';
+                                  @endphp
+                                  <div class="text-center small mt-1 fw-bold text-dark" style="border-top: 1px dashed #ddd; padding-top: 4px;">Occupant: {{ $uTypeLabel }}</div>
+                                @else
+                                  @php
+                                    $displayRoomType = $room->room_type;
+                                    $rawType = trim($displayRoomType ?? '');
+                                    if (in_array($rawType, ['Singel', 'Single'])) {
+                                        $displayRoomType = 'Single Room';
+                                    } elseif (in_array($rawType, ['Doubel', 'Double'])) {
+                                        $displayRoomType = 'Double Room';
+                                    }
+                                  @endphp
+                                  <div><strong>Room Type:</strong> {{ $displayRoomType }}</div>
+                                  <div><strong>Monthly Rent:</strong> ৳{{ $seat->price }}</div>
+                                  @if((int)$seat->advance_price > 0)
+                                    <div><strong>Advance Deposit:</strong> ৳{{ $seat->advance_price }}</div>
+                                  @endif
+                                  @if($devFeeActive)
+                                    <div><strong>Development Fee:</strong> ৳{{ number_format($devFeeAmount) }}</div>
+                                  @endif
+                                @endif
+                              </div>
+                            </div>
+                          @endforeach
+                        @endif
                       @endforeach
                     @endforeach
                   @endif
