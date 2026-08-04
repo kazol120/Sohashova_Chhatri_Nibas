@@ -148,7 +148,7 @@
                             </div>
                             <div class="text-muted"><i class="fa fa-chevron-right fs-7"></i></div>
                             <div id="step-indicator-2" class="step-badge text-muted fw-semibold">
-                                <span class="badge rounded-circle bg-secondary me-2">2</span> Step 2: Guardian & Institution / Workplace
+                                <span class="badge rounded-circle bg-secondary me-2">2</span> Step 2: Guardian & Institution Details
                             </div>
                         </div>
                     </div>
@@ -201,7 +201,7 @@
 
                             <!-- STEP 2: Guardian & Institution Details -->
                             <div id="wizard-step-2" style="display: none;">
-                                <h6 class="text-uppercase fw-bold text-success mb-3"><i class="fa fa-users me-1"></i> Step 2: Guardian & Institution / Workplace Details</h6>
+                                <h6 class="text-uppercase fw-bold text-success mb-3"><i class="fa fa-users me-1"></i> Step 2: Guardian & Institution Details</h6>
                                 
                                 <div class="row g-3">
                                     <!-- Father's Info -->
@@ -237,15 +237,9 @@
                                     </div>
 
                                     <!-- Institution Name -->
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <label for="institution_name" class="form-label fw-semibold text-primary">Institution Name (শিক্ষাপ্রতিষ্ঠানের নাম)</label>
                                         <input type="text" class="form-control" name="institution_name" value="{{ old('institution_name', $booking->institution_name ?? '') }}" id="institution_name" placeholder="College / University Name">
-                                    </div>
-
-                                    <!-- Workplace Name -->
-                                    <div class="col-md-6">
-                                        <label for="workplace_name" class="form-label fw-semibold text-success">Workplace Name (কর্মস্থলের নাম)</label>
-                                        <input type="text" class="form-control" name="workplace_name" value="{{ old('workplace_name', $booking->workplace_name ?? '') }}" id="workplace_name" placeholder="Company / Workplace Name">
                                     </div>
                                 </div>
 
