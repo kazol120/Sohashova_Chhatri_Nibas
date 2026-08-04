@@ -96,4 +96,28 @@ class ComplaintController extends Controller
 
         return redirect()->back()->with('success', 'অভিযোগটি সফলভাবে Accepted / Resolved চিহ্নিত করা হয়েছে।');
     }
+
+    public function checkPendingComplaints()
+    {
+        $pendingCount = Complaint::where('status', 0)->count();
+        $latestComplaints = Complaint::with(['user'])
+            ->where('status', 0)
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function($c) {
+                return [
+                    'id' => $c->id,
+                    'user_name' => $c->user->name ?? 'Resident',
+                    'complaint_text' => $c->complaint_text,
+                    'time_ago' => $c->created_at->diffForHumans(),
+                    'initial' => strtoupper(substr($c->user->name ?? 'R', 0, 1)),
+                ];
+            });
+
+        return response()->json([
+            'count' => $pendingCount,
+            'complaints' => $latestComplaints,
+        ]);
+    }
 }

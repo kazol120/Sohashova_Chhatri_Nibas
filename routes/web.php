@@ -286,6 +286,8 @@
     Route::get('/complaints', [\App\Http\Controllers\Backend\ComplaintController::class, 'index'])->name('complaints.index');
     Route::post('/complaints/store', [\App\Http\Controllers\Backend\ComplaintController::class, 'store'])->name('complaints.store');
     Route::post('/complaints/update-status/{id}', [\App\Http\Controllers\Backend\ComplaintController::class, 'updateStatus'])->name('complaints.update-status');
+    Route::get('/api/pending-complaints-check', [\App\Http\Controllers\Backend\ComplaintController::class, 'checkPendingComplaints'])->name('complaints.check-pending');
+
 
 
 

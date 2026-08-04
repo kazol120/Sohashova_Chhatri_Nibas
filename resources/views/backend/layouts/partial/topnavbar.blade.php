@@ -40,21 +40,19 @@
            aria-expanded="false"
            title="Resident Complaints">
           <i class="ti ti-bell ti-md text-danger"></i>
-          @if($pendingComplaintsCount > 0)
-            <span class="badge bg-danger rounded-pill badge-notifications position-absolute top-0 start-100 translate-middle p-1 border border-light" style="font-size: 0.65rem;">
-                {{ $pendingComplaintsCount }}
-            </span>
-          @endif
+          <span id="complaintBellBadge" class="badge bg-danger rounded-pill badge-notifications position-absolute top-0 start-100 translate-middle p-1 border border-light" style="font-size: 0.65rem; {{ $pendingComplaintsCount > 0 ? '' : 'display: none;' }}">
+              {{ $pendingComplaintsCount }}
+          </span>
         </a>
         <ul class="dropdown-menu dropdown-menu-end py-0 shadow-lg" style="width: 320px; right: 0 !important; left: auto !important;">
           <li class="dropdown-menu-header border-bottom py-3 px-3 bg-label-danger rounded-top">
             <div class="d-flex align-items-center justify-content-between">
               <h6 class="mb-0 text-danger fw-bold"><i class="ti ti-alert-triangle me-2"></i>Complaints (অভিযোগ)</h6>
-              <span class="badge bg-danger rounded-pill">{{ $pendingComplaintsCount }} New</span>
+              <span id="complaintHeaderBadge" class="badge bg-danger rounded-pill">{{ $pendingComplaintsCount }} New</span>
             </div>
           </li>
           <li class="dropdown-notifications-list scrollable-container" style="max-height: 280px; overflow-y: auto;">
-            <ul class="list-group list-group-flush">
+            <ul class="list-group list-group-flush" id="complaintListGroup">
               @forelse($latestComplaints as $c)
               <li class="list-group-item list-group-item-action dropdown-notifications-item p-3">
                 <a href="{{ route('complaints.index') }}" class="text-decoration-none text-dark d-block">
@@ -89,9 +87,8 @@
         </ul>
       </li>
       @endrole
-      
-      <!-- User Dropdown -->
 
+      <!-- User Dropdown -->
       <li class="nav-item navbar-dropdown dropdown-user dropdown position-relative">
         <a class="nav-link dropdown-toggle hide-arrow p-0"
            href="javascript:void(0);"
@@ -137,12 +134,14 @@
             </a>
           </li>
           <li>
+            <div class="dropdown-divider my-1 mx-n2"></div>
+          </li>
+          <li>
             <div class="d-grid px-2 pt-2 pb-1">
               <a class="btn btn-sm btn-danger d-flex align-items-center justify-content-center"
                  href="{{ route('logout') }}"
                  onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                <span class="align-middle me-2">Logout</span>
-                <i class="ti ti-logout ti-14px"></i>
+                <i class="ti ti-logout me-2"></i><span class="align-middle">Log Out</span>
               </a>
               <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                 @csrf
@@ -151,17 +150,11 @@
           </li>
         </ul>
       </li>
-      <!-- / User Dropdown -->
+      <!--/ User Dropdown -->
     </ul>
-  </div>
-  <!-- Search Small Screens -->
-  <div class="navbar-search-wrapper search-input-wrapper d-none">
-    <input type="text" class="form-control search-input container-xxl border-0" placeholder="Search..." aria-label="Search..." />
-    <i class="ti ti-x search-toggler cursor-pointer"></i>
   </div>
 </nav>
 
-<!-- Robust Dropdown Toggle Script Fallback -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const dropdownToggles = document.querySelectorAll('#layout-navbar [data-bs-toggle="dropdown"]');
@@ -200,9 +193,10 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 @role('admin|staffs')
-@if(isset($pendingComplaintsCount) && $pendingComplaintsCount > 0)
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    var lastPendingCount = {{ $pendingComplaintsCount }};
+
     function playChimeSound() {
         try {
             var ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -213,13 +207,13 @@ document.addEventListener('DOMContentLoaded', function () {
             osc1.type = 'sine';
             osc2.type = 'sine';
 
-            osc1.frequency.setValueAtTime(587.33, ctx.currentTime); // D5 tone
-            osc1.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15); // A5 tone
+            osc1.frequency.setValueAtTime(587.33, ctx.currentTime);
+            osc1.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
 
             osc2.frequency.setValueAtTime(880, ctx.currentTime + 0.15);
-            osc2.frequency.exponentialRampToValueAtTime(1174.66, ctx.currentTime + 0.35); // D6 tone
+            osc2.frequency.exponentialRampToValueAtTime(1174.66, ctx.currentTime + 0.35);
 
-            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.setValueAtTime(0.35, ctx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
 
             osc1.connect(gain);
@@ -230,23 +224,70 @@ document.addEventListener('DOMContentLoaded', function () {
             osc1.stop(ctx.currentTime + 0.2);
             osc2.start(ctx.currentTime + 0.15);
             osc2.stop(ctx.currentTime + 0.6);
-        } catch (e) {
-            console.log('Audio Context notification chime:', e);
-        }
+        } catch (e) {}
     }
 
-    // Play chime sound on page load
-    setTimeout(playChimeSound, 400);
+    function checkLiveComplaints() {
+        fetch("{{ route('complaints.check-pending') }}")
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                var bellBadge = document.getElementById('complaintBellBadge');
+                var headerBadge = document.getElementById('complaintHeaderBadge');
+                var listGroup = document.getElementById('complaintListGroup');
 
-    // Fallback play sound on first user click if browser autoplay was blocked
-    var soundTriggered = false;
-    document.addEventListener('click', function() {
-        if (!soundTriggered) {
-            playChimeSound();
-            soundTriggered = true;
-        }
-    }, { once: true });
+                if (data.count > 0) {
+                    if (bellBadge) {
+                        bellBadge.innerText = data.count;
+                        bellBadge.style.display = 'inline-block';
+                    }
+                    if (headerBadge) {
+                        headerBadge.innerText = data.count + ' New';
+                    }
+                } else {
+                    if (bellBadge) bellBadge.style.display = 'none';
+                    if (headerBadge) headerBadge.innerText = '0 New';
+                }
+
+                // If new complaint arrived, play chime sound!
+                if (data.count > lastPendingCount) {
+                    playChimeSound();
+                }
+                lastPendingCount = data.count;
+
+                // Update list group HTML dynamically if list exists
+                if (listGroup && data.complaints) {
+                    if (data.complaints.length === 0) {
+                        listGroup.innerHTML = '<li class="list-group-item text-center py-4 text-muted fs-7">No new pending complaints.</li>';
+                    } else {
+                        var html = '';
+                        data.complaints.forEach(function(c) {
+                            html += '<li class="list-group-item list-group-item-action dropdown-notifications-item p-3">' +
+                                '<a href="{{ route("complaints.index") }}" class="text-decoration-none text-dark d-block">' +
+                                '<div class="d-flex align-items-start">' +
+                                '<div class="flex-shrink-0 me-3">' +
+                                '<div class="avatar avatar-sm">' +
+                                '<span class="avatar-initial rounded-circle bg-label-danger fw-bold">' + c.initial + '</span>' +
+                                '</div></div>' +
+                                '<div class="flex-grow-1">' +
+                                '<h6 class="mb-1 fw-bold fs-7">' + c.user_name + '</h6>' +
+                                '<p class="mb-1 text-muted fs-8 text-truncate" style="max-width: 200px;">' + c.complaint_text + '</p>' +
+                                '<small class="text-muted fs-9"><i class="ti ti-clock me-1"></i>' + c.time_ago + '</small>' +
+                                '</div></div></a></li>';
+                        });
+                        listGroup.innerHTML = html;
+                    }
+                }
+            })
+            .catch(function(err) { console.log('Live polling error:', err); });
+    }
+
+    // Poll every 7 seconds for live updates without page reload!
+    setInterval(checkLiveComplaints, 7000);
+
+    // Initial sound on load if pending complaints exist
+    if (lastPendingCount > 0) {
+        setTimeout(playChimeSound, 500);
+    }
 });
 </script>
-@endif
 @endrole
