@@ -181,11 +181,6 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label for="nid" class="form-label fw-semibold">NID / Birth Certificate No</label>
-                                        <input type="text" class="form-control" name="nid" value="{{ old('nid', $booking->nid ?? '') }}" id="nid" placeholder="NID or Birth Reg Number">
-                                    </div>
-
-                                    <div class="col-md-6">
                                         <label for="user_type" class="form-label fw-semibold">User Type (ইউজার ধরন)</label>
                                         <select name="user_type" id="user_type" class="form-select" onchange="toggleUserTypeFields()">
                                             <option value="Student" {{ (old('user_type', $booking->user_type ?? '') == 'Student') ? 'selected' : '' }}>Student (শিক্ষার্থী/ছাত্রী)</option>
@@ -214,44 +209,51 @@
 
                             <!-- STEP 2: Guardian & Institution Details -->
                             <div id="wizard-step-2" style="display: none;">
-                                <h6 class="text-uppercase fw-bold text-success mb-3"><i class="fa fa-users me-1"></i> Step 2: Guardian & Institution / Workplace</h6>
+                                <h6 class="text-uppercase fw-bold text-success mb-3"><i class="fa fa-users me-1"></i> Step 2: Guardian & Institution / Workplace Details</h6>
                                 
                                 <div class="row g-3">
-                                    <div class="col-md-6">
+                                    <!-- Father's Info -->
+                                    <div class="col-md-4">
                                         <label for="father_name" class="form-label fw-semibold">Father's Name</label>
                                         <input type="text" class="form-control" name="father_name" value="{{ old('father_name', $booking->father_name ?? '') }}" id="father_name" placeholder="Father's Name">
                                     </div>
 
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <label for="father_phone" class="form-label fw-semibold">Father's Phone Number</label>
                                         <input type="text" class="form-control" name="father_phone" value="{{ old('father_phone', $booking->father_phone ?? '') }}" id="father_phone" placeholder="Father's Phone">
                                     </div>
 
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
+                                        <label for="father_nid" class="form-label fw-semibold">Father's NID</label>
+                                        <input type="text" class="form-control" name="father_nid" value="{{ old('father_nid', $booking->father_nid ?? '') }}" id="father_nid" placeholder="Father's NID Number">
+                                    </div>
+
+                                    <!-- Mother's Info -->
+                                    <div class="col-md-4">
                                         <label for="mother_name" class="form-label fw-semibold">Mother's Name</label>
                                         <input type="text" class="form-control" name="mother_name" value="{{ old('mother_name', $booking->mother_name ?? '') }}" id="mother_name" placeholder="Mother's Name">
                                     </div>
 
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <label for="mother_phone" class="form-label fw-semibold">Mother's Phone Number</label>
                                         <input type="text" class="form-control" name="mother_phone" value="{{ old('mother_phone', $booking->mother_phone ?? '') }}" id="mother_phone" placeholder="Mother's Phone">
                                     </div>
 
+                                    <div class="col-md-4">
+                                        <label for="mother_nid" class="form-label fw-semibold">Mother's NID</label>
+                                        <input type="text" class="form-control" name="mother_nid" value="{{ old('mother_nid', $booking->mother_nid ?? '') }}" id="mother_nid" placeholder="Mother's NID Number">
+                                    </div>
+
                                     <!-- DYNAMIC: Institution Name for Student -->
-                                    <div class="col-md-6" id="institution_wrap">
+                                    <div class="col-md-12" id="institution_wrap">
                                         <label for="institution_name" class="form-label fw-semibold text-primary">Institution Name (শিক্ষাপ্রতিষ্ঠানের নাম) <code>*</code></label>
                                         <input type="text" class="form-control border-primary" name="institution_name" value="{{ old('institution_name', $booking->institution_name ?? '') }}" id="institution_name" placeholder="College / University Name">
                                     </div>
 
                                     <!-- DYNAMIC: Workplace Name for Working Professional -->
-                                    <div class="col-md-6" id="workplace_wrap" style="display: none;">
+                                    <div class="col-md-12" id="workplace_wrap" style="display: none;">
                                         <label for="workplace_name" class="form-label fw-semibold text-success">Workplace Name (কর্মস্থলের নাম) <code>*</code></label>
                                         <input type="text" class="form-control border-success" name="workplace_name" value="{{ old('workplace_name', $booking->workplace_name ?? '') }}" id="workplace_name" placeholder="Company / Workplace Name">
-                                    </div>
-
-                                    <div class="col-12">
-                                        <label for="education_and_workplace" class="form-label fw-semibold">Education & Workplace Details</label>
-                                        <textarea class="form-control" name="education_and_workplace" id="education_and_workplace" rows="2" placeholder="Educational qualification or job details">{{ old('education_and_workplace', $booking->education_and_workplace ?? '') }}</textarea>
                                     </div>
                                 </div>
 

@@ -52,15 +52,15 @@ class ProfileController extends Controller
             'email' => 'required|email|unique:users,email,' . $user->id,
             'user_image' => 'nullable|file|mimes:jpg,png,jpeg,pdf,webp|max:4096',
             'cover_image' => 'nullable|file|mimes:jpg,png,jpeg,pdf,webp|max:4096',
-            'nid' => 'nullable|string|max:100',
             'father_name' => 'nullable|string|max:255',
             'father_phone' => 'nullable|string|max:30',
+            'father_nid' => 'nullable|string|max:100',
             'mother_name' => 'nullable|string|max:255',
             'mother_phone' => 'nullable|string|max:30',
+            'mother_nid' => 'nullable|string|max:100',
             'user_type' => 'nullable|string|max:100',
             'institution_name' => 'nullable|string|max:255',
             'workplace_name' => 'nullable|string|max:255',
-            'education_and_workplace' => 'nullable|string',
             'address' => 'nullable|string|max:500',
         ]);
 

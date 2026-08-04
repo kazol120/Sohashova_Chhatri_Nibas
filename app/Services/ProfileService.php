@@ -63,7 +63,7 @@ class ProfileService {
             $staff->update($staffData);
         }
 
-        // RoomBookingHistory Sync (Complete sync for all resident profile fields)
+        // RoomBookingHistory Sync (Complete sync for resident profile fields)
         $bookingHistory = \App\Models\Backend\RoomBookingHistory::where('phone', 'LIKE', '%' . $last11Digits)->first();
         if ($bookingHistory) {
             $bookingData = [
@@ -75,20 +75,23 @@ class ProfileService {
             if ($request->has('address')) {
                 $bookingData['address'] = $request->address;
             }
-            if ($request->has('nid')) {
-                $bookingData['nid'] = $request->nid;
-            }
             if ($request->has('father_name')) {
                 $bookingData['father_name'] = $request->father_name;
             }
             if ($request->has('father_phone')) {
                 $bookingData['father_phone'] = $request->father_phone;
             }
+            if ($request->has('father_nid')) {
+                $bookingData['father_nid'] = $request->father_nid;
+            }
             if ($request->has('mother_name')) {
                 $bookingData['mother_name'] = $request->mother_name;
             }
             if ($request->has('mother_phone')) {
                 $bookingData['mother_phone'] = $request->mother_phone;
+            }
+            if ($request->has('mother_nid')) {
+                $bookingData['mother_nid'] = $request->mother_nid;
             }
             if ($request->has('user_type')) {
                 $bookingData['user_type'] = $request->user_type;
@@ -98,9 +101,6 @@ class ProfileService {
             }
             if ($request->has('workplace_name')) {
                 $bookingData['workplace_name'] = $request->workplace_name;
-            }
-            if ($request->has('education_and_workplace')) {
-                $bookingData['education_and_workplace'] = $request->education_and_workplace;
             }
 
             if ($request->hasFile('user_image')) {
