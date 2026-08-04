@@ -137,7 +137,7 @@
                         <h5 class="mb-0 fw-bold text-primary">
                             <i class="fa fa-user-edit me-2"></i>Resident Profile Update
                         </h5>
-                        <span class="badge bg-primary rounded-pill">Room Booking Record Sync</span>
+                        <span class="badge bg-primary rounded-pill">{{ optional($booking)->user_type ?? 'Student' }}</span>
                     </div>
 
                     <!-- Step Wizard Navigation Indicator -->
@@ -148,7 +148,7 @@
                             </div>
                             <div class="text-muted"><i class="fa fa-chevron-right fs-7"></i></div>
                             <div id="step-indicator-2" class="step-badge text-muted fw-semibold">
-                                <span class="badge rounded-circle bg-secondary me-2">2</span> Step 2: Guardian & Institution / Workplace
+                                <span class="badge rounded-circle bg-secondary me-2">2</span> Step 2: Additional Details
                             </div>
                         </div>
                     </div>
@@ -199,27 +199,36 @@
                                 </div>
                             </div>
 
-                            <!-- STEP 2: Guardian & Institution / Workplace Details -->
+                            <!-- STEP 2: Automatic DB Detection for Student vs Working Professional -->
                             <div id="wizard-step-2" style="display: none;">
-                                <h6 class="text-uppercase fw-bold text-success mb-3"><i class="fa fa-users me-1"></i> Step 2: Guardian & Additional Details</h6>
+                                
+                                @if(optional($booking)->user_type == 'Working Professional')
+                                <!-- WORKING PROFESSIONAL EXCLUSIVE FIELDS -->
+                                <h6 class="text-uppercase fw-bold text-success mb-3">
+                                    <i class="fa fa-briefcase me-1"></i> Step 2: Working Professional Details
+                                </h6>
                                 
                                 <div class="row g-3">
-                                    <!-- NID / Passport -->
-                                    <div class="col-md-12">
-                                        <label for="nid" class="form-label fw-semibold">Resident NID / Birth Certificate No</label>
-                                        <input type="text" class="form-control" name="nid" value="{{ old('nid', $booking->nid ?? '') }}" id="nid" placeholder="NID or Passport or Birth Reg Number">
-                                    </div>
-
-                                    <!-- Institution Name -->
                                     <div class="col-md-6">
-                                        <label for="institution_name" class="form-label fw-semibold text-primary">Institution Name (শিক্ষাপ্রতিষ্ঠানের নাম)</label>
-                                        <input type="text" class="form-control" name="institution_name" value="{{ old('institution_name', $booking->institution_name ?? '') }}" id="institution_name" placeholder="College / University Name">
+                                        <label for="nid" class="form-label fw-semibold text-success">Resident NID / Birth Certificate No</label>
+                                        <input type="text" class="form-control border-success" name="nid" value="{{ old('nid', $booking->nid ?? '') }}" id="nid" placeholder="NID or Passport or Birth Reg Number">
                                     </div>
 
-                                    <!-- Workplace Name -->
                                     <div class="col-md-6">
                                         <label for="workplace_name" class="form-label fw-semibold text-success">Workplace Name (কর্মস্থলের নাম)</label>
-                                        <input type="text" class="form-control" name="workplace_name" value="{{ old('workplace_name', $booking->workplace_name ?? '') }}" id="workplace_name" placeholder="Company / Workplace Name">
+                                        <input type="text" class="form-control border-success" name="workplace_name" value="{{ old('workplace_name', $booking->workplace_name ?? '') }}" id="workplace_name" placeholder="Company / Office Name">
+                                    </div>
+                                </div>
+                                @else
+                                <!-- STUDENT EXCLUSIVE FIELDS -->
+                                <h6 class="text-uppercase fw-bold text-primary mb-3">
+                                    <i class="fa fa-graduation-cap me-1"></i> Step 2: Student Guardian & Institution Details
+                                </h6>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <label for="institution_name" class="form-label fw-semibold text-primary">Institution Name (শিক্ষাপ্রতিষ্ঠানের নাম)</label>
+                                        <input type="text" class="form-control border-primary" name="institution_name" value="{{ old('institution_name', $booking->institution_name ?? '') }}" id="institution_name" placeholder="College / University Name">
                                     </div>
 
                                     <!-- Father's Info -->
@@ -254,6 +263,7 @@
                                         <input type="text" class="form-control" name="mother_nid" value="{{ old('mother_nid', $booking->mother_nid ?? '') }}" id="mother_nid" placeholder="Mother's NID Number">
                                     </div>
                                 </div>
+                                @endif
 
                                 <div class="d-flex justify-content-between mt-4">
                                     <button type="button" class="btn btn-outline-secondary px-4 fw-bold waves-effect" onclick="goToStep(1)">
