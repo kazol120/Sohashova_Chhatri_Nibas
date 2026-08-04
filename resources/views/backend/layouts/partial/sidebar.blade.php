@@ -130,7 +130,7 @@
               <a href="{{ route('complaints.index') }}" class="menu-link text-danger">
                 <i class="menu-icon tf-icons ti ti-alert-triangle text-danger"></i>
                 <div class="fs-5 fw-semibold d-flex align-items-center justify-content-between w-100">
-                    <span>Complaints (অভিযোগ)</span>
+                    <span>Complaints List</span>
                     @php $pendingCount = \App\Models\Backend\Complaint::where('status', 0)->count(); @endphp
                     @if($pendingCount > 0)
                         <span class="badge bg-danger rounded-pill px-2 py-1 ms-2" style="font-size: 0.75rem;">{{ $pendingCount }}</span>
@@ -138,6 +138,7 @@
                 </div>
               </a>
             </li>
+
 
 
             {{-- Meal Management --}}
