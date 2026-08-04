@@ -90,35 +90,8 @@
       </li>
       @endrole
       
-      <!-- Style Switcher -->
-      <li class="nav-item dropdown-style-switcher dropdown me-2 me-xl-0">
-        <a class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow"
-           href="javascript:void(0);"
-           data-bs-toggle="dropdown"
-           aria-expanded="false">
-          <i class="ti ti-md ti-sun"></i>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end dropdown-styles">
-          <li>
-            <a class="dropdown-item" href="javascript:void(0);" data-theme="light">
-              <span class="align-middle"><i class="ti ti-sun ti-md me-3"></i>Light</span>
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item" href="javascript:void(0);" data-theme="dark">
-              <span class="align-middle"><i class="ti ti-moon-stars ti-md me-3"></i>Dark</span>
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item" href="javascript:void(0);" data-theme="system">
-              <span class="align-middle"><i class="ti ti-device-desktop-analytics ti-md me-3"></i>System</span>
-            </a>
-          </li>
-        </ul>
-      </li>
-      <!-- / Style Switcher -->
-
       <!-- User Dropdown -->
+
       <li class="nav-item navbar-dropdown dropdown-user dropdown position-relative">
         <a class="nav-link dropdown-toggle hide-arrow p-0"
            href="javascript:void(0);"
@@ -225,3 +198,55 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
+@role('admin|staffs')
+@if(isset($pendingComplaintsCount) && $pendingComplaintsCount > 0)
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    function playChimeSound() {
+        try {
+            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+            var osc1 = ctx.createOscillator();
+            var osc2 = ctx.createOscillator();
+            var gain = ctx.createGain();
+
+            osc1.type = 'sine';
+            osc2.type = 'sine';
+
+            osc1.frequency.setValueAtTime(587.33, ctx.currentTime); // D5 tone
+            osc1.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15); // A5 tone
+
+            osc2.frequency.setValueAtTime(880, ctx.currentTime + 0.15);
+            osc2.frequency.exponentialRampToValueAtTime(1174.66, ctx.currentTime + 0.35); // D6 tone
+
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+
+            osc1.connect(gain);
+            osc2.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc1.start(ctx.currentTime);
+            osc1.stop(ctx.currentTime + 0.2);
+            osc2.start(ctx.currentTime + 0.15);
+            osc2.stop(ctx.currentTime + 0.6);
+        } catch (e) {
+            console.log('Audio Context notification chime:', e);
+        }
+    }
+
+    // Play chime sound on page load
+    setTimeout(playChimeSound, 400);
+
+    // Fallback play sound on first user click if browser autoplay was blocked
+    var soundTriggered = false;
+    document.addEventListener('click', function() {
+        if (!soundTriggered) {
+            playChimeSound();
+            soundTriggered = true;
+        }
+    }, { once: true });
+});
+</script>
+@endif
+@endrole
