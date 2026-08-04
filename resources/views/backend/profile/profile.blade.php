@@ -181,7 +181,7 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label for="user_type" class="form-label fw-semibold text-primary">User Type (ইউজার ধরন) <code>*</code></label>
+                                        <label for="user_type" class="form-label fw-semibold text-primary">User Type (ইউজার ধরন)</label>
                                         <select name="user_type" id="user_type" class="form-select border-primary" onchange="toggleUserTypeFields()">
                                             <option value="Student" {{ (old('user_type', $booking->user_type ?? '') == 'Student' || !isset($booking->user_type)) ? 'selected' : '' }}>Student (শিক্ষার্থী/ছাত্রী)</option>
                                             <option value="Working Professional" {{ (old('user_type', $booking->user_type ?? '') == 'Working Professional') ? 'selected' : '' }}>Working Professional (চাকুরিজীবী)</option>
@@ -260,12 +260,12 @@
                                     
                                     <div class="row g-3">
                                         <div class="col-md-6">
-                                            <label for="nid" class="form-label fw-semibold text-success">Resident NID / Birth Certificate No <code>*</code></label>
+                                            <label for="nid" class="form-label fw-semibold text-success">Resident NID / Birth Certificate No</label>
                                             <input type="text" class="form-control border-success" name="nid" value="{{ old('nid', $booking->nid ?? '') }}" id="nid" placeholder="NID or Passport or Birth Reg Number">
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label for="workplace_name" class="form-label fw-semibold text-success">Workplace Name (কর্মস্থলের নাম) <code>*</code></label>
+                                            <label for="workplace_name" class="form-label fw-semibold text-success">Workplace Name (কর্মস্থলের নাম)</label>
                                             <input type="text" class="form-control border-success" name="workplace_name" value="{{ old('workplace_name', $booking->workplace_name ?? '') }}" id="workplace_name" placeholder="Company / Office Name">
                                         </div>
                                     </div>
