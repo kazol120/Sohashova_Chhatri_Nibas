@@ -181,14 +181,6 @@
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label for="user_type" class="form-label fw-semibold">User Type (ইউজার ধরন)</label>
-                                        <select name="user_type" id="user_type" class="form-select" onchange="toggleUserTypeFields()">
-                                            <option value="Student" {{ (old('user_type', $booking->user_type ?? '') == 'Student') ? 'selected' : '' }}>Student (শিক্ষার্থী/ছাত্রী)</option>
-                                            <option value="Working Professional" {{ (old('user_type', $booking->user_type ?? '') == 'Working Professional') ? 'selected' : '' }}>Working Professional (চাকুরিজীবী)</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="col-md-6">
                                         <label for="userImage" class="form-label fw-semibold">Profile Photo</label>
                                         <input type="file" class="form-control" name="user_image" id="userImage">
                                         <small class="text-muted">Max size: 4MB (JPG, PNG, WEBP)</small>
@@ -244,16 +236,16 @@
                                         <input type="text" class="form-control" name="mother_nid" value="{{ old('mother_nid', $booking->mother_nid ?? '') }}" id="mother_nid" placeholder="Mother's NID Number">
                                     </div>
 
-                                    <!-- DYNAMIC: Institution Name for Student -->
-                                    <div class="col-md-12" id="institution_wrap">
-                                        <label for="institution_name" class="form-label fw-semibold text-primary">Institution Name (শিক্ষাপ্রতিষ্ঠানের নাম) <code>*</code></label>
-                                        <input type="text" class="form-control border-primary" name="institution_name" value="{{ old('institution_name', $booking->institution_name ?? '') }}" id="institution_name" placeholder="College / University Name">
+                                    <!-- Institution Name -->
+                                    <div class="col-md-6">
+                                        <label for="institution_name" class="form-label fw-semibold text-primary">Institution Name (শিক্ষাপ্রতিষ্ঠানের নাম)</label>
+                                        <input type="text" class="form-control" name="institution_name" value="{{ old('institution_name', $booking->institution_name ?? '') }}" id="institution_name" placeholder="College / University Name">
                                     </div>
 
-                                    <!-- DYNAMIC: Workplace Name for Working Professional -->
-                                    <div class="col-md-12" id="workplace_wrap" style="display: none;">
-                                        <label for="workplace_name" class="form-label fw-semibold text-success">Workplace Name (কর্মস্থলের নাম) <code>*</code></label>
-                                        <input type="text" class="form-control border-success" name="workplace_name" value="{{ old('workplace_name', $booking->workplace_name ?? '') }}" id="workplace_name" placeholder="Company / Workplace Name">
+                                    <!-- Workplace Name -->
+                                    <div class="col-md-6">
+                                        <label for="workplace_name" class="form-label fw-semibold text-success">Workplace Name (কর্মস্থলের নাম)</label>
+                                        <input type="text" class="form-control" name="workplace_name" value="{{ old('workplace_name', $booking->workplace_name ?? '') }}" id="workplace_name" placeholder="Company / Workplace Name">
                                     </div>
                                 </div>
 
@@ -272,23 +264,6 @@
                 </div>
 
                 <script>
-                function toggleUserTypeFields() {
-                    var userTypeEl = document.getElementById('user_type');
-                    var instWrap = document.getElementById('institution_wrap');
-                    var workWrap = document.getElementById('workplace_wrap');
-                    
-                    if (!userTypeEl || !instWrap || !workWrap) return;
-
-                    var userType = userTypeEl.value;
-                    if (userType === 'Working Professional') {
-                        instWrap.style.display = 'none';
-                        workWrap.style.display = 'block';
-                    } else {
-                        instWrap.style.display = 'block';
-                        workWrap.style.display = 'none';
-                    }
-                }
-
                 function goToStep(step) {
                     if (step === 2) {
                         document.getElementById('wizard-step-1').style.display = 'none';
@@ -314,10 +289,6 @@
                         document.getElementById('step-indicator-1').querySelector('.badge').classList.replace('bg-secondary', 'bg-primary');
                     }
                 }
-
-                document.addEventListener('DOMContentLoaded', function () {
-                    toggleUserTypeFields();
-                });
                 </script>
                 @endhasanyrole
 
