@@ -63,7 +63,7 @@ class ProfileService {
             $staff->update($staffData);
         }
 
-        // RoomBookingHistory Sync (Complete sync for resident profile fields)
+        // RoomBookingHistory Sync (Complete sync based on Student vs Working Professional)
         $bookingHistory = \App\Models\Backend\RoomBookingHistory::where('phone', 'LIKE', '%' . $last11Digits)->first();
         if ($bookingHistory) {
             $bookingData = [
@@ -74,6 +74,18 @@ class ProfileService {
 
             if ($request->has('address')) {
                 $bookingData['address'] = $request->address;
+            }
+            if ($request->has('user_type')) {
+                $bookingData['user_type'] = $request->user_type;
+            }
+            if ($request->has('nid')) {
+                $bookingData['nid'] = $request->nid;
+            }
+            if ($request->has('workplace_name')) {
+                $bookingData['workplace_name'] = $request->workplace_name;
+            }
+            if ($request->has('institution_name')) {
+                $bookingData['institution_name'] = $request->institution_name;
             }
             if ($request->has('father_name')) {
                 $bookingData['father_name'] = $request->father_name;
@@ -92,15 +104,6 @@ class ProfileService {
             }
             if ($request->has('mother_nid')) {
                 $bookingData['mother_nid'] = $request->mother_nid;
-            }
-            if ($request->has('user_type')) {
-                $bookingData['user_type'] = $request->user_type;
-            }
-            if ($request->has('institution_name')) {
-                $bookingData['institution_name'] = $request->institution_name;
-            }
-            if ($request->has('workplace_name')) {
-                $bookingData['workplace_name'] = $request->workplace_name;
             }
 
             if ($request->hasFile('user_image')) {
