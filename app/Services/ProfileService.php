@@ -19,7 +19,8 @@ class ProfileService {
         
         $oldPhone = $user->getOriginal('phone') ?? $user->phone;
         $cleanPhone = preg_replace('/[^0-9]/', '', $oldPhone);
-        $last11Digits = substr($cleanPhone, -11);
+        $last11Digits = !empty($cleanPhone) ? substr($cleanPhone, -11) : '';
+        $last10Digits = !empty($cleanPhone) ? substr($cleanPhone, -10) : '';
 
         if ($request->hasFile('user_image')) {
             if ($user->user_image && $user->user_image !== 'user.png') {
@@ -41,7 +42,12 @@ class ProfileService {
         $user = $user->fresh();
 
         // Staff Sync
-        $staff = \App\Models\Backend\Staffs::where('phone', 'LIKE', '%' . $last11Digits)->first();
+        $staff = \App\Models\Backend\Staffs::where(function($q) use ($user, $last11Digits, $last10Digits) {
+            if (!empty($user->email)) $q->orWhere('email', $user->email);
+            if (!empty($last11Digits)) $q->orWhere('phone', 'LIKE', '%' . $last11Digits);
+            if (!empty($last10Digits)) $q->orWhere('phone', 'LIKE', '%' . $last10Digits);
+        })->first();
+
         if ($staff) {
             $staffData = [
                 'name'              => $request->name,
@@ -64,7 +70,12 @@ class ProfileService {
         }
 
         // RoomBookingHistory Sync (Complete sync based on Student vs Working Professional)
-        $bookingHistory = \App\Models\Backend\RoomBookingHistory::where('phone', 'LIKE', '%' . $last11Digits)->first();
+        $bookingHistory = \App\Models\Backend\RoomBookingHistory::where(function($q) use ($user, $last11Digits, $last10Digits) {
+            if (!empty($user->email)) $q->orWhere('email', $user->email);
+            if (!empty($last11Digits)) $q->orWhere('phone', 'LIKE', '%' . $last11Digits);
+            if (!empty($last10Digits)) $q->orWhere('phone', 'LIKE', '%' . $last10Digits);
+        })->latest()->first();
+
         if ($bookingHistory) {
             $bookingData = [
                 'full_name' => $request->name,

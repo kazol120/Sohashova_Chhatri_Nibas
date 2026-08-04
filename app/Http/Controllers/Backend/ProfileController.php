@@ -28,15 +28,24 @@ class ProfileController extends Controller
         $booking = null;
         if (!$user->hasRole('admin') && !$user->hasRole('staffs')) {
             $cleanPhone = preg_replace('/[^0-9]/', '', $user->phone ?? '');
-            $booking = RoomBookingHistory::where('status', 0)
-                ->where(function ($q) use ($user, $cleanPhone) {
-                    if (!empty($user->email)) {
-                        $q->orWhere('email', $user->email);
-                    }
-                    if (!empty($cleanPhone)) {
-                        $q->orWhere('phone', 'like', "%{$cleanPhone}%");
-                    }
-                })->latest()->first();
+            $last11Digits = !empty($cleanPhone) ? substr($cleanPhone, -11) : '';
+            $last10Digits = !empty($cleanPhone) ? substr($cleanPhone, -10) : '';
+
+            $bookingQuery = RoomBookingHistory::where(function ($q) use ($user, $last11Digits, $last10Digits) {
+                if (!empty($user->email)) {
+                    $q->orWhere('email', $user->email);
+                }
+                if (!empty($last11Digits)) {
+                    $q->orWhere('phone', 'like', "%{$last11Digits}%");
+                }
+                if (!empty($last10Digits)) {
+                    $q->orWhere('phone', 'like', "%{$last10Digits}%");
+                }
+            });
+
+            // Try active resident first (status = 0), otherwise take latest history
+            $booking = (clone $bookingQuery)->where('status', 0)->latest()->first() 
+                       ?? $bookingQuery->latest()->first();
         }
         $data['booking'] = $booking;
 
