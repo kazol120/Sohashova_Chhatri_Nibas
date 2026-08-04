@@ -282,6 +282,11 @@
     Route::post('management-update/{id}', [HotelManagementController::class, 'update']);
     Route::delete('management-delete/{id}', [HotelManagementController::class, 'destroy']);
 
+    // Complaint System Routes
+    Route::get('/complaints', [\App\Http\Controllers\Backend\ComplaintController::class, 'index'])->name('complaints.index');
+    Route::post('/complaints/store', [\App\Http\Controllers\Backend\ComplaintController::class, 'store'])->name('complaints.store');
+    Route::post('/complaints/update-status/{id}', [\App\Http\Controllers\Backend\ComplaintController::class, 'updateStatus'])->name('complaints.update-status');
+
 
 
 

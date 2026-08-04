@@ -111,6 +111,32 @@
             </a>
         </div>
 
+        <!-- My Complaints Card -->
+        <div class="col-sm-6 col-xl-3">
+            <a href="{{ route('complaints.index') }}" class="text-decoration-none">
+                <div class="card h-100 position-relative overflow-hidden border-0 shadow-sm" style="border-top: 4px solid #ef4444 !important;">
+                    <div class="card-body pb-1">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span class="text-heading text-danger fw-semibold">My Complaints</span>
+                                <div class="d-flex align-items-center my-1">
+                                    <h4 class="mb-0 me-2 text-danger">{{ \App\Models\Backend\Complaint::where('user_id', Auth::id())->count() }}</h4>
+                                </div>
+                                <small class="mb-0 text-muted">Submit & View Issues</small>
+                            </div>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-danger">
+                                   <i class="fa fa-exclamation-triangle"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div id="chart-complaint" class="mt-2" style="min-height: 45px;"></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+
         @endunlessrole
 
 
@@ -379,6 +405,33 @@
                             </div>
                         </div>
                         <div id="chart-meal" class="mt-2" style="min-height: 45px;"></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        @endrole
+
+        <!-- Complaints Card for Admin -->
+        @role('admin|staffs')
+        <div class="col-sm-6 col-xl-3">
+            <a href="{{ route('complaints.index') }}" class="text-decoration-none">
+                <div class="card h-100 position-relative overflow-hidden border-0 shadow-sm" style="border-top: 4px solid #ef4444 !important;">
+                    <div class="card-body pb-1">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span class="text-heading text-danger fw-semibold">Complaints (অভিযোগ)</span>
+                                <div class="d-flex align-items-center my-1">
+                                    <h4 class="mb-0 me-2 text-danger">{{ \App\Models\Backend\Complaint::where('status', 0)->count() }}</h4>
+                                </div>
+                                <small class="mb-0 text-muted">Pending Complaints</small>
+                            </div>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-danger">
+                                   <i class="fa fa-bell"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div id="chart-admin-complaint" class="mt-2" style="min-height: 45px;"></div>
                     </div>
                 </div>
             </a>

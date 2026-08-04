@@ -30,7 +30,14 @@
                     <div data-i18n="Daily Meal Create" class="fs-5">Daily Meal Create</div>
                 </a>
             </li>
+            <li class="menu-item {{ Route::currentRouteNamed('complaints.index') ? 'active' : '' }}">
+                <a href="{{ route('complaints.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-alert-triangle text-danger"></i>
+                    <div data-i18n="My Complaints" class="fs-5 text-danger fw-semibold">My Complaints</div>
+                </a>
+            </li>
             @endunlessrole
+
 
             <!-- SECTION 2: CORE MANAGEMENT -->
             @role('admin|staffs')
@@ -117,6 +124,21 @@
             <li class="menu-header small text-uppercase mt-3">
                 <span class="menu-header-text fw-bold text-primary" style="letter-spacing: 0.8px; font-size: 0.72rem;">OPERATIONS</span>
             </li>
+
+            {{-- Complaints Management --}}
+            <li class="menu-item {{ Route::currentRouteNamed('complaints.index') ? 'active' : '' }}">
+              <a href="{{ route('complaints.index') }}" class="menu-link text-danger">
+                <i class="menu-icon tf-icons ti ti-alert-triangle text-danger"></i>
+                <div class="fs-5 fw-semibold d-flex align-items-center justify-content-between w-100">
+                    <span>Complaints (অভিযোগ)</span>
+                    @php $pendingCount = \App\Models\Backend\Complaint::where('status', 0)->count(); @endphp
+                    @if($pendingCount > 0)
+                        <span class="badge bg-danger rounded-pill px-2 py-1 ms-2" style="font-size: 0.75rem;">{{ $pendingCount }}</span>
+                    @endif
+                </div>
+              </a>
+            </li>
+
 
             {{-- Meal Management --}}
             <li class="menu-item {{ Route::currentRouteNamed('meals.index') || Route::currentRouteNamed('meals.create') || Route::currentRouteNamed('meal-history') || Route::currentRouteNamed('deposits.index') || Route::currentRouteNamed('deposits.create') || Route::currentRouteNamed('fines.index') || Route::currentRouteNamed('fines.create') ? 'active open' : '' }}">

@@ -27,6 +27,69 @@
   <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
     <ul class="navbar-nav flex-row align-items-center ms-auto">
       
+      @role('admin|staffs')
+      <!-- Complaints Notification Bell -->
+      @php
+          $pendingComplaintsCount = \App\Models\Backend\Complaint::where('status', 0)->count();
+          $latestComplaints = \App\Models\Backend\Complaint::with(['user', 'booking'])->where('status', 0)->latest()->take(5)->get();
+      @endphp
+      <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-2 me-xl-1">
+        <a class="nav-link dropdown-toggle hide-arrow btn btn-text-secondary btn-icon rounded-pill position-relative"
+           href="javascript:void(0);"
+           data-bs-toggle="dropdown"
+           aria-expanded="false"
+           title="Resident Complaints">
+          <i class="ti ti-bell ti-md text-danger"></i>
+          @if($pendingComplaintsCount > 0)
+            <span class="badge bg-danger rounded-pill badge-notifications position-absolute top-0 start-100 translate-middle p-1 border border-light" style="font-size: 0.65rem;">
+                {{ $pendingComplaintsCount }}
+            </span>
+          @endif
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end py-0 shadow-lg" style="width: 320px; right: 0 !important; left: auto !important;">
+          <li class="dropdown-menu-header border-bottom py-3 px-3 bg-label-danger rounded-top">
+            <div class="d-flex align-items-center justify-content-between">
+              <h6 class="mb-0 text-danger fw-bold"><i class="ti ti-alert-triangle me-2"></i>Complaints (অভিযোগ)</h6>
+              <span class="badge bg-danger rounded-pill">{{ $pendingComplaintsCount }} New</span>
+            </div>
+          </li>
+          <li class="dropdown-notifications-list scrollable-container" style="max-height: 280px; overflow-y: auto;">
+            <ul class="list-group list-group-flush">
+              @forelse($latestComplaints as $c)
+              <li class="list-group-item list-group-item-action dropdown-notifications-item p-3">
+                <a href="{{ route('complaints.index') }}" class="text-decoration-none text-dark d-block">
+                  <div class="d-flex align-items-start">
+                    <div class="flex-shrink-0 me-3">
+                      <div class="avatar avatar-sm">
+                        <span class="avatar-initial rounded-circle bg-label-danger fw-bold">
+                          {{ strtoupper(substr($c->user->name ?? 'R', 0, 1)) }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1">
+                      <h6 class="mb-1 fw-bold fs-7">{{ $c->user->name ?? 'Resident' }}</h6>
+                      <p class="mb-1 text-muted fs-8 text-truncate" style="max-width: 200px;">{{ $c->complaint_text }}</p>
+                      <small class="text-muted fs-9"><i class="ti ti-clock me-1"></i>{{ $c->created_at->diffForHumans() }}</small>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              @empty
+              <li class="list-group-item text-center py-4 text-muted fs-7">
+                No new pending complaints.
+              </li>
+              @endforelse
+            </ul>
+          </li>
+          <li class="dropdown-menu-footer border-top p-2 text-center bg-light rounded-bottom">
+            <a href="{{ route('complaints.index') }}" class="btn btn-primary btn-sm w-100 fw-bold">
+              View All Complaints (সকল অভিযোগ দেখুন)
+            </a>
+          </li>
+        </ul>
+      </li>
+      @endrole
+      
       <!-- Style Switcher -->
       <li class="nav-item dropdown-style-switcher dropdown me-2 me-xl-0">
         <a class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow"
