@@ -50,20 +50,20 @@
                         <small class="card-text text-uppercase">About</small>
                         <ul class="list-unstyled mb-4 mt-3">
                             <li class="d-flex align-items-center mb-3">
-                                <i class="ti ti-user text-heading"></i
-                                ><span class="fw-medium mx-2 text-heading">Full Name:</span> <span>{{$user->name}}</span>
+                                <i class="ti ti-user text-heading"></i>
+                                <span class="fw-medium mx-2 text-heading">Full Name:</span> <span>{{$user->name}}</span>
                             </li>
                             <li class="d-flex align-items-center mb-3">
-                                <i class="fas fa-{{$user->status == 1 ? 'check' : 'times'}} text-heading"></i
-                                ><span class="fw-medium mx-2 text-heading">Status:</span> <span>{{$user->status == 1 ? 'Active' : 'Deactivated'}}</span>
+                                <i class="fas fa-{{$user->status == 1 ? 'check' : 'times'}} text-heading"></i>
+                                <span class="fw-medium mx-2 text-heading">Status:</span> <span>{{$user->status == 1 ? 'Active' : 'Deactivated'}}</span>
                             </li>
                             <li class="d-flex align-items-center mb-3">
-                                <i class="ti ti-crown text-heading"></i
-                                ><span class="fw-medium mx-2 text-heading">Role:</span> <span>{{ $user->roles->pluck('name')->implode(', ') }}</span>
+                                <i class="ti ti-crown text-heading"></i>
+                                <span class="fw-medium mx-2 text-heading">Role:</span> <span>{{ $user->roles->pluck('name')->implode(', ') }}</span>
                             </li>
                             <li class="d-flex align-items-center mb-3">
-                                <i class="ti ti-map-pin text-heading"></i
-                                ><span class="fw-medium mx-2 text-heading">Address:</span> <span>{{$user->address}}</span>
+                                <i class="ti ti-map-pin text-heading"></i>
+                                <span class="fw-medium mx-2 text-heading">Address:</span> <span>{{$user->address}}</span>
                             </li>
                         </ul>
                         <small class="card-text text-uppercase">Contacts</small>
@@ -77,12 +77,14 @@
                                 <span>{{$user->email}}</span>
                             </li>
                         </ul>
-
                     </div>
                 </div>
             </div>
+
             <div class="col-xl-8 col-lg-7 col-md-7">
-                <!-- Activity Timeline -->
+                
+                @hasanyrole('admin|staffs')
+                <!-- ADMIN / STAFF PROFILE UPDATE FORM -->
                 <div class="card mb-4">
                     <h5 class="card-header">Profile Information Update</h5>
                     <div class="card-body">
@@ -99,21 +101,21 @@
                                 <label for="phone" class="form-label">Phone <code>*</code></label>
                                 <input type="text" class="form-control @error('phone') is-invalid @enderror" required name="phone" value="{{$user->phone}}" id="phone" placeholder="Phone">
                             </div>
-                              @error("phone")
+                            @error("phone")
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email <code>*</code></label>
                                 <input type="email" class="form-control @error('email') is-invalid @enderror" required name="email" value="{{$user->email}}" id="email" placeholder="Email">
                             </div>
-                              @error("email")
+                            @error("email")
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                             <div class="mb-3">
                                 <label for="address" class="form-label">Address <code>*</code></label>
                                 <input type="text" class="form-control @error('address') is-invalid @enderror" required name="address" value="{{$user->address}}" id="address" placeholder="Address">
                             </div>
-                              @error("address")
+                            @error("address")
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                             <div class="mb-3">
@@ -121,123 +123,182 @@
                                 <input type="file" class="form-control @error('user_image') is-invalid @enderror" name="user_image" id="userImage">
                                 <small>Image Size 100x100</small>
                             </div>
-                              @error("user_image")
+                            @error("user_image")
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                             <button type="submit" class="btn btn-primary waves-effect waves-light">Submit</button>
                         </form>
                     </div>
                 </div>
-                <!--/ Activity Timeline -->
+                @else
+                <!-- RESIDENT / STUDENT MULTI-STEP PROFILE WIZARD FORM -->
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header bg-label-primary d-flex align-items-center justify-content-between py-3">
+                        <h5 class="mb-0 fw-bold text-primary">
+                            <i class="fa fa-user-edit me-2"></i>Resident Profile Update
+                        </h5>
+                        <span class="badge bg-primary rounded-pill">Room Booking Record Sync</span>
+                    </div>
+
+                    <!-- Step Wizard Navigation Indicator -->
+                    <div class="px-4 pt-3 pb-2 border-bottom bg-light">
+                        <div class="d-flex align-items-center justify-content-around">
+                            <div id="step-indicator-1" class="step-badge active-step text-primary fw-bold">
+                                <span class="badge rounded-circle bg-primary me-2">1</span> Step 1: Personal & Contact Info
+                            </div>
+                            <div class="text-muted"><i class="fa fa-chevron-right fs-7"></i></div>
+                            <div id="step-indicator-2" class="step-badge text-muted fw-semibold">
+                                <span class="badge rounded-circle bg-secondary me-2">2</span> Step 2: Guardian & Workplace Details
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body pt-4">
+                        <form action="{{route('profile')}}" method="post" enctype="multipart/form-data" id="residentProfileForm">
+                            @csrf
+                            
+                            <!-- STEP 1: Personal & Contact Details -->
+                            <div id="wizard-step-1">
+                                <h6 class="text-uppercase fw-bold text-primary mb-3"><i class="fa fa-id-card me-1"></i> Step 1: Personal Information</h6>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="name" class="form-label fw-semibold">Full Name <code>*</code></label>
+                                        <input type="text" class="form-control @error('name') is-invalid @enderror" required name="name" value="{{ old('name', $user->name) }}" id="name" placeholder="Full Name">
+                                        @error("name") <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="phone" class="form-label fw-semibold">Phone Number <code>*</code></label>
+                                        <input type="text" class="form-control @error('phone') is-invalid @enderror" required name="phone" value="{{ old('phone', $user->phone) }}" id="phone" placeholder="Phone Number">
+                                        @error("phone") <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label fw-semibold">Email Address <code>*</code></label>
+                                        <input type="email" class="form-control @error('email') is-invalid @enderror" required name="email" value="{{ old('email', $user->email) }}" id="email" placeholder="Email Address">
+                                        @error("email") <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="nid" class="form-label fw-semibold">NID / Birth Certificate No</label>
+                                        <input type="text" class="form-control" name="nid" value="{{ old('nid', $booking->nid ?? '') }}" id="nid" placeholder="NID or Birth Reg Number">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="user_type" class="form-label fw-semibold">User Type</label>
+                                        <select name="user_type" id="user_type" class="form-select">
+                                            <option value="Student" {{ (old('user_type', $booking->user_type ?? '') == 'Student') ? 'selected' : '' }}>Student (শিক্ষার্থী)</option>
+                                            <option value="Working Professional" {{ (old('user_type', $booking->user_type ?? '') == 'Working Professional') ? 'selected' : '' }}>Working Professional (চাকুরিজীবী)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="userImage" class="form-label fw-semibold">Profile Photo</label>
+                                        <input type="file" class="form-control" name="user_image" id="userImage">
+                                        <small class="text-muted">Max size: 4MB (JPG, PNG, WEBP)</small>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label for="address" class="form-label fw-semibold">Present Address</label>
+                                        <textarea class="form-control" name="address" id="address" rows="2" placeholder="Full Present Address">{{ old('address', $user->address) }}</textarea>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end mt-4">
+                                    <button type="button" class="btn btn-primary px-4 fw-bold waves-effect waves-light" onclick="goToStep(2)">
+                                        Next Step (পরবর্তী ধাপ) <i class="fa fa-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- STEP 2: Guardian & Institution Details -->
+                            <div id="wizard-step-2" style="display: none;">
+                                <h6 class="text-uppercase fw-bold text-success mb-3"><i class="fa fa-users me-1"></i> Step 2: Guardian & Institution / Workplace</h6>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="father_name" class="form-label fw-semibold">Father's Name</label>
+                                        <input type="text" class="form-control" name="father_name" value="{{ old('father_name', $booking->father_name ?? '') }}" id="father_name" placeholder="Father's Name">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="father_phone" class="form-label fw-semibold">Father's Phone Number</label>
+                                        <input type="text" class="form-control" name="father_phone" value="{{ old('father_phone', $booking->father_phone ?? '') }}" id="father_phone" placeholder="Father's Phone">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="mother_name" class="form-label fw-semibold">Mother's Name</label>
+                                        <input type="text" class="form-control" name="mother_name" value="{{ old('mother_name', $booking->mother_name ?? '') }}" id="mother_name" placeholder="Mother's Name">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="mother_phone" class="form-label fw-semibold">Mother's Phone Number</label>
+                                        <input type="text" class="form-control" name="mother_phone" value="{{ old('mother_phone', $booking->mother_phone ?? '') }}" id="mother_phone" placeholder="Mother's Phone">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="institution_name" class="form-label fw-semibold">Institution Name (শিক্ষাপ্রতিষ্ঠান)</label>
+                                        <input type="text" class="form-control" name="institution_name" value="{{ old('institution_name', $booking->institution_name ?? '') }}" id="institution_name" placeholder="College / University Name">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="workplace_name" class="form-label fw-semibold">Workplace Name (কর্মস্থল)</label>
+                                        <input type="text" class="form-control" name="workplace_name" value="{{ old('workplace_name', $booking->workplace_name ?? '') }}" id="workplace_name" placeholder="Office / Workplace Name">
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label for="education_and_workplace" class="form-label fw-semibold">Education & Workplace Details</label>
+                                        <textarea class="form-control" name="education_and_workplace" id="education_and_workplace" rows="2" placeholder="Educational qualification or job details">{{ old('education_and_workplace', $booking->education_and_workplace ?? '') }}</textarea>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between mt-4">
+                                    <button type="button" class="btn btn-outline-secondary px-4 fw-bold waves-effect" onclick="goToStep(1)">
+                                        <i class="fa fa-arrow-left me-2"></i> Previous (আগের ধাপ)
+                                    </button>
+                                    <button type="submit" class="btn btn-success px-4 fw-bold waves-effect waves-light">
+                                        <i class="fa fa-check-circle me-1"></i> Submit Profile (সংরক্ষণ করুন)
+                                    </button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+                <script>
+                function goToStep(step) {
+                    if (step === 2) {
+                        document.getElementById('wizard-step-1').style.display = 'none';
+                        document.getElementById('wizard-step-2').style.display = 'block';
+                        
+                        document.getElementById('step-indicator-1').classList.remove('text-primary', 'fw-bold');
+                        document.getElementById('step-indicator-1').classList.add('text-muted');
+                        document.getElementById('step-indicator-1').querySelector('.badge').classList.replace('bg-primary', 'bg-secondary');
+
+                        document.getElementById('step-indicator-2').classList.remove('text-muted');
+                        document.getElementById('step-indicator-2').classList.add('text-primary', 'fw-bold');
+                        document.getElementById('step-indicator-2').querySelector('.badge').classList.replace('bg-secondary', 'bg-primary');
+                    } else {
+                        document.getElementById('wizard-step-2').style.display = 'none';
+                        document.getElementById('wizard-step-1').style.display = 'block';
+                        
+                        document.getElementById('step-indicator-2').classList.remove('text-primary', 'fw-bold');
+                        document.getElementById('step-indicator-2').classList.add('text-muted');
+                        document.getElementById('step-indicator-2').querySelector('.badge').classList.replace('bg-primary', 'bg-secondary');
+
+                        document.getElementById('step-indicator-1').classList.remove('text-muted');
+                        document.getElementById('step-indicator-1').classList.add('text-primary', 'fw-bold');
+                        document.getElementById('step-indicator-1').querySelector('.badge').classList.replace('bg-secondary', 'bg-primary');
+                    }
+                }
+                </script>
+                @endhasanyrole
+
             </div>
         </div>
         <!--/ User Profile Content -->
     </div>
     <!-- / Content -->
-    <!-- status change modal -->
-    <!-- Modal -->
-    <div class="modal modal-top fade" id="modalTop" tabindex="-1">
-        <div class="modal-dialog modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalTopTitle">Change Status?</h5>
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <h4>Are you sure to change status</h4>
-            </div>
-            <div class="modal-footer">
-                <form action="{{route('user-status-update')}}" method="post">
-                    @csrf
-                    <input type="hidden" name="user_id" id="userId">
-                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
-                        NO
-                    </button>
-                    <button type="submit" class="btn btn-primary">YES!</button>
-                </form>
-            </div>
-        </div>
-    </div>
 @endsection
-@push('script')
-    <script src="{{url('/')}}/backend/js/pages-profile.js"></script>
-    <script>
-        document.getElementById('userImage').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            const preview = document.getElementById('imagePreview');
-            if (file) {
-            const reader = new FileReader();
-
-            reader.onload = function(e) {
-                const img = new Image();
-                img.src = e.target.result;
-
-                img.onload = function() {
-                    // Create a canvas element to resize the image
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-
-                    // Set desired width and height
-                    const width = 110;
-                    const height = 110;
-                    canvas.width = width;
-                    canvas.height = height;
-
-                    // Draw the image onto the canvas, resizing it
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    // Convert the canvas content to a data URL and set it as the preview source
-                    preview.src = canvas.toDataURL('image/png');
-                };
-            };
-
-            reader.readAsDataURL(file); // Read the file as a data URL
-        }
-        });
-    </script>
-    <script>
-        document.getElementById('coverImage').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            const preview = document.getElementById('coverImagePreview');
-
-        if (file) {
-            const reader = new FileReader();
-
-            reader.onload = function(e) {
-                const img = new Image();
-                img.src = e.target.result;
-
-                img.onload = function() {
-                    // Create a canvas element to resize the image
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-
-                    // Set desired width and height
-                    const width = 995;
-                    const height = 250;
-                    canvas.width = width;
-                    canvas.height = height;
-
-                    // Draw the image onto the canvas, resizing it
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    // Convert the canvas content to a data URL and set it as the preview source
-                    preview.src = canvas.toDataURL('image/png');
-                };
-            };
-
-            reader.readAsDataURL(file); // Read the file as a data URL
-        }
-    });
-</script>
-    <script>
-        function changeStatus($userId)
-        {
-            $('#modalTop').modal('show');
-            $('#userId').val($userId)
-        }
-    </script>
-@endpush

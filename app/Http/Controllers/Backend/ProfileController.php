@@ -7,6 +7,7 @@ use App\Services\ProfileService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Backend\RoomBookingHistory;
 
 class ProfileController extends Controller
 {
@@ -20,11 +21,27 @@ class ProfileController extends Controller
     public function profile()
     {
         $id = Auth::id();
+        $user = $this->profileService->getUser($id);
         $data['page_title'] = "My Profile Information";
-        $data['user'] = $this->profileService->getUser($id);
-        return view('backend.profile.profile',$data);
-    }
+        $data['user'] = $user;
 
+        $booking = null;
+        if (!$user->hasRole('admin') && !$user->hasRole('staffs')) {
+            $cleanPhone = preg_replace('/[^0-9]/', '', $user->phone ?? '');
+            $booking = RoomBookingHistory::where('status', 0)
+                ->where(function ($q) use ($user, $cleanPhone) {
+                    if (!empty($user->email)) {
+                        $q->orWhere('email', $user->email);
+                    }
+                    if (!empty($cleanPhone)) {
+                        $q->orWhere('phone', 'like', "%{$cleanPhone}%");
+                    }
+                })->latest()->first();
+        }
+        $data['booking'] = $booking;
+
+        return view('backend.profile.profile', $data);
+    }
 
     public function profileUpdate(Request $request)
     {
@@ -33,11 +50,21 @@ class ProfileController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'required|max:17',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'user_image' => 'file|mimes:jpg,png,jpeg,pdf|max:2048',
-            'cover_image' => 'file|mimes:jpg,png,jpeg,pdf|max:2048',
+            'user_image' => 'nullable|file|mimes:jpg,png,jpeg,pdf,webp|max:4096',
+            'cover_image' => 'nullable|file|mimes:jpg,png,jpeg,pdf,webp|max:4096',
+            'nid' => 'nullable|string|max:100',
+            'father_name' => 'nullable|string|max:255',
+            'father_phone' => 'nullable|string|max:30',
+            'mother_name' => 'nullable|string|max:255',
+            'mother_phone' => 'nullable|string|max:30',
+            'user_type' => 'nullable|string|max:100',
+            'institution_name' => 'nullable|string|max:255',
+            'workplace_name' => 'nullable|string|max:255',
+            'education_and_workplace' => 'nullable|string',
+            'address' => 'nullable|string|max:500',
         ]);
 
-        $this->profileService->updateProfile($request,$user);
+        $this->profileService->updateProfile($request, $user);
         return redirect()->back()->with('success', 'Profile updated successfully');
     }
 
@@ -51,33 +78,27 @@ class ProfileController extends Controller
             return redirect()->back()->with('success', 'Profile updated successfully');
         }catch(\Exception $exception){
             return redirect()->back()->with('error',$exception->getMessage());
-
         }
-
     }
+
     public function passwordChange()
     {
         $id = Auth::id();
         $data['page_title'] = "Change Password";
         $data['user'] = $this->profileService->getUser($id);
-        // Initialize the session attempts to 3
         session()->put('attempt', 3);
         return view('backend.profile.change-password',$data);
     }
 
     public function oldPasswordCheck(Request $request)
     {
-        // Validate the input for the old password
         $request->validate([
             'old_password' => 'required|string|min:6|max:6',
         ]);
 
-        // Check if the entered old password matches the current password
         if (!Hash::check($request->old_password, auth()->user()->password)) {
-            // Add an error message to the session
             return back()->withErrors(['old_password' => 'The old password is incorrect.']);
         }
-        // Continue with the process (e.g., showing the next step)
         return redirect()->route('new-password')->with('success', 'Old password is correct.');
     }
 
@@ -88,6 +109,7 @@ class ProfileController extends Controller
         $data['user'] = $this->profileService->getUser($id);
         return view('backend.profile.new-password',$data);
     }
+
     public function passwordUpdate(Request $request)
     {
         $request->validate([
@@ -96,10 +118,6 @@ class ProfileController extends Controller
         ]);
         $id = Auth::id();
         $this->profileService->changePassword($request,$id);
-        // Redirect with a success message
         return redirect()->route('profile')->with('success', 'Your password has been updated successfully.');
-
     }
-
-
 }

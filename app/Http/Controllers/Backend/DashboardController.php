@@ -32,6 +32,7 @@ class DashboardController extends Controller
         $data['totalseatcount'] = RoomSeat::count();
         $data['availableseatcount'] = RoomSeat::where('status', 0)->count();
         $data['bookedseatcount'] = RoomSeat::where('status', 1)->count();
+        $data['availPercent'] = $data['totalseatcount'] > 0 ? round(($data['availableseatcount'] / $data['totalseatcount']) * 100) : 0;
 
         $user = Auth::user();
         if ($user->hasRole('admin')) {
@@ -67,6 +68,29 @@ class DashboardController extends Controller
             }
         }
 
+        // Student/Resident User Specific Data
+        if (!$user->hasRole('admin') && !$user->hasRole('staffs')) {
+            $cleanPhone = preg_replace('/[^0-9]/', '', $user->phone ?? '');
+            $userBooking = RoomBookingHistory::where('status', 0)
+                ->where(function ($q) use ($user, $cleanPhone) {
+                    if (!empty($user->email)) {
+                        $q->orWhere('email', $user->email);
+                    }
+                    if (!empty($cleanPhone)) {
+                        $q->orWhere('phone', 'like', "%{$cleanPhone}%");
+                    }
+                })->latest()->first();
+
+            $data['userBooking'] = $userBooking;
+            $data['myMealCount'] = Meal::where('user_id', $user->id)->count();
+
+            if ($userBooking) {
+                $data['myTotalPaid'] = MonthlyPayment::where('room_booking_history_id', $userBooking->id)->sum('paid_amount');
+            } else {
+                $data['myTotalPaid'] = 0;
+            }
+        }
+
         $data['todayacheackin'] = RoomBookingHistory::where('status', 0)->whereDate('check_in', today())->count();
         $data['todaycheackout'] = RoomBookingHistory::whereDate('today_check_out', today())->count();
 
@@ -85,6 +109,32 @@ class DashboardController extends Controller
                 return $item->purchase_date . '_' . $item->floor_id . '_' . $item->room_id . '_' . $item->customer_id;
             })
             ->count();
+
+        // 7-day trends data for mini sparkline graphs
+        $last7Days = collect(range(6, 0))->map(function($daysAgo) {
+            return Carbon::today()->subDays($daysAgo);
+        });
+
+        $rentTrends = $last7Days->map(function($date) {
+            return (float) MonthlyPayment::whereDate('created_at', $date)->sum('paid_amount');
+        })->values()->toArray();
+
+        $expenseTrends = $last7Days->map(function($date) {
+            return (float) Expense::whereDate('created_at', $date)->sum('expense_amount');
+        })->values()->toArray();
+
+        $mealTrends = $last7Days->map(function($date) {
+            return (int) Meal::whereDate('date', $date)->count();
+        })->values()->toArray();
+
+        $productTrends = $last7Days->map(function($date) {
+            return (int) ProductDistribution::whereDate('purchase_date', $date)->count();
+        })->values()->toArray();
+
+        $data['rentTrends'] = json_encode($rentTrends);
+        $data['expenseTrends'] = json_encode($expenseTrends);
+        $data['mealTrends'] = json_encode($mealTrends);
+        $data['productTrends'] = json_encode($productTrends);
 
         return view('backend.dashboard.welcome', $data);
     }
