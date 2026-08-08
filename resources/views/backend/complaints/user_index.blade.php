@@ -24,7 +24,7 @@
                     <label for="complaint_text" class="form-label fw-semibold text-dark">
                         Describe your issue/complaint (আপনার সমস্যা বা অভিযোগের বিবরণ লিখুন) <code>*</code>
                     </label>
-                    <textarea name="complaint_text" id="complaint_text" rows="4" class="form-control @error('complaint_text') is-invalid @enderror" required placeholder="উদাহরণ: ৩য় তলার ২০৪ নম্বর রুমের ফ্যানটি কাজ করছে না, অনুগ্রহ করে টেকনিশিয়ান পাঠান।"></textarea>
+                    <textarea name="complaint_text" id="complaint_text" rows="4" class="form-control @error('complaint_text') is-invalid @enderror" required></textarea>
                     @error('complaint_text')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror

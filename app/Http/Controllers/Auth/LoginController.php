@@ -86,6 +86,11 @@ protected function sendLoginResponse(Request $request)
     }
 
     // status 1 and 2 allow
+    $intended = session('url.intended');
+    if ($intended && (str_contains($intended, '/api/') || str_contains($intended, 'pending-complaints'))) {
+        session()->forget('url.intended');
+    }
+
     return redirect()->intended('/backend/dashboard');
 }
 

@@ -71,7 +71,7 @@ class DashboardController extends Controller
         // Student/Resident User Specific Data
         if (!$user->hasRole('admin') && !$user->hasRole('staffs')) {
             $cleanPhone = preg_replace('/[^0-9]/', '', $user->phone ?? '');
-            $userBooking = RoomBookingHistory::where('status', 0)
+            $userBooking = RoomBookingHistory::with(['division', 'district', 'thana'])->where('status', 0)
                 ->where(function ($q) use ($user, $cleanPhone) {
                     if (!empty($user->email)) {
                         $q->orWhere('email', $user->email);

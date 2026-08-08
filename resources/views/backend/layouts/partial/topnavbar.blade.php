@@ -34,13 +34,14 @@
           $latestComplaints = \App\Models\Backend\Complaint::with(['user', 'booking'])->where('status', 0)->latest()->take(5)->get();
       @endphp
       <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-2 me-xl-1">
-        <a class="nav-link dropdown-toggle hide-arrow btn btn-text-secondary btn-icon rounded-pill position-relative"
+        <a class="nav-link dropdown-toggle hide-arrow btn btn-text-secondary btn-icon rounded-pill position-relative d-inline-flex align-items-center justify-content-center"
            href="javascript:void(0);"
            data-bs-toggle="dropdown"
            aria-expanded="false"
-           title="Resident Complaints">
+           title="Resident Complaints"
+           style="position: relative; width: 40px; height: 40px; padding: 0;">
           <i class="ti ti-bell ti-md text-danger"></i>
-          <span id="complaintBellBadge" class="badge bg-danger rounded-pill badge-notifications position-absolute top-0 start-100 translate-middle p-1 border border-light" style="font-size: 0.65rem; {{ $pendingComplaintsCount > 0 ? '' : 'display: none;' }}">
+          <span id="complaintBellBadge" class="badge bg-danger rounded-pill position-absolute" style="top: 2px; right: 2px; font-size: 0.65rem; padding: 2px 5px; line-height: 1; border: 1.5px solid #fff; {{ $pendingComplaintsCount > 0 ? '' : 'display: none;' }}">
               {{ $pendingComplaintsCount }}
           </span>
         </a>
@@ -228,7 +229,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function checkLiveComplaints() {
-        fetch("{{ route('complaints.check-pending') }}")
+        fetch("{{ route('complaints.check-pending') }}", {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
             .then(function(res) { return res.json(); })
             .then(function(data) {
                 var bellBadge = document.getElementById('complaintBellBadge');
@@ -283,11 +289,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Poll every 7 seconds for live updates without page reload!
     setInterval(checkLiveComplaints, 7000);
-
-    // Initial sound on load if pending complaints exist
-    if (lastPendingCount > 0) {
-        setTimeout(playChimeSound, 500);
-    }
 });
 </script>
 @endrole

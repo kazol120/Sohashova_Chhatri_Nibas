@@ -17,7 +17,6 @@
   </div>
 </section>
 
-
 <section class="ticket-wrap">
   <div class="container">
     <div class="row ticket-grid">
@@ -89,11 +88,9 @@
         </div>
       </div>
       @endforeach
-
     </div>
   </div>
 </section>
-
 
 @endsection
 

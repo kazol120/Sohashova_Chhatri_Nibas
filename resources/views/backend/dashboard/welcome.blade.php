@@ -7,6 +7,26 @@
         <!-- RESIDENT / STUDENT USER SPECIFIC STAT CARDS -->
         @unlessrole('admin|staffs')
         
+        <div class="col-12 mb-2">
+            <div class="card border-0 shadow-sm p-3 bg-white" style="border-left: 5px solid #6366f1 !important;">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div>
+                        <h5 class="fw-bold mb-1 text-dark">
+                            <i class="fa fa-user-circle text-primary me-2"></i>Resident Dashboard (বোর্ডার ড্যাশবোর্ড)
+                        </h5>
+                        <small class="text-muted">Welcome, <strong>{{ auth()->user()->name }}</strong>! Manage your hostel booking & profile.</small>
+                    </div>
+                    @if(isset($userBooking) && $userBooking)
+                    <div>
+                        <button type="button" onclick="printResidentDocument()" class="btn btn-primary fw-bold waves-effect waves-light shadow-sm">
+                            <i class="fa fa-print me-2"></i> Confirm Booking Document
+                        </button>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+        
         <!-- My Room & Booking Status -->
         <div class="col-sm-6 col-xl-3">
             <div class="card h-100 position-relative overflow-hidden border-0 shadow-sm" style="border-top: 4px solid #6366f1 !important;">
@@ -571,5 +591,305 @@ document.addEventListener("DOMContentLoaded", function () {
     createSparkline("#chart-expense", expenseData.length ? expenseData : [12, 18, 14, 25, 20, 30, 28], "#7367f0");
     createSparkline("#chart-product", productData.length ? productData : [2, 5, 3, 8, 6, 12, 10], "#00cfdd");
 });
+</script>
+
+<script>
+window.userBookingData = @json($userBooking ?? null);
+window.userProfileData = @json(auth()->user());
+
+function printResidentDocument() {
+    var r = window.userBookingData;
+    var u = window.userProfileData || {};
+
+    if (!r) {
+        alert('No active booking record found!');
+        return;
+    }
+
+    var logoUrl = window.location.origin + '/logo/logoimage (2).png';
+    var userImgUrl = r.image ? (window.location.origin + '/bookingsimage/' + r.image) : (u.avatar_url || '');
+
+    var roomItems = [];
+    if (typeof r.floor_number_room_number_roomprice === 'string') {
+        try { roomItems = JSON.parse(r.floor_number_room_number_roomprice); } catch(e){}
+    } else if (Array.isArray(r.floor_number_room_number_roomprice)) {
+        roomItems = r.floor_number_room_number_roomprice;
+    }
+
+    function getRoomNo(str) {
+        if (!str) return '-';
+        var parts = String(str).split('-');
+        return parts[0] || str;
+    }
+    function getSeatNo(str) {
+        if (!str) return '-';
+        var parts = String(str).split('-');
+        return parts.length > 1 ? parts.slice(1).join('-') : '-';
+    }
+
+    var roomNo = roomItems.length
+        ? roomItems.map(function(i){ return getRoomNo(i.roomnumber); }).join(', ')
+        : (getRoomNo(r.roomnumber) || r.room_number || '-');
+    var seatNo = roomItems.length
+        ? roomItems.map(function(i){ return getSeatNo(i.roomnumber); }).join(', ')
+        : (getSeatNo(r.roomnumber) || '-');
+    var floorNo = roomItems.length
+        ? Array.from(new Set(roomItems.map(function(i){ return i.floornumber; }))).filter(Boolean).join(', ')
+        : (r.floornumber || '-');
+
+    var fullName = r.full_name || u.name || '-';
+    var phone = r.phone || u.phone || '-';
+    var address = r.address || u.address || '-';
+    var thanaName = (r.thana && r.thana.name) ? r.thana.name : (r.thana_name || '-');
+    var districtName = (r.district && r.district.name) ? r.district.name : (r.district_name || '-');
+    var bookingDate = r.created_at
+        ? new Date(r.created_at).toLocaleString('bn-BD', { dateStyle: 'long', timeStyle: 'short' })
+        : '-';
+
+    var userType = (r.user_type || u.user_type || '').toLowerCase();
+    var isProf = userType.includes('professional') || userType.includes('job') || userType.includes('passenger');
+
+    var docTitle = isProf ? 'কর্মজীবীর তথ্য - টি এস এস ভিলা' : 'শিক্ষার্থীর তথ্য - টি এস এস ভিলা';
+    var sectionTitleText = isProf ? 'কর্মজীবীর তথ্য' : 'শিক্ষার্থীর তথ্য';
+    var signatureLabelText = isProf ? 'বোর্ডারের স্বাক্ষর' : 'শিক্ষার্থীর স্বাক্ষর';
+
+    var institutionName = r.institution_name || u.institution_name || '-';
+    var workplaceName = r.workplace_name || u.workplace_name || '-';
+    var fatherName = r.father_name || u.father_name || '-';
+    var fatherPhone = r.father_phone || u.father_phone || '-';
+    var motherName = r.mother_name || u.mother_name || '-';
+    var motherPhone = r.mother_phone || u.mother_phone || '-';
+    var email = r.email || u.email || '-';
+    var nid = r.nid || u.nid || '-';
+
+    var infoSectionHtml = '';
+    if (isProf) {
+        infoSectionHtml = `
+          <div class="form-pill-row">
+            <div class="pill-lbl">কর্মজীবীর পূর্ণ নাম :</div>
+            <div class="pill-val">${fullName}</div>
+            <div class="pill-right">
+              <div class="pill-lbl">মোবাইল নং :</div>
+              <div class="pill-val">${phone}</div>
+            </div>
+          </div>
+
+          <div class="form-pill-row">
+            <div class="pill-lbl">কর্মপ্রতিষ্ঠানের নাম:</div>
+            <div class="pill-val">${workplaceName}</div>
+            <div class="pill-right">
+              <div class="pill-lbl">NID নম্বর :</div>
+              <div class="pill-val">${nid}</div>
+            </div>
+          </div>
+
+          <div class="form-pill-row">
+            <div class="pill-lbl">ইমেইল ঠিকানা:</div>
+            <div class="pill-val">${email}</div>
+            <div class="pill-right">
+              <div class="pill-lbl">পেশা/টাইপ:</div>
+              <div class="pill-val">${r.user_type || u.user_type || 'Working Professional'}</div>
+            </div>
+          </div>
+
+          ${(fatherName !== '-' || motherName !== '-') ? `
+          <div class="form-pill-row">
+            <div class="pill-lbl">পিতার নাম:</div>
+            <div class="pill-val">${fatherName}</div>
+            <div class="pill-right">
+              <div class="pill-lbl">মাতার নাম:</div>
+              <div class="pill-val">${motherName}</div>
+            </div>
+          </div>
+          ` : ''}
+        `;
+    } else {
+        infoSectionHtml = `
+          <div class="form-pill-row">
+            <div class="pill-lbl">শিক্ষার্থীর পূর্ণ নাম :</div>
+            <div class="pill-val">${fullName}</div>
+            <div class="pill-right">
+              <div class="pill-lbl">মোবাইল নং :</div>
+              <div class="pill-val">${phone}</div>
+            </div>
+          </div>
+
+          <div class="form-pill-row">
+            <div class="pill-lbl">অধ্যয়নরত শিক্ষা প্রতিষ্ঠানের নাম:</div>
+            <div class="pill-val">${institutionName}</div>
+          </div>
+
+          <div class="form-pill-row">
+            <div class="pill-lbl">পিতার নাম:</div>
+            <div class="pill-val">${fatherName}</div>
+            <div class="pill-right">
+              <div class="pill-lbl">মোবাইল নং :</div>
+              <div class="pill-val">${fatherPhone}</div>
+            </div>
+          </div>
+
+          <div class="form-pill-row">
+            <div class="pill-lbl">মাতার নাম:</div>
+            <div class="pill-val">${motherName}</div>
+            <div class="pill-right">
+              <div class="pill-lbl">মোবাইল নং :</div>
+              <div class="pill-val">${motherPhone}</div>
+            </div>
+          </div>
+        `;
+    }
+
+    var html = `
+        <!DOCTYPE html>
+        <html lang="bn">
+        <head>
+          <meta charset="UTF-8">
+          <title>${docTitle}</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Hind+Siliguri:wght@400;500;600;700;800&display=swap');
+            @page { size: A4 portrait; margin: 5mm; }
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+            html, body {
+              height: 100%; width: 100%; background: #fff;
+              font-family: 'Hind Siliguri', 'Tiro Bangla', sans-serif;
+              padding: 0; margin: 0; color: #000;
+              -webkit-print-color-adjust: exact; print-color-adjust: exact;
+            }
+            .paper-frame {
+              background: linear-gradient(165deg, #fef9e7 0%, #fef3cd 50%, #fef9e7 100%);
+              border: 4px solid #27ae60; border-radius: 10px;
+              padding: 18px 22px 16px 22px; box-sizing: border-box;
+              height: calc(297mm - 10mm); min-height: calc(297mm - 10mm);
+              display: flex; flex-direction: column; justify-content: space-between;
+              position: relative; page-break-inside: avoid;
+            }
+            .paper-frame::before {
+              content: ''; position: absolute; inset: 4px;
+              border: 1.5px solid #f39c12; border-radius: 7px; pointer-events: none;
+            }
+            .main-content-wrap { display: flex; flex-direction: column; flex-grow: 1; justify-content: space-evenly; }
+            .top-header { display: flex; align-items: center; justify-content: center; gap: 18px; margin-bottom: 10px; padding: 0 4px; }
+            .logo-wrap img { width: 78px; height: 78px; object-fit: contain; }
+            .brand-center { text-align: center; flex: 1; }
+            .brand-name { font-size: 46px; font-weight: 900; color: #c0392b; font-family: 'Tiro Bangla', serif; line-height: 1; letter-spacing: 1px; }
+            .photo-box { width: 110px; height: 125px; border: 2px solid #2c3e50; border-radius: 4px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #f0f0f0; flex-shrink: 0; }
+            .photo-box img { width: 100%; height: 100%; object-fit: cover; }
+            .photo-placeholder { font-size: 11px; color: #888; text-align: center; }
+            .address-banner { background: #1a237e; color: #fff; text-align: center; padding: 9px 14px; font-size: 13.5px; font-weight: 600; border-radius: 5px; margin-bottom: 12px; letter-spacing: 0.2px; }
+            .room-meta-row { display: flex; gap: 12px; margin-bottom: 12px; }
+            .room-meta-box { flex: 1; border: 2px solid #27ae60; border-radius: 6px; padding: 8px 12px; background: #fff; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+            .room-meta-box .lbl { color: #1a5c2e; font-weight: 700; white-space: nowrap; }
+            .room-meta-box .val { color: #000; font-weight: 800; font-size: 14.5px; }
+            .section-title-container { display: flex; align-items: center; justify-content: space-between; border-bottom: 2.5px solid #f39c12; padding-bottom: 3px; margin: 10px 0 8px 0; }
+            .title-side-dummy { flex: 1; }
+            .section-title-container .section-title { text-align: center; font-size: 21.5px; font-weight: 800; color: #e74c3c; font-family: 'Tiro Bangla', serif; letter-spacing: 0.3px; flex: 2; margin: 0; padding-bottom: 0; border-bottom: none; }
+            .booking-date-right-box { flex: 1; text-align: right; font-size: 13px; font-weight: 700; white-space: nowrap; }
+            .booking-date-right-box .lbl { color: #1a5c2e; font-weight: 800; }
+            .booking-date-right-box .val { color: #000; font-weight: 800; }
+            .section-title { text-align: center; font-size: 21.5px; font-weight: 800; color: #e74c3c; font-family: 'Tiro Bangla', serif; border-bottom: 2.5px solid #f39c12; padding-bottom: 3px; margin: 10px 0 8px 0; letter-spacing: 0.3px; }
+            .form-pill-row { border: 2px solid #8e44ad; border-radius: 25px; background: #fff; display: flex; overflow: hidden; margin-bottom: 10px; min-height: 42px; align-items: stretch; }
+            .pill-lbl { background: #7b1fa2; color: #fff; padding: 9px 18px; font-size: 14px; font-weight: 700; white-space: nowrap; display: flex; align-items: center; border-right: 2px solid #8e44ad; flex-shrink: 0; }
+            .pill-val { padding: 9px 18px; font-size: 14.5px; font-weight: 600; color: #111; flex-grow: 1; display: flex; align-items: center; }
+            .pill-right { border-left: 2px solid #8e44ad; display: flex; align-items: stretch; flex-shrink: 0; }
+            .address-row { border: 2px solid #8e44ad; border-radius: 25px; background: #fff; display: flex; flex-wrap: wrap; padding: 11px 20px; font-size: 14px; font-weight: 600; gap: 10px 30px; margin-bottom: 10px; align-items: center; min-height: 42px; }
+            .akey { color: #7b1fa2; font-weight: 700; }
+            .rules-box { background: #fffde7; border: 2px solid #f48fb1; border-radius: 12px; padding: 14px 20px; margin-top: 4px; margin-bottom: 10px; }
+            .rules-list { list-style: none; padding: 0; margin: 0; }
+            .rules-list li { font-size: 13px; font-weight: 600; color: #1a1a1a; line-height: 1.8; border-bottom: 1px dashed #f8bbd0; padding-bottom: 4px; margin-bottom: 4px; }
+            .rules-list li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+            .signature-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; padding: 16px 36px 8px 36px; }
+            .sig-box { text-align: center; min-width: 150px; }
+            .sig-line { border-top: 1.5px solid #2c3e50; margin-bottom: 5px; }
+            .sig-text { font-size: 14px; font-weight: 700; color: #1a1a1a; }
+            @media print {
+              html, body { height: 100% !important; margin: 0 !important; padding: 0 !important; background: #fff !important; }
+              .paper-frame { height: calc(297mm - 10mm) !important; min-height: calc(297mm - 10mm) !important; border-radius: 0; box-sizing: border-box; page-break-inside: avoid !important; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="paper-frame">
+            <div class="main-content-wrap">
+              <div class="top-header">
+                <div class="logo-wrap">
+                  <img src="${logoUrl}" alt="Logo" onerror="this.style.display='none'">
+                </div>
+                <div class="brand-center">
+                  <div class="brand-name">টি এস এস ভিলা</div>
+                </div>
+                <div class="photo-box">
+                  ${userImgUrl ? `<img src="${userImgUrl}" alt="Photo">` : `<div class="photo-placeholder">ছবি<br>Photo</div>`}
+                </div>
+              </div>
+              <div class="address-banner">
+                কলেজ রোড , নেসকো গেট সংলগ্ন , রংপুর &nbsp;|&nbsp; প্রয়োজনে: ০১৯৭৭২৭০৯২০ &nbsp;|&nbsp; Gmail: tssvilla2026@gmail.com
+              </div>
+              <div class="room-meta-row">
+                <div class="room-meta-box"><span class="lbl">রুম নং:</span>&nbsp;<span class="val">${roomNo}</span></div>
+                <div class="room-meta-box"><span class="lbl">ব্লক নং:</span>&nbsp;<span class="val">${seatNo}</span></div>
+                <div class="room-meta-box"><span class="lbl">ফ্লোর নং:</span>&nbsp;<span class="val">${floorNo}</span></div>
+              </div>
+              <div class="section-title-container">
+                <div class="title-side-dummy"></div>
+                <div class="section-title">${sectionTitleText}</div>
+                <div class="booking-date-right-box">
+                  <span class="lbl">বুকিং তারিখ:</span> <span class="val">${bookingDate}</span>
+                </div>
+              </div>
+              ${infoSectionHtml}
+              <div class="section-title">স্থায়ী ঠিকানা</div>
+              <div class="address-row">
+                <span><span class="akey">গ্রাম/রাস্তা:</span> ${address}</span>
+                <span><span class="akey">থানা:</span> ${thanaName}</span>
+                <span><span class="akey">উপজেলা:</span> ${thanaName}</span>
+                <span><span class="akey">জেলা:</span> ${districtName}</span>
+              </div>
+              <div class="section-title">নিয়মাবলী</div>
+              <div class="rules-box">
+                ${isProf ? `
+                <ul class="rules-list">
+                  <li>* মেসের ভাড়া ০৭ তারিখের মধ্যে পরিশোধ করতে হবে।</li>
+                  <li>* মেস ছাড়লে ০২ মাস পূর্বেই মেস কর্তৃপক্ষকে জানাতে হবে। অন্যথায় দুই মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</li>
+                  <li>* রুম চেঞ্জ করতে চাইলে ৫০০ টাকা জরিমানা প্রদান করতে হবে।</li>
+                  <li>* মেসের নিয়ম-কানুন মেনে চলতে হবে। কারো বিরুদ্ধে কোনো অভিযোগ আসলে এবং তা প্রমাণিত হলে সিট বাতিলসহ যেকোনো ব্যবস্থা নেয়ার অধিকার কর্তৃপক্ষ রাখে।</li>
+                </ul>
+                ` : `
+                <ul class="rules-list">
+                  <li>* মেসের ভাড়া ০৭ তারিখের মধ্যে পরিশোধ করতে হবে।</li>
+                  <li>* মেস ছাড়লে ০২ মাস পূর্বেই মেস কর্তৃপক্ষকে জানাতে হবে। অন্যথায় দুই মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</li>
+                  <li>* মাগরিবের আযানের পর মেসের বাহিরে থাকলে অভিভাবককে জানিয়ে দিতে হবে।</li>
+                  <li>* রুম চেঞ্জ করতে চাইলে ৫০০ টাকা জরিমানা প্রদান করতে হবে।</li>
+                  <li>* মেসের নিয়ম-কানুন মেনে চলতে হবে। কারো বিরুদ্ধে কোনো অভিযোগ আসলে এবং তা প্রমাণিত হলে সিট বাতিলসহ যেকোনো ব্যবস্থা নেয়ার অধিকার কর্তৃপক্ষ রাখে।</li>
+                </ul>
+                `}
+              </div>
+            </div>
+            <div class="signature-row">
+              <div class="sig-box">
+                <div class="sig-line"></div>
+                <div class="sig-text">অনুমোদিত স্বাক্ষর</div>
+              </div>
+              <div class="sig-box">
+                <div class="sig-line"></div>
+                <div class="sig-text">${signatureLabelText}</div>
+              </div>
+            </div>
+          </div>
+        </body>
+        </html>
+    `;
+
+    var win = window.open('', '_blank');
+    if (win) {
+        win.document.write(html);
+        win.document.close();
+        setTimeout(function() {
+            win.focus();
+            win.print();
+        }, 400);
+    } else {
+        alert('Please allow popups for this site to print document.');
+    }
+}
 </script>
 @endsection

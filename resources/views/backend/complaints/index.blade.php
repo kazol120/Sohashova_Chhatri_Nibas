@@ -140,15 +140,17 @@
                                                     <h5 class="modal-title text-white fw-bold mb-0">Accept & Resolve Complaint</h5>
                                                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
-                                                <div class="modal-body text-start">
+                                                <div class="modal-body text-start" style="white-space: normal;">
                                                     <p class="fw-semibold text-dark mb-2">Mark this complaint as accepted and resolved?</p>
-                                                    <div class="p-3 bg-light rounded mb-3 border">
-                                                        <strong>Resident:</strong> {{ $complaint->user->name ?? 'Resident' }}<br>
-                                                        <strong>Complaint:</strong> {{ $complaint->complaint_text }}
+                                                    <div class="p-3 bg-light rounded mb-3 border" style="white-space: normal; word-break: break-word; overflow-wrap: break-word;">
+                                                        <div class="mb-1"><strong>Resident:</strong> {{ $complaint->user->name ?? 'Resident' }}</div>
+                                                        <div style="white-space: normal; word-break: break-word; overflow-wrap: break-word;">
+                                                            <strong>Complaint:</strong> <span>{{ $complaint->complaint_text }}</span>
+                                                        </div>
                                                     </div>
                                                     <div class="mb-3">
                                                         <label class="form-label fw-semibold">Note for Resident (Optional):</label>
-                                                        <input type="text" name="admin_note" class="form-control" placeholder="e.g. Electrician sent, issue fixed!">
+                                                        <textarea name="admin_note" class="form-control" rows="3" placeholder="e.g. Electrician sent, issue fixed!"></textarea>
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">
