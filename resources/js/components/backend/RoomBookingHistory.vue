@@ -1122,7 +1122,7 @@ watch: {
           <meta charset="UTF-8">
           <title>Resident ID Card - ${fullName}</title>
           <style>
-            @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Hind+Siliguri:wght@400;500;600;700;800&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
             @page { size: A4 portrait; margin: 10mm; }
             * {
               box-sizing: border-box;
@@ -1133,48 +1133,74 @@ watch: {
               color-adjust: exact !important;
             }
             body {
-              background: #f4f6f9;
-              font-family: 'Hind Siliguri', 'Tiro Bangla', sans-serif;
+              background: #f1f5f9;
+              font-family: 'Hind Siliguri', 'Outfit', sans-serif;
               display: flex;
               justify-content: center;
               align-items: center;
               min-height: 100vh;
               padding: 20px;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
             }
             .id-card-frame {
               width: 86mm;
               height: 135mm;
               background: #ffffff !important;
-              border: 3px solid #1a237e !important;
-              border-radius: 12px;
-              box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+              border: 3px solid #0f172a !important;
+              border-radius: 14px;
+              box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
               overflow: hidden;
               position: relative;
               display: flex;
               flex-direction: column;
               justify-content: space-between;
               page-break-inside: avoid;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
             }
+            
             .id-header {
-              background-color: #1a237e !important;
-              background: linear-gradient(135deg, #1a237e 0%, #283593 100%) !important;
+              background: #0f172a !important;
+              background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #1e293b 100%) !important;
               color: #ffffff !important;
-              padding: 10px 8px;
+              padding: 12px 10px 10px 10px;
               text-align: center;
               position: relative;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
+              border-bottom: 3px solid #f59e0b !important;
             }
-            .id-header img { width: 42px; height: 42px; object-fit: contain; margin-bottom: 2px; }
-            .id-header h2 { font-size: 20px; font-weight: 800; font-family: 'Tiro Bangla', serif; color: #ffffff !important; margin: 0; line-height: 1.1; }
-            .id-header p { font-size: 10px; color: #e0e0e0 !important; margin: 0; letter-spacing: 0.5px; }
+            .logo-ring {
+              width: 44px;
+              height: 44px;
+              margin: 0 auto 4px auto;
+              background: #ffffff;
+              border: 2px solid #f59e0b;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            }
+            .logo-ring img {
+              width: 32px;
+              height: 32px;
+              object-fit: contain;
+            }
+            .id-header h2 {
+              font-size: 21px;
+              font-weight: 800;
+              color: #ffffff !important;
+              margin: 0;
+              line-height: 1.1;
+              letter-spacing: 0.5px;
+            }
+            .id-header p {
+              font-size: 9.5px;
+              color: #f59e0b !important;
+              font-weight: 700;
+              margin-top: 2px;
+              letter-spacing: 1px;
+              text-transform: uppercase;
+            }
 
             .id-body {
-              padding: 10px 12px;
+              padding: 10px 14px;
               text-align: center;
               flex: 1;
               display: flex;
@@ -1184,14 +1210,15 @@ watch: {
             }
 
             .photo-container {
-              width: 90px;
-              height: 105px;
-              border: 2.5px solid #1a237e !important;
-              border-radius: 8px;
+              width: 92px;
+              height: 108px;
+              border: 3px solid #0f172a !important;
+              border-radius: 10px;
               overflow: hidden;
-              background: #eef2f5;
-              margin-bottom: 6px;
-              box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+              background: #f8fafc;
+              box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+              margin-top: 2px;
+              margin-bottom: 4px;
               display: flex;
               align-items: center;
               justify-content: center;
@@ -1199,59 +1226,72 @@ watch: {
             .photo-container img { width: 100%; height: 100%; object-fit: cover; }
             .photo-placeholder { font-size: 10px; color: #888; display: flex; flex-direction: column; height: 100%; align-items: center; justify-content: center; text-align: center; }
 
-            .resident-name { font-size: 16px; font-weight: 800; color: #1a237e; margin-bottom: 2px; line-height: 1.2; }
+            .resident-name {
+              font-size: 17px;
+              font-weight: 800;
+              color: #0f172a;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              line-height: 1.2;
+              margin-bottom: 2px;
+            }
             .type-badge {
               display: inline-block;
-              background-color: #e8eaf6 !important;
-              color: #1a237e !important;
-              font-size: 10.5px;
-              font-weight: 700;
-              padding: 3px 10px;
-              border-radius: 12px;
-              margin-bottom: 8px;
-              border: 1px solid #c5cae9 !important;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
+              background-color: #f1f5f9 !important;
+              color: #0f172a !important;
+              font-size: 10px;
+              font-weight: 800;
+              padding: 2px 12px;
+              border-radius: 20px;
+              border: 1.5px solid #cbd5e1 !important;
+              text-transform: uppercase;
+              letter-spacing: 0.8px;
+              margin-bottom: 6px;
             }
-
-            .meta-grid { width: 100%; background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 6px 8px; font-size: 11px; margin-bottom: 6px; text-align: left; }
-            .meta-row { display: flex; justify-content: space-between; margin-bottom: 3px; }
-            .meta-row:last-child { margin-bottom: 0; }
-            .m-lbl { color: #555; font-weight: 600; }
-            .m-val { color: #000; font-weight: 700; }
 
             .room-badges { display: flex; gap: 4px; width: 100%; justify-content: center; margin-bottom: 6px; }
             .r-badge {
               flex: 1;
-              background-color: #1a237e !important;
+              background-color: #0f172a !important;
               color: #ffffff !important;
               font-size: 10.5px;
               font-weight: 700;
               padding: 4px 2px;
-              border-radius: 4px;
+              border-radius: 6px;
               text-align: center;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.08);
             }
-            .r-badge.room { background-color: #2e7d32 !important; color: #ffffff !important; }
-            .r-badge.seat { background-color: #c62828 !important; color: #ffffff !important; }
+            .r-badge.room { background-color: #047857 !important; color: #ffffff !important; }
+            .r-badge.seat { background-color: #b91c1c !important; color: #ffffff !important; }
+
+            .meta-box {
+              width: 100%;
+              background: #f8fafc;
+              border: 1px solid #e2e8f0;
+              border-radius: 8px;
+              padding: 6px 10px;
+              font-size: 11px;
+              margin-bottom: 6px;
+            }
+            .meta-row { display: flex; justify-content: space-between; align-items: center; }
+            .m-lbl { color: #64748b; font-weight: 600; }
+            .m-val { color: #0f172a; font-weight: 800; font-family: 'Outfit', sans-serif; font-size: 12px; }
 
             .qr-section { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 4px; }
-            .qr-img { width: 45px; height: 45px; }
+            .qr-img { width: 48px; height: 48px; border-radius: 4px; border: 1px solid #e2e8f0; }
 
             .sig-box { text-align: center; }
-            .sig-line { border-top: 1px solid #333; width: 70px; margin-bottom: 2px; }
-            .sig-lbl { font-size: 9px; font-weight: 700; color: #333; }
+            .sig-line { border-top: 1.5px solid #0f172a; width: 75px; margin-bottom: 3px; }
+            .sig-lbl { font-size: 9px; font-weight: 700; color: #334155; }
 
             .id-footer {
-              background-color: #1a237e !important;
+              background: #0f172a !important;
               color: #ffffff !important;
               font-size: 8.5px;
               text-align: center;
               padding: 6px 4px;
               font-weight: 600;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
+              border-top: 2px solid #f59e0b !important;
             }
 
             @media print {
@@ -1262,38 +1302,40 @@ watch: {
               }
               body { background: #fff !important; padding: 0 !important; }
               .id-card-frame { box-shadow: none !important; margin: auto; }
-              .id-header { background-color: #1a237e !important; color: #ffffff !important; }
-              .id-footer { background-color: #1a237e !important; color: #ffffff !important; }
-              .r-badge { background-color: #1a237e !important; color: #ffffff !important; }
-              .r-badge.room { background-color: #2e7d32 !important; color: #ffffff !important; }
-              .r-badge.seat { background-color: #c62828 !important; color: #ffffff !important; }
-              .type-badge { background-color: #e8eaf6 !important; color: #1a237e !important; }
+              .id-header { background: #0f172a !important; color: #ffffff !important; }
+              .id-footer { background: #0f172a !important; color: #ffffff !important; }
+              .r-badge { background-color: #0f172a !important; color: #ffffff !important; }
+              .r-badge.room { background-color: #047857 !important; color: #ffffff !important; }
+              .r-badge.seat { background-color: #b91c1c !important; color: #ffffff !important; }
+              .type-badge { background-color: #f1f5f9 !important; color: #0f172a !important; }
             }
           </style>
         </head>
         <body>
           <div class="id-card-frame">
-            <div class="id-header" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #1a237e !important; color: #ffffff !important;">
-              <img src="${logoUrl}" alt="Logo" onerror="this.style.display='none'">
+            <div class="id-header" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #0f172a !important; color: #ffffff !important;">
+              <div class="logo-ring">
+                <img src="${logoUrl}" alt="Logo" onerror="this.style.display='none'">
+              </div>
               <h2 style="color: #ffffff !important;">টি এস এস ভিলা</h2>
-              <p style="color: #e0e0e0 !important;">TSS VILLA RESIDENT ID CARD</p>
+              <p style="color: #f59e0b !important;">RESIDENT SMART ID CARD</p>
             </div>
 
             <div class="id-body">
               <div class="photo-container">
-                ${userImgUrl ? `<img src="${userImgUrl}" alt="Photo" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="photo-placeholder" style="display:none;"><svg width="40" height="40" viewBox="0 0 24 24" fill="#1a237e"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span style="font-size:9px; color:#555; margin-top:2px;">PHOTO</span></div>` : `<div class="photo-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="#1a237e"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span style="font-size:9px; color:#555; margin-top:2px;">PHOTO</span></div>`}
+                ${userImgUrl ? `<img src="${userImgUrl}" alt="Photo" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="photo-placeholder" style="display:none;"><svg width="45" height="45" viewBox="0 0 24 24" fill="#0f172a"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span style="font-size:9px; color:#64748b; font-weight:700; margin-top:2px;">PHOTO</span></div>` : `<div class="photo-placeholder"><svg width="45" height="45" viewBox="0 0 24 24" fill="#0f172a"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span style="font-size:9px; color:#64748b; font-weight:700; margin-top:2px;">PHOTO</span></div>`}
               </div>
 
               <div class="resident-name">${fullName}</div>
-              <div class="type-badge" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #e8eaf6 !important; color: #1a237e !important;">${userType}</div>
+              <div class="type-badge" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #f1f5f9 !important; color: #0f172a !important;">${userType}</div>
 
               <div class="room-badges">
-                <div class="r-badge" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #1a237e !important; color: #ffffff !important;">ফ্লোর: ${floorNo}</div>
-                <div class="r-badge room" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #2e7d32 !important; color: #ffffff !important;">রুম: ${roomNo}</div>
-                <div class="r-badge seat" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #c62828 !important; color: #ffffff !important;">সিট: ${seatNo}</div>
+                <div class="r-badge" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #0f172a !important; color: #ffffff !important;">ফ্লোর: ${floorNo}</div>
+                <div class="r-badge room" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #047857 !important; color: #ffffff !important;">রুম: ${roomNo}</div>
+                <div class="r-badge seat" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #b91c1c !important; color: #ffffff !important;">সিট: ${seatNo}</div>
               </div>
 
-              <div class="meta-grid">
+              <div class="meta-box">
                 <div class="meta-row"><span class="m-lbl">মোবাইল:</span><span class="m-val">${phone}</span></div>
               </div>
 
@@ -1306,7 +1348,7 @@ watch: {
               </div>
             </div>
 
-            <div class="id-footer" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #1a237e !important; color: #ffffff !important;">
+            <div class="id-footer" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #0f172a !important; color: #ffffff !important;">
               কলেজ রোড , নেসকো গেট সংলগ্ন , রংপুর | হেল্পলাইন: ০১৯৭৭২৭০৯২০
             </div>
           </div>
