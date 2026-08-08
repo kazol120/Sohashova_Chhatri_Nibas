@@ -33888,7 +33888,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     printResidentIdCard: function printResidentIdCard(r) {
       var _this7 = this;
       var logoUrl = window.location.origin + '/logo/logoimage (2).png';
-      var userImgUrl = r.image ? this.imageSrc(r.image) : '';
+      var userImgUrl = r.image ? r.image.startsWith('http') ? r.image : window.location.origin + '/bookingsimage/' + r.image : '';
       var roomNo = r.room_items && r.room_items.length ? r.room_items.map(function (i) {
         return _this7.getRoomNo(i.roomnumber);
       }).join(', ') : this.getRoomNo(r.roomnumber) || r.room_number || '-';
@@ -33900,11 +33900,10 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       }))).filter(Boolean).join(', ') : r.floornumber || '-';
       var fullName = r.full_name || '-';
       var phone = r.phone || '-';
-      var nid = r.nid || '-';
       var userType = r.user_type || 'Student';
       var qrText = encodeURIComponent("TSS VILLA | Name: ".concat(fullName, " | Phone: ").concat(phone, " | Room: ").concat(roomNo, " | Seat: ").concat(seatNo));
       var qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=".concat(qrText);
-      var html = "\n        <!DOCTYPE html>\n        <html lang=\"bn\">\n        <head>\n          <meta charset=\"UTF-8\">\n          <title>Resident ID Card - ".concat(fullName, "</title>\n          <style>\n            @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Hind+Siliguri:wght@400;500;600;700;800&display=swap');\n            @page { size: A4 portrait; margin: 10mm; }\n            * { box-sizing: border-box; margin: 0; padding: 0; }\n            body {\n              background: #f4f6f9;\n              font-family: 'Hind Siliguri', 'Tiro Bangla', sans-serif;\n              display: flex;\n              justify-content: center;\n              align-items: center;\n              min-height: 100vh;\n              padding: 20px;\n            }\n            .id-card-frame {\n              width: 86mm;\n              height: 135mm;\n              background: #ffffff;\n              border: 3px solid #1a237e;\n              border-radius: 12px;\n              box-shadow: 0 8px 25px rgba(0,0,0,0.15);\n              overflow: hidden;\n              position: relative;\n              display: flex;\n              flex-direction: column;\n              justify-content: space-between;\n              page-break-inside: avoid;\n            }\n            .id-header {\n              background: linear-gradient(135deg, #1a237e 0%, #283593 100%);\n              color: #fff;\n              padding: 10px 8px;\n              text-align: center;\n              position: relative;\n            }\n            .id-header img { width: 42px; height: 42px; object-fit: contain; margin-bottom: 2px; }\n            .id-header h2 { font-size: 20px; font-weight: 800; font-family: 'Tiro Bangla', serif; color: #fff; margin: 0; line-height: 1.1; }\n            .id-header p { font-size: 10px; color: #e0e0e0; margin: 0; letter-spacing: 0.5px; }\n\n            .id-body {\n              padding: 10px 12px;\n              text-align: center;\n              flex: 1;\n              display: flex;\n              flex-direction: column;\n              align-items: center;\n              justify-content: space-between;\n            }\n\n            .photo-container {\n              width: 90px;\n              height: 105px;\n              border: 3px solid #1a237e;\n              border-radius: 8px;\n              overflow: hidden;\n              background: #eef2f5;\n              margin-bottom: 6px;\n              box-shadow: 0 3px 8px rgba(0,0,0,0.1);\n            }\n            .photo-container img { width: 100%; height: 100%; object-fit: cover; }\n            .photo-placeholder { font-size: 10px; color: #888; display: flex; height: 100%; align-items: center; justify-content: center; text-align: center; }\n\n            .resident-name { font-size: 16px; font-weight: 800; color: #1a237e; margin-bottom: 2px; line-height: 1.2; }\n            .type-badge { display: inline-block; background: #e8eaf6; color: #1a237e; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #c5cae9; }\n\n            .meta-grid { width: 100%; background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 6px 8px; font-size: 11px; margin-bottom: 6px; text-align: left; }\n            .meta-row { display: flex; justify-content: space-between; margin-bottom: 3px; }\n            .meta-row:last-child { margin-bottom: 0; }\n            .m-lbl { color: #555; font-weight: 600; }\n            .m-val { color: #000; font-weight: 700; }\n\n            .room-badges { display: flex; gap: 4px; width: 100%; justify-content: center; margin-bottom: 6px; }\n            .r-badge { flex: 1; background: #1a237e; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 2px; border-radius: 4px; text-align: center; }\n            .r-badge.room { background: #2e7d32; }\n            .r-badge.seat { background: #c62828; }\n\n            .qr-section { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 4px; }\n            .qr-img { width: 45px; height: 45px; }\n\n            .sig-box { text-align: center; }\n            .sig-line { border-top: 1px solid #333; width: 70px; margin-bottom: 2px; }\n            .sig-lbl { font-size: 9px; font-weight: 700; color: #333; }\n\n            .id-footer { background: #1a237e; color: #fff; font-size: 8.5px; text-align: center; padding: 5px; font-weight: 600; }\n\n            @media print {\n              body { background: #fff !important; padding: 0 !important; }\n              .id-card-frame { box-shadow: none !important; margin: auto; }\n            }\n          </style>\n        </head>\n        <body>\n          <div class=\"id-card-frame\">\n            <div class=\"id-header\">\n              <img src=\"").concat(logoUrl, "\" alt=\"Logo\" onerror=\"this.style.display='none'\">\n              <h2>\u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE</h2>\n              <p>TSS VILLA RESIDENT ID CARD</p>\n            </div>\n\n            <div class=\"id-body\">\n              <div class=\"photo-container\">\n                ").concat(userImgUrl ? "<img src=\"".concat(userImgUrl, "\" alt=\"Photo\">") : "<div class=\"photo-placeholder\">PHOTO</div>", "\n              </div>\n\n              <div class=\"resident-name\">").concat(fullName, "</div>\n              <div class=\"type-badge\">").concat(userType, "</div>\n\n              <div class=\"room-badges\">\n                <div class=\"r-badge\">\u09AB\u09CD\u09B2\u09CB\u09B0: ").concat(floorNo, "</div>\n                <div class=\"r-badge room\">\u09B0\u09C1\u09AE: ").concat(roomNo, "</div>\n                <div class=\"r-badge seat\">\u09B8\u09BF\u099F: ").concat(seatNo, "</div>\n              </div>\n\n              <div class=\"meta-grid\">\n                <div class=\"meta-row\"><span class=\"m-lbl\">\u09AE\u09CB\u09AC\u09BE\u0987\u09B2:</span><span class=\"m-val\">").concat(phone, "</span></div>\n                <div class=\"meta-row\"><span class=\"m-lbl\">NID:</span><span class=\"m-val\">").concat(nid, "</span></div>\n              </div>\n\n              <div class=\"qr-section\">\n                <img src=\"").concat(qrUrl, "\" alt=\"QR\" class=\"qr-img\">\n                <div class=\"sig-box\">\n                  <div class=\"sig-line\"></div>\n                  <div class=\"sig-lbl\">\u0985\u09A8\u09C1\u09AE\u09CB\u09A6\u09BF\u09A4 \u09B8\u09CD\u09AC\u09BE\u0995\u09CD\u09B7\u09B0</div>\n                </div>\n              </div>\n            </div>\n\n            <div class=\"id-footer\">\n              \u0995\u09B2\u09C7\u099C \u09B0\u09CB\u09A1 , \u09A8\u09C7\u09B8\u0995\u09CB \u0997\u09C7\u099F \u09B8\u0982\u09B2\u0997\u09CD\u09A8 , \u09B0\u0982\u09AA\u09C1\u09B0 | \u09B9\u09C7\u09B2\u09CD\u09AA\u09B2\u09BE\u0987\u09A8: \u09E6\u09E7\u09EF\u09ED\u09ED\u09E8\u09ED\u09E6\u09EF\u09E8\u09E6\n            </div>\n          </div>\n        </body>\n        </html>\n      ");
+      var html = "\n        <!DOCTYPE html>\n        <html lang=\"bn\">\n        <head>\n          <meta charset=\"UTF-8\">\n          <title>Resident ID Card - ".concat(fullName, "</title>\n          <style>\n            @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Hind+Siliguri:wght@400;500;600;700;800&display=swap');\n            @page { size: A4 portrait; margin: 10mm; }\n            * {\n              box-sizing: border-box;\n              margin: 0;\n              padding: 0;\n              -webkit-print-color-adjust: exact !important;\n              print-color-adjust: exact !important;\n              color-adjust: exact !important;\n            }\n            body {\n              background: #f4f6f9;\n              font-family: 'Hind Siliguri', 'Tiro Bangla', sans-serif;\n              display: flex;\n              justify-content: center;\n              align-items: center;\n              min-height: 100vh;\n              padding: 20px;\n              -webkit-print-color-adjust: exact !important;\n              print-color-adjust: exact !important;\n            }\n            .id-card-frame {\n              width: 86mm;\n              height: 135mm;\n              background: #ffffff !important;\n              border: 3px solid #1a237e !important;\n              border-radius: 12px;\n              box-shadow: 0 8px 25px rgba(0,0,0,0.15);\n              overflow: hidden;\n              position: relative;\n              display: flex;\n              flex-direction: column;\n              justify-content: space-between;\n              page-break-inside: avoid;\n              -webkit-print-color-adjust: exact !important;\n              print-color-adjust: exact !important;\n            }\n            .id-header {\n              background-color: #1a237e !important;\n              background: linear-gradient(135deg, #1a237e 0%, #283593 100%) !important;\n              color: #ffffff !important;\n              padding: 10px 8px;\n              text-align: center;\n              position: relative;\n              -webkit-print-color-adjust: exact !important;\n              print-color-adjust: exact !important;\n            }\n            .id-header img { width: 42px; height: 42px; object-fit: contain; margin-bottom: 2px; }\n            .id-header h2 { font-size: 20px; font-weight: 800; font-family: 'Tiro Bangla', serif; color: #ffffff !important; margin: 0; line-height: 1.1; }\n            .id-header p { font-size: 10px; color: #e0e0e0 !important; margin: 0; letter-spacing: 0.5px; }\n\n            .id-body {\n              padding: 10px 12px;\n              text-align: center;\n              flex: 1;\n              display: flex;\n              flex-direction: column;\n              align-items: center;\n              justify-content: space-between;\n            }\n\n            .photo-container {\n              width: 90px;\n              height: 105px;\n              border: 2.5px solid #1a237e !important;\n              border-radius: 8px;\n              overflow: hidden;\n              background: #eef2f5;\n              margin-bottom: 6px;\n              box-shadow: 0 3px 8px rgba(0,0,0,0.1);\n              display: flex;\n              align-items: center;\n              justify-content: center;\n            }\n            .photo-container img { width: 100%; height: 100%; object-fit: cover; }\n            .photo-placeholder { font-size: 10px; color: #888; display: flex; flex-direction: column; height: 100%; align-items: center; justify-content: center; text-align: center; }\n\n            .resident-name { font-size: 16px; font-weight: 800; color: #1a237e; margin-bottom: 2px; line-height: 1.2; }\n            .type-badge {\n              display: inline-block;\n              background-color: #e8eaf6 !important;\n              color: #1a237e !important;\n              font-size: 10.5px;\n              font-weight: 700;\n              padding: 3px 10px;\n              border-radius: 12px;\n              margin-bottom: 8px;\n              border: 1px solid #c5cae9 !important;\n              -webkit-print-color-adjust: exact !important;\n              print-color-adjust: exact !important;\n            }\n\n            .meta-grid { width: 100%; background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 6px 8px; font-size: 11px; margin-bottom: 6px; text-align: left; }\n            .meta-row { display: flex; justify-content: space-between; margin-bottom: 3px; }\n            .meta-row:last-child { margin-bottom: 0; }\n            .m-lbl { color: #555; font-weight: 600; }\n            .m-val { color: #000; font-weight: 700; }\n\n            .room-badges { display: flex; gap: 4px; width: 100%; justify-content: center; margin-bottom: 6px; }\n            .r-badge {\n              flex: 1;\n              background-color: #1a237e !important;\n              color: #ffffff !important;\n              font-size: 10.5px;\n              font-weight: 700;\n              padding: 4px 2px;\n              border-radius: 4px;\n              text-align: center;\n              -webkit-print-color-adjust: exact !important;\n              print-color-adjust: exact !important;\n            }\n            .r-badge.room { background-color: #2e7d32 !important; color: #ffffff !important; }\n            .r-badge.seat { background-color: #c62828 !important; color: #ffffff !important; }\n\n            .qr-section { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 4px; }\n            .qr-img { width: 45px; height: 45px; }\n\n            .sig-box { text-align: center; }\n            .sig-line { border-top: 1px solid #333; width: 70px; margin-bottom: 2px; }\n            .sig-lbl { font-size: 9px; font-weight: 700; color: #333; }\n\n            .id-footer {\n              background-color: #1a237e !important;\n              color: #ffffff !important;\n              font-size: 8.5px;\n              text-align: center;\n              padding: 6px 4px;\n              font-weight: 600;\n              -webkit-print-color-adjust: exact !important;\n              print-color-adjust: exact !important;\n            }\n\n            @media print {\n              * {\n                -webkit-print-color-adjust: exact !important;\n                print-color-adjust: exact !important;\n                color-adjust: exact !important;\n              }\n              body { background: #fff !important; padding: 0 !important; }\n              .id-card-frame { box-shadow: none !important; margin: auto; }\n              .id-header { background-color: #1a237e !important; color: #ffffff !important; }\n              .id-footer { background-color: #1a237e !important; color: #ffffff !important; }\n              .r-badge { background-color: #1a237e !important; color: #ffffff !important; }\n              .r-badge.room { background-color: #2e7d32 !important; color: #ffffff !important; }\n              .r-badge.seat { background-color: #c62828 !important; color: #ffffff !important; }\n              .type-badge { background-color: #e8eaf6 !important; color: #1a237e !important; }\n            }\n          </style>\n        </head>\n        <body>\n          <div class=\"id-card-frame\">\n            <div class=\"id-header\" style=\"-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #1a237e !important; color: #ffffff !important;\">\n              <img src=\"").concat(logoUrl, "\" alt=\"Logo\" onerror=\"this.style.display='none'\">\n              <h2 style=\"color: #ffffff !important;\">\u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE</h2>\n              <p style=\"color: #e0e0e0 !important;\">TSS VILLA RESIDENT ID CARD</p>\n            </div>\n\n            <div class=\"id-body\">\n              <div class=\"photo-container\">\n                ").concat(userImgUrl ? "<img src=\"".concat(userImgUrl, "\" alt=\"Photo\" onerror=\"this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';\"><div class=\"photo-placeholder\" style=\"display:none;\"><svg width=\"40\" height=\"40\" viewBox=\"0 0 24 24\" fill=\"#1a237e\"><path d=\"M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\"/></svg><span style=\"font-size:9px; color:#555; margin-top:2px;\">PHOTO</span></div>") : "<div class=\"photo-placeholder\"><svg width=\"40\" height=\"40\" viewBox=\"0 0 24 24\" fill=\"#1a237e\"><path d=\"M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\"/></svg><span style=\"font-size:9px; color:#555; margin-top:2px;\">PHOTO</span></div>", "\n              </div>\n\n              <div class=\"resident-name\">").concat(fullName, "</div>\n              <div class=\"type-badge\" style=\"-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #e8eaf6 !important; color: #1a237e !important;\">").concat(userType, "</div>\n\n              <div class=\"room-badges\">\n                <div class=\"r-badge\" style=\"-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #1a237e !important; color: #ffffff !important;\">\u09AB\u09CD\u09B2\u09CB\u09B0: ").concat(floorNo, "</div>\n                <div class=\"r-badge room\" style=\"-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #2e7d32 !important; color: #ffffff !important;\">\u09B0\u09C1\u09AE: ").concat(roomNo, "</div>\n                <div class=\"r-badge seat\" style=\"-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #c62828 !important; color: #ffffff !important;\">\u09B8\u09BF\u099F: ").concat(seatNo, "</div>\n              </div>\n\n              <div class=\"meta-grid\">\n                <div class=\"meta-row\"><span class=\"m-lbl\">\u09AE\u09CB\u09AC\u09BE\u0987\u09B2:</span><span class=\"m-val\">").concat(phone, "</span></div>\n              </div>\n\n              <div class=\"qr-section\">\n                <img src=\"").concat(qrUrl, "\" alt=\"QR\" class=\"qr-img\">\n                <div class=\"sig-box\">\n                  <div class=\"sig-line\"></div>\n                  <div class=\"sig-lbl\">\u0985\u09A8\u09C1\u09AE\u09CB\u09A6\u09BF\u09A4 \u09B8\u09CD\u09AC\u09BE\u0995\u09CD\u09B7\u09B0</div>\n                </div>\n              </div>\n            </div>\n\n            <div class=\"id-footer\" style=\"-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #1a237e !important; color: #ffffff !important;\">\n              \u0995\u09B2\u09C7\u099C \u09B0\u09CB\u09A1 , \u09A8\u09C7\u09B8\u0995\u09CB \u0997\u09C7\u099F \u09B8\u0982\u09B2\u0997\u09CD\u09A8 , \u09B0\u0982\u09AA\u09C1\u09B0 | \u09B9\u09C7\u09B2\u09CD\u09AA\u09B2\u09BE\u0987\u09A8: \u09E6\u09E7\u09EF\u09ED\u09ED\u09E8\u09ED\u09E6\u09EF\u09E8\u09E6\n            </div>\n          </div>\n        </body>\n        </html>\n      ");
       var win = window.open('', '_blank');
       if (win) {
         win.document.write(html);
@@ -48354,7 +48353,7 @@ var _hoisted_93 = {
 var _hoisted_94 = ["disabled"];
 var _hoisted_95 = ["disabled"];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_cache[42] || (_cache[42] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_cache[40] || (_cache[40] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "card-header d-flex flex-wrap gap-2 justify-content-between align-items-center py-3"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
     "class": "card-title mb-0"
@@ -48369,7 +48368,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     style: {
       "max-width": "300px"
     }
-  }, [_cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, [_cache[13] || (_cache[13] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: ""
   }, "Select Guest", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.guestNames, function (guest) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
@@ -48381,7 +48380,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[2] || (_cache[2] = function () {
       return $options.clearFilters && $options.clearFilters.apply($options, arguments);
     })
-  }, "Clear")])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [$props.isAdmin ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_cache[15] || (_cache[15] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, "Clear")])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [$props.isAdmin ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "class": "mb-2 text-black"
   }, "Start Date", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     "class": "form-control",
@@ -48392,7 +48391,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onChange: _cache[4] || (_cache[4] = function ($event) {
       return $options.fetchRooms(1);
     })
-  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.startDate]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [_cache[16] || (_cache[16] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.startDate]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [_cache[15] || (_cache[15] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "class": "mb-2 text-black"
   }, "End Date", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     "class": "form-control",
@@ -48408,7 +48407,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[7] || (_cache[7] = function () {
       return $options.clearFilters && $options.clearFilters.apply($options, arguments);
     })
-  }, "Clear")])])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [_cache[18] || (_cache[18] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, "Clear")])])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [_cache[17] || (_cache[17] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "class": "small text-muted mb-0"
   }, "Rows:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
     "class": "form-select form-select-sm",
@@ -48418,7 +48417,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
       return $data.perPage = $event;
     })
-  }, _cache[17] || (_cache[17] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, _cache[16] || (_cache[16] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: 5
   }, "5", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: 10
@@ -48436,96 +48435,87 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       return $options.printTable && $options.printTable.apply($options, arguments);
     }),
     title: "Confirm Booking Document"
-  }, _cache[19] || (_cache[19] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, _cache[18] || (_cache[18] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "fa fa-print me-1"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Confirm Booking Document ")]))) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    type: "button",
-    "class": "btn btn-success btn-sm fw-bold",
-    onClick: _cache[10] || (_cache[10] = function () {
-      return $options.exportResidentsCSV && $options.exportResidentsCSV.apply($options, arguments);
-    }),
-    title: "Export Active Residents to CSV/Excel"
-  }, _cache[20] || (_cache[20] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
-    "class": "fa fa-file-excel me-1"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Export Excel ")])), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Confirm Booking Document ")]))) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
     "class": "form-control form-control-sm",
     style: {
       "width": "240px"
     },
     placeholder: "Search room / floor / name / phone...",
-    "onUpdate:modelValue": _cache[11] || (_cache[11] = function ($event) {
+    "onUpdate:modelValue": _cache[10] || (_cache[10] = function ($event) {
       return $data.search = $event;
     })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.search]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [_cache[21] || (_cache[21] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.search]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [_cache[19] || (_cache[19] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "70px"
     }
-  }, "Sl", -1 /* HOISTED */)), _cache[22] || (_cache[22] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Sl", -1 /* HOISTED */)), _cache[20] || (_cache[20] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "130px"
     }
-  }, "Image", -1 /* HOISTED */)), _cache[23] || (_cache[23] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Image", -1 /* HOISTED */)), _cache[21] || (_cache[21] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "160px"
     }
-  }, "Name", -1 /* HOISTED */)), _cache[24] || (_cache[24] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Name", -1 /* HOISTED */)), _cache[22] || (_cache[22] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "130px"
     }
-  }, "User Type", -1 /* HOISTED */)), _cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "User Type", -1 /* HOISTED */)), _cache[23] || (_cache[23] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "130px"
     }
-  }, "Floor", -1 /* HOISTED */)), _cache[26] || (_cache[26] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Floor", -1 /* HOISTED */)), _cache[24] || (_cache[24] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "100px"
     }
-  }, "Room", -1 /* HOISTED */)), _cache[27] || (_cache[27] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Room", -1 /* HOISTED */)), _cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "120px"
     }
-  }, "Seat", -1 /* HOISTED */)), _cache[28] || (_cache[28] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Seat", -1 /* HOISTED */)), _cache[26] || (_cache[26] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "180px"
     }
-  }, "Booking Date & Time", -1 /* HOISTED */)), _cache[29] || (_cache[29] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Booking Date & Time", -1 /* HOISTED */)), _cache[27] || (_cache[27] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "150px"
     }
-  }, "Monthly Amount", -1 /* HOISTED */)), _cache[30] || (_cache[30] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Monthly Amount", -1 /* HOISTED */)), _cache[28] || (_cache[28] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "150px"
     }
-  }, "Development Fee", -1 /* HOISTED */)), _cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Development Fee", -1 /* HOISTED */)), _cache[29] || (_cache[29] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "180px"
     }
-  }, "Email", -1 /* HOISTED */)), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_23, "Institution Name")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_24, "Education System")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_25, "Class / Semester")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_26, "Father Name")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_27, "Mother Name")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_28, "Father NID")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_29, "NID / Mother NID")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_30, "Father Phone")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_31, "Mother Phone")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showNidColumn ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_32, "Workplace Name")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showNidColumn ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_33, "NID")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), _cache[32] || (_cache[32] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Email", -1 /* HOISTED */)), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_23, "Institution Name")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_24, "Education System")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_25, "Class / Semester")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_26, "Father Name")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_27, "Mother Name")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_28, "Father NID")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_29, "NID / Mother NID")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_30, "Father Phone")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_31, "Mother Phone")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showNidColumn ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_32, "Workplace Name")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showNidColumn ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_33, "NID")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), _cache[30] || (_cache[30] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "140px"
     }
-  }, "Phone", -1 /* HOISTED */)), _cache[33] || (_cache[33] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Phone", -1 /* HOISTED */)), _cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "120px"
     }
-  }, "Division", -1 /* HOISTED */)), _cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Division", -1 /* HOISTED */)), _cache[32] || (_cache[32] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "120px"
     }
-  }, "District", -1 /* HOISTED */)), _cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "District", -1 /* HOISTED */)), _cache[33] || (_cache[33] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "120px"
     }
-  }, "Thana", -1 /* HOISTED */)), _cache[36] || (_cache[36] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Thana", -1 /* HOISTED */)), _cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "160px"
     }
-  }, "Address", -1 /* HOISTED */)), _cache[37] || (_cache[37] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Address", -1 /* HOISTED */)), _cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "120px"
     }
-  }, "Payment", -1 /* HOISTED */)), _cache[38] || (_cache[38] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Payment", -1 /* HOISTED */)), _cache[36] || (_cache[36] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "110px"
     }
@@ -48559,7 +48549,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         return $options.printResidentForm(r);
       },
       title: "Confirm Booking Document"
-    }, _toConsumableArray(_cache[39] || (_cache[39] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    }, _toConsumableArray(_cache[37] || (_cache[37] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "fa fa-print me-1"
     }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Document ")])), 8 /* PROPS */, _hoisted_85), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
       type: "button",
@@ -48568,24 +48558,24 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         return $options.printResidentIdCard(r);
       },
       title: "Print Resident ID Card"
-    }, _toConsumableArray(_cache[40] || (_cache[40] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    }, _toConsumableArray(_cache[38] || (_cache[38] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "fa fa-id-card me-1"
     }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" ID Card ")])), 8 /* PROPS */, _hoisted_86)])])]);
   }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tbody", _hoisted_87, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
     colspan: $options.totalColumns,
     "class": "text-center py-4 text-muted"
-  }, [$data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_89, _cache[41] || (_cache[41] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, [$data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_89, _cache[39] || (_cache[39] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "fa fa-spinner fa-spin me-2"
   }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Loading... ")]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_90, "No booking history found"))], 8 /* PROPS */, _hoisted_88)])]))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_91, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_92, " Total: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.total) + " | Page: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.currentPage) + " / " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.totalPages), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_93, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-sm btn-secondary",
     disabled: $data.currentPage <= 1 || $data.loading,
-    onClick: _cache[12] || (_cache[12] = function ($event) {
+    onClick: _cache[11] || (_cache[11] = function ($event) {
       return $options.fetchRooms($data.currentPage - 1);
     })
   }, " Previous ", 8 /* PROPS */, _hoisted_94), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-sm btn-secondary",
     disabled: $data.currentPage >= $data.totalPages || $data.loading,
-    onClick: _cache[13] || (_cache[13] = function ($event) {
+    onClick: _cache[12] || (_cache[12] = function ($event) {
       return $options.fetchRooms($data.currentPage + 1);
     })
   }, " Next ", 8 /* PROPS */, _hoisted_95)])])])])])])]);

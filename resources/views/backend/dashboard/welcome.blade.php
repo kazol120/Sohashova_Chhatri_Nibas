@@ -904,7 +904,7 @@ function printResidentIdCard() {
     }
 
     var logoUrl = window.location.origin + '/logo/logoimage (2).png';
-    var userImgUrl = r.image ? (window.location.origin + '/bookingsimage/' + r.image) : (u.avatar_url || '');
+    var userImgUrl = r.image ? (r.image.indexOf('http') === 0 ? r.image : window.location.origin + '/bookingsimage/' + r.image) : (u.avatar_url || '');
 
     var roomItems = [];
     if (typeof r.floor_number_room_number_roomprice === 'string') {
@@ -936,7 +936,6 @@ function printResidentIdCard() {
 
     var fullName = r.full_name || u.name || '-';
     var phone = r.phone || u.phone || '-';
-    var nid = r.nid || u.nid || '-';
     var userType = r.user_type || u.user_type || 'Student';
 
     var qrText = encodeURIComponent(`TSS VILLA | Name: ${fullName} | Phone: ${phone} | Room: ${roomNo} | Seat: ${seatNo}`);
@@ -951,72 +950,113 @@ function printResidentIdCard() {
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Hind+Siliguri:wght@400;500;600;700;800&display=swap');
             @page { size: A4 portrait; margin: 10mm; }
-            * { box-sizing: border-box; margin: 0; padding: 0; }
+            * {
+              box-sizing: border-box;
+              margin: 0;
+              padding: 0;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              color-adjust: exact !important;
+            }
             body {
               background: #f4f6f9;
               font-family: 'Hind Siliguri', 'Tiro Bangla', sans-serif;
               display: flex; justify-content: center; align-items: center;
               min-height: 100vh; padding: 20px;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
             }
             .id-card-frame {
-              width: 86mm; height: 135mm; background: #ffffff;
-              border: 3px solid #1a237e; border-radius: 12px;
+              width: 86mm; height: 135mm; background: #ffffff !important;
+              border: 3px solid #1a237e !important; border-radius: 12px;
               box-shadow: 0 8px 25px rgba(0,0,0,0.15); overflow: hidden;
               position: relative; display: flex; flex-direction: column;
               justify-content: space-between; page-break-inside: avoid;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
             }
-            .id-header { background: linear-gradient(135deg, #1a237e 0%, #283593 100%); color: #fff; padding: 10px 8px; text-align: center; }
+            .id-header {
+              background-color: #1a237e !important;
+              background: linear-gradient(135deg, #1a237e 0%, #283593 100%) !important;
+              color: #ffffff !important; padding: 10px 8px; text-align: center;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
             .id-header img { width: 42px; height: 42px; object-fit: contain; margin-bottom: 2px; }
-            .id-header h2 { font-size: 20px; font-weight: 800; font-family: 'Tiro Bangla', serif; color: #fff; margin: 0; line-height: 1.1; }
-            .id-header p { font-size: 10px; color: #e0e0e0; margin: 0; letter-spacing: 0.5px; }
+            .id-header h2 { font-size: 20px; font-weight: 800; font-family: 'Tiro Bangla', serif; color: #ffffff !important; margin: 0; line-height: 1.1; }
+            .id-header p { font-size: 10px; color: #e0e0e0 !important; margin: 0; letter-spacing: 0.5px; }
             .id-body { padding: 10px 12px; text-align: center; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
-            .photo-container { width: 90px; height: 105px; border: 3px solid #1a237e; border-radius: 8px; overflow: hidden; background: #eef2f5; margin-bottom: 6px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
+            .photo-container {
+              width: 90px; height: 105px; border: 2.5px solid #1a237e !important; border-radius: 8px; overflow: hidden; background: #eef2f5; margin-bottom: 6px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center;
+            }
             .photo-container img { width: 100%; height: 100%; object-fit: cover; }
-            .photo-placeholder { font-size: 10px; color: #888; display: flex; height: 100%; align-items: center; justify-content: center; text-align: center; }
+            .photo-placeholder { font-size: 10px; color: #888; display: flex; flex-direction: column; height: 100%; align-items: center; justify-content: center; text-align: center; }
             .resident-name { font-size: 16px; font-weight: 800; color: #1a237e; margin-bottom: 2px; line-height: 1.2; }
-            .type-badge { display: inline-block; background: #e8eaf6; color: #1a237e; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #c5cae9; }
+            .type-badge {
+              display: inline-block; background-color: #e8eaf6 !important; color: #1a237e !important; font-size: 10.5px; font-weight: 700; padding: 3px 10px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #c5cae9 !important;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
             .meta-grid { width: 100%; background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 6px 8px; font-size: 11px; margin-bottom: 6px; text-align: left; }
             .meta-row { display: flex; justify-content: space-between; margin-bottom: 3px; }
             .meta-row:last-child { margin-bottom: 0; }
             .m-lbl { color: #555; font-weight: 600; }
             .m-val { color: #000; font-weight: 700; }
             .room-badges { display: flex; gap: 4px; width: 100%; justify-content: center; margin-bottom: 6px; }
-            .r-badge { flex: 1; background: #1a237e; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 2px; border-radius: 4px; text-align: center; }
-            .r-badge.room { background: #2e7d32; }
-            .r-badge.seat { background: #c62828; }
+            .r-badge {
+              flex: 1; background-color: #1a237e !important; color: #ffffff !important; font-size: 10.5px; font-weight: 700; padding: 4px 2px; border-radius: 4px; text-align: center;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            .r-badge.room { background-color: #2e7d32 !important; color: #ffffff !important; }
+            .r-badge.seat { background-color: #c62828 !important; color: #ffffff !important; }
             .qr-section { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 4px; }
             .qr-img { width: 45px; height: 45px; }
             .sig-box { text-align: center; }
             .sig-line { border-top: 1px solid #333; width: 70px; margin-bottom: 2px; }
             .sig-lbl { font-size: 9px; font-weight: 700; color: #333; }
-            .id-footer { background: #1a237e; color: #fff; font-size: 8.5px; text-align: center; padding: 5px; font-weight: 600; }
+            .id-footer {
+              background-color: #1a237e !important; color: #ffffff !important; font-size: 8.5px; text-align: center; padding: 6px 4px; font-weight: 600;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
             @media print {
+              * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+              }
               body { background: #fff !important; padding: 0 !important; }
               .id-card-frame { box-shadow: none !important; margin: auto; }
+              .id-header { background-color: #1a237e !important; color: #ffffff !important; }
+              .id-footer { background-color: #1a237e !important; color: #ffffff !important; }
+              .r-badge { background-color: #1a237e !important; color: #ffffff !important; }
+              .r-badge.room { background-color: #2e7d32 !important; color: #ffffff !important; }
+              .r-badge.seat { background-color: #c62828 !important; color: #ffffff !important; }
+              .type-badge { background-color: #e8eaf6 !important; color: #1a237e !important; }
             }
           </style>
         </head>
         <body>
           <div class="id-card-frame">
-            <div class="id-header">
+            <div class="id-header" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #1a237e !important; color: #ffffff !important;">
               <img src="${logoUrl}" alt="Logo" onerror="this.style.display='none'">
-              <h2>টি এস এস ভিলা</h2>
-              <p>TSS VILLA RESIDENT ID CARD</p>
+              <h2 style="color: #ffffff !important;">টি এস এস ভিলা</h2>
+              <p style="color: #e0e0e0 !important;">TSS VILLA RESIDENT ID CARD</p>
             </div>
             <div class="id-body">
               <div class="photo-container">
-                ${userImgUrl ? `<img src="${userImgUrl}" alt="Photo">` : `<div class="photo-placeholder">PHOTO</div>`}
+                ${userImgUrl ? `<img src="${userImgUrl}" alt="Photo" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="photo-placeholder" style="display:none;"><svg width="40" height="40" viewBox="0 0 24 24" fill="#1a237e"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span style="font-size:9px; color:#555; margin-top:2px;">PHOTO</span></div>` : `<div class="photo-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="#1a237e"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span style="font-size:9px; color:#555; margin-top:2px;">PHOTO</span></div>`}
               </div>
               <div class="resident-name">${fullName}</div>
-              <div class="type-badge">${userType}</div>
+              <div class="type-badge" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #e8eaf6 !important; color: #1a237e !important;">${userType}</div>
               <div class="room-badges">
-                <div class="r-badge">ফ্লোর: ${floorNo}</div>
-                <div class="r-badge room">রুম: ${roomNo}</div>
-                <div class="r-badge seat">সিট: ${seatNo}</div>
+                <div class="r-badge" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #1a237e !important; color: #ffffff !important;">ফ্লোর: ${floorNo}</div>
+                <div class="r-badge room" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #2e7d32 !important; color: #ffffff !important;">রুম: ${roomNo}</div>
+                <div class="r-badge seat" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #c62828 !important; color: #ffffff !important;">সিট: ${seatNo}</div>
               </div>
               <div class="meta-grid">
                 <div class="meta-row"><span class="m-lbl">মোবাইল:</span><span class="m-val">${phone}</span></div>
-                <div class="meta-row"><span class="m-lbl">NID:</span><span class="m-val">${nid}</span></div>
               </div>
               <div class="qr-section">
                 <img src="${qrUrl}" alt="QR" class="qr-img">
@@ -1026,7 +1066,7 @@ function printResidentIdCard() {
                 </div>
               </div>
             </div>
-            <div class="id-footer">
+            <div class="id-footer" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #1a237e !important; color: #ffffff !important;">
               কলেজ রোড , নেসকো গেট সংলগ্ন , রংপুর | হেল্পলাইন: ০১৯৭৭২৭০৯২০
             </div>
           </div>
