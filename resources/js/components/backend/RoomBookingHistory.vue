@@ -1335,10 +1335,6 @@ watch: {
                 <div class="r-badge seat" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #b91c1c !important; color: #ffffff !important;">সিট: ${seatNo}</div>
               </div>
 
-              <div class="meta-box">
-                <div class="meta-row"><span class="m-lbl">মোবাইল:</span><span class="m-val">${phone}</span></div>
-              </div>
-
               <div class="qr-section">
                 <img src="${qrUrl}" alt="QR" class="qr-img">
                 <div class="sig-box">
