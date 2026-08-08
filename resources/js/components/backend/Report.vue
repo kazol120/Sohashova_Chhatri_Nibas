@@ -7,9 +7,14 @@
           <!-- Header -->
           <div class="card-header d-flex flex-wrap gap-2 justify-content-between align-items-center py-3">
             <h5 class="card-title mb-0">Profit / Loss Report </h5>
-            <button class="btn btn-primary" type="button" @click="printTable">
-              <i class="ti ti-printer me-1"></i> Print
-            </button>
+            <div class="d-flex gap-2">
+              <button class="btn btn-success" type="button" @click="exportProfitReportCSV">
+                <i class="fa fa-file-excel me-1"></i> Export Excel
+              </button>
+              <button class="btn btn-primary" type="button" @click="printTable">
+                <i class="ti ti-printer me-1"></i> Print
+              </button>
+            </div>
           </div>
 
           <!-- Filter -->
@@ -732,12 +737,59 @@ export default {
         duration: 3000,
         gravity: "top",
         position: "right",
-        style: {
-          background: type === "success"
-            ? "linear-gradient(to right, #22c55e, #16a34a)"
-            : "linear-gradient(to right, #ef4444, #dc2626)",
-        },
       }).showToast();
+    },
+
+    exportProfitReportCSV() {
+      if (!this.profitRows || this.profitRows.length === 0) {
+        this.toast("এক্সপোর্ট করার মতো কোনো ডাটা পাওয়া যায়নি", "warning");
+        return;
+      }
+      const headers = [
+        this.profitViewMode === 'monthly' ? 'Month' : 'Year',
+        "Advance Booking Fee",
+        "Monthly Rent",
+        "Product Sales",
+        "Room Change Fee",
+        "Total Income",
+        "General Expense",
+        "Staff Salary",
+        "Product Purchase",
+        "Advance Refund",
+        "Total Cost",
+        "Profit / Loss"
+      ];
+      const rows = this.profitRows.map(r => [
+        r.label,
+        r.booking_fee || 0,
+        r.monthly_rent || 0,
+        r.product_sales || 0,
+        r.room_change_fee || 0,
+        r.total_income || 0,
+        r.general_expense || 0,
+        r.staff_salary || 0,
+        r.product_purchase || 0,
+        r.advance_refund || 0,
+        r.total_cost || 0,
+        r.net_profit || 0
+      ]);
+      const filename = `Profit_Loss_Report_${this.profitViewMode}_${this.selectedYear || 'All'}.csv`;
+      this.downloadCSV(filename, headers, rows);
+    },
+
+    downloadCSV(filename, headers, rows) {
+      let csvContent = "\uFEFF";
+      csvContent += headers.map(h => `"${String(h).replace(/"/g, '""')}"`).join(",") + "\n";
+      rows.forEach(row => {
+        csvContent += row.map(cell => `"${String(cell ?? '').replace(/"/g, '""')}"`).join(",") + "\n";
+      });
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     },
   },
 };

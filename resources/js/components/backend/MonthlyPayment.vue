@@ -11,8 +11,14 @@
               </h4>
               <p class="text-muted mb-0 small">Manage guest monthly rents, generate billing invoices, and keep track of pending, partial or overdue dues.</p>
             </div>
-            <!-- Generate Bills Button -->
-            <div>
+            <!-- Action Buttons -->
+            <div class="d-flex gap-2">
+              <button 
+                class="btn btn-success d-flex align-items-center gap-2 px-3 py-2 shadow-sm"
+                @click="exportPaymentsCSV">
+                <i class="fa fa-file-excel fs-5"></i>
+                <span>Export Excel</span>
+              </button>
               <button 
                 class="btn btn-primary d-flex align-items-center gap-2 px-4 py-2 shadow-sm"
                 @click="confirmGenerateBills"
@@ -797,7 +803,45 @@ export default {
         iframe.contentWindow.focus();
         iframe.contentWindow.print();
       }, 300);
-    }
+    },
+
+    exportPaymentsCSV() {
+      if (!this.payments || this.payments.length === 0) {
+        this.toast("এক্সপোর্ট করার মতো কোনো ডাটা পাওয়া যায়নি", "warning");
+        return;
+      }
+      const headers = ["SL", "Resident Name", "Phone", "Month", "Total Amount", "Paid Amount", "Due Amount", "Status", "Payment Method", "TRX ID", "Received By"];
+      const rows = this.payments.map((p, index) => [
+        index + 1,
+        p.user_name || (p.booking ? p.booking.full_name : ''),
+        p.user_phone || (p.booking ? p.booking.phone : ''),
+        p.month_name || p.month_year || this.selectedMonth,
+        p.total_amount || 0,
+        p.paid_amount || 0,
+        p.due_amount || 0,
+        p.status_text || (p.due_amount <= 0 ? 'PAID' : (p.paid_amount > 0 ? 'PARTIAL' : 'UNPAID')),
+        p.payment_method || '-',
+        p.transaction_id || '-',
+        this.cleanReceivedBy(p.received_by)
+      ]);
+      const filename = `Monthly_Payments_${this.selectedMonth || 'All'}.csv`;
+      this.downloadCSV(filename, headers, rows);
+    },
+
+    downloadCSV(filename, headers, rows) {
+      let csvContent = "\uFEFF";
+      csvContent += headers.map(h => `"${String(h).replace(/"/g, '""')}"`).join(",") + "\n";
+      rows.forEach(row => {
+        csvContent += row.map(cell => `"${String(cell ?? '').replace(/"/g, '""')}"`).join(",") + "\n";
+      });
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
   }
 };
 </script>

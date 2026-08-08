@@ -31,7 +31,10 @@
                 </div>
               </template>
             </div>
-            <div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-success" type="button" @click="exportExpensesCSV">
+                <i class="fa fa-file-excel me-1"></i> Export Excel
+              </button>
               <button class="btn btn-primary" type="button" @click="printTable">
                 <i class="ti ti-printer me-1"></i> Print
               </button>
@@ -584,11 +587,42 @@ export default {
         this.toast('Expense deleted successfully.');
         this.closeDeleteModal();
         this.fetchExpenses(this.currentPage);
-      } catch {
-        this.toast('Delete failed.', 'error');
       } finally {
         this.savingDelete = false;
       }
+    },
+
+    exportExpensesCSV() {
+      if (!this.expenses || this.expenses.length === 0) {
+        this.toast("এক্সপোর্ট করার মতো কোনো ডাটা পাওয়া যায়নি", "warning");
+        return;
+      }
+      const headers = ["SL", "Expense Title / Items", "Category", "Amount", "Voucher No", "Expense Date"];
+      const rows = this.expenses.map((ex, index) => [
+        index + 1,
+        ex.expense_title || ex.expense_name || '',
+        ex.expense_type ? ex.expense_type.expense_type : (ex.category_name || ''),
+        ex.expense_amount || 0,
+        ex.voucher_no || '-',
+        ex.expense_date || (ex.created_at ? ex.created_at.slice(0, 10) : '')
+      ]);
+      const filename = `Expense_Report_${new Date().toISOString().slice(0, 10)}.csv`;
+      this.downloadCSV(filename, headers, rows);
+    },
+
+    downloadCSV(filename, headers, rows) {
+      let csvContent = "\uFEFF";
+      csvContent += headers.map(h => `"${String(h).replace(/"/g, '""')}"`).join(",") + "\n";
+      rows.forEach(row => {
+        csvContent += row.map(cell => `"${String(cell ?? '').replace(/"/g, '""')}"`).join(",") + "\n";
+      });
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     },
   },
 };

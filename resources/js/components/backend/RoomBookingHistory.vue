@@ -71,7 +71,7 @@
                 </select>
               </div>
 
-              <div class="d-flex flex-column align-items-end gap-2">
+              <div class="d-flex align-items-center gap-2">
                 <button
                   v-if="!isAdmin"
                   type="button"
@@ -80,6 +80,14 @@
                   title="Confirm Booking Document"
                 >
                   <i class="fa fa-print me-1"></i> Confirm Booking Document
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-success btn-sm fw-bold"
+                  @click="exportResidentsCSV"
+                  title="Export Active Residents to CSV/Excel"
+                >
+                  <i class="fa fa-file-excel me-1"></i> Export Excel
                 </button>
                 <input
                   type="text"
@@ -274,14 +282,24 @@
                     </td>
 
                     <td class="text-center">
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-primary fw-bold text-nowrap"
-                        @click="printResidentForm(r)"
-                        title="Confirm Booking Document"
-                      >
-                        <i class="fa fa-print me-1"></i> Confirm Booking Document
-                      </button>
+                      <div class="d-flex align-items-center justify-content-center gap-1">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-primary fw-bold text-nowrap"
+                          @click="printResidentForm(r)"
+                          title="Confirm Booking Document"
+                        >
+                          <i class="fa fa-print me-1"></i> Document
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-info fw-bold text-nowrap"
+                          @click="printResidentIdCard(r)"
+                          title="Print Resident ID Card"
+                        >
+                          <i class="fa fa-id-card me-1"></i> ID Card
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 </tbody>
@@ -1084,6 +1102,218 @@ watch: {
         iframe.contentWindow.focus();
         iframe.contentWindow.print();
       }, 400);
+    },
+
+    printResidentIdCard(r) {
+      const logoUrl = window.location.origin + '/logo/logoimage (2).png';
+      const userImgUrl = r.image ? this.imageSrc(r.image) : '';
+      const roomNo = (r.room_items && r.room_items.length)
+        ? r.room_items.map(i => this.getRoomNo(i.roomnumber)).join(', ')
+        : (this.getRoomNo(r.roomnumber) || r.room_number || '-');
+      const seatNo = (r.room_items && r.room_items.length)
+        ? r.room_items.map(i => this.getSeatNo(i.roomnumber)).join(', ')
+        : (this.getSeatNo(r.roomnumber) || '-');
+      const floorNo = (r.room_items && r.room_items.length)
+        ? [...new Set(r.room_items.map(i => i.floornumber))].filter(Boolean).join(', ')
+        : (r.floornumber || '-');
+      const fullName = r.full_name || '-';
+      const phone = r.phone || '-';
+      const nid = r.nid || '-';
+      const userType = r.user_type || 'Student';
+
+      const qrText = encodeURIComponent(`TSS VILLA | Name: ${fullName} | Phone: ${phone} | Room: ${roomNo} | Seat: ${seatNo}`);
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=${qrText}`;
+
+      const html = `
+        <!DOCTYPE html>
+        <html lang="bn">
+        <head>
+          <meta charset="UTF-8">
+          <title>Resident ID Card - ${fullName}</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Hind+Siliguri:wght@400;500;600;700;800&display=swap');
+            @page { size: A4 portrait; margin: 10mm; }
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+            body {
+              background: #f4f6f9;
+              font-family: 'Hind Siliguri', 'Tiro Bangla', sans-serif;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              min-height: 100vh;
+              padding: 20px;
+            }
+            .id-card-frame {
+              width: 86mm;
+              height: 135mm;
+              background: #ffffff;
+              border: 3px solid #1a237e;
+              border-radius: 12px;
+              box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+              overflow: hidden;
+              position: relative;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              page-break-inside: avoid;
+            }
+            .id-header {
+              background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+              color: #fff;
+              padding: 10px 8px;
+              text-align: center;
+              position: relative;
+            }
+            .id-header img { width: 42px; height: 42px; object-fit: contain; margin-bottom: 2px; }
+            .id-header h2 { font-size: 20px; font-weight: 800; font-family: 'Tiro Bangla', serif; color: #fff; margin: 0; line-height: 1.1; }
+            .id-header p { font-size: 10px; color: #e0e0e0; margin: 0; letter-spacing: 0.5px; }
+
+            .id-body {
+              padding: 10px 12px;
+              text-align: center;
+              flex: 1;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: space-between;
+            }
+
+            .photo-container {
+              width: 90px;
+              height: 105px;
+              border: 3px solid #1a237e;
+              border-radius: 8px;
+              overflow: hidden;
+              background: #eef2f5;
+              margin-bottom: 6px;
+              box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            }
+            .photo-container img { width: 100%; height: 100%; object-fit: cover; }
+            .photo-placeholder { font-size: 10px; color: #888; display: flex; height: 100%; align-items: center; justify-content: center; text-align: center; }
+
+            .resident-name { font-size: 16px; font-weight: 800; color: #1a237e; margin-bottom: 2px; line-height: 1.2; }
+            .type-badge { display: inline-block; background: #e8eaf6; color: #1a237e; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #c5cae9; }
+
+            .meta-grid { width: 100%; background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 6px 8px; font-size: 11px; margin-bottom: 6px; text-align: left; }
+            .meta-row { display: flex; justify-content: space-between; margin-bottom: 3px; }
+            .meta-row:last-child { margin-bottom: 0; }
+            .m-lbl { color: #555; font-weight: 600; }
+            .m-val { color: #000; font-weight: 700; }
+
+            .room-badges { display: flex; gap: 4px; width: 100%; justify-content: center; margin-bottom: 6px; }
+            .r-badge { flex: 1; background: #1a237e; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 2px; border-radius: 4px; text-align: center; }
+            .r-badge.room { background: #2e7d32; }
+            .r-badge.seat { background: #c62828; }
+
+            .qr-section { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 4px; }
+            .qr-img { width: 45px; height: 45px; }
+
+            .sig-box { text-align: center; }
+            .sig-line { border-top: 1px solid #333; width: 70px; margin-bottom: 2px; }
+            .sig-lbl { font-size: 9px; font-weight: 700; color: #333; }
+
+            .id-footer { background: #1a237e; color: #fff; font-size: 8.5px; text-align: center; padding: 5px; font-weight: 600; }
+
+            @media print {
+              body { background: #fff !important; padding: 0 !important; }
+              .id-card-frame { box-shadow: none !important; margin: auto; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="id-card-frame">
+            <div class="id-header">
+              <img src="${logoUrl}" alt="Logo" onerror="this.style.display='none'">
+              <h2>টি এস এস ভিলা</h2>
+              <p>TSS VILLA RESIDENT ID CARD</p>
+            </div>
+
+            <div class="id-body">
+              <div class="photo-container">
+                ${userImgUrl ? `<img src="${userImgUrl}" alt="Photo">` : `<div class="photo-placeholder">PHOTO</div>`}
+              </div>
+
+              <div class="resident-name">${fullName}</div>
+              <div class="type-badge">${userType}</div>
+
+              <div class="room-badges">
+                <div class="r-badge">ফ্লোর: ${floorNo}</div>
+                <div class="r-badge room">রুম: ${roomNo}</div>
+                <div class="r-badge seat">সিট: ${seatNo}</div>
+              </div>
+
+              <div class="meta-grid">
+                <div class="meta-row"><span class="m-lbl">মোবাইল:</span><span class="m-val">${phone}</span></div>
+                <div class="meta-row"><span class="m-lbl">NID:</span><span class="m-val">${nid}</span></div>
+              </div>
+
+              <div class="qr-section">
+                <img src="${qrUrl}" alt="QR" class="qr-img">
+                <div class="sig-box">
+                  <div class="sig-line"></div>
+                  <div class="sig-lbl">অনুমোদিত স্বাক্ষর</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="id-footer">
+              কলেজ রোড , নেসকো গেট সংলগ্ন , রংপুর | হেল্পলাইন: ০১৯৭৭২৭০৯২০
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      const win = window.open('', '_blank');
+      if (win) {
+        win.document.write(html);
+        win.document.close();
+        setTimeout(() => {
+          win.focus();
+          win.print();
+        }, 400);
+      }
+    },
+
+    exportResidentsCSV() {
+      if (!this.rooms || this.rooms.length === 0) {
+        this.toast("এক্সপোর্ট করার মতো কোনো ডাটা পাওয়া যায়নি", "warning");
+        return;
+      }
+      const headers = ["SL", "Full Name", "Phone", "Email", "NID", "User Type", "Room No", "Seat No", "Floor No", "Monthly Rent", "Check In", "Check Out", "Address", "District", "Thana"];
+      const rows = this.rooms.map((r, index) => [
+        index + 1,
+        r.full_name || '',
+        r.phone || '',
+        r.email || '',
+        r.nid || '',
+        r.user_type || 'Student',
+        (r.room_items && r.room_items.length) ? r.room_items.map(i => this.getRoomNo(i.roomnumber)).join(', ') : (this.getRoomNo(r.roomnumber) || r.room_number || ''),
+        (r.room_items && r.room_items.length) ? r.room_items.map(i => this.getSeatNo(i.roomnumber)).join(', ') : (this.getSeatNo(r.roomnumber) || ''),
+        (r.room_items && r.room_items.length) ? [...new Set(r.room_items.map(i => i.floornumber))].filter(Boolean).join(', ') : (r.floornumber || ''),
+        r.monthly_amount || 0,
+        r.check_in || '',
+        r.check_out || '',
+        r.address || '',
+        r.district_name || '',
+        r.thana_name || ''
+      ]);
+      this.downloadCSV("Resident_Bookings_List_" + new Date().toISOString().slice(0,10) + ".csv", headers, rows);
+    },
+
+    downloadCSV(filename, headers, rows) {
+      let csvContent = "\uFEFF";
+      csvContent += headers.map(h => `"${String(h).replace(/"/g, '""')}"`).join(",") + "\n";
+      rows.forEach(row => {
+        csvContent += row.map(cell => `"${String(cell ?? '').replace(/"/g, '""')}"`).join(",") + "\n";
+      });
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     },
   },
 };
