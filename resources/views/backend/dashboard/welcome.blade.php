@@ -123,8 +123,6 @@
         @endforeach
 
 
-
-
         
         <!-- My Room & Booking Status -->
         @php
@@ -263,15 +261,13 @@
                         <div class="content-left">
                             <span class="text-heading fw-semibold">Today's Meal (আজকের মিল)</span>
                             <div class="my-1">
-                                @if((isset($mealDepositWarning) && $mealDepositWarning) || (isset($todayMealStatus) && $todayMealStatus->is_off))
+                                @if(isset($todayMealStatus) && $todayMealStatus->is_off)
                                     <span class="badge bg-danger fs-6 px-2 py-1"><i class="fa fa-ban me-1"></i> Meal OFF (বন্ধ)</span>
                                 @elseif(isset($todayMealStatus) && $todayMealStatus->half_meal)
                                     <span class="badge bg-info fs-6 px-2 py-1"><i class="fa fa-sun me-1"></i> Half Meal (হাফ)</span>
                                 @else
                                     <span class="badge bg-success fs-6 px-2 py-1"><i class="fa fa-check-circle me-1"></i> Full Meal (অটো চালু)</span>
                                 @endif
-
-
                             </div>
                             <small class="mb-0 text-muted">Auto generated daily</small>
                         </div>

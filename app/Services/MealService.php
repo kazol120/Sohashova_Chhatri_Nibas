@@ -520,13 +520,18 @@ class MealService
         $mealCost     = (float) $singleHistory->meal_cost;
         $balance      = (float) $singleHistory->balance;
 
-        $isZero = ($balance <= 0);
+        // Check if user has ANY deposit or meal consumption history ever
+        $hasAnyDepositHistory = Deposit::where('user_id', $userId)->exists();
+        $hasAnyMealHistory    = Meal::where('user_id', $userId)->where(function($q) {
+            $q->where('full_meal', '>', 0)->orWhere('half_meal', '>', 0);
+        })->exists();
+
+        // Zero deposit warning is ONLY for existing boarders who have history AND balance <= 0
+        $isZero = ($hasAnyDepositHistory || $hasAnyMealHistory) && ($balance <= 0);
         $warningMessage = null;
-        $alertType      = null;
 
         if ($isZero) {
-            $alertType      = 'zero_deposit_notice';
-            $warningMessage = "📌 মেসের মিল সার্ভিস চালু করতে এবং মিল ডিপোজিট জমা দিতে অনুগ্রহ করে এডমিন এর সাথে যোগাযোগ করুন।";
+            $warningMessage = "⚠️ আপনার মেল ডিপোজিট (Meal Deposit) ব্যালেন্স ৳ " . number_format($balance, 2) . " টাকা! সার্ভিস চালু রাখতে অনুগ্রহ করে মেল ডিপোজিট রিচার্জ/প্রদান করুন এবং মেল চালু করতে এডমিন এর সাথে যোগাযোগ করুন।";
         }
 
         return [
@@ -534,11 +539,8 @@ class MealService
             'meal_cost'       => $mealCost,
             'balance'         => $balance,
             'is_zero_deposit' => $isZero,
-            'alert_type'      => $alertType,
             'warning_message' => $warningMessage,
         ];
-
-
 
     }
 
@@ -619,7 +621,7 @@ class MealService
                     }
                 }
 
-                $depositInfo   = $this->getUserMealDepositBalance($user->id);
+                $depositInfo = $this->getUserMealDepositBalance($user->id);
                 $isZeroDeposit = $depositInfo['is_zero_deposit'];
 
                 $meal = Meal::where('user_id', $user->id)->whereDate('date', $date)->first();
@@ -664,7 +666,7 @@ class MealService
                                 'full_meal' => 0,
                                 'is_off'    => 1,
                                 'made_by'   => $authId,
-                                'note'      => 'Auto Meal OFF (Zero Deposit / Contact Admin)',
+                                'note'      => 'Auto Meal OFF (Zero Deposit)',
                             ]);
                         } else {
                             Meal::create([
@@ -683,9 +685,9 @@ class MealService
                                 'half_meal' => 0,
                                 'full_meal' => 0,
                                 'is_off'    => 1,
-                                'note'      => 'Auto Meal OFF (Zero Deposit / Contact Admin)',
+                                'note'      => 'Auto Meal OFF (Zero Deposit)',
                             ]);
-                        } elseif (!$isZeroDeposit && $meal->is_off && str_contains($meal->note ?? '', 'Auto Meal OFF')) {
+                        } elseif (!$isZeroDeposit && $meal->is_off && $meal->note === 'Auto Meal OFF (Zero Deposit)') {
                             $meal->update([
                                 'half_meal' => 0,
                                 'full_meal' => 1,
@@ -695,8 +697,6 @@ class MealService
                         }
                     }
                 }
-
-
             }
         }
     }
