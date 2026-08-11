@@ -122,26 +122,7 @@
             </div>
         @endforeach
 
-        @if(isset($mealDepositWarning) && $mealDepositWarning)
-        <div class="col-12 mb-3">
-            <div class="alert alert-info border-info d-flex align-items-center justify-content-between flex-wrap gap-2 p-3 mb-0 shadow-sm rounded-3" role="alert">
-                <div class="d-flex align-items-center">
-                    <span class="alert-icon text-info me-3 fs-3">
-                        <i class="fa fa-info-circle"></i>
-                    </span>
-                    <div>
-                        <h6 class="alert-heading mb-1 text-info fw-bold fs-6">📌 মিল সার্ভিস সংক্রান্ত তথ্য (Meal Service Information)</h6>
-                        <div class="fw-medium text-dark fs-7">
-                            {{ $mealDepositWarning }}
-                        </div>
-                    </div>
-                </div>
-                <a href="{{ route('dashboard.my-meals') }}" class="btn btn-sm btn-info fw-bold shadow-sm waves-effect waves-light px-3 py-2">
-                    <i class="fa fa-utensils me-1"></i> মেল ডিপোজিট হিস্ট্রি / রিচার্জ
-                </a>
-            </div>
-        </div>
-        @endif
+
 
 
         
