@@ -520,23 +520,13 @@ class MealService
         $mealCost     = (float) $singleHistory->meal_cost;
         $balance      = (float) $singleHistory->balance;
 
-        // Check if user has ANY deposit or meal consumption history ever
-        $hasAnyDepositHistory = Deposit::where('user_id', $userId)->exists();
-        $hasAnyMealHistory    = Meal::where('user_id', $userId)->where(function($q) {
-            $q->where('full_meal', '>', 0)->orWhere('half_meal', '>', 0);
-        })->exists();
-
-        $isNewUser = (!$hasAnyDepositHistory && !$hasAnyMealHistory);
-        $isZero    = ($hasAnyDepositHistory || $hasAnyMealHistory) && ($balance <= 0);
+        $isZero = ($balance <= 0);
         $warningMessage = null;
         $alertType      = null;
 
-        if ($isNewUser) {
-            $alertType      = 'new_user_notice';
+        if ($isZero) {
+            $alertType      = 'zero_deposit_notice';
             $warningMessage = "📌 মেসের মিল সার্ভিস চালু করতে এবং মিল ডিপোজিট জমা দিতে অনুগ্রহ করে এডমিন এর সাথে যোগাযোগ করুন।";
-        } elseif ($isZero) {
-            $alertType      = 'zero_deposit_warning';
-            $warningMessage = "⚠️ আপনার মেল ডিপোজিট (Meal Deposit) ব্যালেন্স ৳ " . number_format($balance, 2) . " টাকা! সার্ভিস চালু রাখতে অনুগ্রহ করে মেল ডিপোজিট রিচার্জ/প্রদান করুন এবং মেল চালু করতে এডমিন এর সাথে যোগাযোগ করুন।";
         }
 
         return [
@@ -544,10 +534,10 @@ class MealService
             'meal_cost'       => $mealCost,
             'balance'         => $balance,
             'is_zero_deposit' => $isZero,
-            'is_new_user'     => $isNewUser,
             'alert_type'      => $alertType,
             'warning_message' => $warningMessage,
         ];
+
 
 
     }
@@ -631,7 +621,6 @@ class MealService
 
                 $depositInfo   = $this->getUserMealDepositBalance($user->id);
                 $isZeroDeposit = $depositInfo['is_zero_deposit'];
-                $isNewUser     = $depositInfo['is_new_user'] ?? false;
 
                 $meal = Meal::where('user_id', $user->id)->whereDate('date', $date)->first();
 
@@ -667,7 +656,7 @@ class MealService
                     }
                 } else {
                     if (!$meal) {
-                        if ($isZeroDeposit || $isNewUser) {
+                        if ($isZeroDeposit) {
                             Meal::create([
                                 'user_id'   => $user->id,
                                 'date'      => $date,
@@ -675,7 +664,7 @@ class MealService
                                 'full_meal' => 0,
                                 'is_off'    => 1,
                                 'made_by'   => $authId,
-                                'note'      => $isNewUser ? 'Auto Meal OFF (New Boarder - Waiting Admin Activation)' : 'Auto Meal OFF (Zero Deposit)',
+                                'note'      => 'Auto Meal OFF (Zero Deposit / Contact Admin)',
                             ]);
                         } else {
                             Meal::create([
@@ -689,14 +678,14 @@ class MealService
                             ]);
                         }
                     } else {
-                        if (($isZeroDeposit || $isNewUser) && str_contains($meal->note ?? '', 'Auto')) {
+                        if ($isZeroDeposit && str_contains($meal->note ?? '', 'Auto')) {
                             $meal->update([
                                 'half_meal' => 0,
                                 'full_meal' => 0,
                                 'is_off'    => 1,
-                                'note'      => $isNewUser ? 'Auto Meal OFF (New Boarder - Waiting Admin Activation)' : 'Auto Meal OFF (Zero Deposit)',
+                                'note'      => 'Auto Meal OFF (Zero Deposit / Contact Admin)',
                             ]);
-                        } elseif (!$isZeroDeposit && !$isNewUser && $meal->is_off && str_contains($meal->note ?? '', 'Auto Meal OFF')) {
+                        } elseif (!$isZeroDeposit && $meal->is_off && str_contains($meal->note ?? '', 'Auto Meal OFF')) {
                             $meal->update([
                                 'half_meal' => 0,
                                 'full_meal' => 1,
@@ -706,6 +695,7 @@ class MealService
                         }
                     }
                 }
+
 
             }
         }

@@ -123,33 +123,26 @@
         @endforeach
 
         @if(isset($mealDepositWarning) && $mealDepositWarning)
-        @php
-            $isNewUserNotice = ($mealDepositAlertType ?? '') === 'new_user_notice';
-            $alertClass      = $isNewUserNotice ? 'alert-info border-info' : 'alert-danger border-danger';
-            $iconClass       = $isNewUserNotice ? 'text-info fa-info-circle' : 'text-danger fa-exclamation-triangle';
-            $titleText       = $isNewUserNotice ? '📌 মিল সার্ভিস সংক্রান্ত তথ্য (Meal Service Information)' : 'মেল ডিপোজিট বকেয়া/জিরো অ্যালার্ট (Meal Deposit Alert)';
-            $titleColor      = $isNewUserNotice ? 'text-info' : 'text-danger';
-            $btnClass        = $isNewUserNotice ? 'btn-info' : 'btn-danger';
-        @endphp
         <div class="col-12 mb-3">
-            <div class="alert {{ $alertClass }} d-flex align-items-center justify-content-between flex-wrap gap-2 p-3 mb-0 shadow-sm rounded-3" role="alert">
+            <div class="alert alert-info border-info d-flex align-items-center justify-content-between flex-wrap gap-2 p-3 mb-0 shadow-sm rounded-3" role="alert">
                 <div class="d-flex align-items-center">
-                    <span class="alert-icon {{ $titleColor }} me-3 fs-3">
-                        <i class="fa {{ $isNewUserNotice ? 'fa-info-circle' : 'fa-exclamation-triangle' }}"></i>
+                    <span class="alert-icon text-info me-3 fs-3">
+                        <i class="fa fa-info-circle"></i>
                     </span>
                     <div>
-                        <h6 class="alert-heading mb-1 {{ $titleColor }} fw-bold fs-6">{{ $titleText }}</h6>
+                        <h6 class="alert-heading mb-1 text-info fw-bold fs-6">📌 মিল সার্ভিস সংক্রান্ত তথ্য (Meal Service Information)</h6>
                         <div class="fw-medium text-dark fs-7">
                             {{ $mealDepositWarning }}
                         </div>
                     </div>
                 </div>
-                <a href="{{ route('dashboard.my-meals') }}" class="btn btn-sm {{ $btnClass }} fw-bold shadow-sm waves-effect waves-light px-3 py-2">
+                <a href="{{ route('dashboard.my-meals') }}" class="btn btn-sm btn-info fw-bold shadow-sm waves-effect waves-light px-3 py-2">
                     <i class="fa fa-utensils me-1"></i> মেল ডিপোজিট হিস্ট্রি / রিচার্জ
                 </a>
             </div>
         </div>
         @endif
+
 
         
         <!-- My Room & Booking Status -->
@@ -289,13 +282,14 @@
                         <div class="content-left">
                             <span class="text-heading fw-semibold">Today's Meal (আজকের মিল)</span>
                             <div class="my-1">
-                                @if((isset($mealDepositAlertType) && $mealDepositAlertType === 'new_user_notice') || (isset($todayMealStatus) && $todayMealStatus->is_off))
+                                @if((isset($mealDepositWarning) && $mealDepositWarning) || (isset($todayMealStatus) && $todayMealStatus->is_off))
                                     <span class="badge bg-danger fs-6 px-2 py-1"><i class="fa fa-ban me-1"></i> Meal OFF (বন্ধ)</span>
                                 @elseif(isset($todayMealStatus) && $todayMealStatus->half_meal)
                                     <span class="badge bg-info fs-6 px-2 py-1"><i class="fa fa-sun me-1"></i> Half Meal (হাফ)</span>
                                 @else
                                     <span class="badge bg-success fs-6 px-2 py-1"><i class="fa fa-check-circle me-1"></i> Full Meal (অটো চালু)</span>
                                 @endif
+
 
                             </div>
                             <small class="mb-0 text-muted">Auto generated daily</small>
