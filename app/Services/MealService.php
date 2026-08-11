@@ -509,8 +509,8 @@ class MealService
                 'deposit_total' => 0,
                 'meal_cost' => 0,
                 'balance' => 0,
-                'is_zero_deposit' => true,
-                'warning_message' => '⚠️ আপনার মেল ডিপোজিট (Meal Deposit) ব্যালেন্স ৳ 0 টাকা! সার্ভিস চালু রাখতে অনুগ্রহ করে মেল ডিপোজিট জমা দিন এবং মেল চালু করতে এডমিন এর সাথে যোগাযোগ করুন।',
+                'is_zero_deposit' => false,
+                'warning_message' => null,
             ];
         }
 
@@ -520,7 +520,14 @@ class MealService
         $mealCost     = (float) $singleHistory->meal_cost;
         $balance      = (float) $singleHistory->balance;
 
-        $isZero = ($depositTotal <= 0 || $balance <= 0);
+        // Check if user has ANY deposit or meal consumption history ever
+        $hasAnyDepositHistory = Deposit::where('user_id', $userId)->exists();
+        $hasAnyMealHistory    = Meal::where('user_id', $userId)->where(function($q) {
+            $q->where('full_meal', '>', 0)->orWhere('half_meal', '>', 0);
+        })->exists();
+
+        // Zero deposit warning is ONLY for existing boarders who have history AND balance <= 0
+        $isZero = ($hasAnyDepositHistory || $hasAnyMealHistory) && ($balance <= 0);
         $warningMessage = null;
 
         if ($isZero) {
@@ -534,6 +541,7 @@ class MealService
             'is_zero_deposit' => $isZero,
             'warning_message' => $warningMessage,
         ];
+
     }
 
     public function ensureAutoMealGeneratedForUsers($users, $date = null)
