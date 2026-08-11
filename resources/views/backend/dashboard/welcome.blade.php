@@ -123,25 +123,34 @@
         @endforeach
 
         @if(isset($mealDepositWarning) && $mealDepositWarning)
+        @php
+            $isNewUserNotice = ($mealDepositAlertType ?? '') === 'new_user_notice';
+            $alertClass      = $isNewUserNotice ? 'alert-info border-info' : 'alert-danger border-danger';
+            $iconClass       = $isNewUserNotice ? 'text-info fa-info-circle' : 'text-danger fa-exclamation-triangle';
+            $titleText       = $isNewUserNotice ? '📌 মিল সার্ভিস সংক্রান্ত তথ্য (Meal Service Information)' : 'মেল ডিপোজিট বকেয়া/জিরো অ্যালার্ট (Meal Deposit Alert)';
+            $titleColor      = $isNewUserNotice ? 'text-info' : 'text-danger';
+            $btnClass        = $isNewUserNotice ? 'btn-info' : 'btn-danger';
+        @endphp
         <div class="col-12 mb-3">
-            <div class="alert alert-danger d-flex align-items-center justify-content-between flex-wrap gap-2 p-3 mb-0 shadow-sm border-danger rounded-3" role="alert">
+            <div class="alert {{ $alertClass }} d-flex align-items-center justify-content-between flex-wrap gap-2 p-3 mb-0 shadow-sm rounded-3" role="alert">
                 <div class="d-flex align-items-center">
-                    <span class="alert-icon text-danger me-3 fs-3">
-                        <i class="fa fa-exclamation-triangle"></i>
+                    <span class="alert-icon {{ $titleColor }} me-3 fs-3">
+                        <i class="fa {{ $isNewUserNotice ? 'fa-info-circle' : 'fa-exclamation-triangle' }}"></i>
                     </span>
                     <div>
-                        <h6 class="alert-heading mb-1 text-danger fw-bold fs-6">মেল ডিপোজিট বকেয়া/জিরো অ্যালার্ট (Meal Deposit Alert)</h6>
+                        <h6 class="alert-heading mb-1 {{ $titleColor }} fw-bold fs-6">{{ $titleText }}</h6>
                         <div class="fw-medium text-dark fs-7">
                             {{ $mealDepositWarning }}
                         </div>
                     </div>
                 </div>
-                <a href="{{ route('dashboard.my-meals') }}" class="btn btn-sm btn-danger fw-bold shadow-sm waves-effect waves-light px-3 py-2">
+                <a href="{{ route('dashboard.my-meals') }}" class="btn btn-sm {{ $btnClass }} fw-bold shadow-sm waves-effect waves-light px-3 py-2">
                     <i class="fa fa-utensils me-1"></i> মেল ডিপোজিট হিস্ট্রি / রিচার্জ
                 </a>
             </div>
         </div>
         @endif
+
         
         <!-- My Room & Booking Status -->
         @php

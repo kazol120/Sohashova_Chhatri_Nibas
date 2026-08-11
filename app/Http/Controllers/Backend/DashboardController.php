@@ -94,8 +94,10 @@ class DashboardController extends Controller
             $data['myMealCount'] = Meal::where('user_id', $user->id)->count();
 
             $mealDepositInfo = app(\App\Services\MealService::class)->getUserMealDepositBalance($user->id);
-            $data['mealDepositBalance'] = $mealDepositInfo['balance'];
-            $data['mealDepositWarning'] = $mealDepositInfo['is_zero_deposit'] ? $mealDepositInfo['warning_message'] : null;
+            $data['mealDepositBalance']   = $mealDepositInfo['balance'];
+            $data['mealDepositWarning']   = $mealDepositInfo['warning_message'];
+            $data['mealDepositAlertType'] = $mealDepositInfo['alert_type'] ?? null;
+
 
             app(\App\Services\MealService::class)->ensureAutoMealGeneratedForUsers(collect([$user]), today());
             $data['todayMealStatus']   = Meal::where('user_id', $user->id)->whereDate('date', today())->first();
