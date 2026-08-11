@@ -526,12 +526,19 @@ class MealService
             $q->where('full_meal', '>', 0)->orWhere('half_meal', '>', 0);
         })->exists();
 
-        // Zero deposit warning is ONLY for existing boarders who have history AND balance <= 0
-        $isZero = ($hasAnyDepositHistory || $hasAnyMealHistory) && ($balance <= 0);
+        $isExistingUser = ($hasAnyDepositHistory || $hasAnyMealHistory);
+        $isZero         = ($balance <= 0);
+
         $warningMessage = null;
+        $alertType      = null;
 
         if ($isZero) {
-            $warningMessage = "⚠️ আপনার মেল ডিপোজিট (Meal Deposit) ব্যালেন্স ৳ " . number_format($balance, 2) . " টাকা! সার্ভিস চালু রাখতে অনুগ্রহ করে মেল ডিপোজিট রিচার্জ/প্রদান করুন এবং মেল চালু করতে এডমিন এর সাথে যোগাযোগ করুন।";
+            $alertType = 'meal_notice';
+            if ($isExistingUser) {
+                $warningMessage = "📌 মেসের মিল সার্ভিস চালু করতে এবং মিল ডিপোজিট জমা দিতে অনুগ্রহ করে এডমিন এর সাথে যোগাযোগ করুন। আপনার ডিপোজিট ব্যালেন্স ৳ " . number_format($balance, 2) . " টাকা।";
+            } else {
+                $warningMessage = "📌 মেসের মিল সার্ভিস চালু করতে এবং মিল ডিপোজিট জমা দিতে অনুগ্রহ করে এডমিন এর সাথে যোগাযোগ করুন।";
+            }
         }
 
         return [
@@ -539,8 +546,11 @@ class MealService
             'meal_cost'       => $mealCost,
             'balance'         => $balance,
             'is_zero_deposit' => $isZero,
+            'is_existing'     => $isExistingUser,
+            'alert_type'      => $alertType,
             'warning_message' => $warningMessage,
         ];
+
 
     }
 

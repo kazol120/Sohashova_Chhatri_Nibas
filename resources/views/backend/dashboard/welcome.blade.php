@@ -121,8 +121,8 @@
                 </div>
             </div>
         @endforeach
-        @if((isset($mealDepositBalance) && $mealDepositBalance <= 0) || (isset($todayMealStatus) && $todayMealStatus->is_off))
-        <div class="col-12 mb-3">
+        @if(isset($mealDepositWarning) && $mealDepositWarning)
+        <div class="col-12 mb-3" id="mealNoticeBanner">
             <div class="alert alert-info border-info d-flex align-items-center justify-content-between flex-wrap gap-2 p-3 mb-0 shadow-sm rounded-3" role="alert">
                 <div class="d-flex align-items-center">
                     <span class="alert-icon text-info me-3 fs-3">
@@ -130,8 +130,8 @@
                     </span>
                     <div>
                         <h6 class="alert-heading mb-1 text-info fw-bold fs-6">📌 মিল সার্ভিস সংক্রান্ত তথ্য (Meal Service Information)</h6>
-                        <div class="fw-medium text-dark fs-7">
-                            📌 মেসের মিল সার্ভিস চালু করতে এবং মিল ডিপোজিট জমা দিতে অনুগ্রহ করে এডমিন এর সাথে যোগাযোগ করুন।
+                        <div class="fw-medium text-dark fs-7" id="mealNoticeMessage">
+                            {{ $mealDepositWarning }}
                         </div>
                     </div>
                 </div>
@@ -141,6 +141,7 @@
             </div>
         </div>
         @endif
+
 
         @php
             $bookingItems = [];
@@ -277,7 +278,7 @@
                     <div class="d-flex align-items-start justify-content-between mb-1">
                         <div class="content-left">
                             <span class="text-heading fw-semibold">Today's Meal (আজকের মিল)</span>
-                            <div class="my-1">
+                            <div class="my-1" id="todayMealBadgeWrap">
                                 @if(isset($todayMealStatus) && $todayMealStatus->is_off)
                                     <span class="badge bg-danger fs-6 px-2 py-1"><i class="fa fa-ban me-1"></i> Meal OFF (বন্ধ)</span>
                                 @elseif(isset($todayMealStatus) && $todayMealStatus->half_meal)
@@ -286,6 +287,7 @@
                                     <span class="badge bg-success fs-6 px-2 py-1"><i class="fa fa-check-circle me-1"></i> Full Meal (অটো চালু)</span>
                                 @endif
                             </div>
+
                             <small class="mb-0 text-muted">Auto generated daily</small>
                         </div>
                         <div class="avatar">
@@ -1152,35 +1154,82 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(res => res.json())
         .then(data => {
-            if (data.success && data.has_notifs && data.notifications) {
-                const container = document.querySelector('.container-xxl .row.g-6');
-                if (container) {
-                    data.notifications.forEach(notif => {
-                        const alertType = notif.status == 1 ? 'success' : 'danger';
-                        const icon = notif.status == 1 ? 'check-circle' : 'times-circle';
-
-                        const notifDiv = document.createElement('div');
-                        notifDiv.className = 'col-12 mb-3';
-                        notifDiv.id = 'mealNotifBox_' + notif.id;
-                        notifDiv.innerHTML = `
-                            <div class="alert alert-${alertType} alert-dismissible d-flex align-items-center justify-content-between p-3 mb-0 shadow-sm border-${alertType} rounded-3" role="alert">
-                                <div class="d-flex align-items-center">
-                                    <span class="alert-icon text-${alertType} me-3 fs-3">
-                                        <i class="fa fa-${icon}"></i>
-                                    </span>
-                                    <div>
-                                        <h6 class="alert-heading mb-1 text-${alertType} fw-bold fs-6">${notif.title}</h6>
-                                        <div class="fw-medium text-dark fs-7">${notif.message}</div>
+            if (data.success) {
+                // Live notice banner update / real-time removal when admin activates meal
+                const noticeBanner = document.getElementById('mealNoticeBanner');
+                if (data.warning_message) {
+                    if (noticeBanner) {
+                        const msgDiv = document.getElementById('mealNoticeMessage');
+                        if (msgDiv) msgDiv.innerText = data.warning_message;
+                    } else {
+                        const container = document.querySelector('.container-xxl .row.g-6');
+                        if (container) {
+                            const newBanner = document.createElement('div');
+                            newBanner.className = 'col-12 mb-3';
+                            newBanner.id = 'mealNoticeBanner';
+                            newBanner.innerHTML = `
+                                <div class="alert alert-info border-info d-flex align-items-center justify-content-between flex-wrap gap-2 p-3 mb-0 shadow-sm rounded-3" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <span class="alert-icon text-info me-3 fs-3">
+                                            <i class="fa fa-info-circle"></i>
+                                        </span>
+                                        <div>
+                                            <h6 class="alert-heading mb-1 text-info fw-bold fs-6">📌 মিল সার্ভিস সংক্রান্ত তথ্য (Meal Service Information)</h6>
+                                            <div class="fw-medium text-dark fs-7" id="mealNoticeMessage">
+                                                ${data.warning_message}
+                                            </div>
+                                        </div>
                                     </div>
+                                    <a href="tel:01977270920" class="btn btn-sm btn-info fw-bold shadow-sm waves-effect waves-light px-3 py-2">
+                                        <i class="fa fa-phone-alt me-1"></i> এডমিন এর সাথে যোগাযোগ করুন
+                                    </a>
                                 </div>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick="dismissMealNotif(${notif.id})"></button>
-                            </div>
-                        `;
-                        container.prepend(notifDiv);
-                    });
+                            `;
+                            container.prepend(newBanner);
+                        }
+                    }
+                } else {
+                    if (noticeBanner) noticeBanner.remove();
+                }
+
+                // Live Today's Meal Badge update
+                const badgeWrap = document.getElementById('todayMealBadgeWrap');
+                if (badgeWrap && data.today_meal_badge_text) {
+                    badgeWrap.innerHTML = `<span class="badge ${data.today_meal_badge_class} fs-6 px-2 py-1"><i class="fa ${data.today_meal_badge_icon} me-1"></i> ${data.today_meal_badge_text}</span>`;
+                }
+
+                // User notifications modal/alerts
+                if (data.has_notifs && data.notifications) {
+                    const container = document.querySelector('.container-xxl .row.g-6');
+                    if (container) {
+                        data.notifications.forEach(notif => {
+                            const alertType = notif.status == 1 ? 'success' : 'danger';
+                            const icon = notif.status == 1 ? 'check-circle' : 'times-circle';
+
+                            const notifDiv = document.createElement('div');
+                            notifDiv.className = 'col-12 mb-3';
+                            notifDiv.id = 'mealNotifBox_' + notif.id;
+                            notifDiv.innerHTML = `
+                                <div class="alert alert-${alertType} alert-dismissible d-flex align-items-center justify-content-between p-3 mb-0 shadow-sm border-${alertType} rounded-3" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <span class="alert-icon text-${alertType} me-3 fs-3">
+                                            <i class="fa fa-${icon}"></i>
+                                        </span>
+                                        <div>
+                                            <h6 class="alert-heading mb-1 text-${alertType} fw-bold fs-6">${notif.title}</h6>
+                                            <div class="fw-medium text-dark fs-7">${notif.message}</div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick="dismissMealNotif(${notif.id})"></button>
+                                </div>
+                            `;
+                            container.prepend(notifDiv);
+                        });
+                    }
                 }
             }
         })
+
         .catch(err => console.log('Dashboard live notif poll skipped', err));
     }
     setInterval(checkDashboardUserNotifsLive, 5000);

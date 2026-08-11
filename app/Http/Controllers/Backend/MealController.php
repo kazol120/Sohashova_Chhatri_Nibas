@@ -476,13 +476,39 @@ class MealController extends Controller
             ->where('status', 0)
             ->count();
 
+        $depositInfo = $this->mealService->getUserMealDepositBalance($user->id);
+        $todayMealStatus = \App\Models\Backend\Meal::where('user_id', $user->id)->whereDate('date', today())->first();
+
+        $isMealOff = ($depositInfo['balance'] <= 0) || ($todayMealStatus && $todayMealStatus->is_off);
+
+        $todayMealBadgeText = 'Full Meal (অটো চালু)';
+        $todayMealBadgeClass = 'bg-success';
+        $todayMealBadgeIcon = 'fa-check-circle';
+
+        if ($isMealOff) {
+            $todayMealBadgeText = 'Meal OFF (বন্ধ)';
+            $todayMealBadgeClass = 'bg-danger';
+            $todayMealBadgeIcon = 'fa-ban';
+        } elseif ($todayMealStatus && $todayMealStatus->half_meal) {
+            $todayMealBadgeText = 'Half Meal (হাফ)';
+            $todayMealBadgeClass = 'bg-info';
+            $todayMealBadgeIcon = 'fa-sun';
+        }
+
         return response()->json([
-            'success'       => true,
-            'has_notifs'    => count($notifications) > 0,
-            'notifications' => $notifications,
-            'pending_count' => $pendingCount,
+            'success'               => true,
+            'has_notifs'            => count($notifications) > 0,
+            'notifications'         => $notifications,
+            'pending_count'         => $pendingCount,
+            'deposit_balance'       => $depositInfo['balance'],
+            'warning_message'       => $depositInfo['warning_message'],
+            'is_meal_off'           => $isMealOff,
+            'today_meal_badge_text'  => $todayMealBadgeText,
+            'today_meal_badge_class' => $todayMealBadgeClass,
+            'today_meal_badge_icon'  => $todayMealBadgeIcon,
         ]);
     }
+
 
     public function checkPendingMealRequests()
     {
