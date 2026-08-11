@@ -27,7 +27,6 @@ class ResidenceOverviewController extends Controller
             'img_back.required'  => 'Back image is required.',
             'img_front.required' => 'Front image is required.',
         ]);
-
         if ($validator->fails()) {
             return response()->json([
                 'status'  => false,
@@ -35,10 +34,8 @@ class ResidenceOverviewController extends Controller
                 'errors'  => $validator->errors(),
             ], 422);
         }
-
         $imgBackName = null;
         $imgFrontName = null;
-
         // Back Image Path
         $backPath = public_path('residence_back_image');
         if (!file_exists($backPath)) {

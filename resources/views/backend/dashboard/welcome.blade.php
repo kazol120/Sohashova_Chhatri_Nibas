@@ -14,39 +14,177 @@
                         <h5 class="fw-bold mb-1 text-dark">
                             <i class="fa fa-user-circle text-primary me-2"></i>Resident Dashboard (বোর্ডার ড্যাশবোর্ড)
                         </h5>
-                        <small class="text-muted">Welcome, <strong>{{ auth()->user()->name }}</strong>! Manage your hostel booking & profile.</small>
+                        <small class="text-muted d-block mb-1">📌 <strong>নির্দেশাবলী:</strong> কনফার্ম বুকিং ডকুমেন্টটি প্রিন্ট করে এডমিন এর কাছে জমা দিয়ে আপনার বুকিং রসিদ বুঝে নিন।</small>
+                        <small class="text-dark fw-semibold"><i class="fa fa-phone-alt me-1 text-success"></i> যেকোনো তথ্যের জন্য এই নম্বরে যোগাযোগ করুন: <a href="tel:01977270920" class="text-primary fw-bold text-decoration-none">01977270920</a></small>
                     </div>
                     @if(isset($userBooking) && $userBooking)
                     <div class="d-flex align-items-center gap-2">
                         <button type="button" onclick="printResidentDocument()" class="btn btn-primary fw-bold waves-effect waves-light shadow-sm">
                             <i class="fa fa-print me-2"></i> Confirm Booking Document
                         </button>
-                        <button type="button" onclick="printResidentIdCard()" class="btn btn-info fw-bold waves-effect waves-light shadow-sm">
-                            <i class="fa fa-id-card me-2"></i> Print ID Card
-                        </button>
                     </div>
                     @endif
                 </div>
             </div>
         </div>
+
+        @if(session('success'))
+            <div class="col-12 mb-3">
+                <div class="alert alert-success alert-dismissible d-flex align-items-center justify-content-between p-3 mb-0 shadow-sm border-success rounded-3" role="alert">
+                    <div class="d-flex align-items-center">
+                        <span class="alert-icon text-success me-3 fs-3">
+                            <i class="fa fa-check-circle"></i>
+                        </span>
+                        <div>
+                            <h6 class="alert-heading mb-1 text-success fw-bold fs-6">📌 মিল অনুরোধ সফলভাবে পাঠানো হয়েছে</h6>
+                            <div class="fw-medium text-dark fs-7">{{ session('success') }}</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        @endif
+
+        @php
+            $todayStr = \Carbon\Carbon::today()->format('Y-m-d');
+            $currentHour = (int) \Carbon\Carbon::now()->format('H');
+
+            // Auto mark past or expired notifications as notified in DB so they clear automatically:
+            // 1. Any request where date/end_date < today
+            // 2. Any 'half_night' (Lunch OFF) request for today when current time >= 16:00 (4:00 PM)
+            \App\Models\Backend\MealRequest::where('user_id', auth()->id())
+                ->where('user_notified', 0)
+                ->where(function($q) use ($todayStr, $currentHour) {
+                    $q->where(function($sub) use ($todayStr) {
+                        $sub->whereNotNull('end_date')->where('end_date', '<', $todayStr);
+                    })->orWhere(function($sub) use ($todayStr) {
+                        $sub->whereNull('end_date')->where('date', '<', $todayStr);
+                    });
+
+                    if ($currentHour >= 16) {
+                        $q->orWhere(function($sub) use ($todayStr) {
+                            $sub->where('request_type', 'half_night')->where('date', '<=', $todayStr);
+                        });
+                    }
+                })
+                ->update(['user_notified' => 1]);
+
+            $userMealNotifs = \App\Models\Backend\MealRequest::where('user_id', auth()->id())
+                ->whereIn('status', [1, 2])
+                ->where('user_notified', 0)
+                ->get();
+
+            $mealTypeLabels = [
+                'full'       => 'ফুল মিল (Full Meal)',
+                'half_day'   => 'দিনের হাফ মিল',
+                'half_night' => 'রাতের হাফ মিল',
+                'off'        => 'মিল বন্ধ (Meal OFF)',
+            ];
+        @endphp
+
+        @foreach($userMealNotifs as $un)
+            <div class="col-12 mb-3" id="mealNotifBox_{{ $un->id }}">
+                <div class="alert alert-{{ $un->status == 1 ? 'success' : 'danger' }} alert-dismissible d-flex align-items-center justify-content-between p-3 mb-0 shadow-sm border-{{ $un->status == 1 ? 'success' : 'danger' }} rounded-3" role="alert">
+                    <div class="d-flex align-items-center">
+                        <span class="alert-icon text-{{ $un->status == 1 ? 'success' : 'danger' }} me-3 fs-3">
+                            <i class="fa fa-{{ $un->status == 1 ? 'check-circle' : 'times-circle' }}"></i>
+                        </span>
+                        <div>
+                            <h6 class="alert-heading mb-1 text-{{ $un->status == 1 ? 'success' : 'danger' }} fw-bold fs-6">
+                                {{ $un->status == 1 ? '✅ মিল অনুরোধ অনুমোদিত হয়েছে' : '❌ মিল অনুরোধ প্রত্যাখ্যাত হয়েছে' }}
+                            </h6>
+                            <div class="fw-medium text-dark fs-7">
+                                আপনার <strong>{{ \Carbon\Carbon::parse($un->date)->format('d-M-Y') }}</strong> {{ $un->end_date && $un->total_days > 1 ? "হতে " . \Carbon\Carbon::parse($un->end_date)->format('d-M-Y') . " পর্যন্ত" : "" }} তারিখের <strong>'{{ $mealTypeLabels[$un->request_type] ?? $un->request_type }}'</strong> অনুরোধটি এডমিন কর্তৃক {{ $un->status == 1 ? 'অনুমোদিত' : 'প্রত্যাখ্যাত' }} হয়েছে।
+                                @if($un->status == 1)
+                                    @if($un->request_type == 'off')
+                                        @php
+                                            $resumeDate = \Carbon\Carbon::parse($un->end_date ?: $un->date)->addDay()->format('d-M-Y');
+                                        @endphp
+                                        <br><span class="text-success fw-bold mt-1 d-inline-block"><i class="fa fa-info-circle me-1"></i> <strong>{{ $resumeDate }}</strong> তারিখ থেকে আপনার মিল স্বয়ংক্রিয়ভাবে পুনরায় চালু থাকবে।</span>
+                                    @elseif($un->request_type == 'half_night')
+                                        <br><span class="text-success fw-bold mt-1 d-inline-block"><i class="fa fa-sun me-1"></i> ☀️ দুপুরের মিল বন্ধ রাখা হয়েছে। আজ রাত থেকে রাতের মিল চালু থাকবে।</span>
+                                    @elseif($un->request_type == 'half_day')
+                                        @php
+                                            $resumeDate = \Carbon\Carbon::parse($un->date)->addDay()->format('d-M-Y');
+                                        @endphp
+                                        <br><span class="text-success fw-bold mt-1 d-inline-block"><i class="fa fa-moon me-1"></i> 🌙 রাতের মিল বন্ধ রাখা হয়েছে। <strong>{{ $resumeDate }}</strong> তারিখ থেকে পুনরায় স্বাভাবিক মিল চালু থাকবে।</span>
+                                    @endif
+                                @endif
+                                @if($un->admin_note)
+                                    <br><small class="text-muted">নোট: {{ $un->admin_note }}</small>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+                            onclick="dismissMealNotif({{ $un->id }})"></button>
+                </div>
+            </div>
+        @endforeach
+
+        @if(isset($mealDepositWarning) && $mealDepositWarning)
+        <div class="col-12 mb-3">
+            <div class="alert alert-danger d-flex align-items-center justify-content-between flex-wrap gap-2 p-3 mb-0 shadow-sm border-danger rounded-3" role="alert">
+                <div class="d-flex align-items-center">
+                    <span class="alert-icon text-danger me-3 fs-3">
+                        <i class="fa fa-exclamation-triangle"></i>
+                    </span>
+                    <div>
+                        <h6 class="alert-heading mb-1 text-danger fw-bold fs-6">মেল ডিপোজিট বকেয়া/জিরো অ্যালার্ট (Meal Deposit Alert)</h6>
+                        <div class="fw-medium text-dark fs-7">
+                            {{ $mealDepositWarning }}
+                        </div>
+                    </div>
+                </div>
+                <a href="{{ route('dashboard.my-meals') }}" class="btn btn-sm btn-danger fw-bold shadow-sm waves-effect waves-light px-3 py-2">
+                    <i class="fa fa-utensils me-1"></i> মেল ডিপোজিট হিস্ট্রি / রিচার্জ
+                </a>
+            </div>
+        </div>
+        @endif
         
         <!-- My Room & Booking Status -->
+        @php
+            $bookingItems = [];
+            if (isset($userBooking) && $userBooking) {
+                if (is_string($userBooking->floor_number_room_number_roomprice)) {
+                    $bookingItems = json_decode($userBooking->floor_number_room_number_roomprice, true) ?? [];
+                } elseif (is_array($userBooking->floor_number_room_number_roomprice)) {
+                    $bookingItems = $userBooking->floor_number_room_number_roomprice;
+                }
+            }
+            
+            $bFloors = collect($bookingItems)->pluck('floornumber')->filter()->unique()->implode(', ');
+            if (!$bFloors && isset($userBooking) && $userBooking) {
+                $bFloors = $userBooking->floornumber ?? '-';
+            }
+
+            $bRooms = collect($bookingItems)->map(function($i) {
+                $parts = explode('-', $i['roomnumber'] ?? '');
+                return $parts[0] ?? ($i['roomnumber'] ?? '');
+            })->filter()->implode(', ');
+            if (!$bRooms && isset($userBooking) && $userBooking) {
+                $bRooms = $userBooking->room_number ?? $userBooking->roomnumber ?? '-';
+            }
+
+            $bSeats = collect($bookingItems)->map(function($i) {
+                $parts = explode('-', $i['roomnumber'] ?? '');
+                return count($parts) > 1 ? implode('-', array_slice($parts, 1)) : '-';
+            })->filter()->implode(', ');
+            if (!$bSeats && isset($userBooking) && $userBooking) {
+                $bSeats = '-';
+            }
+        @endphp
+
         <div class="col-sm-6 col-xl-3">
             <div class="card h-100 position-relative overflow-hidden border-0 shadow-sm" style="border-top: 4px solid #6366f1 !important;">
-                <div class="card-body pb-1">
-                    <div class="d-flex align-items-start justify-content-between">
+                <div class="card-body pb-2">
+                    <div class="d-flex align-items-start justify-content-between mb-2">
                         <div class="content-left">
-                            <span class="text-heading">My Booking Status</span>
+                            <span class="text-heading fw-semibold">My Booking Status</span>
                             <div class="d-flex align-items-center my-1">
-                                <h4 class="mb-0 me-2 text-primary">{{ $userBooking ? 'Active Resident' : 'No Booking' }}</h4>
+                                <h4 class="mb-0 me-2 text-primary fw-bold">{{ $userBooking ? 'Active Resident' : 'No Booking' }}</h4>
                             </div>
-                            <small class="mb-0 text-muted">
-                                @if($userBooking)
-                                  <i class="fa fa-bed me-1 text-primary"></i> ৳ {{ number_format($userBooking->monthly_amount ?? 0) }}/month
-                                @else
-                                  No Active Booking Record
-                                @endif
-                            </small>
                         </div>
                         <div class="avatar">
                             <span class="avatar-initial rounded bg-label-primary">
@@ -54,7 +192,27 @@
                             </span>
                         </div>
                     </div>
-                    <div id="chart-mybooking" class="mt-2" style="min-height: 45px;"></div>
+                    @if($userBooking)
+                    <div class="bg-light p-2 rounded-2 mb-2 border">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted"><i class="fa fa-building text-primary me-1"></i> Floor:</span>
+                            <span class="fw-bold text-dark">{{ $bFloors ?: '-' }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted"><i class="fa fa-door-open text-primary me-1"></i> Room/Section:</span>
+                            <span class="fw-bold text-dark">{{ $bRooms ?: '-' }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between small">
+                            <span class="text-muted"><i class="fa fa-bed text-primary me-1"></i> Seat No:</span>
+                            <span class="badge bg-label-danger font-monospace fw-bold">{{ $bSeats ?: '-' }}</span>
+                        </div>
+                    </div>
+                    <small class="mb-0 text-primary fw-bold">
+                        <i class="fa fa-tag me-1"></i> ৳ {{ number_format($userBooking->monthly_amount ?? 0) }}/month
+                    </small>
+                    @else
+                    <small class="mb-0 text-muted">No Active Booking Record</small>
+                    @endif
                 </div>
             </div>
         </div>
@@ -84,18 +242,21 @@
             </a>
         </div>
 
-        <!-- My Meal History Card -->
+
+        <!-- My Meal Deposit & History Card -->
         <div class="col-sm-6 col-xl-3">
             <a href="{{ route('dashboard.my-meals') }}" class="text-decoration-none">
                 <div class="card h-100 position-relative overflow-hidden border-0 shadow-sm" style="border-top: 4px solid #ff9f43 !important;">
-                    <div class="card-body pb-1">
+                    <div class="card-body pb-2">
                         <div class="d-flex align-items-start justify-content-between">
                             <div class="content-left">
-                                <span class="text-heading">My Meal History</span>
+                                <span class="text-heading fw-semibold text-warning">Meal Deposit Balance</span>
                                 <div class="d-flex align-items-center my-1">
-                                    <h4 class="mb-0 me-2 text-warning">{{ number_format($myMealCount ?? 0) }} Meals</h4>
+                                    <h4 class="mb-0 me-2 {{ (isset($mealDepositBalance) && $mealDepositBalance < 0) ? 'text-danger' : 'text-warning' }} fw-bold">
+                                        ৳ {{ number_format($mealDepositBalance ?? 0, 2) }}
+                                    </h4>
                                 </div>
-                                <small class="mb-0 text-muted">Meal Records</small>
+                                <small class="mb-0 text-muted">Total Meals: {{ number_format($myMealCount ?? 0) }}</small>
                             </div>
                             <div class="avatar">
                                 <span class="avatar-initial rounded bg-label-warning">
@@ -103,35 +264,48 @@
                                 </span>
                             </div>
                         </div>
-                        <div id="chart-mymeals" class="mt-2" style="min-height: 45px;"></div>
+                        <div class="mt-2">
+                            <span class="badge bg-label-warning w-100 py-1"><i class="fa fa-wallet me-1"></i> View Deposit & History</span>
+                        </div>
                     </div>
                 </div>
             </a>
         </div>
 
-        <!-- Daily Meal Create Card -->
+        <!-- Daily Meal Status / Setting Card -->
         <div class="col-sm-6 col-xl-3">
-            <a href="{{ route('meals.create') }}" class="text-decoration-none">
-                <div class="card h-100 position-relative overflow-hidden border-0 shadow-sm" style="border-top: 4px solid #00cfdd !important;">
-                    <div class="card-body pb-1">
-                        <div class="d-flex align-items-start justify-content-between">
-                            <div class="content-left">
-                                <span class="text-heading">Daily Meal Create</span>
-                                <div class="d-flex align-items-center my-1">
-                                    <h4 class="mb-0 me-2 text-info">Enter Meal</h4>
-                                </div>
-                                <small class="mb-0 text-muted">Daily Meal Entry</small>
+            <div class="card h-100 position-relative overflow-hidden border-0 shadow-sm" style="border-top: 4px solid #00cfdd !important;">
+                <div class="card-body pb-2">
+                    <div class="d-flex align-items-start justify-content-between mb-1">
+                        <div class="content-left">
+                            <span class="text-heading fw-semibold">Today's Meal (আজকের মিল)</span>
+                            <div class="my-1">
+                                @if(isset($todayMealStatus) && $todayMealStatus->is_off)
+                                    <span class="badge bg-danger fs-6 px-2 py-1"><i class="fa fa-ban me-1"></i> Meal OFF (বন্ধ)</span>
+                                @elseif(isset($todayMealStatus) && $todayMealStatus->half_meal)
+                                    <span class="badge bg-info fs-6 px-2 py-1"><i class="fa fa-sun me-1"></i> Half Meal (হাফ)</span>
+                                @else
+                                    <span class="badge bg-success fs-6 px-2 py-1"><i class="fa fa-check-circle me-1"></i> Full Meal (অটো চালু)</span>
+                                @endif
                             </div>
-                            <div class="avatar">
-                                <span class="avatar-initial rounded bg-label-info">
-                                   <i class="fa fa-calendar-plus"></i>
-                                </span>
-                            </div>
+                            <small class="mb-0 text-muted">Auto generated daily</small>
                         </div>
-                        <div id="chart-createmeal" class="mt-2" style="min-height: 45px;"></div>
+                        <div class="avatar">
+                            <span class="avatar-initial rounded bg-label-info">
+                               <i class="fa fa-calendar-alt"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <a href="{{ route('meals.create') }}" class="btn btn-sm btn-outline-info w-100 fw-bold shadow-sm waves-effect">
+                            <i class="fa fa-cog me-1"></i> Change / Turn OFF Meal
+                        </a>
+                        <small class="d-block text-muted text-center mt-1" style="font-size: 0.72rem;">
+                            ☀️ লাঞ্চ কাটঅফ: ১০:০০ AM | 🌙 ডিনার: ০৪:০০ PM
+                        </small>
                     </div>
                 </div>
-            </a>
+            </div>
         </div>
 
         <!-- My Complaints Card -->
@@ -893,227 +1067,62 @@ function printResidentDocument() {
     } else {
         alert('Please allow popups for this site to print document.');
     }
+function dismissMealNotif(id) {
+    fetch('/meal-requests/' + id + '/dismiss-user-notif', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Content-Type': 'application/json'
+        }
+    }).then(res => res.json())
+    .then(data => {
+        const box = document.getElementById('mealNotifBox_' + id);
+        if (box) box.remove();
+    });
 }
 
-function printResidentIdCard() {
-    var r = window.userBookingData;
-    var u = window.userProfileData || {};
-    if (!r) {
-        alert('No active booking record found!');
-        return;
+document.addEventListener('DOMContentLoaded', function() {
+    function checkDashboardUserNotifsLive() {
+        fetch("{{ route('meal-requests.check-user-notifs') }}", {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && data.has_notifs && data.notifications) {
+                const container = document.querySelector('.container-xxl .row.g-6');
+                if (container) {
+                    data.notifications.forEach(notif => {
+                        const alertType = notif.status == 1 ? 'success' : 'danger';
+                        const icon = notif.status == 1 ? 'check-circle' : 'times-circle';
+
+                        const notifDiv = document.createElement('div');
+                        notifDiv.className = 'col-12 mb-3';
+                        notifDiv.id = 'mealNotifBox_' + notif.id;
+                        notifDiv.innerHTML = `
+                            <div class="alert alert-${alertType} alert-dismissible d-flex align-items-center justify-content-between p-3 mb-0 shadow-sm border-${alertType} rounded-3" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <span class="alert-icon text-${alertType} me-3 fs-3">
+                                        <i class="fa fa-${icon}"></i>
+                                    </span>
+                                    <div>
+                                        <h6 class="alert-heading mb-1 text-${alertType} fw-bold fs-6">${notif.title}</h6>
+                                        <div class="fw-medium text-dark fs-7">${notif.message}</div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick="dismissMealNotif(${notif.id})"></button>
+                            </div>
+                        `;
+                        container.prepend(notifDiv);
+                    });
+                }
+            }
+        })
+        .catch(err => console.log('Dashboard live notif poll skipped', err));
     }
-
-    var logoUrl = window.location.origin + '/logo/logoimage (2).png';
-    var userImgUrl = r.image ? (r.image.indexOf('http') === 0 ? r.image : window.location.origin + '/bookingsimage/' + r.image) : (u.avatar_url || '');
-
-    var roomItems = [];
-    if (typeof r.floor_number_room_number_roomprice === 'string') {
-        try { roomItems = JSON.parse(r.floor_number_room_number_roomprice); } catch(e){}
-    } else if (Array.isArray(r.floor_number_room_number_roomprice)) {
-        roomItems = r.floor_number_room_number_roomprice;
-    }
-
-    function getRoomNo(str) {
-        if (!str) return '-';
-        var parts = String(str).split('-');
-        return parts[0] || str;
-    }
-    function getSeatNo(str) {
-        if (!str) return '-';
-        var parts = String(str).split('-');
-        return parts.length > 1 ? parts.slice(1).join('-') : '-';
-    }
-
-    var roomNo = roomItems.length
-        ? roomItems.map(function(i){ return getRoomNo(i.roomnumber); }).join(', ')
-        : (getRoomNo(r.roomnumber) || r.room_number || '-');
-    var seatNo = roomItems.length
-        ? roomItems.map(function(i){ return getSeatNo(i.roomnumber); }).join(', ')
-        : (getSeatNo(r.roomnumber) || '-');
-    var floorNo = roomItems.length
-        ? Array.from(new Set(roomItems.map(function(i){ return i.floornumber; }))).filter(Boolean).join(', ')
-        : (r.floornumber || '-');
-
-    var fullName = r.full_name || u.name || '-';
-    var phone = r.phone || u.phone || '-';
-    var userType = r.user_type || u.user_type || 'Student';
-    var idNo = String(r.id || '1001').padStart(4, '0');
-    var checkIn = r.check_in || (r.created_at ? String(r.created_at).slice(0, 10) : '-');
-
-    var qrText = encodeURIComponent(`TSS VILLA | ID: TSS-${idNo} | Name: ${fullName} | Phone: ${phone} | Room: ${roomNo} | Seat: ${seatNo}`);
-    var qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=${qrText}`;
-
-    var html = `
-        <!DOCTYPE html>
-        <html lang="bn">
-        <head>
-          <meta charset="UTF-8">
-          <title>Resident ID Card - ${fullName}</title>
-          <style>
-            @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
-            @page { size: A4 portrait; margin: 10mm; }
-            * {
-              box-sizing: border-box;
-              margin: 0;
-              padding: 0;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-              color-adjust: exact !important;
-            }
-            body {
-              background: #e2e8f0;
-              font-family: 'Hind Siliguri', 'Outfit', sans-serif;
-              display: flex; justify-content: center; align-items: center;
-              min-height: 100vh; padding: 20px;
-            }
-            
-            .id-card-frame {
-              width: 86mm; height: 138mm; background: #ffffff !important;
-              border: 3px solid #1e293b !important; border-radius: 14px;
-              box-shadow: 0 12px 35px rgba(15, 23, 42, 0.25); overflow: hidden;
-              position: relative; display: flex; flex-direction: column;
-              justify-content: space-between; page-break-inside: avoid;
-            }
-
-            .id-header {
-              background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%) !important;
-              color: #ffffff !important; padding: 10px 8px 8px 8px; text-align: center;
-              position: relative; border-bottom: 3px solid #f59e0b !important;
-            }
-            .header-content { display: flex; align-items: center; justify-content: center; gap: 8px; }
-            .logo-img { width: 38px; height: 38px; object-fit: contain; background: #ffffff; padding: 2px; border-radius: 50%; border: 2px solid #f59e0b; }
-            .header-text { text-align: left; }
-            .header-text h2 { font-size: 18px; font-weight: 800; color: #ffffff !important; margin: 0; line-height: 1.1; }
-            .header-text p { font-size: 9px; color: #f59e0b !important; font-weight: 700; letter-spacing: 0.5px; margin: 0; }
-            .card-type-tag {
-              background: #f59e0b !important; color: #0f172a !important; font-size: 8.5px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; padding: 2px 0; margin-top: 5px;
-            }
-
-            .id-body { padding: 8px 12px; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
-
-            .photo-wrapper { position: relative; margin-top: 4px; margin-bottom: 4px; }
-            .photo-container {
-              width: 90px; height: 102px; border: 2.5px solid #0f172a !important; border-radius: 8px; overflow: hidden; background: #f1f5f9; box-shadow: 0 4px 10px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center;
-            }
-            .photo-container img { width: 100%; height: 100%; object-fit: cover; }
-            .photo-placeholder { font-size: 10px; color: #64748b; display: flex; flex-direction: column; height: 100%; align-items: center; justify-content: center; }
-
-            .name-container { text-align: center; margin-bottom: 6px; width: 100%; }
-            .resident-name { font-size: 16px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.1; margin-bottom: 3px; }
-            .id-number { font-size: 10px; font-weight: 700; color: #64748b; font-family: 'Outfit', sans-serif; }
-
-            .info-table {
-              width: 100%; border-collapse: collapse; margin-bottom: 6px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;
-            }
-            .info-table td { padding: 4px 8px; font-size: 10.5px; border-bottom: 1px dashed #e2e8f0; }
-            .info-table tr:last-child td { border-bottom: none; }
-            .lbl { font-weight: 600; color: #475569; width: 35%; text-align: left; }
-            .colon { width: 5%; text-align: center; color: #94a3b8; font-weight: bold; }
-            .val { font-weight: 700; color: #0f172a; width: 60%; text-align: left; }
-
-            .room-badges { display: flex; gap: 3px; width: 100%; justify-content: center; margin-bottom: 6px; }
-            .r-badge {
-              flex: 1; background-color: #0f172a !important; color: #ffffff !important; font-size: 10px; font-weight: 700; padding: 3.5px 2px; border-radius: 4px; text-align: center;
-            }
-            .r-badge.room { background-color: #047857 !important; color: #ffffff !important; }
-            .r-badge.seat { background-color: #b91c1c !important; color: #ffffff !important; }
-
-            .qr-section { display: flex; align-items: flex-end; justify-content: space-between; width: 100%; padding: 0 2px; }
-            .qr-img { width: 44px; height: 44px; border-radius: 4px; border: 1px solid #cbd5e1; }
-            .sig-box { text-align: center; }
-            .sig-line { border-top: 1.5px solid #0f172a; width: 70px; margin-bottom: 2px; }
-            .sig-lbl { font-size: 8.5px; font-weight: 700; color: #334155; }
-
-            .id-footer {
-              background: #0f172a !important; color: #ffffff !important; font-size: 8px; text-align: center; padding: 5px 4px; font-weight: 600; border-top: 2px solid #f59e0b !important;
-            }
-
-            @media print {
-              * {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                color-adjust: exact !important;
-              }
-              body { background: #fff !important; padding: 0 !important; }
-              .id-card-frame { box-shadow: none !important; margin: auto; }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="id-card-frame">
-            <div class="id-header" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background: #0f172a !important; color: #ffffff !important;">
-              <div class="header-content">
-                <img src="${logoUrl}" alt="Logo" class="logo-img" onerror="this.style.display='none'">
-                <div class="header-text">
-                  <h2>টি এস এস ভিলা</h2>
-                  <p>ছাত্রী নিবাস ও হোস্টেল</p>
-                </div>
-              </div>
-              <div class="card-type-tag" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #f59e0b !important; color: #0f172a !important;">RESIDENT IDENTIFICATION CARD</div>
-            </div>
-
-            <div class="id-body">
-              <div class="photo-wrapper">
-                <div class="photo-container">
-                  ${userImgUrl ? `<img src="${userImgUrl}" alt="Photo" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="photo-placeholder" style="display:none;"><svg width="40" height="40" viewBox="0 0 24 24" fill="#0f172a"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span style="font-size:8.5px; color:#64748b; font-weight:700; margin-top:2px;">PHOTO</span></div>` : `<div class="photo-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="#0f172a"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span style="font-size:8.5px; color:#64748b; font-weight:700; margin-top:2px;">PHOTO</span></div>`}
-                </div>
-              </div>
-
-              <div class="name-container">
-                <div class="resident-name">${fullName}</div>
-                <div class="id-number">ID NO: TSS-${idNo}</div>
-              </div>
-
-              <table class="info-table">
-                <tr>
-                  <td class="lbl">ক্যাটাগরি</td>
-                  <td class="colon">:</td>
-                  <td class="val">${userType}</td>
-                </tr>
-                <tr>
-                  <td class="lbl">মোবাইল</td>
-                  <td class="colon">:</td>
-                  <td class="val">${phone}</td>
-                </tr>
-                <tr>
-                  <td class="lbl">বুকিং তারিখ</td>
-                  <td class="colon">:</td>
-                  <td class="val">${checkIn}</td>
-                </tr>
-              </table>
-
-              <div class="room-badges">
-                <div class="r-badge" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #0f172a !important; color: #ffffff !important;">ফ্লোর: ${floorNo}</div>
-                <div class="r-badge room" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #047857 !important; color: #ffffff !important;">রুম: ${roomNo}</div>
-                <div class="r-badge seat" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #b91c1c !important; color: #ffffff !important;">সিট: ${seatNo}</div>
-              </div>
-
-              <div class="qr-section">
-                <img src="${qrUrl}" alt="QR" class="qr-img">
-                <div class="sig-box">
-                  <div class="sig-line"></div>
-                  <div class="sig-lbl">অনুমোদিত স্বাক্ষর</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="id-footer" style="-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #0f172a !important; color: #ffffff !important;">
-              কলেজ রোড, নেসকো গেট সংলগ্ন, রংপুর | হেল্পলাইন: ০১৯৭৭২৭০৯২০
-            </div>
-          </div>
-        </body>
-        </html>
-    `;
-
-    var win = window.open('', '_blank');
-    if (win) {
-        win.document.write(html);
-        win.document.close();
-        setTimeout(function() {
-            win.focus();
-            win.print();
-        }, 400);
-    }
-}
+    setInterval(checkDashboardUserNotifsLive, 5000);
+});
 </script>
 @endsection

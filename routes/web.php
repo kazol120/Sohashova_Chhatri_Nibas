@@ -261,6 +261,11 @@
     Route::get('development-fees/get', [RoomBookingHistoryController::class, 'getDevFeeList']);
     Route::post('development-fees/{id}/pay', [RoomBookingHistoryController::class, 'payDevFee']);
 
+    // advance fee management routes
+    Route::get('advance-fees', [RoomBookingHistoryController::class, 'advanceFeeIndex'])->name('advance-fee.index');
+    Route::get('advance-fees/get', [RoomBookingHistoryController::class, 'getAdvanceFeeList']);
+    Route::post('advance-fees/{id}/pay', [RoomBookingHistoryController::class, 'payAdvanceFee']);
+
     // monthly payment controller //
     Route::get('monthly-payments', [MonthlyPaymentController::class, 'index'])->name('monthly-payments.index');
     Route::get('monthly-payments/get', [MonthlyPaymentController::class, 'getPayments']);
@@ -268,6 +273,14 @@
     Route::post('monthly-payments/collect', [MonthlyPaymentController::class, 'collectPayment']);
 
     // meal management routes //
+    Route::get('meal-requests', [MealController::class, 'mealRequestsIndex'])->name('meal-requests.index');
+    Route::post('meal-requests/{id}/approve', [MealController::class, 'approveMealRequest'])->name('meal-requests.approve');
+    Route::post('meal-requests/{id}/reject', [MealController::class, 'rejectMealRequest'])->name('meal-requests.reject');
+    Route::get('api/pending-meal-requests-check', [MealController::class, 'checkPendingMealRequests'])->name('meal-requests.check-pending');
+    Route::get('api/user-meal-notifs-check', [MealController::class, 'checkUserMealNotifs'])->name('meal-requests.check-user-notifs');
+    Route::post('meal-requests/{id}/dismiss-user-notif', [MealController::class, 'dismissUserMealNotification'])->name('meal-requests.dismiss-notif');
+    Route::post('meals/toggle-off', [MealController::class, 'toggleMealOff'])->name('meals.toggle-off');
+    Route::post('meals/update-status', [MealController::class, 'updateMealStatus'])->name('meals.update-status');
     Route::resource('meals', MealController::class);
     Route::get('meal-history', [MealController::class, 'mealHistory'])->name('meal-history');
     Route::resource('deposits', DepositController::class);
@@ -287,6 +300,9 @@
     Route::post('/complaints/store', [\App\Http\Controllers\Backend\ComplaintController::class, 'store'])->name('complaints.store');
     Route::post('/complaints/update-status/{id}', [\App\Http\Controllers\Backend\ComplaintController::class, 'updateStatus'])->name('complaints.update-status');
     Route::get('/api/pending-complaints-check', [\App\Http\Controllers\Backend\ComplaintController::class, 'checkPendingComplaints'])->name('complaints.check-pending');
+    Route::get('/api/pending-bookings-check', [RoomBookingHistoryController::class, 'checkPendingBookings'])->name('bookings.check-pending');
+    Route::get('/api/room-booking/{id}/mark-seen', [RoomBookingHistoryController::class, 'markBookingSeen'])->name('bookings.mark-seen');
+
 
 
 

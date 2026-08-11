@@ -106,10 +106,8 @@ class RoomBookingHistoryController extends Controller
     } elseif (!empty($startDate) && !empty($endDate)) {
         $query->whereBetween('check_in', [$startDate, $endDate]);
     }
-    $appSettings = \App\Services\SettingService::getSettingContentBySlug('app_setting');
-    $defaultDevFee = (float) ($appSettings['development_fee'] ?? 3000);
+    $mapped = $query->orderByDesc('id')->get()->map(function ($row) {
 
-    $mapped = $query->orderByDesc('id')->get()->map(function ($row) use ($defaultDevFee) {
         $items = is_string($row->floor_number_room_number_roomprice)
             ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
             : ($row->floor_number_room_number_roomprice ?? []);
@@ -130,6 +128,9 @@ class RoomBookingHistoryController extends Controller
             'mother_phone',
             'room_number',
             'monthly_amount',
+            'roomprice',
+            'advance_fee',
+            'development_fee',
             'check_in',
             'check_out',
             'status',
@@ -142,7 +143,7 @@ class RoomBookingHistoryController extends Controller
             'education_class',
             'workplace_name',
         ]), [
-            'development_fee' => ((float) $row->development_fee > 0) ? (float) $row->development_fee : $defaultDevFee,
+            'development_fee' => (float) ($row->development_fee ?? 0),
             'group_key'     => 'booking_' . $row->id,
             'floornumber'   => $c->pluck('floornumber')->filter()->unique()->implode(', '),
             'roomnumber'    => $c->pluck('roomnumber')->filter()->implode(', '),
@@ -152,6 +153,7 @@ class RoomBookingHistoryController extends Controller
             'district_name' => optional($row->district)->name ?? '-',
             'thana_name'    => optional($row->thana)->name ?? '-',
         ]);
+
     })->values();
     $paginator = new LengthAwarePaginator(
         $mapped->slice(($page - 1) * $perPage, $perPage)->values(),
@@ -628,10 +630,7 @@ public function getbookinghistory(Request $request)
             $query->whereBetween('check_in', [$startDate, $endDate]);
         }
 
-        $appSettings = \App\Services\SettingService::getSettingContentBySlug('app_setting');
-        $defaultDevFee = (float) ($appSettings['development_fee'] ?? 3000);
-
-        $mapped = $query->orderByDesc('id')->get()->map(function ($row) use ($defaultDevFee) {
+        $mapped = $query->orderByDesc('id')->get()->map(function ($row) {
             $items = is_string($row->floor_number_room_number_roomprice)
                 ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
                 : ($row->floor_number_room_number_roomprice ?? []);
@@ -653,6 +652,9 @@ public function getbookinghistory(Request $request)
                 'mother_phone',
                 'room_number',
                 'monthly_amount',
+                'roomprice',
+                'advance_fee',
+                'development_fee',
                 'check_in',
                 'check_out',
                 'status',
@@ -666,7 +668,7 @@ public function getbookinghistory(Request $request)
                 'workplace_name',
                 'address',
             ]), [
-                'development_fee' => ((float) $row->development_fee > 0) ? (float) $row->development_fee : $defaultDevFee,
+                'development_fee' => (float) ($row->development_fee ?? 0),
                 'group_key'     => 'booking_' . $row->id,
                 'floornumber'   => $c->pluck('floornumber')->filter()->unique()->implode(', '),
                 'roomnumber'    => $c->pluck('roomnumber')->filter()->implode(', '),
@@ -677,6 +679,7 @@ public function getbookinghistory(Request $request)
                 'thana_name'    => optional($row->thana)->name,
             ]);
         });
+
 
         $paginator = new LengthAwarePaginator(
             $mapped->slice(($page - 1) * $perPage, $perPage)->values(),
@@ -1349,4 +1352,155 @@ public function getNameguet()
         }
     }
 
+    public function advanceFeeIndex()
+    {
+        return view('backend.room.advance_fee');
+    }
+
+    public function getAdvanceFeeList(Request $request)
+    {
+        $perPage = (int) $request->get('per_page', 10);
+        $page    = (int) $request->get('page', 1);
+        $search  = trim($request->get('search', ''));
+        $filter  = $request->get('filter', 'all');
+
+        $query = RoomBookingHistory::where('status', 0);
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        if ($filter === 'paid') {
+            $query->where('advance_fee', '>', 0);
+        } elseif ($filter === 'unpaid') {
+            $query->where(function ($q) {
+                $q->whereNull('advance_fee')->orWhere('advance_fee', 0);
+            });
+        }
+
+        $mapped = $query->orderByDesc('id')->get()->map(function ($row) {
+            $items = is_string($row->floor_number_room_number_roomprice)
+                ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
+                : ($row->floor_number_room_number_roomprice ?? []);
+
+            $c = collect($items);
+
+            $sumAdvancePrice = $c->sum(function ($item) {
+                return (float) ($item['original_advance_price'] ?? $item['advance_price'] ?? 0);
+            });
+
+            $advanceFeeAmount = $sumAdvancePrice > 0
+                ? $sumAdvancePrice
+                : ((float) $row->advance_fee > 0 ? (float) $row->advance_fee : ((float) $row->monthly_amount ?: 0));
+
+            return array_merge($row->only([
+                'id',
+                'image',
+                'full_name',
+                'father_name',
+                'mother_name',
+                'email',
+                'phone',
+                'father_phone',
+                'mother_phone',
+                'room_number',
+                'monthly_amount',
+                'development_fee',
+                'check_in',
+                'check_out',
+                'created_at',
+                'user_type'
+            ]), [
+                'advance_fee' => $advanceFeeAmount,
+                'floornumber' => $c->pluck('floornumber')->filter()->unique()->implode(', '),
+                'roomnumber'  => $c->pluck('roomnumber')->filter()->implode(', '),
+                'is_paid'     => true,
+            ]);
+        })->values();
+
+        $paginator = new LengthAwarePaginator(
+            $mapped->slice(($page - 1) * $perPage, $perPage)->values(),
+            $mapped->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return response()->json($paginator);
+    }
+
+    public function payAdvanceFee(Request $request, $id)
+    {
+        try {
+            $booking = RoomBookingHistory::findOrFail($id);
+
+            $feeAmount = (float) $request->get('amount', 0);
+
+            $booking->update([
+                'advance_fee' => $feeAmount,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Advance Fee (৳ ' . number_format($feeAmount) . ') recorded successfully!',
+                'data'    => $booking
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function checkPendingBookings(Request $request)
+    {
+        $lastId = (int) $request->query('last_id', 0);
+
+        // Fetch ONLY unseen/unread bookings (is_seen = 0) that are active (status = 0)
+        $unseenQuery = RoomBookingHistory::where('status', 0)->where('is_seen', 0);
+        $pendingCount = (clone $unseenQuery)->count();
+
+        $latestBookings = $unseenQuery->latest('id')
+            ->take(10)
+            ->get()
+            ->map(function ($b) {
+                return [
+                    'id'         => $b->id,
+                    'full_name'  => $b->full_name ?? 'Guest',
+                    'phone'      => $b->phone ?? 'N/A',
+                    'time_ago'   => $b->created_at ? $b->created_at->diffForHumans() : 'Recently',
+                    'initial'    => strtoupper(substr($b->full_name ?? 'G', 0, 1)),
+                    'view_url'   => route('bookings.mark-seen', $b->id),
+                ];
+            });
+
+        $maxBooking = RoomBookingHistory::latest('id')->first();
+        $latestId = $maxBooking ? $maxBooking->id : 0;
+
+        $hasNew = false;
+        if ($lastId > 0 && $latestId > $lastId) {
+            $hasNew = true;
+        }
+
+        return response()->json([
+            'count'     => $pendingCount,
+            'latest_id' => $latestId,
+            'has_new'   => $hasNew,
+            'bookings'  => $latestBookings,
+        ]);
+    }
+
+    public function markBookingSeen($id)
+    {
+        $booking = RoomBookingHistory::find($id);
+
+        if ($booking) {
+            $booking->update(['is_seen' => 1]);
+            $searchTerm = !empty($booking->phone) ? $booking->phone : $booking->full_name;
+            return redirect(url('/room-booking-history') . '?search=' . urlencode($searchTerm));
+        }
+
+        return redirect(url('/room-booking-history'));
+    }
 }

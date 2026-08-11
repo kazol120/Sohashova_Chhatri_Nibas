@@ -27,7 +27,7 @@
             <li class="menu-item {{ Route::currentRouteNamed('meals.create') ? 'active' : '' }}">
                 <a href="{{ route('meals.create') }}" class="menu-link">
                     <i class="menu-icon tf-icons ti ti-calendar-event"></i>
-                    <div data-i18n="Daily Meal Create" class="fs-5">Daily Meal Create</div>
+                    <div data-i18n="Daily Meal Setting" class="fs-5">Daily Meal Setting</div>
                 </a>
             </li>
             <li class="menu-item {{ Route::currentRouteNamed('complaints.index') ? 'active' : '' }}">
@@ -103,6 +103,14 @@
               </a>
             </li>
 
+            {{-- Advance Fee --}}
+            <li class="menu-item {{ Route::currentRouteNamed('advance-fee.index') ? 'active' : '' }}">
+              <a href="{{ route('advance-fee.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-wallet"></i>
+                <div class="fs-5">Advance Fee</div>
+              </a>
+            </li>
+
             {{-- Monthly Payments --}}
             <li class="menu-item {{ Route::currentRouteNamed('monthly-payments.index') ? 'active open' : '' }}">
               <a href="javascript:void(0)" class="menu-link menu-toggle">
@@ -150,7 +158,7 @@
               <ul class="menu-sub">
                 <li class="menu-item {{ Route::currentRouteNamed('meals.create') ? 'active' : '' }}">
                   <a href="{{ route('meals.create') }}" class="menu-link">
-                    <div class="fs-5">Daily Meal Create</div>
+                    <div class="fs-5">Daily Meal Setting</div>
                   </a>
                 </li>
                 <li class="menu-item {{ Route::currentRouteNamed('meals.index') ? 'active' : '' }}">
@@ -166,6 +174,11 @@
                 <li class="menu-item {{ Route::currentRouteNamed('deposits.index') || Route::currentRouteNamed('deposits.create') ? 'active' : '' }}">
                   <a href="{{ route('deposits.index') }}" class="menu-link">
                     <div class="fs-5">Meal Deposits</div>
+                  </a>
+                </li>
+                <li class="menu-item {{ Route::currentRouteNamed('meal-requests.index') ? 'active' : '' }}">
+                  <a href="{{ route('meal-requests.index') }}" class="menu-link">
+                    <div class="fs-5">Meal Requests (অনুরোধ)</div>
                   </a>
                 </li>
                 <li class="menu-item {{ Route::currentRouteNamed('fines.index') || Route::currentRouteNamed('fines.create') ? 'active' : '' }}">
@@ -275,11 +288,6 @@
                     <li class="menu-item {{ Route::currentRouteNamed('report.index') ? 'active' : '' }}">
                         <a href="{{ route('report.index') }}" class="menu-link">
                             <div class="fs-5">Management Report</div>
-                        </a>
-                    </li>
-                    <li class="menu-item {{ Route::currentRouteNamed('customer-report.index') ? 'active' : '' }}">
-                        <a href="{{ route('customer-report.index') }}" class="menu-link">
-                            <div class="fs-5">Guest Report</div>
                         </a>
                     </li>
                 </ul>

@@ -12,16 +12,33 @@ use Carbon\Carbon;
 class MyPaymentController extends Controller
 {
     /**
+     * Helper to get accurate user bookings by phone (or email fallback)
+     */
+    private function getUserBookings($user)
+    {
+        $cleanPhone = preg_replace('/[^0-9]/', '', $user->phone ?? '');
+        $cleanPhone10 = strlen($cleanPhone) >= 6 ? (strlen($cleanPhone) > 10 ? substr($cleanPhone, -10) : $cleanPhone) : '';
+
+        return RoomBookingHistory::where(function ($q) use ($user, $cleanPhone10) {
+            if (!empty($cleanPhone10)) {
+                $q->whereRaw("REPLACE(REPLACE(REPLACE(phone, ' ', ''), '-', ''), '+', '') LIKE ?", ["%{$cleanPhone10}%"]);
+            } elseif (!empty($user->email)) {
+                $q->where('email', $user->email);
+            } else {
+                $q->whereRaw('1 = 0');
+            }
+        })->get();
+    }
+
+    /**
      * Show logged in user's own payment history (Frontend look)
      */
     public function index()
     {
         $user = Auth::user();
 
-        // Find booking by email or phone
-        $bookings = RoomBookingHistory::where('email', $user->email)
-            ->orWhere('phone', $user->phone)
-            ->get();
+        // Find booking by phone (or email fallback)
+        $bookings = $this->getUserBookings($user);
 
         $bookingIds = $bookings->pluck('id');
 
@@ -94,10 +111,8 @@ class MyPaymentController extends Controller
     {
         $user = Auth::user();
 
-        // Find booking by email or phone
-        $bookings = RoomBookingHistory::where('email', $user->email)
-            ->orWhere('phone', $user->phone)
-            ->get();
+        // Find booking by phone (or email fallback)
+        $bookings = $this->getUserBookings($user);
 
         $bookingIds = $bookings->pluck('id');
 

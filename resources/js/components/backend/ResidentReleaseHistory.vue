@@ -76,7 +76,7 @@
                     <th class="text-center">Floor / Room / Seat</th>
                     <th class="text-center">Check-In Date</th>
                     <th class="text-center">Checkout Date</th>
-                    <th class="text-center">Outstanding Due</th>
+                   
                     <th class="text-center">Action</th>
                   </tr>
                 </thead>
@@ -131,14 +131,7 @@
                     <td class="text-center text-muted fw-semibold">
                       {{ formatDateTime(r.today_check_out || r.check_out) }}
                     </td>
-                    <td class="text-center">
-                      <span v-if="r.due_amount > 0" class="badge bg-danger-light text-danger fw-bold border border-danger px-3 py-1 shadow-sm">
-                        ৳ {{ r.due_amount.toFixed(2) }} (Due)
-                      </span>
-                      <span v-else class="badge bg-success-light text-success fw-bold border border-success px-3 py-1 shadow-sm">
-                        ৳ 0.00 (No Due)
-                      </span>
-                    </td>
+            
                     <td class="text-center">
                       <button 
                         class="btn btn-sm btn-outline-primary fw-bold"

@@ -89,7 +89,145 @@
       </li>
       @endrole
 
+      @role('admin|staffs')
+      <!-- Meal Notification Bell -->
+      @php
+          $pendingMealRequestsCount = \App\Models\Backend\MealRequest::where('status', 0)->count();
+          $latestMealRequests = \App\Models\Backend\MealRequest::with('user')->where('status', 0)->latest()->take(5)->get();
+          $mealTypeLabels = [
+              'full'       => 'Full Meal',
+              'half_day'   => 'Day Half (দুপুর চালু / রাত বন্ধ)',
+              'half_night' => 'Night Half (রাত চালু / দুপুর বন্ধ)',
+              'off'        => 'Meal OFF (মিল বন্ধ)',
+          ];
+      @endphp
+      <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-2 me-xl-1">
+        <a class="nav-link dropdown-toggle hide-arrow btn btn-text-secondary btn-icon rounded-pill position-relative d-inline-flex align-items-center justify-content-center"
+           href="javascript:void(0);"
+           data-bs-toggle="dropdown"
+           aria-expanded="false"
+           title="Meal Change Requests"
+           style="position: relative; width: 40px; height: 40px; padding: 0;">
+          <i class="ti ti-cup ti-md text-warning"></i>
+          <span id="mealBellBadge" class="badge bg-warning text-dark rounded-pill position-absolute" style="top: 2px; right: 2px; font-size: 0.65rem; padding: 2px 5px; line-height: 1; border: 1.5px solid #fff; {{ $pendingMealRequestsCount > 0 ? '' : 'display: none;' }}">
+              {{ $pendingMealRequestsCount }}
+          </span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end py-0 shadow-lg" style="width: 320px; right: 0 !important; left: auto !important;">
+          <li class="dropdown-menu-header border-bottom py-3 px-3 bg-label-warning rounded-top">
+            <div class="d-flex align-items-center justify-content-between">
+              <h6 class="mb-0 text-warning fw-bold"><i class="ti ti-cup me-2"></i>Meal Requests (মিল অনুরোধ)</h6>
+              <span id="mealHeaderBadge" class="badge bg-warning text-dark rounded-pill">{{ $pendingMealRequestsCount }} New</span>
+            </div>
+          </li>
+          <li class="dropdown-notifications-list scrollable-container" style="max-height: 280px; overflow-y: auto;">
+            <ul class="list-group list-group-flush" id="mealListGroup">
+              @forelse($latestMealRequests as $mr)
+              <li class="list-group-item list-group-item-action dropdown-notifications-item p-3">
+                <a href="{{ route('meal-requests.index') }}" class="text-decoration-none text-dark d-block">
+                  <div class="d-flex align-items-start">
+                    <div class="flex-shrink-0 me-3">
+                      <div class="avatar avatar-sm">
+                        <span class="avatar-initial rounded-circle bg-label-warning text-warning fw-bold">
+                          {{ strtoupper(substr($mr->user->name ?? 'R', 0, 1)) }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1">
+                      <h6 class="mb-1 fw-bold fs-7">{{ $mr->user->name ?? 'Resident' }}</h6>
+                      <p class="mb-1 text-dark fs-8 text-truncate" style="max-width: 200px;">
+                        Request: <strong class="text-warning">{{ $mealTypeLabels[$mr->request_type] ?? $mr->request_type }}</strong> ({{ $mr->date }})
+                      </p>
+                      <small class="text-muted fs-9"><i class="ti ti-clock me-1"></i>{{ $mr->created_at->diffForHumans() }}</small>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              @empty
+              <li class="list-group-item text-center py-4 text-muted fs-7">
+                No new pending meal requests.
+              </li>
+              @endforelse
+            </ul>
+          </li>
+          <li class="dropdown-menu-footer border-top p-2 text-center bg-light rounded-bottom">
+            <a href="{{ route('meal-requests.index') }}" class="btn btn-warning btn-sm w-100 fw-bold text-dark">
+              View All Meal Requests (সকল অনুরোধ দেখুন)
+            </a>
+          </li>
+        </ul>
+      </li>
+      @endrole
+
+      @role('admin|staffs')
+      <!-- Room Booking Notification Bell -->
+      @php
+          $pendingBookingsCount = \App\Models\Backend\RoomBookingHistory::where('status', 0)->where('is_seen', 0)->count();
+          $latestBookings = \App\Models\Backend\RoomBookingHistory::where('status', 0)->where('is_seen', 0)->latest('id')->take(10)->get();
+      @endphp
+      <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-2 me-xl-1">
+        <a class="nav-link dropdown-toggle hide-arrow btn btn-text-secondary btn-icon rounded-pill position-relative d-inline-flex align-items-center justify-content-center"
+           href="javascript:void(0);"
+           data-bs-toggle="dropdown"
+           aria-expanded="false"
+           title="New Room Bookings"
+           style="position: relative; width: 40px; height: 40px; padding: 0;">
+          <i class="ti ti-bed ti-md text-info"></i>
+          <span id="bookingBellBadge" class="badge bg-info text-white rounded-pill position-absolute" style="top: 2px; right: 2px; font-size: 0.65rem; padding: 2px 5px; line-height: 1; border: 1.5px solid #fff; {{ $pendingBookingsCount > 0 ? '' : 'display: none;' }}">
+              {{ $pendingBookingsCount }}
+          </span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end py-0 shadow-lg" style="width: 330px; right: 0 !important; left: auto !important;">
+          <li class="dropdown-menu-header border-bottom py-3 px-3 bg-label-info rounded-top">
+            <div class="d-flex align-items-center justify-content-between">
+              <h6 class="mb-0 text-info fw-bold"><i class="ti ti-bed me-2"></i>Room Bookings (নতুন বুকিং)</h6>
+              <span id="bookingHeaderBadge" class="badge bg-info text-white rounded-pill">{{ $pendingBookingsCount }} New</span>
+            </div>
+          </li>
+          <li class="dropdown-notifications-list scrollable-container" style="max-height: 320px; overflow-y: auto;">
+            <ul class="list-group list-group-flush" id="bookingListGroup">
+              @forelse($latestBookings as $b)
+              <li class="list-group-item list-group-item-action dropdown-notifications-item p-3">
+                <a href="{{ route('bookings.mark-seen', $b->id) }}" class="text-decoration-none text-dark d-block">
+                  <div class="d-flex align-items-start">
+                    <div class="flex-shrink-0 me-3">
+                      <div class="avatar avatar-sm">
+                        <span class="avatar-initial rounded-circle bg-label-info text-info fw-bold">
+                          {{ strtoupper(substr($b->full_name ?? 'G', 0, 1)) }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1">
+                      <h6 class="mb-1 fw-bold fs-7">{{ $b->full_name ?? 'Guest' }}</h6>
+                      <p class="mb-1 text-dark fs-8 text-truncate" style="max-width: 210px;">
+                        Phone: <strong>{{ $b->phone ?? 'N/A' }}</strong>
+                      </p>
+                      <small class="text-muted fs-9"><i class="ti ti-clock me-1"></i>{{ $b->created_at ? $b->created_at->diffForHumans() : 'Recently' }}</small>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              @empty
+              <li class="list-group-item text-center py-4 text-muted fs-7">
+                No new pending room bookings.
+              </li>
+              @endforelse
+            </ul>
+          </li>
+          <li class="dropdown-menu-footer border-top p-2 text-center bg-light rounded-bottom">
+            <a href="{{ url('/room-booking-history') }}" class="btn btn-info btn-sm w-100 fw-bold text-white">
+              View All Bookings (সকল বুকিং দেখুন)
+            </a>
+          </li>
+
+        </ul>
+      </li>
+
+      @endrole
+
       <!-- User Dropdown -->
+
+
       <li class="nav-item navbar-dropdown dropdown-user dropdown position-relative">
         <a class="nav-link dropdown-toggle hide-arrow p-0"
            href="javascript:void(0);"
@@ -193,10 +331,10 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-@role('admin|staffs')
+@if(auth()->check())
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    var lastPendingCount = {{ $pendingComplaintsCount }};
+    var lastPendingCount = {{ $pendingComplaintsCount ?? 0 }};
 
     function playChimeSound() {
         try {
@@ -254,13 +392,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (headerBadge) headerBadge.innerText = '0 New';
                 }
 
-                // If new complaint arrived, play chime sound!
                 if (data.count > lastPendingCount) {
                     playChimeSound();
                 }
                 lastPendingCount = data.count;
 
-                // Update list group HTML dynamically if list exists
                 if (listGroup && data.complaints) {
                     if (data.complaints.length === 0) {
                         listGroup.innerHTML = '<li class="list-group-item text-center py-4 text-muted fs-7">No new pending complaints.</li>';
@@ -287,8 +423,213 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(function(err) { console.log('Live polling error:', err); });
     }
 
-    // Poll every 7 seconds for live updates without page reload!
     setInterval(checkLiveComplaints, 7000);
+
+    // Live Polling & Distinct Sound for Meal Requests
+    var lastMealPendingCount = {{ \App\Models\Backend\MealRequest::where('status', 0)->count() }};
+    window.sharedAudioCtx = null;
+
+    function playMealChimeSound() {
+        try {
+            if (!window.sharedAudioCtx) {
+                window.sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (window.sharedAudioCtx.state === 'suspended') {
+                window.sharedAudioCtx.resume();
+            }
+            var now = window.sharedAudioCtx.currentTime;
+
+            var osc1 = window.sharedAudioCtx.createOscillator();
+            var gain1 = window.sharedAudioCtx.createGain();
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(880, now);
+            gain1.gain.setValueAtTime(0.5, now);
+            gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+            osc1.connect(gain1);
+            gain1.connect(window.sharedAudioCtx.destination);
+            osc1.start(now);
+            osc1.stop(now + 0.35);
+
+            var osc2 = window.sharedAudioCtx.createOscillator();
+            var gain2 = window.sharedAudioCtx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(1174.66, now + 0.15);
+            gain2.gain.setValueAtTime(0.6, now + 0.15);
+            gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+            osc2.connect(gain2);
+            gain2.connect(window.sharedAudioCtx.destination);
+            osc2.start(now + 0.15);
+            osc2.stop(now + 0.6);
+        } catch(e) { console.log('Audio error:', e); }
+    }
+
+    document.addEventListener('click', function() {
+        if (window.sharedAudioCtx && window.sharedAudioCtx.state === 'suspended') {
+            window.sharedAudioCtx.resume();
+        }
+    });
+
+    function checkLiveMealRequests() {
+        fetch("{{ route('meal-requests.check-pending') }}", {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                var bellBadge = document.getElementById('mealBellBadge');
+                var headerBadge = document.getElementById('mealHeaderBadge');
+                var listGroup = document.getElementById('mealListGroup');
+
+                if (data.count > 0) {
+                    if (bellBadge) {
+                        bellBadge.innerText = data.count;
+                        bellBadge.style.display = 'inline-block';
+                    }
+                    if (headerBadge) {
+                        headerBadge.innerText = data.count + ' New';
+                    }
+                } else {
+                    if (bellBadge) bellBadge.style.display = 'none';
+                    if (headerBadge) headerBadge.innerText = '0 New';
+                }
+
+                if (data.count > lastMealPendingCount) {
+                    playMealChimeSound();
+                }
+                lastMealPendingCount = data.count;
+
+                if (listGroup && data.requests) {
+                    if (data.requests.length === 0) {
+                        listGroup.innerHTML = '<li class="list-group-item text-center py-4 text-muted fs-7">No new pending meal requests.</li>';
+                    } else {
+                        var html = '';
+                        data.requests.forEach(function(mr) {
+                            html += '<li class="list-group-item list-group-item-action dropdown-notifications-item p-3">' +
+                                '<a href="{{ route("meal-requests.index") }}" class="text-decoration-none text-dark d-block">' +
+                                '<div class="d-flex align-items-start">' +
+                                '<div class="flex-shrink-0 me-3">' +
+                                '<div class="avatar avatar-sm">' +
+                                '<span class="avatar-initial rounded-circle bg-label-warning text-warning fw-bold">' + mr.initial + '</span>' +
+                                '</div></div>' +
+                                '<div class="flex-grow-1">' +
+                                '<h6 class="mb-1 fw-bold fs-7">' + mr.user_name + '</h6>' +
+                                '<p class="mb-1 text-dark fs-8 text-truncate" style="max-width: 200px;">Request: <strong class="text-warning">' + mr.request_type + '</strong> (' + mr.date + ')</p>' +
+                                '<small class="text-muted fs-9"><i class="ti ti-clock me-1"></i>' + mr.time_ago + '</small>' +
+                                '</div></div></a></li>';
+                        });
+                        listGroup.innerHTML = html;
+                    }
+                }
+            })
+            .catch(function(err) { console.log('Meal live polling error:', err); });
+    }
+
+    checkLiveMealRequests();
+    setInterval(checkLiveMealRequests, 5000);
+
+    // Live Polling & Sound Toast Notification for New Room Bookings
+    function playBookingChimeSound() {
+        try {
+            if (!window.sharedAudioCtx) {
+                window.sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (window.sharedAudioCtx.state === 'suspended') {
+                window.sharedAudioCtx.resume();
+            }
+            var now = window.sharedAudioCtx.currentTime;
+
+            var notes = [523.25, 659.25, 783.99, 1046.50];
+            notes.forEach(function(freq, index) {
+                var osc = window.sharedAudioCtx.createOscillator();
+                var gain = window.sharedAudioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now + (index * 0.12));
+                gain.gain.setValueAtTime(0.5, now + (index * 0.12));
+                gain.gain.exponentialRampToValueAtTime(0.001, now + (index * 0.12) + 0.35);
+                osc.connect(gain);
+                gain.connect(window.sharedAudioCtx.destination);
+                osc.start(now + (index * 0.12));
+                osc.stop(now + (index * 0.12) + 0.35);
+            });
+        } catch(e) { console.log('Booking chime audio error:', e); }
+    }
+
+    function checkLiveBookings() {
+        var rawStored = localStorage.getItem('admin_last_seen_booking_id');
+        var lastSeenId = rawStored ? parseInt(rawStored, 10) : 0;
+        var queryUrl = "{{ route('bookings.check-pending') }}?last_id=" + lastSeenId;
+
+        fetch(queryUrl, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                var bellBadge = document.getElementById('bookingBellBadge');
+                var headerBadge = document.getElementById('bookingHeaderBadge');
+                var listGroup = document.getElementById('bookingListGroup');
+
+                // 1. Update Notification Bell Badge & Header Counter
+                if (data.count > 0) {
+                    if (bellBadge) {
+                        bellBadge.innerText = data.count;
+                        bellBadge.style.display = 'inline-block';
+                    }
+                    if (headerBadge) {
+                        headerBadge.innerText = data.count + ' New';
+                    }
+                } else {
+                    if (bellBadge) bellBadge.style.display = 'none';
+                    if (headerBadge) headerBadge.innerText = '0 New';
+                }
+
+                // 2. Render List Group HTML dynamically with up to 10 latest bookings
+                if (listGroup && data.bookings) {
+                    if (data.bookings.length === 0) {
+                        listGroup.innerHTML = '<li class="list-group-item text-center py-4 text-muted fs-7">No new pending room bookings.</li>';
+                    } else {
+                        var html = '';
+                        data.bookings.forEach(function(b) {
+                            html += '<li class="list-group-item list-group-item-action dropdown-notifications-item p-3">' +
+                                '<a href="' + b.view_url + '" class="text-decoration-none text-dark d-block">' +
+                                '<div class="d-flex align-items-start">' +
+                                '<div class="flex-shrink-0 me-3">' +
+                                '<div class="avatar avatar-sm">' +
+                                '<span class="avatar-initial rounded-circle bg-label-info text-info fw-bold">' + b.initial + '</span>' +
+                                '</div></div>' +
+                                '<div class="flex-grow-1">' +
+                                '<h6 class="mb-1 fw-bold fs-7">' + b.full_name + '</h6>' +
+                                '<p class="mb-1 text-dark fs-8 text-truncate" style="max-width: 210px;">Phone: <strong>' + b.phone + '</strong></p>' +
+                                '<small class="text-muted fs-9"><i class="ti ti-clock me-1"></i>' + b.time_ago + '</small>' +
+                                '</div></div></a></li>';
+                        });
+                        listGroup.innerHTML = html;
+                    }
+                }
+
+                // 3. Play Chime Sound Alert for New Unseen Room Bookings (No Pop-up Modal)
+                if (data.latest_id) {
+                    if (rawStored === null) {
+                        localStorage.setItem('admin_last_seen_booking_id', data.latest_id);
+                    } else if (data.latest_id > lastSeenId && data.bookings && data.bookings.length > 0) {
+                        localStorage.setItem('admin_last_seen_booking_id', data.latest_id);
+                        playBookingChimeSound();
+                    }
+                }
+            })
+            .catch(function(err) { console.log('Booking live polling error:', err); });
+
+    }
+
+    checkLiveBookings();
+    setInterval(checkLiveBookings, 5000);
 });
+
+
 </script>
-@endrole
+@endif
+

@@ -70,6 +70,7 @@ class MonthlyPaymentController extends Controller
                 'status'                  => $freshRow->status,
                 'received_by'             => $freshRow->received_by,
                 'created_at'              => $freshRow->created_at ? $freshRow->created_at->format('Y-m-d H:i:s') : '',
+                'updated_at'              => $freshRow->updated_at ? $freshRow->updated_at->format('Y-m-d H:i:s') : '',
                 'full_name'               => $booking->full_name ?? '-',
                 'phone'                   => $booking->phone ?? '-',
                 'email'                   => $booking->email ?? '',

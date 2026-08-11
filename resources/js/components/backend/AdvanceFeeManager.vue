@@ -5,33 +5,17 @@
         <div class="card mb-4 shadow-sm border-0">
           <div class="card-header d-flex flex-wrap gap-2 justify-content-between align-items-center py-3 bg-light border-bottom">
             <h5 class="card-title mb-0 text-primary fw-bold">
-              <i class="ti ti-cash me-2"></i>Development Fee Manager (উন্নয়ন ফি ব্যবস্থাপনা)
+              <i class="ti ti-wallet me-2"></i>Advance Fee Manager (এডভান্স ফি ব্যবস্থাপনা)
             </h5>
 
             <div class="d-flex align-items-center gap-2">
-              <button
-                class="btn btn-sm"
-                :class="activeFilter === 'all' ? 'btn-primary' : 'btn-outline-primary'"
-                @click="setFilter('all')"
-              >
-                All Residents
-              </button>
-
-              <button
-                class="btn btn-sm"
-                :class="activeFilter === 'unpaid' ? 'btn-warning' : 'btn-outline-warning'"
-                @click="setFilter('unpaid')"
-              >
-                <i class="ti ti-alert-circle me-1"></i>Unpaid (বাকি)
-              </button>
-
-              <button
-                class="btn btn-sm"
-                :class="activeFilter === 'paid' ? 'btn-success' : 'btn-outline-success'"
-                @click="setFilter('paid')"
-              >
-                <i class="ti ti-check me-1"></i>Paid (পরিশোধিত)
-              </button>
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                style="width: 280px"
+                placeholder="Search resident / phone / room..."
+                v-model="search"
+              />
             </div>
           </div>
 
@@ -46,16 +30,6 @@
                   <option :value="50">50</option>
                 </select>
               </div>
-
-              <div class="d-flex gap-2 align-items-center">
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  style="width: 280px"
-                  placeholder="Search resident / phone / room..."
-                  v-model="search"
-                />
-              </div>
             </div>
 
             <div class="table-responsive">
@@ -67,8 +41,8 @@
                     <th style="width: 140px">Phone</th>
                     <th style="width: 140px">Floor</th>
                     <th style="width: 140px">Room - Seat</th>
-                    <th style="width: 160px">Development Fee Status</th>
-                    <th style="width: 180px" class="text-center">Action</th>
+                    <th style="width: 160px">Advance Fee Status</th>
+                    <th style="width: 160px" class="text-center">Action</th>
                   </tr>
                 </thead>
 
@@ -89,31 +63,17 @@
                       <span class="badge bg-primary px-2 py-1 font-monospace fs-6">{{ r.roomnumber || "-" }}</span>
                     </td>
                     <td>
-                      <span v-if="r.is_paid" class="badge bg-success px-2 py-1 fs-6">
-                        <i class="ti ti-check me-1"></i> Paid (৳ {{ formatCurrency(r.development_fee) }})
-                      </span>
-                      <span v-else class="badge bg-warning text-dark px-2 py-1 fs-6">
-                        <i class="ti ti-clock me-1"></i> Unpaid (৳ 0)
+                      <span class="badge bg-success px-2 py-1 fs-6">
+                        <i class="ti ti-check me-1"></i> Paid (৳ {{ formatCurrency(r.advance_fee) }})
                       </span>
                     </td>
                     <td class="text-center">
-                      <div class="d-flex justify-content-center gap-2">
-                        <button
-                          v-if="!r.is_paid"
-                          class="btn btn-sm btn-success fw-bold"
-                          @click="openPayModal(r)"
-                        >
-                          <i class="ti ti-cash me-1"></i> Collect Fee
-                        </button>
-
-                        <button
-                          v-if="r.is_paid"
-                          class="btn btn-sm btn-outline-primary fw-bold"
-                          @click="printReceiptModal(r)"
-                        >
-                          <i class="ti ti-printer me-1"></i> Print Receipt
-                        </button>
-                      </div>
+                      <button
+                        class="btn btn-sm btn-dark fw-semibold"
+                        @click="printReceiptModal(r)"
+                      >
+                        <i class="ti ti-printer me-1"></i> Print Receipt
+                      </button>
                     </td>
                   </tr>
                 </tbody>
@@ -124,7 +84,7 @@
                       <span v-if="loading">
                         <i class="fa fa-spinner fa-spin me-2"></i> Loading data...
                       </span>
-                      <span v-else>No residents found for this status</span>
+                      <span v-else>No residents found</span>
                     </td>
                   </tr>
                 </tbody>
@@ -159,68 +119,10 @@
       </div>
     </div>
 
-    <!-- Collect Fee Modal -->
-    <div
-      class="modal fade"
-      id="payDevFeeModal"
-      tabindex="-1"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content shadow-lg border-0">
-          <div class="modal-header bg-success text-white py-3">
-            <h5 class="modal-title text-white fw-bold">
-              <i class="ti ti-cash me-2"></i>Collect Development Fee (উন্নয়ন ফি সংগ্রহ)
-            </h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-          </div>
-
-          <div class="modal-body p-4" v-if="selectedResident">
-            <div class="alert alert-light border border-success d-flex align-items-center gap-3 mb-3">
-              <div>
-                <h6 class="mb-1 fw-bold text-dark">{{ selectedResident.full_name }}</h6>
-                <div class="small text-muted">
-                  Phone: <strong>{{ selectedResident.phone }}</strong> | Room: <strong>{{ selectedResident.roomnumber }}</strong>
-                </div>
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label fw-bold">Development Fee Amount (উন্নয়ন ফি টাকা) <span class="text-danger">*</span></label>
-              <div class="input-group">
-                <span class="input-group-text fw-bold">৳</span>
-                <input
-                  type="number"
-                  class="form-control form-control-lg fw-bold text-success"
-                  v-model.number="payAmount"
-                  placeholder="3000"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div class="modal-footer bg-light py-3">
-            <button type="button" class="btn btn-secondary fw-semibold" data-bs-dismiss="modal">
-              Cancel
-            </button>
-            <button
-              type="button"
-              class="btn btn-success fw-bold px-4"
-              :disabled="!payAmount || submitting"
-              @click="submitPayFee"
-            >
-              <span v-if="submitting"><i class="fa fa-spinner fa-spin me-1"></i> Saving...</span>
-              <span v-else><i class="ti ti-check me-1"></i> Confirm & Collect</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Printable Receipt Modal -->
     <div
       class="modal fade"
-      id="receiptModal"
+      id="advReceiptModal"
       tabindex="-1"
       aria-hidden="true"
     >
@@ -228,22 +130,22 @@
         <div class="modal-content shadow-lg border-0">
           <div class="modal-header bg-dark text-white py-2 px-3">
             <h6 class="modal-title text-white mb-0 fw-bold">
-              <i class="ti ti-printer me-2"></i>Development Fee Receipt (উন্নয়ন ফি মানি রিসিট)
+              <i class="ti ti-printer me-2"></i>Advance Fee Receipt (এডভান্স ফি মানি রিসিট)
             </h6>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
           </div>
 
-          <div class="modal-body p-4" id="printableReceiptArea" v-if="receiptResident">
+          <div class="modal-body p-4" id="printableAdvReceiptArea" v-if="receiptResident">
             <!-- Receipt Template Box -->
             <div class="receipt-box p-4 border border-2 border-dark rounded-3 bg-white" style="font-family: 'Segoe UI', Arial, sans-serif;">
               <div class="text-center border-bottom pb-3 mb-3">
                 <h3 class="fw-bold mb-1" style="color: #033364;">টি এস এস ভিলা</h3>
                 <div class="small text-dark fw-semibold">কলেজ রোড, নেসকোগেট সংলগ্ন, রংপুর | ফোন: +8801977270920</div>
-                <div class="badge bg-dark fs-6 px-3 py-1 mt-2 text-uppercase">DEVELOPMENT FEE MONEY RECEIPT</div>
+                <div class="badge bg-dark fs-6 px-3 py-1 mt-2 text-uppercase">ADVANCE FEE MONEY RECEIPT</div>
               </div>
 
               <div class="d-flex justify-content-between align-items-center mb-3 small text-muted">
-                <div>Receipt No: <strong>#DEV-{{ receiptResident.id }}</strong></div>
+                <div>Receipt No: <strong>#ADV-{{ receiptResident.id }}</strong></div>
                 <div>Date: <strong>{{ formatDate(receiptResident.created_at) }}</strong></div>
               </div>
 
@@ -269,11 +171,11 @@
                   </tr>
                   <tr>
                     <th class="bg-light">Payment Purpose:</th>
-                    <td class="fw-bold text-primary">Development Fee (উন্নয়ন ফি - এককালীন)</td>
+                    <td class="fw-bold text-primary">Advance Fee (এডভান্স ফি)</td>
                   </tr>
                   <tr>
                     <th class="bg-light">Amount Paid:</th>
-                    <td class="fw-bold fs-5 text-success">৳ {{ formatCurrency(receiptResident.development_fee) }}</td>
+                    <td class="fw-bold fs-5 text-success">৳ {{ formatCurrency(receiptResident.advance_fee) }}</td>
                   </tr>
                   <tr>
                     <th class="bg-light">Payment Status:</th>
@@ -320,29 +222,21 @@
 
 <script>
 import axios from "axios";
-import Toastify from "toastify-js";
-import "toastify-js/src/toastify.css";
 
 export default {
-  name: "DevelopmentFeeManager",
+  name: "AdvanceFeeManager",
 
   data() {
     return {
       residents: [],
       loading: false,
       search: "",
-      activeFilter: "all", // all, unpaid, paid
       perPage: 10,
       currentPage: 1,
       totalPages: 1,
       total: 0,
       from: 0,
       _t: null,
-
-      selectedResident: null,
-      payAmount: 3000,
-      submitting: false,
-      payModalInstance: null,
 
       receiptResident: null,
       receiptModalInstance: null,
@@ -391,44 +285,20 @@ export default {
       return date.toLocaleDateString("en-GB");
     },
 
-    toast(text, type = "success") {
-      const bg =
-        type === "success"
-          ? "linear-gradient(to right, #00b09b, #96c93d)"
-          : type === "warning"
-          ? "linear-gradient(to right, #f59e0b, #fbbf24)"
-          : "linear-gradient(to right, #ff5f6d, #ffc371)";
-
-      Toastify({
-        text: text || "Done",
-        duration: 2500,
-        close: true,
-        gravity: "top",
-        position: "right",
-        backgroundColor: bg,
-      }).showToast();
-    },
-
     endpoint(path) {
       const base = this.url.endsWith("/") ? this.url.slice(0, -1) : this.url;
       const cleanPath = path.startsWith("/") ? path : `/${path}`;
       return `${base}${cleanPath}`;
     },
 
-    setFilter(filterType) {
-      this.activeFilter = filterType;
-      this.fetchResidents(1);
-    },
-
     async fetchResidents(page = 1) {
       this.loading = true;
       try {
-        const res = await axios.get(this.endpoint("development-fees/get"), {
+        const res = await axios.get(this.endpoint("advance-fees/get"), {
           params: {
             page,
             per_page: this.perPage,
             search: this.search,
-            filter: this.activeFilter,
           },
         });
 
@@ -439,56 +309,15 @@ export default {
         this.from = res.data.from ? res.data.from - 1 : 0;
       } catch (e) {
         console.error(e);
-        this.toast("Failed to load residents data", "error");
       } finally {
         this.loading = false;
-      }
-    },
-
-    openPayModal(resident) {
-      this.selectedResident = resident;
-      this.payAmount = resident.default_fee || 3000;
-
-      const modalEl = document.getElementById("payDevFeeModal");
-      if (modalEl && window.bootstrap) {
-        this.payModalInstance = window.bootstrap.Modal.getOrCreateInstance(modalEl);
-        this.payModalInstance.show();
-      }
-    },
-
-    async submitPayFee() {
-      if (!this.selectedResident || !this.payAmount) return;
-
-      this.submitting = true;
-      try {
-        const res = await axios.post(
-          this.endpoint(`development-fees/${this.selectedResident.id}/pay`),
-          {
-            amount: this.payAmount,
-          }
-        );
-
-        if (res.data.success) {
-          this.toast(res.data.message || "Development fee saved successfully!");
-          if (this.payModalInstance) {
-            this.payModalInstance.hide();
-          }
-          this.fetchResidents(this.currentPage);
-        } else {
-          this.toast(res.data.message || "Failed to record development fee.", "error");
-        }
-      } catch (e) {
-        console.error(e);
-        this.toast("Failed to record fee.", "error");
-      } finally {
-        this.submitting = false;
       }
     },
 
     printReceiptModal(resident) {
       this.receiptResident = resident;
 
-      const modalEl = document.getElementById("receiptModal");
+      const modalEl = document.getElementById("advReceiptModal");
       if (modalEl && window.bootstrap) {
         this.receiptModalInstance = window.bootstrap.Modal.getOrCreateInstance(modalEl);
         this.receiptModalInstance.show();
@@ -496,11 +325,11 @@ export default {
     },
 
     printReceiptNow() {
-      const content = document.getElementById("printableReceiptArea").innerHTML;
-      let iframe = document.getElementById("receiptPrintIframe");
+      const content = document.getElementById("printableAdvReceiptArea").innerHTML;
+      let iframe = document.getElementById("advReceiptPrintIframe");
       if (!iframe) {
         iframe = document.createElement("iframe");
-        iframe.id = "receiptPrintIframe";
+        iframe.id = "advReceiptPrintIframe";
         iframe.style.position = "fixed";
         iframe.style.right = "0";
         iframe.style.bottom = "0";
@@ -515,7 +344,7 @@ export default {
         <!DOCTYPE html>
         <html>
           <head>
-            <title>Development Fee Receipt - টি এস এস ভিলা</title>
+            <title>Advance Fee Receipt - টি এস এস ভিলা</title>
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
             <style>
               body { padding: 25px; font-family: 'Segoe UI', Arial, sans-serif; background: #fff; }

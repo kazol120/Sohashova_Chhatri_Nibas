@@ -105,17 +105,17 @@
                                 <span class="badge bg-label-secondary">No Booking Link</span>
                             @endif
                         </td>
-                        <td style="white-space: normal; min-width: 250px;">
-                            <div class="p-2 bg-light rounded border text-wrap fs-7 text-dark">
+                        <td style="white-space: normal !important; word-break: break-word; min-width: 250px;">
+                            <div class="p-2 bg-light rounded border fs-7 text-dark" style="white-space: normal !important; word-break: break-word;">
                                 {{ $complaint->complaint_text }}
                             </div>
                             @if($complaint->admin_note)
-                                <small class="text-success d-block mt-1"><i class="fa fa-comment-dots me-1"></i>Admin Note: {{ $complaint->admin_note }}</small>
+                                <small class="text-success d-block mt-1" style="white-space: normal !important; word-break: break-word;"><i class="fa fa-comment-dots me-1"></i>Admin Note: {{ $complaint->admin_note }}</small>
                             @endif
                         </td>
                         <td>
-                            <small class="text-dark fw-medium">{{ $complaint->created_at->format('d M, Y') }}</small><br>
-                            <small class="text-muted">{{ $complaint->created_at->format('h:i A') }}</small>
+                            <small class="text-dark fw-medium">{{ $complaint->created_at->timezone('Asia/Dhaka')->format('d M, Y') }}</small><br>
+                            <small class="text-muted">{{ $complaint->created_at->timezone('Asia/Dhaka')->format('h:i A') }}</small>
                         </td>
                         <td>
                             @if($complaint->status == 1)
@@ -140,17 +140,15 @@
                                                     <h5 class="modal-title text-white fw-bold mb-0">Accept & Resolve Complaint</h5>
                                                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
-                                                <div class="modal-body text-start" style="white-space: normal;">
+                                                <div class="modal-body text-start">
                                                     <p class="fw-semibold text-dark mb-2">Mark this complaint as accepted and resolved?</p>
-                                                    <div class="p-3 bg-light rounded mb-3 border" style="white-space: normal; word-break: break-word; overflow-wrap: break-word;">
-                                                        <div class="mb-1"><strong>Resident:</strong> {{ $complaint->user->name ?? 'Resident' }}</div>
-                                                        <div style="white-space: normal; word-break: break-word; overflow-wrap: break-word;">
-                                                            <strong>Complaint:</strong> <span>{{ $complaint->complaint_text }}</span>
-                                                        </div>
+                                                    <div class="p-3 bg-light rounded mb-3 border text-start" style="white-space: normal !important; word-break: break-word;">
+                                                        <div class="mb-2"><strong>Resident:</strong> {{ $complaint->user->name ?? 'Resident' }}</div>
+                                                        <div><strong>Complaint:</strong> <span class="text-dark">{{ $complaint->complaint_text }}</span></div>
                                                     </div>
                                                     <div class="mb-3">
                                                         <label class="form-label fw-semibold">Note for Resident (Optional):</label>
-                                                        <textarea name="admin_note" class="form-control" rows="3" placeholder="e.g. Electrician sent, issue fixed!"></textarea>
+                                                        <textarea name="admin_note" rows="3" class="form-control" placeholder="e.g. Electrician sent, issue fixed!"></textarea>
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">

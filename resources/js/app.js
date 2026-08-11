@@ -30,6 +30,7 @@ import ResidentReleaseManager from './components/backend/ResidentReleaseManager.
 import ResidentReleaseHistory from './components/backend/ResidentReleaseHistory.vue';
 import RoomChangeManager from './components/backend/RoomChangeManager.vue';
 import DevelopmentFeeManager from './components/backend/DevelopmentFeeManager.vue';
+import AdvanceFeeManager from './components/backend/AdvanceFeeManager.vue';
 
 const app = createApp({
     components:{
@@ -59,6 +60,7 @@ const app = createApp({
         ResidentReleaseHistory,
         RoomChangeManager,
         DevelopmentFeeManager,
+        AdvanceFeeManager,
     }
 });
 

@@ -14,12 +14,6 @@
             <!-- Action Buttons -->
             <div class="d-flex gap-2">
               <button 
-                class="btn btn-success d-flex align-items-center gap-2 px-3 py-2 shadow-sm"
-                @click="exportPaymentsCSV">
-                <i class="fa fa-file-excel fs-5"></i>
-                <span>Export Excel</span>
-              </button>
-              <button 
                 class="btn btn-primary d-flex align-items-center gap-2 px-4 py-2 shadow-sm"
                 @click="confirmGenerateBills"
                 :disabled="generating">
@@ -653,6 +647,8 @@ export default {
       const totalBill = rentAmount + carriedForward;
       const paidAmount = Number(pay.paid_amount || 0);
       const dueAmount = Number(pay.due_amount || 0);
+      const rawDate = (pay.updated_at || pay.created_at || '').substring(0, 10);
+      const printDate = rawDate || new Date().toISOString().substring(0, 10);
       const htmlContent = `
         <!DOCTYPE html>
         <html>
@@ -702,7 +698,7 @@ export default {
                 </div>
                 <div class="col-6 text-end">
                   <small class="text-muted d-block">Date / তারিখ:</small>
-                  <strong class="text-dark">${pay.created_at ? pay.created_at.substring(0, 10) : ''}</strong>
+                  <strong class="text-dark">${printDate}</strong>
                 </div>
               </div>
 

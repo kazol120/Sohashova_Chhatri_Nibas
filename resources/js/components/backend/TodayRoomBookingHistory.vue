@@ -714,6 +714,10 @@ watch: {
               padding: 16px 20px 14px 20px;
               box-sizing: border-box;
               position: relative;
+              min-height: 275mm;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
               page-break-inside: avoid;
             }
             .paper-frame::before {
@@ -927,7 +931,7 @@ watch: {
               display: flex;
               justify-content: space-between;
               align-items: flex-end;
-              margin-top: 35px;
+              margin-top: auto;
               padding: 10px 32px 6px 32px;
             }
             .sig-box { text-align: center; min-width: 140px; }

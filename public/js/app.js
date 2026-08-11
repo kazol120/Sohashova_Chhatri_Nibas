@@ -27946,6 +27946,162 @@ const asap = typeof queueMicrotask !== 'undefined' ?
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=script&lang=js":
+/*!*******************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=script&lang=js ***!
+  \*******************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
+function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: "AdvanceFeeManager",
+  data: function data() {
+    return {
+      residents: [],
+      loading: false,
+      search: "",
+      perPage: 10,
+      currentPage: 1,
+      totalPages: 1,
+      total: 0,
+      from: 0,
+      _t: null,
+      receiptResident: null,
+      receiptModalInstance: null
+    };
+  },
+  computed: {
+    url: function url() {
+      return this.$store.state.url;
+    }
+  },
+  mounted: function mounted() {
+    this.fetchResidents(1);
+  },
+  watch: {
+    search: function search() {
+      var _this = this;
+      clearTimeout(this._t);
+      this._t = setTimeout(function () {
+        return _this.fetchResidents(1);
+      }, 300);
+    },
+    perPage: function perPage() {
+      this.fetchResidents(1);
+    }
+  },
+  beforeUnmount: function beforeUnmount() {
+    clearTimeout(this._t);
+  },
+  methods: {
+    formatCurrency: function formatCurrency(val) {
+      if (val === null || val === undefined || isNaN(val)) return "0";
+      return Number(val).toLocaleString("en-US");
+    },
+    isStudent: function isStudent(r) {
+      if (!r || !r.user_type) return false;
+      var u = String(r.user_type).toLowerCase().trim();
+      return u === "student" || u === "ছাত্রী";
+    },
+    formatDate: function formatDate(d) {
+      if (!d) return new Date().toLocaleDateString("en-GB");
+      var date = new Date(d);
+      return date.toLocaleDateString("en-GB");
+    },
+    endpoint: function endpoint(path) {
+      var base = this.url.endsWith("/") ? this.url.slice(0, -1) : this.url;
+      var cleanPath = path.startsWith("/") ? path : "/".concat(path);
+      return "".concat(base).concat(cleanPath);
+    },
+    fetchResidents: function fetchResidents() {
+      var _arguments = arguments,
+        _this2 = this;
+      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+        var page, res;
+        return _regeneratorRuntime().wrap(function _callee$(_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              page = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : 1;
+              _this2.loading = true;
+              _context.prev = 2;
+              _context.next = 5;
+              return axios__WEBPACK_IMPORTED_MODULE_0__["default"].get(_this2.endpoint("advance-fees/get"), {
+                params: {
+                  page: page,
+                  per_page: _this2.perPage,
+                  search: _this2.search
+                }
+              });
+            case 5:
+              res = _context.sent;
+              _this2.residents = res.data.data || [];
+              _this2.currentPage = res.data.current_page || 1;
+              _this2.totalPages = res.data.last_page || 1;
+              _this2.total = res.data.total || 0;
+              _this2.from = res.data.from ? res.data.from - 1 : 0;
+              _context.next = 16;
+              break;
+            case 13:
+              _context.prev = 13;
+              _context.t0 = _context["catch"](2);
+              console.error(_context.t0);
+            case 16:
+              _context.prev = 16;
+              _this2.loading = false;
+              return _context.finish(16);
+            case 19:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, null, [[2, 13, 16, 19]]);
+      }))();
+    },
+    printReceiptModal: function printReceiptModal(resident) {
+      this.receiptResident = resident;
+      var modalEl = document.getElementById("advReceiptModal");
+      if (modalEl && window.bootstrap) {
+        this.receiptModalInstance = window.bootstrap.Modal.getOrCreateInstance(modalEl);
+        this.receiptModalInstance.show();
+      }
+    },
+    printReceiptNow: function printReceiptNow() {
+      var content = document.getElementById("printableAdvReceiptArea").innerHTML;
+      var iframe = document.getElementById("advReceiptPrintIframe");
+      if (!iframe) {
+        iframe = document.createElement("iframe");
+        iframe.id = "advReceiptPrintIframe";
+        iframe.style.position = "fixed";
+        iframe.style.right = "0";
+        iframe.style.bottom = "0";
+        iframe.style.width = "0px";
+        iframe.style.height = "0px";
+        iframe.style.border = "0";
+        document.body.appendChild(iframe);
+      }
+      var doc = iframe.contentWindow.document;
+      doc.open();
+      doc.write("\n        <!DOCTYPE html>\n        <html>\n          <head>\n            <title>Advance Fee Receipt - \u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE</title>\n            <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\">\n            <style>\n              body { padding: 25px; font-family: 'Segoe UI', Arial, sans-serif; background: #fff; }\n              .receipt-box { border: 2px solid #000 !important; border-radius: 8px; padding: 25px; }\n              @media print {\n                body { padding: 0; }\n                .receipt-box { border: 2px solid #000 !important; }\n              }\n            </style>\n          </head>\n          <body>\n            ".concat(content, "\n          </body>\n        </html>\n      "));
+      doc.close();
+      setTimeout(function () {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      }, 300);
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/backend/Brand.vue?vue&type=script&lang=js":
 /*!*******************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/backend/Brand.vue?vue&type=script&lang=js ***!
@@ -30830,7 +30986,9 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       var totalBill = rentAmount + carriedForward;
       var paidAmount = Number(pay.paid_amount || 0);
       var dueAmount = Number(pay.due_amount || 0);
-      var htmlContent = "\n        <!DOCTYPE html>\n        <html>\n          <head>\n            <title>Money Receipt - \u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE</title>\n            <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\">\n            <style>\n              body { font-family: 'Segoe UI', Arial, sans-serif; padding: 25px; background-color: #f9f9f9; color: #222; }\n              .receipt-card { max-width: 680px; margin: auto; background: #fff; padding: 35px; border-radius: 12px; border: 2px solid #033364; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }\n              .receipt-header { border-bottom: 2px solid #033364; padding-bottom: 15px; margin-bottom: 20px; }\n              .table-details th { font-weight: 600; color: #444; width: 45%; }\n              .table-details td { font-weight: 700; color: #111; }\n              .badge-paid { background-color: #198754; color: #fff; font-size: 14px; font-weight: 800; padding: 5px 15px; border-radius: 4px; text-transform: uppercase; }\n              .badge-partial { background-color: #ffc107; color: #000; font-size: 14px; font-weight: 800; padding: 5px 15px; border-radius: 4px; text-transform: uppercase; }\n              @media print {\n                body { background-color: #fff; padding: 0; }\n                .receipt-card { border: 2px solid #000 !important; box-shadow: none; max-width: 100%; padding: 25px; }\n                .no-print-btn { display: none !important; }\n              }\n            </style>\n          </head>\n          <body>\n            <div class=\"receipt-card\">\n              <div class=\"d-flex justify-content-between align-items-center mb-3 no-print-btn\">\n                <button class=\"btn btn-secondary btn-sm\" onclick=\"window.close()\">Close Window</button>\n                <button class=\"btn btn-primary btn-sm px-4 fw-bold\" onclick=\"window.print()\">Click to Print Receipt</button>\n              </div>\n\n              <!-- Header Info -->\n              <div class=\"receipt-header text-center\">\n                <h3 class=\"fw-bold mb-1\" style=\"color: #033364;\">\u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE</h3>\n                <div class=\"fw-semibold text-dark mb-1\">\u0995\u09B2\u09C7\u099C \u09B0\u09CB\u09A1, \u09A8\u09C7\u09B8\u0995\u09CB \u0997\u09C7\u099F \u09B8\u0982\u09B2\u0997\u09CD\u09A8, \u09B0\u0982\u09AA\u09C1\u09B0</div>\n                <div class=\"small text-muted mb-2\">\u09AE\u09CB\u09AC\u09BE\u0987\u09B2: +8801977270920</div>\n                <div class=\"d-flex justify-content-center align-items-center gap-2 mt-2\">\n                  <span class=\"badge bg-primary px-3 py-2 fs-6\">\u09AE\u09BE\u09B8\u09BF\u0995 \u09AD\u09BE\u09DC\u09BE \u0986\u09A6\u09BE\u09DF \u09B0\u09BF\u09B8\u09BF\u099F (Monthly Rent Receipt)</span>\n                  ".concat(pay.status === 'paid' ? '<span class="badge-paid">Payment Fully Paid</span>' : '<span class="badge-partial">Partially Paid</span>', "\n                </div>\n              </div>\n\n              <!-- Invoice Metadata -->\n              <div class=\"row mb-3 pb-2 border-bottom\">\n                <div class=\"col-6\">\n                  <small class=\"text-muted d-block\">Invoice No / \u09B0\u09BF\u09B8\u09BF\u099F \u09A8\u0982:</small>\n                  <strong class=\"text-dark\">#RENT-INV-").concat(pay.id, "</strong>\n                </div>\n                <div class=\"col-6 text-end\">\n                  <small class=\"text-muted d-block\">Date / \u09A4\u09BE\u09B0\u09BF\u0996:</small>\n                  <strong class=\"text-dark\">").concat(pay.created_at ? pay.created_at.substring(0, 10) : '', "</strong>\n                </div>\n              </div>\n\n              <!-- Resident & Room Details -->\n              <h6 class=\"fw-bold mb-2 border-bottom pb-1 text-primary\">Resident Details (\u09AC\u09CB\u09B0\u09CD\u09A1\u09BE\u09B0\u09C7\u09B0 \u09AC\u09BF\u09AC\u09B0\u09A3)</h6>\n              <table class=\"table table-sm table-borderless table-details mb-3\">\n                <tr>\n                  <th>Resident Name (\u09AC\u09CB\u09B0\u09CD\u09A1\u09BE\u09B0\u09C7\u09B0 \u09A8\u09BE\u09AE):</th>\n                  <td>").concat(pay.full_name, "</td>\n                </tr>\n                <tr>\n                  <th>Phone Number (\u09AE\u09CB\u09AC\u09BE\u0987\u09B2 \u09A8\u09AE\u09CD\u09AC\u09B0):</th>\n                  <td>").concat(pay.phone, "</td>\n                </tr>\n                <tr>\n                  <th>Room & Seat No (\u09B0\u09C1\u09AE \u0993 \u09B8\u09BF\u099F):</th>\n                  <td>").concat(pay.roomnumber, " (").concat(pay.floornumber, ")</td>\n                </tr>\n                <tr>\n                  <th>Billing Month (\u09AD\u09BE\u09DC\u09BE\u09B0 \u09AE\u09BE\u09B8):</th>\n                  <td>").concat(formattedMonth, "</td>\n                </tr>\n              </table>\n\n              <!-- Financial Summary -->\n              <h6 class=\"fw-bold mb-2 border-bottom pb-1 text-primary\">Financial Summary (\u09B9\u09BF\u09B8\u09BE\u09AC\u09C7\u09B0 \u09AC\u09BF\u09AC\u09B0\u09A3)</h6>\n              <table class=\"table table-sm table-bordered table-details mb-3\">\n                <tbody>\n                  <tr>\n                    <th>Monthly Rent (\u09AE\u09BE\u09B8\u09BF\u0995 \u09AD\u09BE\u09DC\u09BE):</th>\n                    <td class=\"text-end\">\u09F3 ").concat(rentAmount.toFixed(2), "</td>\n                  </tr>\n                  ").concat(carriedForward > 0 ? "\n                  <tr class=\"table-warning\">\n                    <th>Previous Carried Forward Due (\u0986\u0997\u09C7\u09B0 \u09AE\u09BE\u09B8\u09C7\u09B0 \u09AC\u0995\u09C7\u09DF\u09BE):</th>\n                    <td class=\"text-end text-danger font-monospace\">\u09F3 ".concat(carriedForward.toFixed(2), "</td>\n                  </tr>\n                  <tr class=\"table-light\">\n                    <th>Total Payable Bill (\u09B8\u09B0\u09CD\u09AC\u09AE\u09CB\u099F \u09A6\u09C7\u09DF \u09AC\u09BF\u09B2):</th>\n                    <td class=\"text-end fw-bold\">\u09F3 ").concat(totalBill.toFixed(2), "</td>\n                  </tr>") : '', "\n                  <tr class=\"table-success\">\n                    <th>Amount Paid So Far (\u09B8\u09B0\u09CD\u09AC\u09AE\u09CB\u099F \u0986\u09A6\u09BE\u09DF):</th>\n                    <td class=\"text-end text-success font-monospace fw-bold\">\u09F3 ").concat(pay.status === 'paid' && carriedForward > 0 && paidAmount < totalBill ? totalBill.toFixed(2) : paidAmount.toFixed(2), "</td>\n                  </tr>\n                   ").concat(dueAmount > 0 ? "\n                    <tr class=\"table-danger\">\n                      <th>Remaining Due Balance (\u0985\u09AC\u09B6\u09BF\u09B7\u09CD\u099F \u09AC\u0995\u09C7\u09DF\u09BE):</th>\n                      <td class=\"text-end text-danger font-monospace fw-bold\">\n                        \u09F3 ".concat(dueAmount.toFixed(2), "\n                      </td>\n                    </tr>\n                    ") : '', "\n                </tbody>\n              </table>\n\n\n              <!-- Received By & Signatures -->\n              <div class=\"mt-3 pt-2\">\n                <div class=\"small fw-semibold text-muted mb-4\">\n                  Received By / \u0986\u09A6\u09BE\u09DF\u0995\u09BE\u09B0\u09C0: <strong class=\"text-dark\">").concat(this.cleanReceivedBy(pay.received_by), "</strong>\n                </div>\n\n                <div class=\"d-flex justify-content-end align-items-end mt-4 pt-2\">\n                  <div class=\"text-center\" style=\"width: 220px;\">\n                    <div style=\"border-top: 1px solid #000; padding-top: 4px;\" class=\"small fw-bold\">\n                      \u0985\u09AB\u09BF\u09B8 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7\u09C7\u09B0 \u09B8\u09CD\u09AC\u09BE\u0995\u09CD\u09B7\u09B0\n                    </div>\n                  </div>\n                </div>\n              </div>\n\n              <div class=\"text-center text-muted small mt-4 pt-3 border-top\">\n                \u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE \u09AE\u09C7\u09B8\u09C7 \u09A5\u09BE\u0995\u09BE\u09B0 \u099C\u09A8\u09CD\u09AF \u09A7\u09A8\u09CD\u09AF\u09AC\u09BE\u09A6\u0964\n              </div>\n            </div>\n          </body>\n        </html>\n      ");
+      var rawDate = (pay.updated_at || pay.created_at || '').substring(0, 10);
+      var printDate = rawDate || new Date().toISOString().substring(0, 10);
+      var htmlContent = "\n        <!DOCTYPE html>\n        <html>\n          <head>\n            <title>Money Receipt - \u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE</title>\n            <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\">\n            <style>\n              body { font-family: 'Segoe UI', Arial, sans-serif; padding: 25px; background-color: #f9f9f9; color: #222; }\n              .receipt-card { max-width: 680px; margin: auto; background: #fff; padding: 35px; border-radius: 12px; border: 2px solid #033364; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }\n              .receipt-header { border-bottom: 2px solid #033364; padding-bottom: 15px; margin-bottom: 20px; }\n              .table-details th { font-weight: 600; color: #444; width: 45%; }\n              .table-details td { font-weight: 700; color: #111; }\n              .badge-paid { background-color: #198754; color: #fff; font-size: 14px; font-weight: 800; padding: 5px 15px; border-radius: 4px; text-transform: uppercase; }\n              .badge-partial { background-color: #ffc107; color: #000; font-size: 14px; font-weight: 800; padding: 5px 15px; border-radius: 4px; text-transform: uppercase; }\n              @media print {\n                body { background-color: #fff; padding: 0; }\n                .receipt-card { border: 2px solid #000 !important; box-shadow: none; max-width: 100%; padding: 25px; }\n                .no-print-btn { display: none !important; }\n              }\n            </style>\n          </head>\n          <body>\n            <div class=\"receipt-card\">\n              <div class=\"d-flex justify-content-between align-items-center mb-3 no-print-btn\">\n                <button class=\"btn btn-secondary btn-sm\" onclick=\"window.close()\">Close Window</button>\n                <button class=\"btn btn-primary btn-sm px-4 fw-bold\" onclick=\"window.print()\">Click to Print Receipt</button>\n              </div>\n\n              <!-- Header Info -->\n              <div class=\"receipt-header text-center\">\n                <h3 class=\"fw-bold mb-1\" style=\"color: #033364;\">\u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE</h3>\n                <div class=\"fw-semibold text-dark mb-1\">\u0995\u09B2\u09C7\u099C \u09B0\u09CB\u09A1, \u09A8\u09C7\u09B8\u0995\u09CB \u0997\u09C7\u099F \u09B8\u0982\u09B2\u0997\u09CD\u09A8, \u09B0\u0982\u09AA\u09C1\u09B0</div>\n                <div class=\"small text-muted mb-2\">\u09AE\u09CB\u09AC\u09BE\u0987\u09B2: +8801977270920</div>\n                <div class=\"d-flex justify-content-center align-items-center gap-2 mt-2\">\n                  <span class=\"badge bg-primary px-3 py-2 fs-6\">\u09AE\u09BE\u09B8\u09BF\u0995 \u09AD\u09BE\u09DC\u09BE \u0986\u09A6\u09BE\u09DF \u09B0\u09BF\u09B8\u09BF\u099F (Monthly Rent Receipt)</span>\n                  ".concat(pay.status === 'paid' ? '<span class="badge-paid">Payment Fully Paid</span>' : '<span class="badge-partial">Partially Paid</span>', "\n                </div>\n              </div>\n\n              <!-- Invoice Metadata -->\n              <div class=\"row mb-3 pb-2 border-bottom\">\n                <div class=\"col-6\">\n                  <small class=\"text-muted d-block\">Invoice No / \u09B0\u09BF\u09B8\u09BF\u099F \u09A8\u0982:</small>\n                  <strong class=\"text-dark\">#RENT-INV-").concat(pay.id, "</strong>\n                </div>\n                <div class=\"col-6 text-end\">\n                  <small class=\"text-muted d-block\">Date / \u09A4\u09BE\u09B0\u09BF\u0996:</small>\n                  <strong class=\"text-dark\">").concat(printDate, "</strong>\n                </div>\n              </div>\n\n              <!-- Resident & Room Details -->\n              <h6 class=\"fw-bold mb-2 border-bottom pb-1 text-primary\">Resident Details (\u09AC\u09CB\u09B0\u09CD\u09A1\u09BE\u09B0\u09C7\u09B0 \u09AC\u09BF\u09AC\u09B0\u09A3)</h6>\n              <table class=\"table table-sm table-borderless table-details mb-3\">\n                <tr>\n                  <th>Resident Name (\u09AC\u09CB\u09B0\u09CD\u09A1\u09BE\u09B0\u09C7\u09B0 \u09A8\u09BE\u09AE):</th>\n                  <td>").concat(pay.full_name, "</td>\n                </tr>\n                <tr>\n                  <th>Phone Number (\u09AE\u09CB\u09AC\u09BE\u0987\u09B2 \u09A8\u09AE\u09CD\u09AC\u09B0):</th>\n                  <td>").concat(pay.phone, "</td>\n                </tr>\n                <tr>\n                  <th>Room & Seat No (\u09B0\u09C1\u09AE \u0993 \u09B8\u09BF\u099F):</th>\n                  <td>").concat(pay.roomnumber, " (").concat(pay.floornumber, ")</td>\n                </tr>\n                <tr>\n                  <th>Billing Month (\u09AD\u09BE\u09DC\u09BE\u09B0 \u09AE\u09BE\u09B8):</th>\n                  <td>").concat(formattedMonth, "</td>\n                </tr>\n              </table>\n\n              <!-- Financial Summary -->\n              <h6 class=\"fw-bold mb-2 border-bottom pb-1 text-primary\">Financial Summary (\u09B9\u09BF\u09B8\u09BE\u09AC\u09C7\u09B0 \u09AC\u09BF\u09AC\u09B0\u09A3)</h6>\n              <table class=\"table table-sm table-bordered table-details mb-3\">\n                <tbody>\n                  <tr>\n                    <th>Monthly Rent (\u09AE\u09BE\u09B8\u09BF\u0995 \u09AD\u09BE\u09DC\u09BE):</th>\n                    <td class=\"text-end\">\u09F3 ").concat(rentAmount.toFixed(2), "</td>\n                  </tr>\n                  ").concat(carriedForward > 0 ? "\n                  <tr class=\"table-warning\">\n                    <th>Previous Carried Forward Due (\u0986\u0997\u09C7\u09B0 \u09AE\u09BE\u09B8\u09C7\u09B0 \u09AC\u0995\u09C7\u09DF\u09BE):</th>\n                    <td class=\"text-end text-danger font-monospace\">\u09F3 ".concat(carriedForward.toFixed(2), "</td>\n                  </tr>\n                  <tr class=\"table-light\">\n                    <th>Total Payable Bill (\u09B8\u09B0\u09CD\u09AC\u09AE\u09CB\u099F \u09A6\u09C7\u09DF \u09AC\u09BF\u09B2):</th>\n                    <td class=\"text-end fw-bold\">\u09F3 ").concat(totalBill.toFixed(2), "</td>\n                  </tr>") : '', "\n                  <tr class=\"table-success\">\n                    <th>Amount Paid So Far (\u09B8\u09B0\u09CD\u09AC\u09AE\u09CB\u099F \u0986\u09A6\u09BE\u09DF):</th>\n                    <td class=\"text-end text-success font-monospace fw-bold\">\u09F3 ").concat(pay.status === 'paid' && carriedForward > 0 && paidAmount < totalBill ? totalBill.toFixed(2) : paidAmount.toFixed(2), "</td>\n                  </tr>\n                   ").concat(dueAmount > 0 ? "\n                    <tr class=\"table-danger\">\n                      <th>Remaining Due Balance (\u0985\u09AC\u09B6\u09BF\u09B7\u09CD\u099F \u09AC\u0995\u09C7\u09DF\u09BE):</th>\n                      <td class=\"text-end text-danger font-monospace fw-bold\">\n                        \u09F3 ".concat(dueAmount.toFixed(2), "\n                      </td>\n                    </tr>\n                    ") : '', "\n                </tbody>\n              </table>\n\n\n              <!-- Received By & Signatures -->\n              <div class=\"mt-3 pt-2\">\n                <div class=\"small fw-semibold text-muted mb-4\">\n                  Received By / \u0986\u09A6\u09BE\u09DF\u0995\u09BE\u09B0\u09C0: <strong class=\"text-dark\">").concat(this.cleanReceivedBy(pay.received_by), "</strong>\n                </div>\n\n                <div class=\"d-flex justify-content-end align-items-end mt-4 pt-2\">\n                  <div class=\"text-center\" style=\"width: 220px;\">\n                    <div style=\"border-top: 1px solid #000; padding-top: 4px;\" class=\"small fw-bold\">\n                      \u0985\u09AB\u09BF\u09B8 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7\u09C7\u09B0 \u09B8\u09CD\u09AC\u09BE\u0995\u09CD\u09B7\u09B0\n                    </div>\n                  </div>\n                </div>\n              </div>\n\n              <div class=\"text-center text-muted small mt-4 pt-3 border-top\">\n                \u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE \u09AE\u09C7\u09B8\u09C7 \u09A5\u09BE\u0995\u09BE\u09B0 \u099C\u09A8\u09CD\u09AF \u09A7\u09A8\u09CD\u09AF\u09AC\u09BE\u09A6\u0964\n              </div>\n            </div>\n          </body>\n        </html>\n      ");
       var iframe = document.getElementById("monthlyReceiptPrintIframe");
       if (!iframe) {
         iframe = document.createElement("iframe");
@@ -33567,15 +33725,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var toastify_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(toastify_js__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var toastify_js_src_toastify_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! toastify-js/src/toastify.css */ "./node_modules/toastify-js/src/toastify.css");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
+function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
-function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
-function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 
 
 
@@ -33601,7 +33759,8 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       startDate: "",
       endDate: "",
       selectedGuest: "",
-      guestNames: []
+      guestNames: [],
+      selectedReceiptBooking: null
     };
   },
   computed: {
@@ -33651,6 +33810,92 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     clearTimeout(this._t);
   },
   methods: {
+    openBookingReceiptModal: function openBookingReceiptModal(r) {
+      this.selectedReceiptBooking = r;
+      var modalEl = document.getElementById("bookingReceiptModal");
+      if (modalEl) {
+        var bsModal = new bootstrap.Modal(modalEl);
+        bsModal.show();
+      }
+    },
+    getAdvanceDepositAmount: function getAdvanceDepositAmount(r) {
+      if (!r) return 0;
+      if (r.room_items && r.room_items.length) {
+        var sum = 0;
+        r.room_items.forEach(function (item) {
+          var _ref, _ref2, _item$advance_price;
+          var p = Number((_ref = (_ref2 = (_item$advance_price = item.advance_price) !== null && _item$advance_price !== void 0 ? _item$advance_price : item.original_advance_price) !== null && _ref2 !== void 0 ? _ref2 : item.price) !== null && _ref !== void 0 ? _ref : 0);
+          sum += p;
+        });
+        if (sum > 0) return sum;
+      }
+      if (r.advance_fee !== null && r.advance_fee !== undefined && Number(r.advance_fee) > 0) {
+        return Number(r.advance_fee);
+      }
+      if (r.roomprice !== null && r.roomprice !== undefined && Number(r.roomprice) > 0) {
+        return Number(r.roomprice);
+      }
+      return Number(r.monthly_amount || 0);
+    },
+    getDevFeeAmount: function getDevFeeAmount(r) {
+      if (!r) return 0;
+      if (r.development_fee === null || r.development_fee === undefined) return 0;
+      return Number(r.development_fee);
+    },
+    calculateTotalAmountPayable: function calculateTotalAmountPayable(r) {
+      if (!r) return 0;
+      var advance = this.getAdvanceDepositAmount(r);
+      var devFee = this.getDevFeeAmount(r);
+      return advance + devFee;
+    },
+    getSelectedFloorNo: function getSelectedFloorNo(r) {
+      if (!r) return '-';
+      if (r.room_items && r.room_items.length) {
+        return _toConsumableArray(new Set(r.room_items.map(function (i) {
+          return i.floornumber;
+        }))).filter(Boolean).join(', ');
+      }
+      return r.floornumber || '-';
+    },
+    getSelectedRoomNo: function getSelectedRoomNo(r) {
+      var _this4 = this;
+      if (!r) return '-';
+      if (r.room_items && r.room_items.length) {
+        return r.room_items.map(function (i) {
+          return _this4.getRoomNo(i.roomnumber);
+        }).join(', ');
+      }
+      return this.getRoomNo(r.roomnumber) || r.room_number || '-';
+    },
+    getSelectedSeatNo: function getSelectedSeatNo(r) {
+      var _this5 = this;
+      if (!r) return '-';
+      if (r.room_items && r.room_items.length) {
+        return r.room_items.map(function (i) {
+          return _this5.getSeatNo(i.roomnumber);
+        }).join(', ');
+      }
+      return this.getSeatNo(r.roomnumber) || '-';
+    },
+    printBookingReceipt: function printBookingReceipt(r) {
+      if (!r) return;
+      var roomNo = this.getSelectedRoomNo(r);
+      var seatNo = this.getSelectedSeatNo(r);
+      var floorNo = this.getSelectedFloorNo(r);
+      var fullName = r.full_name || '-';
+      var phone = r.phone || '-';
+      var address = (r.address || '') + (r.thana_name ? ', ' + r.thana_name : '') + (r.district_name ? ', ' + r.district_name : '');
+      var institution = r.institution_name || r.workplace_name || '-';
+      var bookingDate = this.formatDateTime(r.created_at);
+      var advance = this.getAdvanceDepositAmount(r);
+      var devFee = this.getDevFeeAmount(r);
+      var totalAmount = advance + devFee;
+      var devFeeRowHtml = devFee > 0 ? "\n        <div style=\"display: flex; justify-content: space-between; font-size: 15px; padding: 4px 0;\">\n          <span style=\"color: #b45309; font-weight: 600;\">Development Fee (One-time):</span>\n          <span style=\"font-weight: bold; color: #d97706;\">+ \u09F3 ".concat(this.formatCurrency(devFee), "</span>\n        </div>\n      ") : '';
+      var printHtml = "\n        <!DOCTYPE html>\n        <html>\n        <head>\n          <title>Booking Money Receipt - ".concat(fullName, "</title>\n          <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\">\n          <style>\n            @media print {\n              @page { size: A4 portrait; margin: 15mm; }\n              body { font-family: 'Segoe UI', Arial, sans-serif; color: #111; }\n              .no-print { display: none !important; }\n            }\n            body { padding: 25px; font-family: 'Segoe UI', Arial, sans-serif; background: #fff; }\n            .receipt-card { max-width: 750px; margin: 0 auto; border: 2px solid #198754; padding: 25px; border-radius: 12px; }\n            .pad-header { text-align: center; border-bottom: 2px solid #198754; padding-bottom: 12px; margin-bottom: 20px; }\n            .fee-box { background-color: #fffdf5; border: 2px solid #f59e0b; border-radius: 12px; padding: 15px; margin-top: 20px; margin-bottom: 20px; }\n            .sig-box { margin-top: 60px; display: flex; justify-content: space-between; }\n            .sig-line { width: 180px; border-top: 1px solid #000; text-align: center; padding-top: 5px; font-weight: bold; font-size: 13px; }\n          </style>\n        </head>\n        <body onload=\"window.print(); setTimeout(function(){ window.close(); }, 500);\">\n          <div class=\"receipt-card\">\n            <div class=\"pad-header\">\n              <h2 style=\"font-weight: 800; color: #198754; margin-bottom: 2px;\">\u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE (TSS Villa)</h2>\n              <p style=\"margin: 0; font-size: 14px; font-weight: 600; color: #333;\">\u0995\u09B2\u09C7\u099C \u09B0\u09CB\u09A1, \u09A8\u09C7\u09B8\u0995\u09CB\u0997\u09C7\u099F \u09B8\u0982\u09B2\u0997\u09CD\u09A8, \u09B0\u0982\u09AA\u09C1\u09B0 | \u09AB\u09CB\u09A8: +8801977270920</p>\n              <div style=\"margin-top: 10px;\">\n                <span class=\"badge bg-success fs-6 px-3 py-2 text-uppercase\">\u09AC\u09C1\u0995\u09BF\u0982 \u09AE\u09BE\u09A8\u09BF \u09B0\u09B8\u09BF\u09A6 (BOOKING MONEY RECEIPT)</span>\n              </div>\n            </div>\n\n            <div style=\"display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; background: #f8f9fa; padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd;\">\n              <div><strong>\u09B0\u09B8\u09BF\u09A6 \u09A8\u0982:</strong> TSSB-").concat(r.id, "</div>\n              <div><strong>\u09A4\u09BE\u09B0\u09BF\u0996 \u0993 \u09B8\u09AE\u09DF:</strong> ").concat(bookingDate, "</div>\n            </div>\n\n            <table class=\"table table-bordered align-middle\" style=\"font-size: 14px;\">\n              <tbody>\n                <tr>\n                  <td style=\"background: #f8f9fa; font-weight: bold; width: 25%;\">\u0997\u09C7\u09B8\u09CD\u099F\u09C7\u09B0 \u09A8\u09BE\u09AE:</td>\n                  <td style=\"font-weight: 600; width: 25%;\">").concat(fullName, "</td>\n                  <td style=\"background: #f8f9fa; font-weight: bold; width: 25%;\">\u09AE\u09CB\u09AC\u09BE\u0987\u09B2 \u09A8\u0982:</td>\n                  <td style=\"font-weight: 600; width: 25%;\">").concat(phone, "</td>\n                </tr>\n                <tr>\n                  <td style=\"background: #f8f9fa; font-weight: bold;\">\u09AA\u09CD\u09B0\u09A4\u09BF\u09B7\u09CD\u09A0\u09BE\u09A8/\u0995\u09B0\u09CD\u09AE\u09B8\u09CD\u09A5\u09B2:</td>\n                  <td colspan=\"3\" style=\"font-weight: 600;\">").concat(institution, "</td>\n                </tr>\n                <tr>\n                  <td style=\"background: #f8f9fa; font-weight: bold;\">\u09A0\u09BF\u0995\u09BE\u09A8\u09BE:</td>\n                  <td colspan=\"3\">").concat(address || '-', "</td>\n                </tr>\n                <tr style=\"background-color: #e8f5e9;\">\n                  <td style=\"font-weight: bold;\">\u09A4\u09B2\u09BE (Floor):</td>\n                  <td style=\"font-weight: bold;\">").concat(floorNo, "</td>\n                  <td style=\"font-weight: bold;\">\u09B0\u09C1\u09AE & \u09B8\u09BF\u099F:</td>\n                  <td style=\"font-weight: bold;\">Room: ").concat(roomNo, " | Seat: ").concat(seatNo, "</td>\n                </tr>\n              </tbody>\n            </table>\n\n            <div class=\"fee-box\">\n              <div style=\"display: flex; justify-content: space-between; font-size: 15px; padding: 4px 0;\">\n                <span style=\"color: #555;\">Advance Deposit / Room Price:</span>\n                <span style=\"font-weight: bold; color: #111;\">\u09F3 ").concat(this.formatCurrency(advance), "</span>\n              </div>\n              ").concat(devFeeRowHtml, "\n              <hr style=\"border-top: 2px dashed #f59e0b; margin: 10px 0;\">\n              <div style=\"display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; padding-top: 4px;\">\n                <span>Total Amount Payable:</span>\n                <span style=\"color: #059669; font-size: 20px;\">\u09F3 ").concat(this.formatCurrency(totalAmount), "</span>\n              </div>\n            </div>\n\n            <div class=\"sig-box\">\n              <div class=\"sig-line\">\u09AC\u09CB\u09B0\u09CD\u09A1\u09BE\u09B0\u09C7\u09B0 \u09B8\u09CD\u09AC\u09BE\u0995\u09CD\u09B7\u09B0</div>\n              <div class=\"sig-line\">\u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7\u09C7\u09B0 \u09B8\u09CD\u09AC\u09BE\u0995\u09CD\u09B7\u09B0</div>\n            </div>\n          </div>\n        </body>\n        </html>\n      ");
+      var win = window.open('', '_blank', 'width=850,height=900');
+      win.document.write(printHtml);
+      win.document.close();
+    },
     formatCurrency: function formatCurrency(val) {
       if (val === null || val === undefined || isNaN(val)) return '0';
       return Number(val).toLocaleString('en-US');
@@ -33677,7 +33922,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       return r.user_type.toLowerCase() === 'working professional';
     },
     loadGuestNames: function loadGuestNames() {
-      var _this4 = this;
+      var _this6 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
         var res;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
@@ -33685,18 +33930,18 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
             case 0:
               _context.prev = 0;
               _context.next = 3;
-              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(_this4.endpoint("get-select-guet"));
+              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(_this6.endpoint("get-select-guet"));
             case 3:
               res = _context.sent;
               if (res.data.status === "success") {
-                _this4.guestNames = res.data.data || [];
+                _this6.guestNames = res.data.data || [];
               }
               _context.next = 10;
               break;
             case 7:
               _context.prev = 7;
               _context.t0 = _context["catch"](0);
-              _this4.toast("Failed to load guest names.", "error");
+              _this6.toast("Failed to load guest names.", "error");
             case 10:
             case "end":
               return _context.stop();
@@ -33773,46 +34018,46 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     },
     fetchRooms: function fetchRooms() {
       var _arguments = arguments,
-        _this5 = this;
+        _this7 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
         var page, params, res;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
               page = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : 1;
-              _this5.loading = true;
+              _this7.loading = true;
               _context2.prev = 2;
               params = {
                 page: page,
-                per_page: _this5.perPage,
-                search: _this5.search
+                per_page: _this7.perPage,
+                search: _this7.search
               };
-              if (_this5.isAdmin) {
-                params.start_date = _this5.startDate;
-                params.end_date = _this5.endDate;
-                params.selected_guest = _this5.selectedGuest;
+              if (_this7.isAdmin) {
+                params.start_date = _this7.startDate;
+                params.end_date = _this7.endDate;
+                params.selected_guest = _this7.selectedGuest;
               }
               _context2.next = 7;
-              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(_this5.endpoint("get-room-booking"), {
+              return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get(_this7.endpoint("get-room-booking"), {
                 params: params
               });
             case 7:
               res = _context2.sent;
-              _this5.rooms = res.data.data || [];
-              _this5.currentPage = res.data.current_page || 1;
-              _this5.totalPages = res.data.last_page || 1;
-              _this5.total = res.data.total || 0;
-              _this5.from = res.data.from ? res.data.from - 1 : 0;
+              _this7.rooms = res.data.data || [];
+              _this7.currentPage = res.data.current_page || 1;
+              _this7.totalPages = res.data.last_page || 1;
+              _this7.total = res.data.total || 0;
+              _this7.from = res.data.from ? res.data.from - 1 : 0;
               _context2.next = 19;
               break;
             case 15:
               _context2.prev = 15;
               _context2.t0 = _context2["catch"](2);
               console.error(_context2.t0);
-              _this5.toast("Failed to load booking history", "error");
+              _this7.toast("Failed to load booking history", "error");
             case 19:
               _context2.prev = 19;
-              _this5.loading = false;
+              _this7.loading = false;
               return _context2.finish(19);
             case 22:
             case "end":
@@ -33829,14 +34074,14 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       }
     },
     printResidentForm: function printResidentForm(r) {
-      var _this6 = this;
+      var _this8 = this;
       var logoUrl = window.location.origin + '/logo/logoimage (2).png';
       var userImgUrl = r.image ? this.imageSrc(r.image) : '';
       var roomNo = r.room_items && r.room_items.length ? r.room_items.map(function (i) {
-        return _this6.getRoomNo(i.roomnumber);
+        return _this8.getRoomNo(i.roomnumber);
       }).join(', ') : this.getRoomNo(r.roomnumber) || r.room_number || '-';
       var seatNo = r.room_items && r.room_items.length ? r.room_items.map(function (i) {
-        return _this6.getSeatNo(i.roomnumber);
+        return _this8.getSeatNo(i.roomnumber);
       }).join(', ') : this.getSeatNo(r.roomnumber) || '-';
       var floorNo = r.room_items && r.room_items.length ? _toConsumableArray(new Set(r.room_items.map(function (i) {
         return i.floornumber;
@@ -33861,11 +34106,11 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       var motherPhone = r.mother_phone || '-';
       var infoSectionHtml = '';
       if (isProf) {
-        infoSectionHtml = "\n          <div class=\"form-pill-row\">\n            <div class=\"pill-lbl\">\u0995\u09B0\u09CD\u09AE\u099C\u09C0\u09AC\u09C0\u09B0 \u09AA\u09C2\u09B0\u09CD\u09A3 \u09A8\u09BE\u09AE :</div>\n            <div class=\"pill-val\">".concat(fullName, "</div>\n            <div class=\"pill-right\">\n              <div class=\"pill-lbl\">\u09AE\u09CB\u09AC\u09BE\u0987\u09B2 \u09A8\u0982 :</div>\n              <div class=\"pill-val\">").concat(phone, "</div>\n            </div>\n          </div>\n\n          <div class=\"form-pill-row\">\n            <div class=\"pill-lbl\">\u0995\u09B0\u09CD\u09AE\u09AA\u09CD\u09B0\u09A4\u09BF\u09B7\u09CD\u09A0\u09BE\u09A8\u09C7\u09B0 \u09A8\u09BE\u09AE:</div>\n            <div class=\"pill-val\">").concat(r.workplace_name || '-', "</div>\n            <div class=\"pill-right\">\n              <div class=\"pill-lbl\">NID \u09A8\u09AE\u09CD\u09AC\u09B0 :</div>\n              <div class=\"pill-val\">").concat(r.nid || '-', "</div>\n            </div>\n          </div>\n\n          <div class=\"form-pill-row\">\n            <div class=\"pill-lbl\">\u0987\u09AE\u09C7\u0987\u09B2 \u09A0\u09BF\u0995\u09BE\u09A8\u09BE:</div>\n            <div class=\"pill-val\">").concat(r.email || '-', "</div>\n            <div class=\"pill-right\">\n              <div class=\"pill-lbl\">\u09AA\u09C7\u09B6\u09BE/\u099F\u09BE\u0987\u09AA:</div>\n              <div class=\"pill-val\">").concat(r.user_type || 'Working Professional', "</div>\n            </div>\n          </div>\n\n          ").concat(fatherName !== '-' || motherName !== '-' ? "\n          <div class=\"form-pill-row\">\n            <div class=\"pill-lbl\">\u09AA\u09BF\u09A4\u09BE\u09B0 \u09A8\u09BE\u09AE:</div>\n            <div class=\"pill-val\">".concat(fatherName, "</div>\n            <div class=\"pill-right\">\n              <div class=\"pill-lbl\">\u09AE\u09BE\u09A4\u09BE\u09B0 \u09A8\u09BE\u09AE:</div>\n              <div class=\"pill-val\">").concat(motherName, "</div>\n            </div>\n          </div>\n          ") : '', "\n        ");
+        infoSectionHtml = "\n          <div class=\"form-pill-row\">\n            <div class=\"pill-lbl\">\u0995\u09B0\u09CD\u09AE\u099C\u09C0\u09AC\u09C0\u09B0 \u09AA\u09C2\u09B0\u09CD\u09A3 \u09A8\u09BE\u09AE :</div>\n            <div class=\"pill-val\">".concat(fullName, "</div>\n            <div class=\"pill-right\">\n              <div class=\"pill-lbl\">\u09AE\u09CB\u09AC\u09BE\u0987\u09B2 \u09A8\u0982 :</div>\n              <div class=\"pill-val\">").concat(phone, "</div>\n            </div>\n          </div>\n\n          <div class=\"form-pill-row\">\n            <div class=\"pill-lbl\">\u0995\u09B0\u09CD\u09AE\u09AA\u09CD\u09B0\u09A4\u09BF\u09B7\u09CD\u09A0\u09BE\u09A8\u09C7\u09B0 \u09A8\u09BE\u09AE:</div>\n            <div class=\"pill-val\">").concat(r.workplace_name || '-', "</div>\n            <div class=\"pill-right\">\n              <div class=\"pill-lbl\">NID \u09A8\u09AE\u09CD\u09AC\u09B0 :</div>\n              <div class=\"pill-val\">").concat(r.nid || '-', "</div>\n            </div>\n          </div>\n\n          ").concat(fatherName !== '-' || motherName !== '-' ? "\n          <div class=\"form-pill-row\">\n            <div class=\"pill-lbl\">\u09AA\u09BF\u09A4\u09BE\u09B0 \u09A8\u09BE\u09AE:</div>\n            <div class=\"pill-val\">".concat(fatherName, "</div>\n            <div class=\"pill-right\">\n              <div class=\"pill-lbl\">\u09AE\u09CB\u09AC\u09BE\u0987\u09B2 \u09A8\u0982 :</div>\n              <div class=\"pill-val\">").concat(fatherPhone, "</div>\n            </div>\n          </div>\n          <div class=\"form-pill-row\">\n            <div class=\"pill-lbl\">\u09AE\u09BE\u09A4\u09BE\u09B0 \u09A8\u09BE\u09AE:</div>\n            <div class=\"pill-val\">").concat(motherName, "</div>\n            <div class=\"pill-right\">\n              <div class=\"pill-lbl\">\u09AE\u09CB\u09AC\u09BE\u0987\u09B2 \u09A8\u0982 :</div>\n              <div class=\"pill-val\">").concat(motherPhone, "</div>\n            </div>\n          </div>\n          ") : '', "\n        ");
       } else {
         infoSectionHtml = "\n          <div class=\"form-pill-row\">\n            <div class=\"pill-lbl\">\u09B6\u09BF\u0995\u09CD\u09B7\u09BE\u09B0\u09CD\u09A5\u09C0\u09B0 \u09AA\u09C2\u09B0\u09CD\u09A3 \u09A8\u09BE\u09AE :</div>\n            <div class=\"pill-val\">".concat(fullName, "</div>\n            <div class=\"pill-right\">\n              <div class=\"pill-lbl\">\u09AE\u09CB\u09AC\u09BE\u0987\u09B2 \u09A8\u0982 :</div>\n              <div class=\"pill-val\">").concat(phone, "</div>\n            </div>\n          </div>\n\n          <div class=\"form-pill-row\">\n            <div class=\"pill-lbl\">\u0985\u09A7\u09CD\u09AF\u09AF\u09BC\u09A8\u09B0\u09A4 \u09B6\u09BF\u0995\u09CD\u09B7\u09BE \u09AA\u09CD\u09B0\u09A4\u09BF\u09B7\u09CD\u09A0\u09BE\u09A8\u09C7\u09B0 \u09A8\u09BE\u09AE:</div>\n            <div class=\"pill-val\">").concat(institutionName, "</div>\n          </div>\n\n          <div class=\"form-pill-row\">\n            <div class=\"pill-lbl\">\u09AA\u09BF\u09A4\u09BE\u09B0 \u09A8\u09BE\u09AE:</div>\n            <div class=\"pill-val\">").concat(fatherName, "</div>\n            <div class=\"pill-right\">\n              <div class=\"pill-lbl\">\u09AE\u09CB\u09AC\u09BE\u0987\u09B2 \u09A8\u0982 :</div>\n              <div class=\"pill-val\">").concat(fatherPhone, "</div>\n            </div>\n          </div>\n\n          <div class=\"form-pill-row\">\n            <div class=\"pill-lbl\">\u09AE\u09BE\u09A4\u09BE\u09B0 \u09A8\u09BE\u09AE:</div>\n            <div class=\"pill-val\">").concat(motherName, "</div>\n            <div class=\"pill-right\">\n              <div class=\"pill-lbl\">\u09AE\u09CB\u09AC\u09BE\u0987\u09B2 \u09A8\u0982 :</div>\n              <div class=\"pill-val\">").concat(motherPhone, "</div>\n            </div>\n          </div>\n        ");
       }
-      var html = "\n        <!DOCTYPE html>\n        <html lang=\"bn\">\n        <head>\n          <meta charset=\"UTF-8\">\n          <title>".concat(docTitle, "</title>\n          <style>\n            @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Hind+Siliguri:wght@400;500;600;700;800&display=swap');\n\n            @page {\n              size: A4 portrait;\n              margin: 5mm;\n            }\n\n            * { box-sizing: border-box; margin: 0; padding: 0; }\n\n            html, body {\n              height: 100%;\n              width: 100%;\n              background: #fff;\n              font-family: 'Hind Siliguri', 'Tiro Bangla', sans-serif;\n              padding: 0;\n              margin: 0;\n              color: #000;\n              -webkit-print-color-adjust: exact;\n              print-color-adjust: exact;\n            }\n\n            /* ======= OUTER FRAME ======= */\n            .paper-frame {\n              background: linear-gradient(165deg, #fef9e7 0%, #fef3cd 50%, #fef9e7 100%);\n              border: 4px solid #27ae60;\n              border-radius: 10px;\n              padding: 18px 22px 16px 22px;\n              box-sizing: border-box;\n              height: calc(297mm - 10mm);\n              min-height: calc(297mm - 10mm);\n              display: flex;\n              flex-direction: column;\n              justify-content: space-between;\n              position: relative;\n              page-break-inside: avoid;\n            }\n            .paper-frame::before {\n              content: '';\n              position: absolute;\n              inset: 4px;\n              border: 1.5px solid #f39c12;\n              border-radius: 7px;\n              pointer-events: none;\n            }\n\n            .main-content-wrap {\n              display: flex;\n              flex-direction: column;\n              flex-grow: 1;\n              justify-content: space-evenly;\n            }\n\n            /* ======= HEADER ======= */\n            .top-header {\n              display: flex;\n              align-items: center;\n              justify-content: center;\n              gap: 18px;\n              margin-bottom: 10px;\n              padding: 0 4px;\n            }\n            .logo-wrap img { width: 78px; height: 78px; object-fit: contain; }\n            .brand-center { text-align: center; flex: 1; }\n            .brand-name {\n              font-size: 46px;\n              font-weight: 900;\n              color: #c0392b;\n              font-family: 'Tiro Bangla', serif;\n              line-height: 1;\n              letter-spacing: 1px;\n            }\n            .photo-box {\n              width: 110px;\n              height: 125px;\n              border: 2px solid #2c3e50;\n              border-radius: 4px;\n              display: flex;\n              align-items: center;\n              justify-content: center;\n              overflow: hidden;\n              background: #f0f0f0;\n              flex-shrink: 0;\n            }\n            .photo-box img { width: 100%; height: 100%; object-fit: cover; }\n            .photo-placeholder { font-size: 11px; color: #888; text-align: center; }\n\n            /* ======= ADDRESS BANNER ======= */\n            .address-banner {\n              background: #1a237e;\n              color: #fff;\n              text-align: center;\n              padding: 9px 14px;\n              font-size: 13.5px;\n              font-weight: 600;\n              border-radius: 5px;\n              margin-bottom: 12px;\n              letter-spacing: 0.2px;\n            }\n\n            /* ======= ROOM META ======= */\n            .room-meta-row {\n              display: flex;\n              gap: 12px;\n              margin-bottom: 12px;\n            }\n            .room-meta-box {\n              flex: 1;\n              border: 2px solid #27ae60;\n              border-radius: 6px;\n              padding: 8px 12px;\n              background: #fff;\n              font-size: 14px;\n              font-weight: 600;\n              display: flex;\n              align-items: center;\n              gap: 5px;\n            }\n            .room-meta-box .lbl { color: #1a5c2e; font-weight: 700; white-space: nowrap; }\n            .room-meta-box .val { color: #000; font-weight: 800; font-size: 14.5px; }\n\n            /* ======= SECTION TITLES ======= */\n            .section-title-container {\n              display: flex;\n              align-items: center;\n              justify-content: space-between;\n              border-bottom: 2.5px solid #f39c12;\n              padding-bottom: 3px;\n              margin: 10px 0 8px 0;\n            }\n            .title-side-dummy {\n              flex: 1;\n            }\n            .section-title-container .section-title {\n              text-align: center;\n              font-size: 21.5px;\n              font-weight: 800;\n              color: #e74c3c;\n              font-family: 'Tiro Bangla', serif;\n              letter-spacing: 0.3px;\n              flex: 2;\n              margin: 0;\n              padding-bottom: 0;\n              border-bottom: none;\n            }\n            .booking-date-right-box {\n              flex: 1;\n              text-align: right;\n              font-size: 13px;\n              font-weight: 700;\n              white-space: nowrap;\n            }\n            .booking-date-right-box .lbl {\n              color: #1a5c2e;\n              font-weight: 800;\n            }\n            .booking-date-right-box .val {\n              color: #000;\n              font-weight: 800;\n            }\n\n            .section-title {\n              text-align: center;\n              font-size: 21.5px;\n              font-weight: 800;\n              color: #e74c3c;\n              font-family: 'Tiro Bangla', serif;\n              border-bottom: 2.5px solid #f39c12;\n              padding-bottom: 3px;\n              margin: 10px 0 8px 0;\n              letter-spacing: 0.3px;\n            }\n\n            /* ======= PILL ROWS ======= */\n            .form-pill-row {\n              border: 2px solid #8e44ad;\n              border-radius: 25px;\n              background: #fff;\n              display: flex;\n              overflow: hidden;\n              margin-bottom: 10px;\n              min-height: 42px;\n              align-items: stretch;\n            }\n            .pill-lbl {\n              background: #7b1fa2;\n              color: #fff;\n              padding: 9px 18px;\n              font-size: 14px;\n              font-weight: 700;\n              white-space: nowrap;\n              display: flex;\n              align-items: center;\n              border-right: 2px solid #8e44ad;\n              flex-shrink: 0;\n            }\n            .pill-val {\n              padding: 9px 18px;\n              font-size: 14.5px;\n              font-weight: 600;\n              color: #111;\n              flex-grow: 1;\n              display: flex;\n              align-items: center;\n            }\n            .pill-right {\n              border-left: 2px solid #8e44ad;\n              display: flex;\n              align-items: stretch;\n              flex-shrink: 0;\n            }\n\n            /* ======= ADDRESS ======= */\n            .address-row {\n              border: 2px solid #8e44ad;\n              border-radius: 25px;\n              background: #fff;\n              display: flex;\n              flex-wrap: wrap;\n              padding: 11px 20px;\n              font-size: 14px;\n              font-weight: 600;\n              gap: 10px 30px;\n              margin-bottom: 10px;\n              align-items: center;\n              min-height: 42px;\n            }\n            .akey { color: #7b1fa2; font-weight: 700; }\n\n            /* ======= RULES ======= */\n            .rules-box {\n              background: #fffde7;\n              border: 2px solid #f48fb1;\n              border-radius: 12px;\n              padding: 14px 20px;\n              margin-top: 4px;\n              margin-bottom: 10px;\n            }\n            .rules-list { list-style: none; padding: 0; margin: 0; }\n            .rules-list li {\n              font-size: 13px;\n              font-weight: 600;\n              color: #1a1a1a;\n              line-height: 1.8;\n              border-bottom: 1px dashed #f8bbd0;\n              padding-bottom: 4px;\n              margin-bottom: 4px;\n            }\n            .rules-list li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }\n\n            /* ======= SIGNATURE ======= */\n            .signature-row {\n              display: flex;\n              justify-content: space-between;\n              align-items: flex-end;\n              margin-top: auto;\n              padding: 16px 36px 8px 36px;\n            }\n            .sig-box { text-align: center; min-width: 150px; }\n            .sig-line { border-top: 1.5px solid #2c3e50; margin-bottom: 5px; }\n            .sig-text { font-size: 14px; font-weight: 700; color: #1a1a1a; }\n\n            @media print {\n              html, body {\n                height: 100% !important;\n                margin: 0 !important;\n                padding: 0 !important;\n                background: #fff !important;\n              }\n              .paper-frame {\n                height: calc(297mm - 10mm) !important;\n                min-height: calc(297mm - 10mm) !important;\n                border-radius: 0;\n                box-sizing: border-box;\n                page-break-inside: avoid !important;\n                page-break-after: avoid !important;\n                page-break-before: avoid !important;\n              }\n            }\n          </style>\n        </head>\n        <body>\n          <div class=\"paper-frame\">\n\n            <div class=\"main-content-wrap\">\n              <!-- HEADER -->\n              <div class=\"top-header\">\n                <div class=\"logo-wrap\">\n                  <img src=\"").concat(logoUrl, "\" alt=\"Logo\" onerror=\"this.style.display='none'\">\n                </div>\n                <div class=\"brand-center\">\n                  <div class=\"brand-name\">\u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE</div>\n                </div>\n                <div class=\"photo-box\">\n                  ").concat(userImgUrl ? "<img src=\"".concat(userImgUrl, "\" alt=\"Photo\">") : "<div class=\"photo-placeholder\">\u099B\u09AC\u09BF<br>Photo</div>", "\n                </div>\n              </div>\n\n              <!-- BANNER -->\n              <div class=\"address-banner\">\n                \u0995\u09B2\u09C7\u099C \u09B0\u09CB\u09A1 , \u09A8\u09C7\u09B8\u0995\u09CB \u0997\u09C7\u099F \u09B8\u0982\u09B2\u0997\u09CD\u09A8 , \u09B0\u0982\u09AA\u09C1\u09B0 &nbsp;|&nbsp; \u09AA\u09CD\u09B0\u09AF\u09BC\u09CB\u099C\u09A8\u09C7: \u09E6\u09E7\u09EF\u09ED\u09ED\u09E8\u09ED\u09E6\u09EF\u09E8\u09E6 &nbsp;|&nbsp; Gmail: tssvilla2026@gmail.com\n              </div>\n\n              <!-- ROOM / BLOCK / FLOOR -->\n              <div class=\"room-meta-row\">\n                <div class=\"room-meta-box\"><span class=\"lbl\">\u09B0\u09C1\u09AE \u09A8\u0982:</span>&nbsp;<span class=\"val\">").concat(roomNo, "</span></div>\n                <div class=\"room-meta-box\"><span class=\"lbl\">\u09AC\u09CD\u09B2\u0995 \u09A8\u0982:</span>&nbsp;<span class=\"val\">").concat(seatNo, "</span></div>\n                <div class=\"room-meta-box\"><span class=\"lbl\">\u09AB\u09CD\u09B2\u09CB\u09B0 \u09A8\u0982:</span>&nbsp;<span class=\"val\">").concat(floorNo, "</span></div>\n              </div>\n\n              <!-- SECTION: INFO HEADER WITH BOOKING DATE ON RIGHT -->\n              <div class=\"section-title-container\">\n                <div class=\"title-side-dummy\"></div>\n                <div class=\"section-title\">").concat(sectionTitleText, "</div>\n                <div class=\"booking-date-right-box\">\n                  <span class=\"lbl\">\u09AC\u09C1\u0995\u09BF\u0982 \u09A4\u09BE\u09B0\u09BF\u0996:</span> <span class=\"val\">").concat(bookingDate, "</span>\n                </div>\n              </div>\n\n              ").concat(infoSectionHtml, "\n\n              <!-- SECTION: ADDRESS -->\n              <div class=\"section-title\">\u09B8\u09CD\u09A5\u09BE\u09AF\u09BC\u09C0 \u09A0\u09BF\u0995\u09BE\u09A8\u09BE</div>\n\n              <div class=\"address-row\">\n                <span><span class=\"akey\">\u0997\u09CD\u09B0\u09BE\u09AE/\u09B0\u09BE\u09B8\u09CD\u09A4\u09BE:</span> ").concat(address, "</span>\n                <span><span class=\"akey\">\u09A5\u09BE\u09A8\u09BE:</span> ").concat(thanaName, "</span>\n                <span><span class=\"akey\">\u0989\u09AA\u099C\u09C7\u09B2\u09BE:</span> ").concat(thanaName, "</span>\n                <span><span class=\"akey\">\u099C\u09C7\u09B2\u09BE:</span> ").concat(districtName, "</span>\n              </div>\n\n              <!-- SECTION: RULES -->\n              <div class=\"section-title\">\u09A8\u09BF\u09AF\u09BC\u09AE\u09BE\u09AC\u09B2\u09C0</div>\n\n              <div class=\"rules-box\">\n                ").concat(isProf ? "\n                <ul class=\"rules-list\">\n                  <li>* \u09AE\u09C7\u09B8\u09C7\u09B0 \u09AD\u09BE\u09A1\u09BC\u09BE \u09E6\u09ED \u09A4\u09BE\u09B0\u09BF\u0996\u09C7\u09B0 \u09AE\u09A7\u09CD\u09AF\u09C7 \u09AA\u09B0\u09BF\u09B6\u09CB\u09A7 \u0995\u09B0\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                  <li>* \u09AE\u09C7\u09B8 \u099B\u09BE\u09A1\u09BC\u09B2\u09C7 \u09E6\u09E8 \u09AE\u09BE\u09B8 \u09AA\u09C2\u09B0\u09CD\u09AC\u09C7\u0987 \u09AE\u09C7\u09B8 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7\u0995\u09C7 \u099C\u09BE\u09A8\u09BE\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964 \u0985\u09A8\u09CD\u09AF\u09A5\u09BE\u09AF\u09BC \u09A6\u09C1\u0987 \u09AE\u09BE\u09B8\u09C7\u09B0 \u09AD\u09BE\u09A1\u09BC\u09BE \u09A6\u09BF\u09AF\u09BC\u09C7 \u09AE\u09C7\u09B8 \u099B\u09BE\u09A1\u09BC\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                  <li>* \u09B0\u09C1\u09AE \u099A\u09C7\u099E\u09CD\u099C \u0995\u09B0\u09A4\u09C7 \u099A\u09BE\u0987\u09B2\u09C7 \u09EB\u09E6\u09E6 \u099F\u09BE\u0995\u09BE \u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE \u09AA\u09CD\u09B0\u09A6\u09BE\u09A8 \u0995\u09B0\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                  <li>* \u09AE\u09C7\u09B8\u09C7\u09B0 \u09A8\u09BF\u09AF\u09BC\u09AE-\u0995\u09BE\u09A8\u09C1\u09A8 \u09AE\u09C7\u09A8\u09C7 \u099A\u09B2\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964 \u0995\u09BE\u09B0\u09CB \u09AC\u09BF\u09B0\u09C1\u09A6\u09CD\u09A7\u09C7 \u0995\u09CB\u09A8\u09CB \u0985\u09AD\u09BF\u09AF\u09CB\u0997 \u0986\u09B8\u09B2\u09C7 \u098F\u09AC\u0982 \u09A4\u09BE \u09AA\u09CD\u09B0\u09AE\u09BE\u09A3\u09BF\u09A4 \u09B9\u09B2\u09C7 \u09B8\u09BF\u099F \u09AC\u09BE\u09A4\u09BF\u09B2\u09B8\u09B9 \u09AF\u09C7\u0995\u09CB\u09A8\u09CB \u09AC\u09CD\u09AF\u09AC\u09B8\u09CD\u09A5\u09BE \u09A8\u09C7\u09AF\u09BC\u09BE\u09B0 \u0985\u09A7\u09BF\u0995\u09BE\u09B0 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7 \u09B0\u09BE\u0996\u09C7\u0964</li>\n                </ul>\n                " : "\n                <ul class=\"rules-list\">\n                  <li>* \u09AE\u09C7\u09B8\u09C7\u09B0 \u09AD\u09BE\u09A1\u09BC\u09BE \u09E6\u09ED \u09A4\u09BE\u09B0\u09BF\u0996\u09C7\u09B0 \u09AE\u09A7\u09CD\u09AF\u09C7 \u09AA\u09B0\u09BF\u09B6\u09CB\u09A7 \u0995\u09B0\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                  <li>* \u09AE\u09C7\u09B8 \u099B\u09BE\u09A1\u09BC\u09B2\u09C7 \u09E6\u09E8 \u09AE\u09BE\u09B8 \u09AA\u09C2\u09B0\u09CD\u09AC\u09C7\u0987 \u09AE\u09C7\u09B8 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7\u0995\u09C7 \u099C\u09BE\u09A8\u09BE\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964 \u0985\u09A8\u09CD\u09AF\u09A5\u09BE\u09AF\u09BC \u09A6\u09C1\u0987 \u09AE\u09BE\u09B8\u09C7\u09B0 \u09AD\u09BE\u09A1\u09BC\u09BE \u09A6\u09BF\u09AF\u09BC\u09C7 \u09AE\u09C7\u09B8 \u099B\u09BE\u09A1\u09BC\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                  <li>* \u09AE\u09BE\u0997\u09B0\u09BF\u09AC\u09C7\u09B0 \u0986\u09AF\u09BE\u09A8\u09C7\u09B0 \u09AA\u09B0 \u09AE\u09C7\u09B8\u09C7\u09B0 \u09AC\u09BE\u09B9\u09BF\u09B0\u09C7 \u09A5\u09BE\u0995\u09B2\u09C7 \u0985\u09AD\u09BF\u09AD\u09BE\u09AC\u0995\u0995\u09C7 \u099C\u09BE\u09A8\u09BF\u09AF\u09BC\u09C7 \u09A6\u09BF\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                  <li>* \u09B0\u09C1\u09AE \u099A\u09C7\u099E\u09CD\u099C \u0995\u09B0\u09A4\u09C7 \u099A\u09BE\u0987\u09B2\u09C7 \u09EB\u09E6\u09E6 \u099F\u09BE\u0995\u09BE \u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE \u09AA\u09CD\u09B0\u09A6\u09BE\u09A8 \u0995\u09B0\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                  <li>* \u09AE\u09C7\u09B8\u09C7\u09B0 \u09A8\u09BF\u09AF\u09BC\u09AE-\u0995\u09BE\u09A8\u09C1\u09A8 \u09AE\u09C7\u09A8\u09C7 \u099A\u09B2\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964 \u0995\u09BE\u09B0\u09CB \u09AC\u09BF\u09B0\u09C1\u09A6\u09CD\u09A7\u09C7 \u0995\u09CB\u09A8\u09CB \u0985\u09AD\u09BF\u09AF\u09CB\u0997 \u0986\u09B8\u09B2\u09C7 \u098F\u09AC\u0982 \u09A4\u09BE \u09AA\u09CD\u09B0\u09AE\u09BE\u09A3\u09BF\u09A4 \u09B9\u09B2\u09C7 \u09B8\u09BF\u099F \u09AC\u09BE\u09A4\u09BF\u09B2\u09B8\u09B9 \u09AF\u09C7\u0995\u09CB\u09A8\u09CB \u09AC\u09CD\u09AF\u09AC\u09B8\u09CD\u09A5\u09BE \u09A8\u09C7\u09AF\u09BC\u09BE\u09B0 \u0985\u09A7\u09BF\u0995\u09BE\u09B0 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7 \u09B0\u09BE\u0996\u09C7\u0964</li>\n                </ul>\n                ", "\n              </div>\n            </div>\n\n            <!-- SIGNATURE -->\n            <div class=\"signature-row\">\n              <div class=\"sig-box\">\n                <div class=\"sig-line\"></div>\n                <div class=\"sig-text\">\u0985\u09A8\u09C1\u09AE\u09CB\u09A6\u09BF\u09A4 \u09B8\u09CD\u09AC\u09BE\u0995\u09CD\u09B7\u09B0</div>\n              </div>\n              <div class=\"sig-box\">\n                <div class=\"sig-line\"></div>\n                <div class=\"sig-text\">").concat(signatureLabelText, "</div>\n              </div>\n            </div>\n\n          </div>\n        </body>\n        </html>\n      ");
+      var html = "\n        <!DOCTYPE html>\n        <html lang=\"bn\">\n        <head>\n          <meta charset=\"UTF-8\">\n          <title>".concat(docTitle, "</title>\n          <style>\n            @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&family=Tiro+Bangla&display=swap');\n            @page { size: A4 portrait; margin: 6mm; }\n            * { box-sizing: border-box; margin: 0; padding: 0; }\n            html, body {\n              height: 100%;\n              margin: 0;\n              padding: 0;\n              background: #fff;\n              font-family: 'Hind Siliguri', 'Tiro Bangla', sans-serif;\n              color: #000;\n              -webkit-print-color-adjust: exact;\n              print-color-adjust: exact;\n            }\n\n            .paper-frame {\n              background: linear-gradient(165deg, #fef9e7 0%, #fef3cd 50%, #fef9e7 100%);\n              border: 4px solid #27ae60;\n              border-radius: 10px;\n              padding: 22px 24px 20px 24px;\n              box-sizing: border-box;\n              position: relative;\n              width: 100%;\n              min-height: 282mm;\n              display: flex;\n              flex-direction: column;\n              justify-content: space-between;\n              page-break-inside: avoid;\n            }\n            .paper-frame::before {\n              content: '';\n              position: absolute;\n              inset: 4px;\n              border: 1.5px solid #f39c12;\n              border-radius: 7px;\n              pointer-events: none;\n            }\n\n            .main-content-wrap {\n              display: flex;\n              flex-direction: column;\n              flex: 1;\n            }\n\n            .top-header {\n              display: flex;\n              align-items: center;\n              justify-content: space-between;\n              gap: 16px;\n              margin-bottom: 12px;\n              padding: 0 4px;\n            }\n            .logo-wrap img { width: 78px; height: 78px; object-fit: contain; }\n            .brand-center { text-align: center; flex: 1; }\n            .brand-name {\n              font-size: 48px;\n              font-weight: 900;\n              color: #c0392b;\n              font-family: 'Tiro Bangla', serif;\n              line-height: 1;\n              letter-spacing: 1px;\n            }\n            .photo-box {\n              width: 110px;\n              height: 125px;\n              border: 2px solid #2c3e50;\n              border-radius: 4px;\n              display: flex;\n              align-items: center;\n              justify-content: center;\n              overflow: hidden;\n              background: #f0f0f0;\n              flex-shrink: 0;\n            }\n            .photo-box img { width: 100%; height: 100%; object-fit: cover; }\n            .photo-placeholder { font-size: 11px; color: #888; text-align: center; }\n\n            .address-banner {\n              background: #1a237e;\n              color: #fff;\n              text-align: center;\n              padding: 9px 12px;\n              font-size: 13.5px;\n              font-weight: 600;\n              border-radius: 5px;\n              margin-bottom: 12px;\n              letter-spacing: 0.2px;\n            }\n\n            .room-meta-row {\n              display: flex;\n              gap: 12px;\n              margin-bottom: 12px;\n            }\n            .room-meta-box {\n              flex: 1;\n              border: 2px solid #27ae60;\n              border-radius: 6px;\n              padding: 8px 12px;\n              background: #fff;\n              font-size: 14px;\n              font-weight: 600;\n              display: flex;\n              align-items: center;\n              gap: 5px;\n            }\n            .room-meta-box .lbl { color: #1a5c2e; font-weight: 700; white-space: nowrap; }\n            .room-meta-box .val { color: #000; font-weight: 800; font-size: 14.5px; }\n\n            .section-title-container {\n              display: flex;\n              align-items: center;\n              justify-content: space-between;\n              border-bottom: 2.5px solid #f39c12;\n              padding-bottom: 4px;\n              margin: 12px 0 10px 0;\n            }\n            .title-side-dummy { flex: 1; }\n            .section-title-container .section-title {\n              text-align: center;\n              font-size: 22px;\n              font-weight: 800;\n              color: #e74c3c;\n              font-family: 'Tiro Bangla', serif;\n              letter-spacing: 0.3px;\n              flex: 2;\n              margin: 0;\n              padding-bottom: 0;\n              border-bottom: none;\n            }\n            .booking-date-right-box {\n              flex: 1;\n              text-align: right;\n              font-size: 13.5px;\n              font-weight: 700;\n              white-space: nowrap;\n            }\n            .booking-date-right-box .lbl { color: #1a5c2e; font-weight: 800; }\n            .booking-date-right-box .val { color: #000; font-weight: 800; }\n\n            .section-title {\n              text-align: center;\n              font-size: 21.5px;\n              font-weight: 800;\n              color: #e74c3c;\n              font-family: 'Tiro Bangla', serif;\n              border-bottom: 2.5px solid #f39c12;\n              padding-bottom: 4px;\n              margin: 12px 0 10px 0;\n              letter-spacing: 0.3px;\n            }\n\n            .form-pill-row {\n              border: 2px solid #8e44ad;\n              border-radius: 25px;\n              background: #fff;\n              display: flex;\n              overflow: hidden;\n              margin-bottom: 10px;\n              min-height: 44px;\n              align-items: stretch;\n            }\n            .pill-lbl {\n              background: #7b1fa2;\n              color: #fff;\n              padding: 9px 18px;\n              font-size: 14px;\n              font-weight: 700;\n              white-space: nowrap;\n              display: flex;\n              align-items: center;\n              border-right: 2px solid #8e44ad;\n              flex-shrink: 0;\n            }\n            .pill-val {\n              padding: 9px 18px;\n              font-size: 14.5px;\n              font-weight: 600;\n              color: #111;\n              flex-grow: 1;\n              display: flex;\n              align-items: center;\n            }\n            .pill-right {\n              border-left: 2px solid #8e44ad;\n              display: flex;\n              align-items: stretch;\n              flex-shrink: 0;\n            }\n\n            .address-row {\n              border: 2px solid #8e44ad;\n              border-radius: 25px;\n              background: #fff;\n              display: flex;\n              flex-wrap: wrap;\n              padding: 12px 20px;\n              font-size: 14px;\n              font-weight: 600;\n              gap: 10px 30px;\n              margin-bottom: 10px;\n              align-items: center;\n              min-height: 44px;\n            }\n            .akey { color: #7b1fa2; font-weight: 700; }\n\n            .rules-box {\n              background: #fffde7;\n              border: 2px solid #f48fb1;\n              border-radius: 12px;\n              padding: 14px 20px;\n              margin-top: 4px;\n              margin-bottom: 8px;\n            }\n            .rules-list { list-style: none; padding: 0; margin: 0; }\n            .rules-list li {\n              font-size: 13.5px;\n              font-weight: 600;\n              color: #1a1a1a;\n              line-height: 1.9;\n              border-bottom: 1px dashed #f8bbd0;\n              padding-bottom: 5px;\n              margin-bottom: 5px;\n            }\n            .rules-list li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }\n\n            .signature-row {\n              display: flex;\n              justify-content: space-between;\n              align-items: flex-end;\n              margin-top: auto;\n              padding: 20px 36px 10px 36px;\n            }\n            .sig-box { text-align: center; min-width: 150px; }\n            .sig-line { border-top: 1.5px solid #2c3e50; margin-bottom: 5px; }\n            .sig-text { font-size: 14px; font-weight: 700; color: #1a1a1a; }\n\n            @media print {\n              html, body {\n                height: 100% !important;\n                margin: 0 !important;\n                padding: 0 !important;\n                background: #fff !important;\n              }\n              .paper-frame {\n                height: calc(297mm - 12mm) !important;\n                min-height: calc(297mm - 12mm) !important;\n                border-radius: 0;\n                box-sizing: border-box;\n                page-break-inside: avoid !important;\n              }\n            }\n          </style>\n        </head>\n        <body>\n          <div class=\"paper-frame\">\n            <div class=\"main-content-wrap\">\n              <div class=\"top-header\">\n                <div class=\"logo-wrap\">\n                  <img src=\"").concat(logoUrl, "\" alt=\"Logo\" onerror=\"this.style.display='none'\">\n                </div>\n                <div class=\"brand-center\">\n                  <div class=\"brand-name\">\u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE</div>\n                </div>\n                <div class=\"photo-box\">\n                  ").concat(userImgUrl ? "<img src=\"".concat(userImgUrl, "\" alt=\"Photo\">") : "<div class=\"photo-placeholder\">\u099B\u09AC\u09BF<br>Photo</div>", "\n                </div>\n              </div>\n\n              <div class=\"address-banner\">\n                \u0995\u09B2\u09C7\u099C \u09B0\u09CB\u09A1 , \u09A8\u09C7\u09B8\u0995\u09CB \u0997\u09C7\u099F \u09B8\u0982\u09B2\u0997\u09CD\u09A8 , \u09B0\u0982\u09AA\u09C1\u09B0 &nbsp;|&nbsp; \u09AA\u09CD\u09B0\u09AF\u09BC\u09CB\u099C\u09A8\u09C7: \u09E6\u09E7\u09EF\u09ED\u09ED\u09E8\u09ED\u09E6\u09EF\u09E8\u09E6 &nbsp;|&nbsp; Gmail: tssvilla2026@gmail.com\n              </div>\n\n              <div class=\"room-meta-row\">\n                <div class=\"room-meta-box\"><span class=\"lbl\">\u09B0\u09C1\u09AE \u09A8\u0982:</span>&nbsp;<span class=\"val\">").concat(roomNo, "</span></div>\n                <div class=\"room-meta-box\"><span class=\"lbl\">\u09AC\u09CD\u09B2\u0995 \u09A8\u0982:</span>&nbsp;<span class=\"val\">").concat(seatNo, "</span></div>\n                <div class=\"room-meta-box\"><span class=\"lbl\">\u09AB\u09CD\u09B2\u09CB\u09B0 \u09A8\u0982:</span>&nbsp;<span class=\"val\">").concat(floorNo, "</span></div>\n              </div>\n\n              <div class=\"section-title-container\">\n                <div class=\"title-side-dummy\"></div>\n                <div class=\"section-title\">").concat(sectionTitleText, "</div>\n                <div class=\"booking-date-right-box\">\n                  <span class=\"lbl\">\u09AC\u09C1\u0995\u09BF\u0982 \u09A4\u09BE\u09B0\u09BF\u0996:</span> <span class=\"val\">").concat(bookingDate, "</span>\n                </div>\n              </div>\n\n              ").concat(infoSectionHtml, "\n\n              <div class=\"section-title\">\u09B8\u09CD\u09A5\u09BE\u09AF\u09BC\u09C0 \u09A0\u09BF\u0995\u09BE\u09A8\u09BE</div>\n\n              <div class=\"address-row\">\n                <span><span class=\"akey\">\u0997\u09CD\u09B0\u09BE\u09AE/\u09B0\u09BE\u09B8\u09CD\u09A4\u09BE:</span> ").concat(address, "</span>\n                <span><span class=\"akey\">\u09A5\u09BE\u09A8\u09BE:</span> ").concat(thanaName, "</span>\n                <span><span class=\"akey\">\u0989\u09AA\u099C\u09C7\u09B2\u09BE:</span> ").concat(thanaName, "</span>\n                <span><span class=\"akey\">\u099C\u09C7\u09B2\u09BE:</span> ").concat(districtName, "</span>\n              </div>\n\n              <div class=\"section-title\">\u09A8\u09BF\u09AF\u09BC\u09AE\u09BE\u09AC\u09B2\u09C0</div>\n\n              <div class=\"rules-box\">\n                ").concat(isProf ? "\n                <ul class=\"rules-list\">\n                  <li>* \u09AE\u09C7\u09B8\u09C7\u09B0 \u09AD\u09BE\u09A1\u09BC\u09BE \u09E6\u09ED \u09A4\u09BE\u09B0\u09BF\u0996\u09C7\u09B0 \u09AE\u09A7\u09CD\u09AF\u09C7 \u09AA\u09B0\u09BF\u09B6\u09CB\u09A7 \u0995\u09B0\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                  <li>* \u09AE\u09C7\u09B8 \u099B\u09BE\u09A1\u09BC\u09B2\u09C7 \u09E6\u09E8 \u09AE\u09BE\u09B8 \u09AA\u09C2\u09B0\u09CD\u09AC\u09C7\u0987 \u09AE\u09C7\u09B8 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7\u0995\u09C7 \u099C\u09BE\u09A8\u09BE\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964 \u0985\u09A8\u09CD\u09AF\u09A5\u09BE\u09AF\u09BC \u09A6\u09C1\u0987 \u09AE\u09BE\u09B8\u09C7\u09B0 \u09AD\u09BE\u09A1\u09BC\u09BE \u09A6\u09BF\u09AF\u09BC\u09C7 \u09AE\u09C7\u09B8 \u099B\u09BE\u09A1\u09BC\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                  <li>* \u09B0\u09C1\u09AE \u099A\u09C7\u099E\u09CD\u099C \u0995\u09B0\u09A4\u09C7 \u099A\u09BE\u0987\u09B2\u09C7 \u09EB\u09E6\u09E6 \u099F\u09BE\u0995\u09BE \u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE \u09AA\u09CD\u09B0\u09A6\u09BE\u09A8 \u0995\u09B0\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                  <li>* \u09AE\u09C7\u09B8\u09C7\u09B0 \u09A8\u09BF\u09AF\u09BC\u09AE-\u0995\u09BE\u09A8\u09C1\u09A8 \u09AE\u09C7\u09A8\u09C7 \u099A\u09B2\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964 \u0995\u09BE\u09B0\u09CB \u09AC\u09BF\u09B0\u09C1\u09A6\u09CD\u09A7\u09C7 \u0995\u09CB\u09A8\u09CB \u0985\u09AD\u09BF\u09AF\u09CB\u0997 \u0986\u09B8\u09B2\u09C7 \u098F\u09AC\u0982 \u09A4\u09BE \u09AA\u09CD\u09B0\u09AE\u09BE\u09A3\u09BF\u09A4 \u09B9\u09B2\u09C7 \u09B8\u09BF\u099F \u09AC\u09BE\u09A4\u09BF\u09B2\u09B8\u09B9 \u09AF\u09C7\u0995\u09CB\u09A8\u09CB \u09AC\u09CD\u09AF\u09AC\u09B8\u09CD\u09A5\u09BE \u09A8\u09C7\u09AF\u09BC\u09BE\u09B0 \u0985\u09A7\u09BF\u0995\u09BE\u09B0 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7 \u09B0\u09BE\u0996\u09C7\u0964</li>\n                </ul>\n                " : "\n                <ul class=\"rules-list\">\n                  <li>* \u09AE\u09C7\u09B8\u09C7\u09B0 \u09AD\u09BE\u09A1\u09BC\u09BE \u09E6\u09ED \u09A4\u09BE\u09B0\u09BF\u0996\u09C7\u09B0 \u09AE\u09A7\u09CD\u09AF\u09C7 \u09AA\u09B0\u09BF\u09B6\u09CB\u09A7 \u0995\u09B0\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                  <li>* \u09AE\u09C7\u09B8 \u099B\u09BE\u09A1\u09BC\u09B2\u09C7 \u09E6\u09E8 \u09AE\u09BE\u09B8 \u09AA\u09C2\u09B0\u09CD\u09AC\u09C7\u0987 \u09AE\u09C7\u09B8 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7\u0995\u09C7 \u099C\u09BE\u09A8\u09BE\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964 \u0985\u09A8\u09CD\u09AF\u09A5\u09BE\u09AF\u09BC \u09A6\u09C1\u0987 \u09AE\u09BE\u09B8\u09C7\u09B0 \u09AD\u09BE\u09A1\u09BC\u09BE \u09A6\u09BF\u09AF\u09BC\u09C7 \u09AE\u09C7\u09B8 \u099B\u09BE\u09A1\u09BC\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                  <li>* \u09AE\u09BE\u0997\u09B0\u09BF\u09AC\u09C7\u09B0 \u0986\u09AF\u09BE\u09A8\u09C7\u09B0 \u09AA\u09B0 \u09AE\u09C7\u09B8\u09C7\u09B0 \u09AC\u09BE\u09B9\u09BF\u09B0\u09C7 \u09A5\u09BE\u0995\u09B2\u09C7 \u0985\u09AD\u09BF\u09AD\u09BE\u09AC\u0995\u0995\u09C7 \u099C\u09BE\u09A8\u09BF\u09AF\u09BC\u09C7 \u09A6\u09BF\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                  <li>* \u09B0\u09C1\u09AE \u099A\u09C7\u099E\u09CD\u099C \u0995\u09B0\u09A4\u09C7 \u099A\u09BE\u0987\u09B2\u09C7 \u09EB\u09E6\u09E6 \u099F\u09BE\u0995\u09BE \u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE \u09AA\u09CD\u09B0\u09A6\u09BE\u09A8 \u0995\u09B0\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                  <li>* \u09AE\u09C7\u09B8\u09C7\u09B0 \u09A8\u09BF\u09AF\u09BC\u09AE-\u0995\u09BE\u09A8\u09C1\u09A8 \u09AE\u09C7\u09A8\u09C7 \u099A\u09B2\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964 \u0995\u09BE\u09B0\u09CB \u09AC\u09BF\u09B0\u09C1\u09A6\u09CD\u09A7\u09C7 \u0995\u09CB\u09A8\u09CB \u0985\u09AD\u09BF\u09AF\u09CB\u0997 \u0986\u09B8\u09B2\u09C7 \u098F\u09AC\u0982 \u09A4\u09BE \u09AA\u09CD\u09B0\u09AE\u09BE\u09A3\u09BF\u09A4 \u09B9\u09B2\u09C7 \u09B8\u09BF\u099F \u09AC\u09BE\u09A4\u09BF\u09B2\u09B8\u09B9 \u09AF\u09C7\u0995\u09CB\u09A8\u09CB \u09AC\u09CD\u09AF\u09AC\u09B8\u09CD\u09A5\u09BE \u09A8\u09C7\u09AF\u09BC\u09BE\u09B0 \u0985\u09A7\u09BF\u0995\u09BE\u09B0 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7 \u09B0\u09BE\u0996\u09C7\u0964</li>\n                </ul>\n                ", "\n              </div>\n            </div>\n\n            <div class=\"signature-row\">\n              <div class=\"sig-box\">\n                <div class=\"sig-line\"></div>\n                <div class=\"sig-text\">\u0985\u09A8\u09C1\u09AE\u09CB\u09A6\u09BF\u09A4 \u09B8\u09CD\u09AC\u09BE\u0995\u09CD\u09B7\u09B0</div>\n              </div>\n              <div class=\"sig-box\">\n                <div class=\"sig-line\"></div>\n                <div class=\"sig-text\">").concat(signatureLabelText, "</div>\n              </div>\n            </div>\n          </div>\n        </body>\n        </html>\n      ");
       var iframe = document.getElementById("print-resident-iframe");
       if (!iframe) {
         iframe = document.createElement("iframe");
@@ -33886,26 +34131,24 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       }, 400);
     },
     printResidentIdCard: function printResidentIdCard(r) {
-      var _this7 = this;
+      var _this9 = this;
       var logoUrl = window.location.origin + '/logo/logoimage (2).png';
       var userImgUrl = r.image ? r.image.startsWith('http') ? r.image : window.location.origin + '/bookingsimage/' + r.image : '';
       var roomNo = r.room_items && r.room_items.length ? r.room_items.map(function (i) {
-        return _this7.getRoomNo(i.roomnumber);
+        return _this9.getRoomNo(i.roomnumber);
       }).join(', ') : this.getRoomNo(r.roomnumber) || r.room_number || '-';
       var seatNo = r.room_items && r.room_items.length ? r.room_items.map(function (i) {
-        return _this7.getSeatNo(i.roomnumber);
+        return _this9.getSeatNo(i.roomnumber);
       }).join(', ') : this.getSeatNo(r.roomnumber) || '-';
       var floorNo = r.room_items && r.room_items.length ? _toConsumableArray(new Set(r.room_items.map(function (i) {
         return i.floornumber;
       }))).filter(Boolean).join(', ') : r.floornumber || '-';
-      var fullName = r.full_name || '-';
+      var fullName = (r.full_name || '-').trim();
       var phone = r.phone || '-';
-      var userType = r.user_type || 'Student';
+      var userType = r.user_type || 'STUDENT';
       var idNo = String(r.id || '1001').padStart(4, '0');
-      var checkIn = r.check_in || (r.created_at ? r.created_at.slice(0, 10) : '-');
-      var qrText = encodeURIComponent("TSS VILLA | ID: TSS-".concat(idNo, " | Name: ").concat(fullName, " | Phone: ").concat(phone, " | Room: ").concat(roomNo, " | Seat: ").concat(seatNo));
-      var qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=".concat(qrText);
-      var html = "\n        <!DOCTYPE html>\n        <html lang=\"bn\">\n        <head>\n          <meta charset=\"UTF-8\">\n          <title>Resident ID Card - ".concat(fullName, "</title>\n          <style>\n            @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');\n            @page { size: A4 portrait; margin: 10mm; }\n            * {\n              box-sizing: border-box;\n              margin: 0;\n              padding: 0;\n              -webkit-print-color-adjust: exact !important;\n              print-color-adjust: exact !important;\n              color-adjust: exact !important;\n            }\n            body {\n              background: #e2e8f0;\n              font-family: 'Hind Siliguri', 'Outfit', sans-serif;\n              display: flex;\n              justify-content: center;\n              align-items: center;\n              min-height: 100vh;\n              padding: 20px;\n            }\n            \n            .id-card-frame {\n              width: 86mm;\n              height: 138mm;\n              background: #ffffff !important;\n              border: 3px solid #1e293b !important;\n              border-radius: 14px;\n              box-shadow: 0 12px 35px rgba(15, 23, 42, 0.25);\n              overflow: hidden;\n              position: relative;\n              display: flex;\n              flex-direction: column;\n              justify-content: space-between;\n              page-break-inside: avoid;\n            }\n\n            .id-header {\n              background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%) !important;\n              color: #ffffff !important;\n              padding: 10px 8px 8px 8px;\n              text-align: center;\n              position: relative;\n              border-bottom: 3px solid #f59e0b !important;\n            }\n            .header-content {\n              display: flex;\n              align-items: center;\n              justify-content: center;\n              gap: 8px;\n            }\n            .logo-img {\n              width: 38px;\n              height: 38px;\n              object-fit: contain;\n              background: #ffffff;\n              padding: 2px;\n              border-radius: 50%;\n              border: 2px solid #f59e0b;\n            }\n            .header-text {\n              text-align: left;\n            }\n            .header-text h2 {\n              font-size: 18px;\n              font-weight: 800;\n              color: #ffffff !important;\n              margin: 0;\n              line-height: 1.1;\n            }\n            .header-text p {\n              font-size: 9px;\n              color: #f59e0b !important;\n              font-weight: 700;\n              letter-spacing: 0.5px;\n              margin: 0;\n            }\n            .card-type-tag {\n              background: #f59e0b !important;\n              color: #0f172a !important;\n              font-size: 8.5px;\n              font-weight: 800;\n              letter-spacing: 1.2px;\n              text-transform: uppercase;\n              padding: 2px 0;\n              margin-top: 5px;\n            }\n\n            .id-body {\n              padding: 8px 12px;\n              flex: 1;\n              display: flex;\n              flex-direction: column;\n              align-items: center;\n              justify-content: space-between;\n            }\n\n            .photo-wrapper {\n              position: relative;\n              margin-top: 4px;\n              margin-bottom: 4px;\n            }\n            .photo-container {\n              width: 90px;\n              height: 102px;\n              border: 2.5px solid #0f172a !important;\n              border-radius: 8px;\n              overflow: hidden;\n              background: #f1f5f9;\n              box-shadow: 0 4px 10px rgba(0,0,0,0.15);\n              display: flex;\n              align-items: center;\n              justify-content: center;\n            }\n            .photo-container img { width: 100%; height: 100%; object-fit: cover; }\n            .photo-placeholder { font-size: 10px; color: #64748b; display: flex; flex-direction: column; height: 100%; align-items: center; justify-content: center; }\n\n            .name-container {\n              text-align: center;\n              margin-bottom: 6px;\n              width: 100%;\n            }\n            .resident-name {\n              font-size: 16px;\n              font-weight: 800;\n              color: #0f172a;\n              text-transform: uppercase;\n              letter-spacing: 0.5px;\n              line-height: 1.1;\n              margin-bottom: 3px;\n            }\n            .id-number {\n              font-size: 10px;\n              font-weight: 700;\n              color: #64748b;\n              font-family: 'Outfit', sans-serif;\n            }\n\n            .info-table {\n              width: 100%;\n              border-collapse: collapse;\n              margin-bottom: 6px;\n              background: #f8fafc;\n              border: 1px solid #e2e8f0;\n              border-radius: 6px;\n              overflow: hidden;\n            }\n            .info-table td {\n              padding: 4px 8px;\n              font-size: 10.5px;\n              border-bottom: 1px dashed #e2e8f0;\n            }\n            .info-table tr:last-child td { border-bottom: none; }\n            .lbl { font-weight: 600; color: #475569; width: 35%; text-align: left; }\n            .colon { width: 5%; text-align: center; color: #94a3b8; font-weight: bold; }\n            .val { font-weight: 700; color: #0f172a; width: 60%; text-align: left; }\n\n            .room-badges {\n              display: flex;\n              gap: 3px;\n              width: 100%;\n              justify-content: center;\n              margin-bottom: 6px;\n            }\n            .r-badge {\n              flex: 1;\n              background-color: #0f172a !important;\n              color: #ffffff !important;\n              font-size: 10px;\n              font-weight: 700;\n              padding: 3.5px 2px;\n              border-radius: 4px;\n              text-align: center;\n            }\n            .r-badge.room { background-color: #047857 !important; color: #ffffff !important; }\n            .r-badge.seat { background-color: #b91c1c !important; color: #ffffff !important; }\n\n            .qr-section {\n              display: flex;\n              align-items: flex-end;\n              justify-content: space-between;\n              width: 100%;\n              padding: 0 2px;\n            }\n            .qr-img { width: 44px; height: 44px; border-radius: 4px; border: 1px solid #cbd5e1; }\n            .sig-box { text-align: center; }\n            .sig-line { border-top: 1.5px solid #0f172a; width: 70px; margin-bottom: 2px; }\n            .sig-lbl { font-size: 8.5px; font-weight: 700; color: #334155; }\n\n            .id-footer {\n              background: #0f172a !important;\n              color: #ffffff !important;\n              font-size: 8px;\n              text-align: center;\n              padding: 5px 4px;\n              font-weight: 600;\n              border-top: 2px solid #f59e0b !important;\n            }\n\n            @media print {\n              * {\n                -webkit-print-color-adjust: exact !important;\n                print-color-adjust: exact !important;\n                color-adjust: exact !important;\n              }\n              body { background: #fff !important; padding: 0 !important; }\n              .id-card-frame { box-shadow: none !important; margin: auto; }\n            }\n          </style>\n        </head>\n        <body>\n          <div class=\"id-card-frame\">\n            <div class=\"id-header\" style=\"-webkit-print-color-adjust: exact; print-color-adjust: exact; background: #0f172a !important; color: #ffffff !important;\">\n              <div class=\"header-content\">\n                <img src=\"").concat(logoUrl, "\" alt=\"Logo\" class=\"logo-img\" onerror=\"this.style.display='none'\">\n                <div class=\"header-text\">\n                  <h2>\u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE</h2>\n                  <p>\u099B\u09BE\u09A4\u09CD\u09B0\u09C0 \u09A8\u09BF\u09AC\u09BE\u09B8 \u0993 \u09B9\u09CB\u09B8\u09CD\u099F\u09C7\u09B2</p>\n                </div>\n              </div>\n              <div class=\"card-type-tag\" style=\"-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #f59e0b !important; color: #0f172a !important;\">RESIDENT IDENTIFICATION CARD</div>\n            </div>\n\n            <div class=\"id-body\">\n              <div class=\"photo-wrapper\">\n                <div class=\"photo-container\">\n                  ").concat(userImgUrl ? "<img src=\"".concat(userImgUrl, "\" alt=\"Photo\" onerror=\"this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';\"><div class=\"photo-placeholder\" style=\"display:none;\"><svg width=\"40\" height=\"40\" viewBox=\"0 0 24 24\" fill=\"#0f172a\"><path d=\"M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\"/></svg><span style=\"font-size:8.5px; color:#64748b; font-weight:700; margin-top:2px;\">PHOTO</span></div>") : "<div class=\"photo-placeholder\"><svg width=\"40\" height=\"40\" viewBox=\"0 0 24 24\" fill=\"#0f172a\"><path d=\"M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\"/></svg><span style=\"font-size:8.5px; color:#64748b; font-weight:700; margin-top:2px;\">PHOTO</span></div>", "\n                </div>\n              </div>\n\n              <div class=\"name-container\">\n                <div class=\"resident-name\">").concat(fullName, "</div>\n                <div class=\"id-number\">ID NO: TSS-").concat(idNo, "</div>\n              </div>\n\n              <table class=\"info-table\">\n                <tr>\n                  <td class=\"lbl\">\u0995\u09CD\u09AF\u09BE\u099F\u09BE\u0997\u09B0\u09BF</td>\n                  <td class=\"colon\">:</td>\n                  <td class=\"val\">").concat(userType, "</td>\n                </tr>\n                <tr>\n                  <td class=\"lbl\">\u09AE\u09CB\u09AC\u09BE\u0987\u09B2</td>\n                  <td class=\"colon\">:</td>\n                  <td class=\"val\">").concat(phone, "</td>\n                </tr>\n                <tr>\n                  <td class=\"lbl\">\u09AC\u09C1\u0995\u09BF\u0982 \u09A4\u09BE\u09B0\u09BF\u0996</td>\n                  <td class=\"colon\">:</td>\n                  <td class=\"val\">").concat(checkIn, "</td>\n                </tr>\n              </table>\n\n              <div class=\"room-badges\">\n                <div class=\"r-badge\" style=\"-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #0f172a !important; color: #ffffff !important;\">\u09AB\u09CD\u09B2\u09CB\u09B0: ").concat(floorNo, "</div>\n                <div class=\"r-badge room\" style=\"-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #047857 !important; color: #ffffff !important;\">\u09B0\u09C1\u09AE: ").concat(roomNo, "</div>\n                <div class=\"r-badge seat\" style=\"-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #b91c1c !important; color: #ffffff !important;\">\u09B8\u09BF\u099F: ").concat(seatNo, "</div>\n              </div>\n\n              <div class=\"qr-section\">\n                <img src=\"").concat(qrUrl, "\" alt=\"QR\" class=\"qr-img\">\n                <div class=\"sig-box\">\n                  <div class=\"sig-line\"></div>\n                  <div class=\"sig-lbl\">\u0985\u09A8\u09C1\u09AE\u09CB\u09A6\u09BF\u09A4 \u09B8\u09CD\u09AC\u09BE\u0995\u09CD\u09B7\u09B0</div>\n                </div>\n              </div>\n            </div>\n\n            <div class=\"id-footer\" style=\"-webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #0f172a !important; color: #ffffff !important;\">\n              \u0995\u09B2\u09C7\u099C \u09B0\u09CB\u09A1 , \u09A8\u09C7\u09B8\u0995\u09CB \u0997\u09C7\u099F \u09B8\u0982\u09B2\u0997\u09CD\u09A8 , \u09B0\u0982\u09AA\u09C1\u09B0 | \u09B9\u09C7\u09B2\u09CD\u09AA\u09B2\u09BE\u0987\u09A8: \u09E6\u09E7\u09EF\u09ED\u09ED\u09E8\u09ED\u09E6\u09EF\u09E8\u09E6\n            </div>\n          </div>\n        </body>\n        </html>\n      ");
+      var checkIn = r.check_in ? String(r.check_in).slice(0, 10) : r.created_at ? String(r.created_at).slice(0, 10) : '-';
+      var html = "\n    <!DOCTYPE html>\n    <html lang=\"bn\">\n    <head>\n      <meta charset=\"UTF-8\">\n      <title>Resident ID Card - ".concat(fullName, "</title>\n      <style>\n        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@500;600;700&family=Montserrat:wght@500;600;700;800&display=swap');\n        \n        @page { size: A4 portrait; margin: 0; }\n        * {\n          box-sizing: border-box;\n          margin: 0;\n          padding: 0;\n          -webkit-print-color-adjust: exact !important;\n          print-color-adjust: exact !important;\n          color-adjust: exact !important;\n        }\n        body {\n          background: #e2e8f0;\n          font-family: 'Montserrat', 'Hind Siliguri', sans-serif;\n          display: flex;\n          justify-content: center;\n          align-items: center;\n          min-height: 100vh;\n          padding: 20px;\n        }\n        \n        .id-card-frame {\n          width: 86mm;\n          height: 138mm;\n          background: #f1f5f9 !important;\n          border-radius: 20px;\n          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);\n          overflow: hidden;\n          position: relative;\n          display: flex;\n          flex-direction: column;\n          justify-content: space-between;\n          page-break-inside: avoid;\n          border: 1px solid #94a3b8;\n        }\n\n        /* Top Header Container (Dark Forest Green) */\n        .header-bg {\n          background: linear-gradient(180deg, #124d35 0%, #0a3222 100%) !important;\n          position: relative;\n          padding: 16px 12px 0 12px;\n          text-align: center;\n          height: 125px;\n          color: #ffffff !important;\n          border-bottom: 2px solid #b3883b;\n        }\n        \n        /* Security Guilloche Mandala Overlay Pattern */\n        .guilloche-bg {\n          position: absolute;\n          inset: 0;\n          opacity: 0.15;\n          background-image: radial-gradient(#10b981 1.5px, transparent 1.5px), radial-gradient(#34d399 1.5px, transparent 1.5px);\n          background-size: 16px 16px;\n          background-position: 0 0, 8px 8px;\n          pointer-events: none;\n        }\n\n        .brand-row {\n          display: flex;\n          align-items: center;\n          justify-content: center;\n          gap: 10px;\n          position: relative;\n          z-index: 10;\n        }\n        .logo-img {\n          width: 38px;\n          height: 38px;\n          object-fit: contain;\n          background: #ffffff;\n          padding: 2px;\n          border-radius: 50%;\n          border: 1.5px solid #d4af37;\n          box-shadow: 0 3px 8px rgba(0,0,0,0.3);\n        }\n        .brand-text {\n          text-align: left;\n        }\n        .brand-name {\n          font-family: 'Hind Siliguri', sans-serif;\n          font-size: 20px;\n          font-weight: 700;\n          color: #ffffff !important;\n          line-height: 1.1;\n        }\n        .brand-sub {\n          font-family: 'Hind Siliguri', sans-serif;\n          font-size: 9.5px;\n          color: #e2e8f0 !important;\n          font-weight: 500;\n          letter-spacing: 0.3px;\n        }\n\n        /* Profile Photo Section (Golden Double Ring) */\n        .photo-wrapper {\n          position: absolute;\n          bottom: -50px;\n          left: 50%;\n          transform: translateX(-50%);\n          z-index: 15;\n        }\n        .photo-circle {\n          width: 96px;\n          height: 96px;\n          border-radius: 50%;\n          border: 3px solid #d4af37 !important;\n          outline: 2px solid #ffffff;\n          overflow: hidden;\n          background: #ffffff;\n          box-shadow: 0 8px 20px rgba(0,0,0,0.3);\n          display: flex;\n          align-items: center;\n          justify-content: center;\n        }\n        .photo-circle img {\n          width: 100%;\n          height: 100%;\n          object-fit: cover;\n        }\n        .photo-placeholder {\n          width: 100%;\n          height: 100%;\n          display: flex;\n          align-items: center;\n          justify-content: center;\n          background: #e2e8f0;\n        }\n\n        /* Main Body Content (Brushed Metallic Texture) */\n        .card-body {\n          flex: 1;\n          padding: 56px 16px 4px 16px;\n          display: flex;\n          flex-direction: column;\n          align-items: center;\n          justify-content: space-between;\n          z-index: 10;\n          background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);\n          position: relative;\n        }\n\n        /* Security Watermark SVG on Body Right */\n        .body-watermark {\n          position: absolute;\n          right: -10px;\n          top: 40%;\n          width: 140px;\n          height: 140px;\n          opacity: 0.12;\n          pointer-events: none;\n        }\n\n        .name-section {\n          text-align: center;\n          margin-bottom: 6px;\n          width: 100%;\n        }\n        .resident-name {\n          font-size: 21px;\n          font-weight: 800;\n          color: #0f172a;\n          text-transform: uppercase;\n          letter-spacing: 1px;\n          line-height: 1.1;\n          margin-bottom: 2px;\n        }\n        .resident-type {\n          font-size: 11px;\n          font-weight: 700;\n          color: #124d35;\n          text-transform: uppercase;\n          letter-spacing: 1.5px;\n        }\n\n        /* Info Grid with Icons matching the Image */\n        .info-list {\n          width: 100%;\n          padding: 0 4px;\n        }\n        .info-row {\n          display: flex;\n          align-items: center;\n          font-size: 12.5px;\n          margin-bottom: 5px;\n        }\n        .info-row:last-child { margin-bottom: 0; }\n        \n        .info-lbl-group {\n          width: 100px;\n          display: flex;\n          align-items: center;\n          gap: 8px;\n        }\n        .info-icon {\n          width: 20px;\n          height: 20px;\n          background: #124d35;\n          border-radius: 5px;\n          display: flex;\n          align-items: center;\n          justify-content: center;\n          flex-shrink: 0;\n          box-shadow: 0 2px 4px rgba(0,0,0,0.15);\n        }\n        .info-icon svg {\n          fill: #ffffff;\n          width: 12px;\n          height: 12px;\n        }\n        .info-lbl {\n          font-weight: 700;\n          color: #0f172a;\n          font-size: 12px;\n        }\n        .info-colon {\n          width: 14px;\n          text-align: center;\n          font-weight: 800;\n          color: #0f172a;\n        }\n        .info-val {\n          flex: 1;\n          font-weight: 800;\n          font-size: 13px;\n          color: #0f172a;\n          text-align: left;\n        }\n\n        /* Signature Row */\n        .sig-row {\n          display: flex;\n          justify-content: flex-end;\n          width: 100%;\n          padding: 0 4px;\n          margin-top: 2px;\n        }\n        .sig-box { text-align: center; }\n        .sig-line { border-top: 1.5px solid #0f172a; width: 95px; margin-bottom: 2px; }\n        .sig-lbl { font-size: 9px; font-weight: 700; color: #334155; font-family: 'Hind Siliguri', sans-serif; }\n\n        /* Footer Section (Rich Green Bar) */\n        .footer-bg {\n          position: relative;\n          background: linear-gradient(180deg, #124d35 0%, #0a3222 100%) !important;\n          padding: 9px 8px;\n          text-align: center;\n          border-top: 2px solid #d4af37;\n        }\n        .footer-content {\n          position: relative;\n          z-index: 10;\n          font-size: 8.5px;\n          font-weight: 600;\n          color: #ffffff !important;\n          font-family: 'Hind Siliguri', sans-serif;\n          line-height: 1.2;\n        }\n\n        @media print {\n          * {\n            -webkit-print-color-adjust: exact !important;\n            print-color-adjust: exact !important;\n            color-adjust: exact !important;\n          }\n          body { background: #fff !important; padding: 0 !important; }\n          .id-card-frame { box-shadow: none !important; border: 1px solid #94a3b8; }\n        }\n      </style>\n    </head>\n    <body>\n      <div class=\"id-card-frame\">\n        \n        <!-- Top Header -->\n        <div class=\"header-bg\">\n          <div class=\"guilloche-bg\"></div>\n          <div class=\"brand-row\">\n            <img src=\"").concat(logoUrl, "\" alt=\"Logo\" class=\"logo-img\" onerror=\"this.style.display='none'\">\n            <div class=\"brand-text\">\n              <div class=\"brand-name\">\u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE</div>\n              <div class=\"brand-sub\">\u099B\u09BE\u09A4\u09CD\u09B0\u09C0 \u09A8\u09BF\u09AC\u09BE\u09B8 \u0993 \u09B9\u09CB\u09B8\u09CD\u099F\u09C7\u09B2</div>\n            </div>\n          </div>\n\n          <!-- Profile Photo Frame -->\n          <div class=\"photo-wrapper\">\n            <div class=\"photo-circle\">\n              ").concat(userImgUrl ? "<img src=\"".concat(userImgUrl, "\" alt=\"Photo\" onerror=\"this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';\"><div class=\"photo-placeholder\" style=\"display:none;\"><svg width=\"42\" height=\"42\" viewBox=\"0 0 24 24\" fill=\"#64748b\"><path d=\"M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\"/></svg></div>") : "<div class=\"photo-placeholder\"><svg width=\"42\" height=\"42\" viewBox=\"0 0 24 24\" fill=\"#64748b\"><path d=\"M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\"/></svg></div>", "\n            </div>\n          </div>\n        </div>\n\n        <!-- Body Content -->\n        <div class=\"card-body\">\n          <svg class=\"body-watermark\" viewBox=\"0 0 100 100\">\n            <circle cx=\"50\" cy=\"50\" r=\"45\" stroke=\"#124d35\" stroke-width=\"0.5\" fill=\"none\" stroke-dasharray=\"1,1\"/>\n            <circle cx=\"50\" cy=\"50\" r=\"35\" stroke=\"#124d35\" stroke-width=\"0.5\" fill=\"none\"/>\n            <path d=\"M50,5 L50,95 M5,50 L95,50\" stroke=\"#124d35\" stroke-width=\"0.3\"/>\n          </svg>\n\n          <div class=\"name-section\">\n            <h2 class=\"resident-name\">").concat(fullName, "</h2>\n            <div class=\"resident-type\">").concat(userType, "</div>\n          </div>\n\n          <div class=\"info-list\">\n            <!-- Id No -->\n            <div class=\"info-row\">\n              <div class=\"info-lbl-group\">\n                <div class=\"info-icon\"><svg viewBox=\"0 0 24 24\"><path d=\"M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3 3zm6 12H6v-1c0-2 4-3.1 6-3.1s6 1.1 6 3.1v1z\"/></svg></div>\n                <div class=\"info-lbl\">Id No</div>\n              </div>\n              <div class=\"info-colon\">:</div>\n              <div class=\"info-val\">TSS-").concat(idNo, "</div>\n            </div>\n\n            <!-- Phone -->\n            <div class=\"info-row\">\n              <div class=\"info-lbl-group\">\n                <div class=\"info-icon\"><svg viewBox=\"0 0 24 24\"><path d=\"M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z\"/></svg></div>\n                <div class=\"info-lbl\">Phone</div>\n              </div>\n              <div class=\"info-colon\">:</div>\n              <div class=\"info-val\">").concat(phone, "</div>\n            </div>\n\n            <!-- Floor -->\n            <div class=\"info-row\">\n              <div class=\"info-lbl-group\">\n                <div class=\"info-icon\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 3L2 12h3v8h14v-8h3L12 3zm1 15h-2v-2h2v2zm0-4h-2v-2h2v2z\"/></svg></div>\n                <div class=\"info-lbl\">Floor</div>\n              </div>\n              <div class=\"info-colon\">:</div>\n              <div class=\"info-val\">").concat(floorNo, "</div>\n            </div>\n\n            <!-- Room No -->\n            <div class=\"info-row\">\n              <div class=\"info-lbl-group\">\n                <div class=\"info-icon\"><svg viewBox=\"0 0 24 24\"><path d=\"M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v10h2v-3h6v3h2V9c0-1.1-.9-2-2-2z\"/></svg></div>\n                <div class=\"info-lbl\">Room No</div>\n              </div>\n              <div class=\"info-colon\">:</div>\n              <div class=\"info-val\">").concat(roomNo, "</div>\n            </div>\n\n            <!-- Seat No -->\n            <div class=\"info-row\">\n              <div class=\"info-lbl-group\">\n                <div class=\"info-icon\"><svg viewBox=\"0 0 24 24\"><path d=\"M4 18v3h2v-3h12v3h2v-3c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2z\"/></svg></div>\n                <div class=\"info-lbl\">Seat No</div>\n              </div>\n              <div class=\"info-colon\">:</div>\n              <div class=\"info-val\">").concat(seatNo, "</div>\n            </div>\n\n            <!-- Join Date -->\n            <div class=\"info-row\">\n              <div class=\"info-lbl-group\">\n                <div class=\"info-icon\"><svg viewBox=\"0 0 24 24\"><path d=\"M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z\"/></svg></div>\n                <div class=\"info-lbl\">Join Date</div>\n              </div>\n              <div class=\"info-colon\">:</div>\n              <div class=\"info-val\">").concat(checkIn, "</div>\n            </div>\n          </div>\n\n          <div class=\"sig-row\">\n            <div class=\"sig-box\">\n              <div class=\"sig-line\"></div>\n              <div class=\"sig-lbl\">\u0985\u09A8\u09C1\u09AE\u09CB\u09A6\u09BF\u09A4 \u09B8\u09CD\u09AC\u09BE\u0995\u09CD\u09B7\u09B0</div>\n            </div>\n          </div>\n        </div>\n\n        <!-- Footer -->\n        <div class=\"footer-bg\">\n          <div class=\"footer-content\">\n            \u0995\u09B2\u09C7\u099C \u09B0\u09CB\u09A1, \u09A8\u09C7\u09B8\u0995\u09CB \u0997\u09C7\u099F \u09B8\u0982\u09B2\u0997\u09CD\u09A8, \u09B0\u0982\u09AA\u09C1\u09B0 | \u09B9\u09C7\u09B2\u09CD\u09AA\u09B2\u09BE\u0987\u09A8: \u09E6\u09E7\u09EF\u09ED\u09ED\u09E8\u09ED\u09E6\u09EF\u09E8\u09E6\n          </div>\n        </div>\n\n      </div>\n    </body>\n    </html>\n  ");
       var win = window.open('', '_blank');
       if (win) {
         win.document.write(html);
@@ -33917,7 +34160,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       }
     },
     exportResidentsCSV: function exportResidentsCSV() {
-      var _this8 = this;
+      var _this10 = this;
       if (!this.rooms || this.rooms.length === 0) {
         this.toast("এক্সপোর্ট করার মতো কোনো ডাটা পাওয়া যায়নি", "warning");
         return;
@@ -33925,10 +34168,10 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       var headers = ["SL", "Full Name", "Phone", "Email", "NID", "User Type", "Room No", "Seat No", "Floor No", "Monthly Rent", "Check In", "Check Out", "Address", "District", "Thana"];
       var rows = this.rooms.map(function (r, index) {
         return [index + 1, r.full_name || '', r.phone || '', r.email || '', r.nid || '', r.user_type || 'Student', r.room_items && r.room_items.length ? r.room_items.map(function (i) {
-          return _this8.getRoomNo(i.roomnumber);
-        }).join(', ') : _this8.getRoomNo(r.roomnumber) || r.room_number || '', r.room_items && r.room_items.length ? r.room_items.map(function (i) {
-          return _this8.getSeatNo(i.roomnumber);
-        }).join(', ') : _this8.getSeatNo(r.roomnumber) || '', r.room_items && r.room_items.length ? _toConsumableArray(new Set(r.room_items.map(function (i) {
+          return _this10.getRoomNo(i.roomnumber);
+        }).join(', ') : _this10.getRoomNo(r.roomnumber) || r.room_number || '', r.room_items && r.room_items.length ? r.room_items.map(function (i) {
+          return _this10.getSeatNo(i.roomnumber);
+        }).join(', ') : _this10.getSeatNo(r.roomnumber) || '', r.room_items && r.room_items.length ? _toConsumableArray(new Set(r.room_items.map(function (i) {
           return i.floornumber;
         }))).filter(Boolean).join(', ') : r.floornumber || '', r.monthly_amount || 0, r.check_in || '', r.check_out || '', r.address || '', r.district_name || '', r.thana_name || ''];
       });
@@ -36111,7 +36354,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       } else {
         infoSectionHtml = "\n          <div class=\"form-pill-row\">\n            <div class=\"pill-lbl\">\u09B6\u09BF\u0995\u09CD\u09B7\u09BE\u09B0\u09CD\u09A5\u09C0\u09B0 \u09AA\u09C2\u09B0\u09CD\u09A3 \u09A8\u09BE\u09AE :</div>\n            <div class=\"pill-val\">".concat(fullName, "</div>\n            <div class=\"pill-right\">\n              <div class=\"pill-lbl\">\u09AE\u09CB\u09AC\u09BE\u0987\u09B2 \u09A8\u0982 :</div>\n              <div class=\"pill-val\">").concat(phone, "</div>\n            </div>\n          </div>\n\n          <div class=\"form-pill-row\">\n            <div class=\"pill-lbl\">\u0985\u09A7\u09CD\u09AF\u09AF\u09BC\u09A8\u09B0\u09A4 \u09B6\u09BF\u0995\u09CD\u09B7\u09BE \u09AA\u09CD\u09B0\u09A4\u09BF\u09B7\u09CD\u09A0\u09BE\u09A8\u09C7\u09B0 \u09A8\u09BE\u09AE:</div>\n            <div class=\"pill-val\">").concat(institutionName, "</div>\n          </div>\n\n          <div class=\"form-pill-row\">\n            <div class=\"pill-lbl\">\u09AA\u09BF\u09A4\u09BE\u09B0 \u09A8\u09BE\u09AE:</div>\n            <div class=\"pill-val\">").concat(fatherName, "</div>\n            <div class=\"pill-right\">\n              <div class=\"pill-lbl\">\u09AE\u09CB\u09AC\u09BE\u0987\u09B2 \u09A8\u0982 :</div>\n              <div class=\"pill-val\">").concat(fatherPhone, "</div>\n            </div>\n          </div>\n\n          <div class=\"form-pill-row\">\n            <div class=\"pill-lbl\">\u09AE\u09BE\u09A4\u09BE\u09B0 \u09A8\u09BE\u09AE:</div>\n            <div class=\"pill-val\">").concat(motherName, "</div>\n            <div class=\"pill-right\">\n              <div class=\"pill-lbl\">\u09AE\u09CB\u09AC\u09BE\u0987\u09B2 \u09A8\u0982 :</div>\n              <div class=\"pill-val\">").concat(motherPhone, "</div>\n            </div>\n          </div>\n        ");
       }
-      var html = "\n        <!DOCTYPE html>\n        <html lang=\"bn\">\n        <head>\n          <meta charset=\"UTF-8\">\n          <title>".concat(docTitle, "</title>\n          <style>\n            @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Hind+Siliguri:wght@400;500;600;700;800&display=swap');\n\n            @page {\n              size: A4 portrait;\n              margin: 5mm;\n            }\n\n            * { box-sizing: border-box; margin: 0; padding: 0; }\n\n            html, body {\n              background: #fff;\n              font-family: 'Hind Siliguri', 'Tiro Bangla', sans-serif;\n              padding: 0;\n              margin: 0;\n              color: #000;\n              -webkit-print-color-adjust: exact;\n              print-color-adjust: exact;\n            }\n\n            /* ======= OUTER FRAME ======= */\n            .paper-frame {\n              background: linear-gradient(165deg, #fef9e7 0%, #fef3cd 50%, #fef9e7 100%);\n              border: 4px solid #27ae60;\n              border-radius: 10px;\n              padding: 16px 20px 14px 20px;\n              box-sizing: border-box;\n              position: relative;\n              page-break-inside: avoid;\n            }\n            .paper-frame::before {\n              content: '';\n              position: absolute;\n              inset: 4px;\n              border: 1.5px solid #f39c12;\n              border-radius: 7px;\n              pointer-events: none;\n            }\n\n            /* ======= HEADER ======= */\n            .top-header {\n              display: flex;\n              align-items: center;\n              justify-content: center;\n              gap: 16px;\n              margin-bottom: 8px;\n              padding: 0 4px;\n            }\n            .logo-wrap img { width: 72px; height: 72px; object-fit: contain; }\n            .brand-center { text-align: center; flex: 1; }\n            .brand-name {\n              font-size: 46px;\n              font-weight: 900;\n              color: #c0392b;\n              font-family: 'Tiro Bangla', serif;\n              line-height: 1;\n              letter-spacing: 1px;\n            }\n            .photo-box {\n              width: 105px;\n              height: 120px;\n              border: 2px solid #2c3e50;\n              border-radius: 4px;\n              display: flex;\n              align-items: center;\n              justify-content: center;\n              overflow: hidden;\n              background: #f0f0f0;\n              flex-shrink: 0;\n            }\n            .photo-box img { width: 100%; height: 100%; object-fit: cover; }\n            .photo-placeholder { font-size: 11px; color: #888; text-align: center; }\n\n            /* ======= ADDRESS BANNER ======= */\n            .address-banner {\n              background: #1a237e;\n              color: #fff;\n              text-align: center;\n              padding: 8px 12px;\n              font-size: 13px;\n              font-weight: 600;\n              border-radius: 5px;\n              margin-bottom: 10px;\n              letter-spacing: 0.2px;\n            }\n\n            /* ======= ROOM META ======= */\n            .room-meta-row {\n              display: flex;\n              gap: 12px;\n              margin-bottom: 10px;\n            }\n            .room-meta-box {\n              flex: 1;\n              border: 2px solid #27ae60;\n              border-radius: 6px;\n              padding: 7px 12px;\n              background: #fff;\n              font-size: 13.5px;\n              font-weight: 600;\n              display: flex;\n              align-items: center;\n              gap: 5px;\n            }\n            .room-meta-box .lbl { color: #1a5c2e; font-weight: 700; white-space: nowrap; }\n            .room-meta-box .val { color: #000; font-weight: 800; font-size: 14px; }\n\n            /* ======= SECTION TITLES ======= */\n            .section-title-container {\n              display: flex;\n              align-items: center;\n              justify-content: space-between;\n              border-bottom: 2.5px solid #f39c12;\n              padding-bottom: 3px;\n              margin: 10px 0 8px 0;\n            }\n            .title-side-dummy {\n              flex: 1;\n            }\n            .section-title-container .section-title {\n              text-align: center;\n              font-size: 21.5px;\n              font-weight: 800;\n              color: #e74c3c;\n              font-family: 'Tiro Bangla', serif;\n              letter-spacing: 0.3px;\n              flex: 2;\n              margin: 0;\n              padding-bottom: 0;\n              border-bottom: none;\n            }\n            .booking-date-right-box {\n              flex: 1;\n              text-align: right;\n              font-size: 13px;\n              font-weight: 700;\n              white-space: nowrap;\n            }\n            .booking-date-right-box .lbl {\n              color: #1a5c2e;\n              font-weight: 800;\n            }\n            .booking-date-right-box .val {\n              color: #000;\n              font-weight: 800;\n            }\n\n            .section-title {\n              text-align: center;\n              font-size: 21px;\n              font-weight: 800;\n              color: #e74c3c;\n              font-family: 'Tiro Bangla', serif;\n              border-bottom: 2.5px solid #f39c12;\n              padding-bottom: 3px;\n              margin: 10px 0 8px 0;\n              letter-spacing: 0.3px;\n            }\n\n            /* ======= PILL ROWS ======= */\n            .form-pill-row {\n              border: 2px solid #8e44ad;\n              border-radius: 25px;\n              background: #fff;\n              display: flex;\n              overflow: hidden;\n              margin-bottom: 8px;\n              min-height: 40px;\n              align-items: stretch;\n            }\n            .pill-lbl {\n              background: #7b1fa2;\n              color: #fff;\n              padding: 8px 16px;\n              font-size: 13.5px;\n              font-weight: 700;\n              white-space: nowrap;\n              display: flex;\n              align-items: center;\n              border-right: 2px solid #8e44ad;\n              flex-shrink: 0;\n            }\n            .pill-val {\n              padding: 8px 16px;\n              font-size: 14px;\n              font-weight: 600;\n              color: #111;\n              flex-grow: 1;\n              display: flex;\n              align-items: center;\n            }\n            .pill-right {\n              border-left: 2px solid #8e44ad;\n              display: flex;\n              align-items: stretch;\n              flex-shrink: 0;\n            }\n\n            /* ======= ADDRESS ======= */\n            .address-row {\n              border: 2px solid #8e44ad;\n              border-radius: 25px;\n              background: #fff;\n              display: flex;\n              flex-wrap: wrap;\n              padding: 10px 18px;\n              font-size: 13.5px;\n              font-weight: 600;\n              gap: 10px 28px;\n              margin-bottom: 8px;\n              align-items: center;\n              min-height: 40px;\n            }\n            .akey { color: #7b1fa2; font-weight: 700; }\n\n            /* ======= RULES ======= */\n            .rules-box {\n              background: #fffde7;\n              border: 2px solid #f48fb1;\n              border-radius: 12px;\n              padding: 12px 18px;\n              margin-top: 2px;\n              margin-bottom: 6px;\n            }\n            .rules-list { list-style: none; padding: 0; margin: 0; }\n            .rules-list li {\n              font-size: 12.5px;\n              font-weight: 600;\n              color: #1a1a1a;\n              line-height: 1.75;\n              border-bottom: 1px dashed #f8bbd0;\n              padding-bottom: 3px;\n              margin-bottom: 3px;\n            }\n            .rules-list li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }\n\n            /* ======= SIGNATURE ======= */\n            .signature-row {\n              display: flex;\n              justify-content: space-between;\n              align-items: flex-end;\n              margin-top: 35px;\n              padding: 10px 32px 6px 32px;\n            }\n            .sig-box { text-align: center; min-width: 140px; }\n            .sig-line { border-top: 1.5px solid #2c3e50; margin-bottom: 5px; }\n            .sig-text { font-size: 13.5px; font-weight: 700; color: #1a1a1a; }\n\n            @media print {\n              html, body {\n                background: #fff;\n              }\n              .paper-frame {\n                border-radius: 0;\n                box-sizing: border-box;\n                page-break-inside: avoid !important;\n                page-break-after: avoid !important;\n                page-break-before: avoid !important;\n              }\n            }\n          </style>\n        </head>\n        <body>\n          <div class=\"paper-frame\">\n\n            <!-- HEADER -->\n            <div class=\"top-header\">\n              <div class=\"logo-wrap\">\n                <img src=\"").concat(logoUrl, "\" alt=\"Logo\" onerror=\"this.style.display='none'\">\n              </div>\n              <div class=\"brand-center\">\n                <div class=\"brand-name\">\u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE</div>\n              </div>\n              <div class=\"photo-box\">\n                ").concat(userImgUrl ? "<img src=\"".concat(userImgUrl, "\" alt=\"Photo\">") : "<div class=\"photo-placeholder\">\u099B\u09AC\u09BF<br>Photo</div>", "\n              </div>\n            </div>\n\n            <!-- BANNER -->\n            <div class=\"address-banner\">\n              \u0995\u09B2\u09C7\u099C \u09B0\u09CB\u09A1 , \u09A8\u09C7\u09B8\u0995\u09CB \u0997\u09C7\u099F \u09B8\u0982\u09B2\u0997\u09CD\u09A8 , \u09B0\u0982\u09AA\u09C1\u09B0 &nbsp;|&nbsp; \u09AA\u09CD\u09B0\u09AF\u09BC\u09CB\u099C\u09A8\u09C7: \u09E6\u09E7\u09EF\u09ED\u09ED\u09E8\u09ED\u09E6\u09EF\u09E8\u09E6 &nbsp;|&nbsp; Gmail: tssvilla2026@gmail.com\n            </div>\n\n            <!-- ROOM / BLOCK / FLOOR -->\n            <div class=\"room-meta-row\">\n              <div class=\"room-meta-box\"><span class=\"lbl\">\u09B0\u09C1\u09AE \u09A8\u0982:</span>&nbsp;<span class=\"val\">").concat(roomNo, "</span></div>\n              <div class=\"room-meta-box\"><span class=\"lbl\">\u09AC\u09CD\u09B2\u0995 \u09A8\u0982:</span>&nbsp;<span class=\"val\">").concat(seatNo, "</span></div>\n              <div class=\"room-meta-box\"><span class=\"lbl\">\u09AB\u09CD\u09B2\u09CB\u09B0 \u09A8\u0982:</span>&nbsp;<span class=\"val\">").concat(floorNo, "</span></div>\n            </div>\n\n            <!-- SECTION: INFO HEADER WITH BOOKING DATE ON RIGHT -->\n            <div class=\"section-title-container\">\n              <div class=\"title-side-dummy\"></div>\n              <div class=\"section-title\">").concat(sectionTitleText, "</div>\n              <div class=\"booking-date-right-box\">\n                <span class=\"lbl\">\u09AC\u09C1\u0995\u09BF\u0982 \u09A4\u09BE\u09B0\u09BF\u0996:</span> <span class=\"val\">").concat(bookingDate, "</span>\n              </div>\n            </div>\n\n            ").concat(infoSectionHtml, "\n\n            <!-- SECTION: ADDRESS -->\n            <div class=\"section-title\">\u09B8\u09CD\u09A5\u09BE\u09AF\u09BC\u09C0 \u09A0\u09BF\u0995\u09BE\u09A8\u09BE</div>\n\n            <div class=\"address-row\">\n              <span><span class=\"akey\">\u0997\u09CD\u09B0\u09BE\u09AE/\u09B0\u09BE\u09B8\u09CD\u09A4\u09BE:</span> ").concat(address, "</span>\n              <span><span class=\"akey\">\u09A5\u09BE\u09A8\u09BE:</span> ").concat(thanaName, "</span>\n              <span><span class=\"akey\">\u0989\u09AA\u099C\u09C7\u09B2\u09BE:</span> ").concat(thanaName, "</span>\n              <span><span class=\"akey\">\u099C\u09C7\u09B2\u09BE:</span> ").concat(districtName, "</span>\n            </div>\n\n            <!-- SECTION: RULES -->\n            <div class=\"section-title\">\u09A8\u09BF\u09AF\u09BC\u09AE\u09BE\u09AC\u09B2\u09C0</div>\n\n            <div class=\"rules-box\">\n              ").concat(isProf ? "\n              <ul class=\"rules-list\">\n                <li>* \u09AE\u09C7\u09B8\u09C7\u09B0 \u09AD\u09BE\u09A1\u09BC\u09BE \u09E6\u09ED \u09A4\u09BE\u09B0\u09BF\u0996\u09C7\u09B0 \u09AE\u09A7\u09CD\u09AF\u09C7 \u09AA\u09B0\u09BF\u09B6\u09CB\u09A7 \u0995\u09B0\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                <li>* \u09AE\u09C7\u09B8 \u099B\u09BE\u09A1\u09BC\u09B2\u09C7 \u09E6\u09E8 \u09AE\u09BE\u09B8 \u09AA\u09C2\u09B0\u09CD\u09AC\u09C7\u0987 \u09AE\u09C7\u09B8 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7\u0995\u09C7 \u099C\u09BE\u09A8\u09BE\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964 \u0985\u09A8\u09CD\u09AF\u09A5\u09BE\u09AF\u09BC \u09A6\u09C1\u0987 \u09AE\u09BE\u09B8\u09C7\u09B0 \u09AD\u09BE\u09A1\u09BC\u09BE \u09A6\u09BF\u09AF\u09BC\u09C7 \u09AE\u09C7\u09B8 \u099B\u09BE\u09A1\u09BC\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                <li>* \u09B0\u09C1\u09AE \u099A\u09C7\u099E\u09CD\u099C \u0995\u09B0\u09A4\u09C7 \u099A\u09BE\u0987\u09B2\u09C7 \u09EB\u09E6\u09E6 \u099F\u09BE\u0995\u09BE \u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE \u09AA\u09CD\u09B0\u09A6\u09BE\u09A8 \u0995\u09B0\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                <li>* \u09AE\u09C7\u09B8\u09C7\u09B0 \u09A8\u09BF\u09AF\u09BC\u09AE-\u0995\u09BE\u09A8\u09C1\u09A8 \u09AE\u09C7\u09A8\u09C7 \u099A\u09B2\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964 \u0995\u09BE\u09B0\u09CB \u09AC\u09BF\u09B0\u09C1\u09A6\u09CD\u09A7\u09C7 \u0995\u09CB\u09A8\u09CB \u0985\u09AD\u09BF\u09AF\u09CB\u0997 \u0986\u09B8\u09B2\u09C7 \u098F\u09AC\u0982 \u09A4\u09BE \u09AA\u09CD\u09B0\u09AE\u09BE\u09A3\u09BF\u09A4 \u09B9\u09B2\u09C7 \u09B8\u09BF\u099F \u09AC\u09BE\u09A4\u09BF\u09B2\u09B8\u09B9 \u09AF\u09C7\u0995\u09CB\u09A8\u09CB \u09AC\u09CD\u09AF\u09AC\u09B8\u09CD\u09A5\u09BE \u09A8\u09C7\u09AF\u09BC\u09BE\u09B0 \u0985\u09A7\u09BF\u0995\u09BE\u09B0 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7 \u09B0\u09BE\u0996\u09C7\u0964</li>\n              </ul>\n              " : "\n              <ul class=\"rules-list\">\n                <li>* \u09AE\u09C7\u09B8\u09C7\u09B0 \u09AD\u09BE\u09A1\u09BC\u09BE \u09E6\u09ED \u09A4\u09BE\u09B0\u09BF\u0996\u09C7\u09B0 \u09AE\u09A7\u09CD\u09AF\u09C7 \u09AA\u09B0\u09BF\u09B6\u09CB\u09A7 \u0995\u09B0\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                <li>* \u09AE\u09C7\u09B8 \u099B\u09BE\u09A1\u09BC\u09B2\u09C7 \u09E6\u09E8 \u09AE\u09BE\u09B8 \u09AA\u09C2\u09B0\u09CD\u09AC\u09C7\u0987 \u09AE\u09C7\u09B8 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7\u0995\u09C7 \u099C\u09BE\u09A8\u09BE\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964 \u0985\u09A8\u09CD\u09AF\u09A5\u09BE\u09AF\u09BC \u09A6\u09C1\u0987 \u09AE\u09BE\u09B8\u09C7\u09B0 \u09AD\u09BE\u09A1\u09BC\u09BE \u09A6\u09BF\u09AF\u09BC\u09C7 \u09AE\u09C7\u09B8 \u099B\u09BE\u09A1\u09BC\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                <li>* \u09AE\u09BE\u0997\u09B0\u09BF\u09AC\u09C7\u09B0 \u0986\u09AF\u09BE\u09A8\u09C7\u09B0 \u09AA\u09B0 \u09AE\u09C7\u09B8\u09C7\u09B0 \u09AC\u09BE\u09B9\u09BF\u09B0\u09C7 \u09A5\u09BE\u0995\u09B2\u09C7 \u0985\u09AD\u09BF\u09AD\u09BE\u09AC\u0995\u0995\u09C7 \u099C\u09BE\u09A8\u09BF\u09AF\u09BC\u09C7 \u09A6\u09BF\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                <li>* \u09B0\u09C1\u09AE \u099A\u09C7\u099E\u09CD\u099C \u0995\u09B0\u09A4\u09C7 \u099A\u09BE\u0987\u09B2\u09C7 \u09EB\u09E6\u09E6 \u099F\u09BE\u0995\u09BE \u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE \u09AA\u09CD\u09B0\u09A6\u09BE\u09A8 \u0995\u09B0\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                <li>* \u09AE\u09C7\u09B8\u09C7\u09B0 \u09A8\u09BF\u09AF\u09BC\u09AE-\u0995\u09BE\u09A8\u09C1\u09A8 \u09AE\u09C7\u09A8\u09C7 \u099A\u09B2\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964 \u0995\u09BE\u09B0\u09CB \u09AC\u09BF\u09B0\u09C1\u09A6\u09CD\u09A7\u09C7 \u0995\u09CB\u09A8\u09CB \u0985\u09AD\u09BF\u09AF\u09CB\u0997 \u0986\u09B8\u09B2\u09C7 \u098F\u09AC\u0982 \u09A4\u09BE \u09AA\u09CD\u09B0\u09AE\u09BE\u09A3\u09BF\u09A4 \u09B9\u09B2\u09C7 \u09B8\u09BF\u099F \u09AC\u09BE\u09A4\u09BF\u09B2\u09B8\u09B9 \u09AF\u09C7\u0995\u09CB\u09A8\u09CB \u09AC\u09CD\u09AF\u09AC\u09B8\u09CD\u09A5\u09BE \u09A8\u09C7\u09AF\u09BC\u09BE\u09B0 \u0985\u09A7\u09BF\u0995\u09BE\u09B0 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7 \u09B0\u09BE\u0996\u09C7\u0964</li>\n              </ul>\n              ", "\n            </div>\n\n            <!-- SIGNATURE -->\n            <div class=\"signature-row\">\n              <div class=\"sig-box\">\n                <div class=\"sig-line\"></div>\n                <div class=\"sig-text\">\u0985\u09A8\u09C1\u09AE\u09CB\u09A6\u09BF\u09A4 \u09B8\u09CD\u09AC\u09BE\u0995\u09CD\u09B7\u09B0</div>\n              </div>\n              <div class=\"sig-box\">\n                <div class=\"sig-line\"></div>\n                <div class=\"sig-text\">").concat(signatureLabelText, "</div>\n              </div>\n            </div>\n\n          </div>\n        </body>\n        </html>\n      ");
+      var html = "\n        <!DOCTYPE html>\n        <html lang=\"bn\">\n        <head>\n          <meta charset=\"UTF-8\">\n          <title>".concat(docTitle, "</title>\n          <style>\n            @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Hind+Siliguri:wght@400;500;600;700;800&display=swap');\n\n            @page {\n              size: A4 portrait;\n              margin: 5mm;\n            }\n\n            * { box-sizing: border-box; margin: 0; padding: 0; }\n\n            html, body {\n              background: #fff;\n              font-family: 'Hind Siliguri', 'Tiro Bangla', sans-serif;\n              padding: 0;\n              margin: 0;\n              color: #000;\n              -webkit-print-color-adjust: exact;\n              print-color-adjust: exact;\n            }\n\n            /* ======= OUTER FRAME ======= */\n            .paper-frame {\n              background: linear-gradient(165deg, #fef9e7 0%, #fef3cd 50%, #fef9e7 100%);\n              border: 4px solid #27ae60;\n              border-radius: 10px;\n              padding: 16px 20px 14px 20px;\n              box-sizing: border-box;\n              position: relative;\n              min-height: 275mm;\n              display: flex;\n              flex-direction: column;\n              justify-content: space-between;\n              page-break-inside: avoid;\n            }\n            .paper-frame::before {\n              content: '';\n              position: absolute;\n              inset: 4px;\n              border: 1.5px solid #f39c12;\n              border-radius: 7px;\n              pointer-events: none;\n            }\n\n            /* ======= HEADER ======= */\n            .top-header {\n              display: flex;\n              align-items: center;\n              justify-content: center;\n              gap: 16px;\n              margin-bottom: 8px;\n              padding: 0 4px;\n            }\n            .logo-wrap img { width: 72px; height: 72px; object-fit: contain; }\n            .brand-center { text-align: center; flex: 1; }\n            .brand-name {\n              font-size: 46px;\n              font-weight: 900;\n              color: #c0392b;\n              font-family: 'Tiro Bangla', serif;\n              line-height: 1;\n              letter-spacing: 1px;\n            }\n            .photo-box {\n              width: 105px;\n              height: 120px;\n              border: 2px solid #2c3e50;\n              border-radius: 4px;\n              display: flex;\n              align-items: center;\n              justify-content: center;\n              overflow: hidden;\n              background: #f0f0f0;\n              flex-shrink: 0;\n            }\n            .photo-box img { width: 100%; height: 100%; object-fit: cover; }\n            .photo-placeholder { font-size: 11px; color: #888; text-align: center; }\n\n            /* ======= ADDRESS BANNER ======= */\n            .address-banner {\n              background: #1a237e;\n              color: #fff;\n              text-align: center;\n              padding: 8px 12px;\n              font-size: 13px;\n              font-weight: 600;\n              border-radius: 5px;\n              margin-bottom: 10px;\n              letter-spacing: 0.2px;\n            }\n\n            /* ======= ROOM META ======= */\n            .room-meta-row {\n              display: flex;\n              gap: 12px;\n              margin-bottom: 10px;\n            }\n            .room-meta-box {\n              flex: 1;\n              border: 2px solid #27ae60;\n              border-radius: 6px;\n              padding: 7px 12px;\n              background: #fff;\n              font-size: 13.5px;\n              font-weight: 600;\n              display: flex;\n              align-items: center;\n              gap: 5px;\n            }\n            .room-meta-box .lbl { color: #1a5c2e; font-weight: 700; white-space: nowrap; }\n            .room-meta-box .val { color: #000; font-weight: 800; font-size: 14px; }\n\n            /* ======= SECTION TITLES ======= */\n            .section-title-container {\n              display: flex;\n              align-items: center;\n              justify-content: space-between;\n              border-bottom: 2.5px solid #f39c12;\n              padding-bottom: 3px;\n              margin: 10px 0 8px 0;\n            }\n            .title-side-dummy {\n              flex: 1;\n            }\n            .section-title-container .section-title {\n              text-align: center;\n              font-size: 21.5px;\n              font-weight: 800;\n              color: #e74c3c;\n              font-family: 'Tiro Bangla', serif;\n              letter-spacing: 0.3px;\n              flex: 2;\n              margin: 0;\n              padding-bottom: 0;\n              border-bottom: none;\n            }\n            .booking-date-right-box {\n              flex: 1;\n              text-align: right;\n              font-size: 13px;\n              font-weight: 700;\n              white-space: nowrap;\n            }\n            .booking-date-right-box .lbl {\n              color: #1a5c2e;\n              font-weight: 800;\n            }\n            .booking-date-right-box .val {\n              color: #000;\n              font-weight: 800;\n            }\n\n            .section-title {\n              text-align: center;\n              font-size: 21px;\n              font-weight: 800;\n              color: #e74c3c;\n              font-family: 'Tiro Bangla', serif;\n              border-bottom: 2.5px solid #f39c12;\n              padding-bottom: 3px;\n              margin: 10px 0 8px 0;\n              letter-spacing: 0.3px;\n            }\n\n            /* ======= PILL ROWS ======= */\n            .form-pill-row {\n              border: 2px solid #8e44ad;\n              border-radius: 25px;\n              background: #fff;\n              display: flex;\n              overflow: hidden;\n              margin-bottom: 8px;\n              min-height: 40px;\n              align-items: stretch;\n            }\n            .pill-lbl {\n              background: #7b1fa2;\n              color: #fff;\n              padding: 8px 16px;\n              font-size: 13.5px;\n              font-weight: 700;\n              white-space: nowrap;\n              display: flex;\n              align-items: center;\n              border-right: 2px solid #8e44ad;\n              flex-shrink: 0;\n            }\n            .pill-val {\n              padding: 8px 16px;\n              font-size: 14px;\n              font-weight: 600;\n              color: #111;\n              flex-grow: 1;\n              display: flex;\n              align-items: center;\n            }\n            .pill-right {\n              border-left: 2px solid #8e44ad;\n              display: flex;\n              align-items: stretch;\n              flex-shrink: 0;\n            }\n\n            /* ======= ADDRESS ======= */\n            .address-row {\n              border: 2px solid #8e44ad;\n              border-radius: 25px;\n              background: #fff;\n              display: flex;\n              flex-wrap: wrap;\n              padding: 10px 18px;\n              font-size: 13.5px;\n              font-weight: 600;\n              gap: 10px 28px;\n              margin-bottom: 8px;\n              align-items: center;\n              min-height: 40px;\n            }\n            .akey { color: #7b1fa2; font-weight: 700; }\n\n            /* ======= RULES ======= */\n            .rules-box {\n              background: #fffde7;\n              border: 2px solid #f48fb1;\n              border-radius: 12px;\n              padding: 12px 18px;\n              margin-top: 2px;\n              margin-bottom: 6px;\n            }\n            .rules-list { list-style: none; padding: 0; margin: 0; }\n            .rules-list li {\n              font-size: 12.5px;\n              font-weight: 600;\n              color: #1a1a1a;\n              line-height: 1.75;\n              border-bottom: 1px dashed #f8bbd0;\n              padding-bottom: 3px;\n              margin-bottom: 3px;\n            }\n            .rules-list li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }\n\n            /* ======= SIGNATURE ======= */\n            .signature-row {\n              display: flex;\n              justify-content: space-between;\n              align-items: flex-end;\n              margin-top: auto;\n              padding: 10px 32px 6px 32px;\n            }\n            .sig-box { text-align: center; min-width: 140px; }\n            .sig-line { border-top: 1.5px solid #2c3e50; margin-bottom: 5px; }\n            .sig-text { font-size: 13.5px; font-weight: 700; color: #1a1a1a; }\n\n            @media print {\n              html, body {\n                background: #fff;\n              }\n              .paper-frame {\n                border-radius: 0;\n                box-sizing: border-box;\n                page-break-inside: avoid !important;\n                page-break-after: avoid !important;\n                page-break-before: avoid !important;\n              }\n            }\n          </style>\n        </head>\n        <body>\n          <div class=\"paper-frame\">\n\n            <!-- HEADER -->\n            <div class=\"top-header\">\n              <div class=\"logo-wrap\">\n                <img src=\"").concat(logoUrl, "\" alt=\"Logo\" onerror=\"this.style.display='none'\">\n              </div>\n              <div class=\"brand-center\">\n                <div class=\"brand-name\">\u099F\u09BF \u098F\u09B8 \u098F\u09B8 \u09AD\u09BF\u09B2\u09BE</div>\n              </div>\n              <div class=\"photo-box\">\n                ").concat(userImgUrl ? "<img src=\"".concat(userImgUrl, "\" alt=\"Photo\">") : "<div class=\"photo-placeholder\">\u099B\u09AC\u09BF<br>Photo</div>", "\n              </div>\n            </div>\n\n            <!-- BANNER -->\n            <div class=\"address-banner\">\n              \u0995\u09B2\u09C7\u099C \u09B0\u09CB\u09A1 , \u09A8\u09C7\u09B8\u0995\u09CB \u0997\u09C7\u099F \u09B8\u0982\u09B2\u0997\u09CD\u09A8 , \u09B0\u0982\u09AA\u09C1\u09B0 &nbsp;|&nbsp; \u09AA\u09CD\u09B0\u09AF\u09BC\u09CB\u099C\u09A8\u09C7: \u09E6\u09E7\u09EF\u09ED\u09ED\u09E8\u09ED\u09E6\u09EF\u09E8\u09E6 &nbsp;|&nbsp; Gmail: tssvilla2026@gmail.com\n            </div>\n\n            <!-- ROOM / BLOCK / FLOOR -->\n            <div class=\"room-meta-row\">\n              <div class=\"room-meta-box\"><span class=\"lbl\">\u09B0\u09C1\u09AE \u09A8\u0982:</span>&nbsp;<span class=\"val\">").concat(roomNo, "</span></div>\n              <div class=\"room-meta-box\"><span class=\"lbl\">\u09AC\u09CD\u09B2\u0995 \u09A8\u0982:</span>&nbsp;<span class=\"val\">").concat(seatNo, "</span></div>\n              <div class=\"room-meta-box\"><span class=\"lbl\">\u09AB\u09CD\u09B2\u09CB\u09B0 \u09A8\u0982:</span>&nbsp;<span class=\"val\">").concat(floorNo, "</span></div>\n            </div>\n\n            <!-- SECTION: INFO HEADER WITH BOOKING DATE ON RIGHT -->\n            <div class=\"section-title-container\">\n              <div class=\"title-side-dummy\"></div>\n              <div class=\"section-title\">").concat(sectionTitleText, "</div>\n              <div class=\"booking-date-right-box\">\n                <span class=\"lbl\">\u09AC\u09C1\u0995\u09BF\u0982 \u09A4\u09BE\u09B0\u09BF\u0996:</span> <span class=\"val\">").concat(bookingDate, "</span>\n              </div>\n            </div>\n\n            ").concat(infoSectionHtml, "\n\n            <!-- SECTION: ADDRESS -->\n            <div class=\"section-title\">\u09B8\u09CD\u09A5\u09BE\u09AF\u09BC\u09C0 \u09A0\u09BF\u0995\u09BE\u09A8\u09BE</div>\n\n            <div class=\"address-row\">\n              <span><span class=\"akey\">\u0997\u09CD\u09B0\u09BE\u09AE/\u09B0\u09BE\u09B8\u09CD\u09A4\u09BE:</span> ").concat(address, "</span>\n              <span><span class=\"akey\">\u09A5\u09BE\u09A8\u09BE:</span> ").concat(thanaName, "</span>\n              <span><span class=\"akey\">\u0989\u09AA\u099C\u09C7\u09B2\u09BE:</span> ").concat(thanaName, "</span>\n              <span><span class=\"akey\">\u099C\u09C7\u09B2\u09BE:</span> ").concat(districtName, "</span>\n            </div>\n\n            <!-- SECTION: RULES -->\n            <div class=\"section-title\">\u09A8\u09BF\u09AF\u09BC\u09AE\u09BE\u09AC\u09B2\u09C0</div>\n\n            <div class=\"rules-box\">\n              ").concat(isProf ? "\n              <ul class=\"rules-list\">\n                <li>* \u09AE\u09C7\u09B8\u09C7\u09B0 \u09AD\u09BE\u09A1\u09BC\u09BE \u09E6\u09ED \u09A4\u09BE\u09B0\u09BF\u0996\u09C7\u09B0 \u09AE\u09A7\u09CD\u09AF\u09C7 \u09AA\u09B0\u09BF\u09B6\u09CB\u09A7 \u0995\u09B0\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                <li>* \u09AE\u09C7\u09B8 \u099B\u09BE\u09A1\u09BC\u09B2\u09C7 \u09E6\u09E8 \u09AE\u09BE\u09B8 \u09AA\u09C2\u09B0\u09CD\u09AC\u09C7\u0987 \u09AE\u09C7\u09B8 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7\u0995\u09C7 \u099C\u09BE\u09A8\u09BE\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964 \u0985\u09A8\u09CD\u09AF\u09A5\u09BE\u09AF\u09BC \u09A6\u09C1\u0987 \u09AE\u09BE\u09B8\u09C7\u09B0 \u09AD\u09BE\u09A1\u09BC\u09BE \u09A6\u09BF\u09AF\u09BC\u09C7 \u09AE\u09C7\u09B8 \u099B\u09BE\u09A1\u09BC\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                <li>* \u09B0\u09C1\u09AE \u099A\u09C7\u099E\u09CD\u099C \u0995\u09B0\u09A4\u09C7 \u099A\u09BE\u0987\u09B2\u09C7 \u09EB\u09E6\u09E6 \u099F\u09BE\u0995\u09BE \u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE \u09AA\u09CD\u09B0\u09A6\u09BE\u09A8 \u0995\u09B0\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                <li>* \u09AE\u09C7\u09B8\u09C7\u09B0 \u09A8\u09BF\u09AF\u09BC\u09AE-\u0995\u09BE\u09A8\u09C1\u09A8 \u09AE\u09C7\u09A8\u09C7 \u099A\u09B2\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964 \u0995\u09BE\u09B0\u09CB \u09AC\u09BF\u09B0\u09C1\u09A6\u09CD\u09A7\u09C7 \u0995\u09CB\u09A8\u09CB \u0985\u09AD\u09BF\u09AF\u09CB\u0997 \u0986\u09B8\u09B2\u09C7 \u098F\u09AC\u0982 \u09A4\u09BE \u09AA\u09CD\u09B0\u09AE\u09BE\u09A3\u09BF\u09A4 \u09B9\u09B2\u09C7 \u09B8\u09BF\u099F \u09AC\u09BE\u09A4\u09BF\u09B2\u09B8\u09B9 \u09AF\u09C7\u0995\u09CB\u09A8\u09CB \u09AC\u09CD\u09AF\u09AC\u09B8\u09CD\u09A5\u09BE \u09A8\u09C7\u09AF\u09BC\u09BE\u09B0 \u0985\u09A7\u09BF\u0995\u09BE\u09B0 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7 \u09B0\u09BE\u0996\u09C7\u0964</li>\n              </ul>\n              " : "\n              <ul class=\"rules-list\">\n                <li>* \u09AE\u09C7\u09B8\u09C7\u09B0 \u09AD\u09BE\u09A1\u09BC\u09BE \u09E6\u09ED \u09A4\u09BE\u09B0\u09BF\u0996\u09C7\u09B0 \u09AE\u09A7\u09CD\u09AF\u09C7 \u09AA\u09B0\u09BF\u09B6\u09CB\u09A7 \u0995\u09B0\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                <li>* \u09AE\u09C7\u09B8 \u099B\u09BE\u09A1\u09BC\u09B2\u09C7 \u09E6\u09E8 \u09AE\u09BE\u09B8 \u09AA\u09C2\u09B0\u09CD\u09AC\u09C7\u0987 \u09AE\u09C7\u09B8 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7\u0995\u09C7 \u099C\u09BE\u09A8\u09BE\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964 \u0985\u09A8\u09CD\u09AF\u09A5\u09BE\u09AF\u09BC \u09A6\u09C1\u0987 \u09AE\u09BE\u09B8\u09C7\u09B0 \u09AD\u09BE\u09A1\u09BC\u09BE \u09A6\u09BF\u09AF\u09BC\u09C7 \u09AE\u09C7\u09B8 \u099B\u09BE\u09A1\u09BC\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                <li>* \u09AE\u09BE\u0997\u09B0\u09BF\u09AC\u09C7\u09B0 \u0986\u09AF\u09BE\u09A8\u09C7\u09B0 \u09AA\u09B0 \u09AE\u09C7\u09B8\u09C7\u09B0 \u09AC\u09BE\u09B9\u09BF\u09B0\u09C7 \u09A5\u09BE\u0995\u09B2\u09C7 \u0985\u09AD\u09BF\u09AD\u09BE\u09AC\u0995\u0995\u09C7 \u099C\u09BE\u09A8\u09BF\u09AF\u09BC\u09C7 \u09A6\u09BF\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                <li>* \u09B0\u09C1\u09AE \u099A\u09C7\u099E\u09CD\u099C \u0995\u09B0\u09A4\u09C7 \u099A\u09BE\u0987\u09B2\u09C7 \u09EB\u09E6\u09E6 \u099F\u09BE\u0995\u09BE \u099C\u09B0\u09BF\u09AE\u09BE\u09A8\u09BE \u09AA\u09CD\u09B0\u09A6\u09BE\u09A8 \u0995\u09B0\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964</li>\n                <li>* \u09AE\u09C7\u09B8\u09C7\u09B0 \u09A8\u09BF\u09AF\u09BC\u09AE-\u0995\u09BE\u09A8\u09C1\u09A8 \u09AE\u09C7\u09A8\u09C7 \u099A\u09B2\u09A4\u09C7 \u09B9\u09AC\u09C7\u0964 \u0995\u09BE\u09B0\u09CB \u09AC\u09BF\u09B0\u09C1\u09A6\u09CD\u09A7\u09C7 \u0995\u09CB\u09A8\u09CB \u0985\u09AD\u09BF\u09AF\u09CB\u0997 \u0986\u09B8\u09B2\u09C7 \u098F\u09AC\u0982 \u09A4\u09BE \u09AA\u09CD\u09B0\u09AE\u09BE\u09A3\u09BF\u09A4 \u09B9\u09B2\u09C7 \u09B8\u09BF\u099F \u09AC\u09BE\u09A4\u09BF\u09B2\u09B8\u09B9 \u09AF\u09C7\u0995\u09CB\u09A8\u09CB \u09AC\u09CD\u09AF\u09AC\u09B8\u09CD\u09A5\u09BE \u09A8\u09C7\u09AF\u09BC\u09BE\u09B0 \u0985\u09A7\u09BF\u0995\u09BE\u09B0 \u0995\u09B0\u09CD\u09A4\u09C3\u09AA\u0995\u09CD\u09B7 \u09B0\u09BE\u0996\u09C7\u0964</li>\n              </ul>\n              ", "\n            </div>\n\n            <!-- SIGNATURE -->\n            <div class=\"signature-row\">\n              <div class=\"sig-box\">\n                <div class=\"sig-line\"></div>\n                <div class=\"sig-text\">\u0985\u09A8\u09C1\u09AE\u09CB\u09A6\u09BF\u09A4 \u09B8\u09CD\u09AC\u09BE\u0995\u09CD\u09B7\u09B0</div>\n              </div>\n              <div class=\"sig-box\">\n                <div class=\"sig-line\"></div>\n                <div class=\"sig-text\">").concat(signatureLabelText, "</div>\n              </div>\n            </div>\n\n          </div>\n        </body>\n        </html>\n      ");
       var iframe = document.getElementById("print-resident-iframe");
       if (!iframe) {
         iframe = document.createElement("iframe");
@@ -41082,6 +41325,300 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=template&id=6b1ad9d3&scoped=true":
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=template&id=6b1ad9d3&scoped=true ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* binding */ render)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+
+var _hoisted_1 = {
+  "class": "container-xxl flex-grow-1 container-p-y"
+};
+var _hoisted_2 = {
+  "class": "row justify-content-center"
+};
+var _hoisted_3 = {
+  "class": "col-12 col-lg-12"
+};
+var _hoisted_4 = {
+  "class": "card mb-4 shadow-sm border-0"
+};
+var _hoisted_5 = {
+  "class": "card-header d-flex flex-wrap gap-2 justify-content-between align-items-center py-3 bg-light border-bottom"
+};
+var _hoisted_6 = {
+  "class": "d-flex align-items-center gap-2"
+};
+var _hoisted_7 = {
+  "class": "card-body mt-3"
+};
+var _hoisted_8 = {
+  "class": "d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3"
+};
+var _hoisted_9 = {
+  "class": "d-flex align-items-center gap-2"
+};
+var _hoisted_10 = {
+  "class": "table-responsive"
+};
+var _hoisted_11 = {
+  "class": "table table-bordered table-hover align-middle"
+};
+var _hoisted_12 = {
+  key: 0
+};
+var _hoisted_13 = {
+  "class": "fw-bold text-dark"
+};
+var _hoisted_14 = {
+  "class": "text-muted"
+};
+var _hoisted_15 = {
+  "class": "fw-semibold text-secondary"
+};
+var _hoisted_16 = {
+  "class": "fw-semibold text-dark"
+};
+var _hoisted_17 = {
+  "class": "badge bg-primary px-2 py-1 font-monospace fs-6"
+};
+var _hoisted_18 = {
+  "class": "badge bg-success px-2 py-1 fs-6"
+};
+var _hoisted_19 = {
+  "class": "text-center"
+};
+var _hoisted_20 = ["onClick"];
+var _hoisted_21 = {
+  key: 1
+};
+var _hoisted_22 = {
+  colspan: "7",
+  "class": "text-center py-4 text-muted"
+};
+var _hoisted_23 = {
+  key: 0
+};
+var _hoisted_24 = {
+  key: 1
+};
+var _hoisted_25 = {
+  "class": "d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2"
+};
+var _hoisted_26 = {
+  "class": "small text-muted"
+};
+var _hoisted_27 = {
+  "class": "d-flex align-items-center gap-2"
+};
+var _hoisted_28 = ["disabled"];
+var _hoisted_29 = ["disabled"];
+var _hoisted_30 = {
+  "class": "modal fade",
+  id: "advReceiptModal",
+  tabindex: "-1",
+  "aria-hidden": "true"
+};
+var _hoisted_31 = {
+  "class": "modal-dialog modal-dialog-centered modal-lg"
+};
+var _hoisted_32 = {
+  "class": "modal-content shadow-lg border-0"
+};
+var _hoisted_33 = {
+  key: 0,
+  "class": "modal-body p-4",
+  id: "printableAdvReceiptArea"
+};
+var _hoisted_34 = {
+  "class": "receipt-box p-4 border border-2 border-dark rounded-3 bg-white",
+  style: {
+    "font-family": "'Segoe UI', Arial, sans-serif"
+  }
+};
+var _hoisted_35 = {
+  "class": "d-flex justify-content-between align-items-center mb-3 small text-muted"
+};
+var _hoisted_36 = {
+  "class": "table table-sm table-bordered align-middle mb-4"
+};
+var _hoisted_37 = {
+  "class": "fw-bold"
+};
+var _hoisted_38 = {
+  key: 0
+};
+var _hoisted_39 = {
+  "class": "fw-bold fs-5 text-success"
+};
+var _hoisted_40 = {
+  "class": "modal-footer bg-light py-2"
+};
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [_cache[5] || (_cache[5] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
+    "class": "card-title mb-0 text-primary fw-bold"
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    "class": "ti ti-wallet me-2"
+  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Advance Fee Manager (এডভান্স ফি ব্যবস্থাপনা) ")], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "text",
+    "class": "form-control form-control-sm",
+    style: {
+      "width": "280px"
+    },
+    placeholder: "Search resident / phone / room...",
+    "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
+      return $data.search = $event;
+    })
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.search]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [_cache[7] || (_cache[7] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "class": "small text-muted mb-0"
+  }, "Rows:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
+    "class": "form-select form-select-sm",
+    style: {
+      "width": "90px"
+    },
+    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
+      return $data.perPage = $event;
+    })
+  }, _cache[6] || (_cache[6] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: 5
+  }, "5", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: 10
+  }, "10", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: 20
+  }, "20", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+    value: 50
+  }, "50", -1 /* HOISTED */)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.perPage, void 0, {
+    number: true
+  }]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_11, [_cache[11] || (_cache[11] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", {
+    "class": "table-light"
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+    style: {
+      "width": "50px"
+    }
+  }, "Sl"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+    style: {
+      "width": "200px"
+    }
+  }, "Resident Name"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+    style: {
+      "width": "140px"
+    }
+  }, "Phone"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+    style: {
+      "width": "140px"
+    }
+  }, "Floor"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+    style: {
+      "width": "140px"
+    }
+  }, "Room - Seat"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+    style: {
+      "width": "160px"
+    }
+  }, "Advance Fee Status"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+    style: {
+      "width": "160px"
+    },
+    "class": "text-center"
+  }, "Action")])], -1 /* HOISTED */)), $data.residents.length ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tbody", _hoisted_12, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.residents, function (r, idx) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
+      key: r.id
+    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.from + idx + 1), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.full_name || "-"), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("small", _hoisted_14, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.user_type || 'Student'), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_15, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.phone || "-"), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_16, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.floornumber || "-"), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_17, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.roomnumber || "-"), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_18, [_cache[8] || (_cache[8] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+      "class": "ti ti-check me-1"
+    }, null, -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Paid (৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatCurrency(r.advance_fee)) + ") ", 1 /* TEXT */)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+      "class": "btn btn-sm btn-dark fw-semibold",
+      onClick: function onClick($event) {
+        return $options.printReceiptModal(r);
+      }
+    }, _toConsumableArray(_cache[9] || (_cache[9] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+      "class": "ti ti-printer me-1"
+    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Print Receipt ")])), 8 /* PROPS */, _hoisted_20)])]);
+  }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tbody", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_22, [$data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_23, _cache[10] || (_cache[10] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    "class": "fa fa-spinner fa-spin me-2"
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Loading data... ")]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_24, "No residents found"))])])]))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, " Total: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.total) + " | Page: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.currentPage) + " / " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.totalPages), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    "class": "btn btn-sm btn-secondary",
+    disabled: $data.currentPage <= 1 || $data.loading,
+    onClick: _cache[2] || (_cache[2] = function ($event) {
+      return $options.fetchResidents($data.currentPage - 1);
+    })
+  }, " Previous ", 8 /* PROPS */, _hoisted_28), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    "class": "btn btn-sm btn-secondary",
+    disabled: $data.currentPage >= $data.totalPages || $data.loading,
+    onClick: _cache[3] || (_cache[3] = function ($event) {
+      return $options.fetchResidents($data.currentPage + 1);
+    })
+  }, " Next ", 8 /* PROPS */, _hoisted_29)])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Printable Receipt Modal "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_30, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_31, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_32, [_cache[26] || (_cache[26] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+    "class": "modal-header bg-dark text-white py-2 px-3"
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h6", {
+    "class": "modal-title text-white mb-0 fw-bold"
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    "class": "ti ti-printer me-2"
+  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Advance Fee Receipt (এডভান্স ফি মানি রিসিট) ")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    type: "button",
+    "class": "btn-close btn-close-white",
+    "data-bs-dismiss": "modal"
+  })], -1 /* HOISTED */)), $data.receiptResident ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_33, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Receipt Template Box "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_34, [_cache[22] || (_cache[22] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+    "class": "text-center border-bottom pb-3 mb-3"
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", {
+    "class": "fw-bold mb-1",
+    style: {
+      "color": "#033364"
+    }
+  }, "টি এস এস ভিলা"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+    "class": "small text-dark fw-semibold"
+  }, "কলেজ রোড, নেসকোগেট সংলগ্ন, রংপুর | ফোন: +8801977270920"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+    "class": "badge bg-dark fs-6 px-3 py-1 mt-2 text-uppercase"
+  }, "ADVANCE FEE MONEY RECEIPT")], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_35, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_cache[12] || (_cache[12] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Receipt No: ")), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, "#ADV-" + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.receiptResident.id), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_cache[13] || (_cache[13] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Date: ")), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatDate($data.receiptResident.created_at)), 1 /* TEXT */)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_36, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [_cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+    style: {
+      "width": "30%"
+    },
+    "class": "bg-light"
+  }, "Resident Name:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_37, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.receiptResident.full_name), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [_cache[15] || (_cache[15] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+    "class": "bg-light"
+  }, "Phone Number:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.receiptResident.phone), 1 /* TEXT */)]), $options.isStudent($data.receiptResident) ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", _hoisted_38, [_cache[16] || (_cache[16] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+    "class": "bg-light"
+  }, "Father / Guardian Phone:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.receiptResident.father_phone || $data.receiptResident.mother_phone || '-'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [_cache[18] || (_cache[18] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+    "class": "bg-light"
+  }, "Floor & Room-Seat:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.receiptResident.floornumber || 'Floor'), 1 /* TEXT */), _cache[17] || (_cache[17] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" | Room-Seat: ")), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("strong", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.receiptResident.roomnumber), 1 /* TEXT */)])]), _cache[20] || (_cache[20] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+    "class": "bg-light"
+  }, "Payment Purpose:"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
+    "class": "fw-bold text-primary"
+  }, "Advance Fee (এডভান্স ফি)")], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [_cache[19] || (_cache[19] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+    "class": "bg-light"
+  }, "Amount Paid:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_39, "৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatCurrency($data.receiptResident.advance_fee)), 1 /* TEXT */)]), _cache[21] || (_cache[21] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+    "class": "bg-light"
+  }, "Payment Status:"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+    "class": "badge bg-success px-3 py-1 fs-6"
+  }, "PAID / পরিশোধিত")])], -1 /* HOISTED */))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Rules Section "), _cache[23] || (_cache[23] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"mt-4 pt-2 border-top\" data-v-6b1ad9d3><div class=\"d-inline-block bg-danger text-white fw-bold px-3 py-1 rounded-pill mb-2\" style=\"font-size:13px;\" data-v-6b1ad9d3> নিয়মাবলী </div><ul class=\"list-unstyled mb-3\" style=\"font-size:12.5px;line-height:1.8;color:#1f2937;\" data-v-6b1ad9d3><li data-v-6b1ad9d3>❖ প্রতি মাসের ভাড়া ঐ মাসের ৭ তারিখের মধ্যে দিতে হবে।</li><li data-v-6b1ad9d3>❖ সীট ছাড়তে চাইলে অবশ্যই ২ মাস আগে লিখিত জানাতে হবে। অন্যথায় ২ মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</li><li data-v-6b1ad9d3>❖ লাইট/ফ্যান/দেয়াল সহ অন্যান্য জিনিস নষ্ট করলে ক্ষতিপূরণ দিতে হবে।</li></ul></div><div class=\"d-flex justify-content-end align-items-end mt-4 pt-3\" data-v-6b1ad9d3><div class=\"text-center\" style=\"width:220px;\" data-v-6b1ad9d3><div style=\"border-top:1px solid #000;padding-top:4px;\" class=\"small fw-bold\" data-v-6b1ad9d3> অফিস কর্তৃপক্ষের স্বাক্ষর </div></div></div>", 2))])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_40, [_cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    type: "button",
+    "class": "btn btn-secondary",
+    "data-bs-dismiss": "modal"
+  }, "Close", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    type: "button",
+    "class": "btn btn-primary fw-bold",
+    onClick: _cache[4] || (_cache[4] = function () {
+      return $options.printReceiptNow && $options.printReceiptNow.apply($options, arguments);
+    })
+  }, _cache[24] || (_cache[24] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    "class": "ti ti-printer me-1"
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Print Receipt Now ")]))])])])])]);
+}
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/backend/Brand.vue?vue&type=template&id=3a1ccdf1&scoped=true":
 /*!***********************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/backend/Brand.vue?vue&type=template&id=3a1ccdf1&scoped=true ***!
@@ -42590,7 +43127,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "bg-light"
   }, "Payment Status:"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
     "class": "badge bg-success px-3 py-1 fs-6"
-  }, "PAID / পরিশোধিত")])], -1 /* HOISTED */))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Rules Section "), _cache[40] || (_cache[40] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"mt-4 pt-2 border-top\" data-v-3dff1dcc><div class=\"d-inline-block bg-danger text-white fw-bold px-3 py-1 rounded-pill mb-2\" style=\"font-size:13px;\" data-v-3dff1dcc> নিয়মাবলী </div><ul class=\"list-unstyled mb-3\" style=\"font-size:12.5px;line-height:1.8;color:#1f2937;\" data-v-3dff1dcc><li data-v-3dff1dcc>❖ প্রতি মাসের ভাড়া ঐ মাসের ৭ তারিখের মধ্যে দিতে হবে। অন্যথায় ১০০ টাকা জরিমানা দিতে হবে।</li><li data-v-3dff1dcc>❖ সীট ছাড়তে চাইলে অবশ্যই ২ মাস আগে লিখিত জানাতে হবে। অন্যথায় ২ মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</li><li data-v-3dff1dcc>❖ লাইট/ফ্যান/দেয়াল সহ অন্যান্য জিনিস নষ্ট করলে ক্ষতিপূরণ দিতে হবে।</li></ul></div><div class=\"d-flex justify-content-end align-items-end mt-4 pt-3\" data-v-3dff1dcc><div class=\"text-center\" style=\"width:220px;\" data-v-3dff1dcc><div style=\"border-top:1px solid #000;padding-top:4px;\" class=\"small fw-bold\" data-v-3dff1dcc> অফিস কর্তৃপক্ষের স্বাক্ষর </div></div></div>", 2))])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_57, [_cache[42] || (_cache[42] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, "PAID / পরিশোধিত")])], -1 /* HOISTED */))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Rules Section "), _cache[40] || (_cache[40] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"mt-4 pt-2 border-top\" data-v-3dff1dcc><div class=\"d-inline-block bg-danger text-white fw-bold px-3 py-1 rounded-pill mb-2\" style=\"font-size:13px;\" data-v-3dff1dcc> নিয়মাবলী </div><ul class=\"list-unstyled mb-3\" style=\"font-size:12.5px;line-height:1.8;color:#1f2937;\" data-v-3dff1dcc><li data-v-3dff1dcc>❖ প্রতি মাসের ভাড়া ঐ মাসের ৭ তারিখের মধ্যে দিতে হবে।</li><li data-v-3dff1dcc>❖ সীট ছাড়তে চাইলে অবশ্যই ২ মাস আগে লিখিত জানাতে হবে। অন্যথায় ২ মাসের ভাড়া দিয়ে মেস ছাড়তে হবে।</li><li data-v-3dff1dcc>❖ লাইট/ফ্যান/দেয়াল সহ অন্যান্য জিনিস নষ্ট করলে ক্ষতিপূরণ দিতে হবে।</li></ul></div><div class=\"d-flex justify-content-end align-items-end mt-4 pt-3\" data-v-3dff1dcc><div class=\"text-center\" style=\"width:220px;\" data-v-3dff1dcc><div style=\"border-top:1px solid #000;padding-top:4px;\" class=\"small fw-bold\" data-v-3dff1dcc> অফিস কর্তৃপক্ষের স্বাক্ষর </div></div></div>", 2))])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_57, [_cache[42] || (_cache[42] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "btn btn-secondary",
     "data-bs-dismiss": "modal"
@@ -44712,39 +45249,32 @@ var _hoisted_85 = {
   "class": "ti ti-check fs-5"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Card Title & Overview "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [_cache[22] || (_cache[22] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h4", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Card Title & Overview "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [_cache[20] || (_cache[20] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h4", {
     "class": "card-title mb-1 text-primary fw-bold"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "ti ti-report-money me-1"
   }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Monthly Payments ")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", {
     "class": "text-muted mb-0 small"
   }, "Manage guest monthly rents, generate billing invoices, and keep track of pending, partial or overdue dues.")], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Action Buttons "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    "class": "btn btn-success d-flex align-items-center gap-2 px-3 py-2 shadow-sm",
-    onClick: _cache[0] || (_cache[0] = function () {
-      return $options.exportPaymentsCSV && $options.exportPaymentsCSV.apply($options, arguments);
-    })
-  }, _cache[20] || (_cache[20] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
-    "class": "fa fa-file-excel fs-5"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Export Excel", -1 /* HOISTED */)])), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-primary d-flex align-items-center gap-2 px-4 py-2 shadow-sm",
-    onClick: _cache[1] || (_cache[1] = function () {
+    onClick: _cache[0] || (_cache[0] = function () {
       return $options.confirmGenerateBills && $options.confirmGenerateBills.apply($options, arguments);
     }),
     disabled: $data.generating
-  }, [$data.generating ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_8)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("i", _hoisted_9)), _cache[21] || (_cache[21] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Generate Bills", -1 /* HOISTED */))], 8 /* PROPS */, _hoisted_7)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Filters Section "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Month Filter "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [_cache[23] || (_cache[23] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, [$data.generating ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_8)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("i", _hoisted_9)), _cache[19] || (_cache[19] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Generate Bills", -1 /* HOISTED */))], 8 /* PROPS */, _hoisted_7)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Filters Section "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Month Filter "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [_cache[21] || (_cache[21] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "class": "form-label fw-semibold text-dark"
   }, "Select Billing Month", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "month",
     "class": "form-control form-control-md border-2",
-    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
+    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
       return $data.selectedMonth = $event;
     }),
-    onChange: _cache[3] || (_cache[3] = function ($event) {
+    onChange: _cache[2] || (_cache[2] = function ($event) {
       return $options.fetchPayments(1);
     })
-  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.selectedMonth]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Search Input "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [_cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.selectedMonth]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Search Input "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [_cache[23] || (_cache[23] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "class": "form-label fw-semibold text-dark"
-  }, "Search Resident (Name or Phone)", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [_cache[24] || (_cache[24] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+  }, "Search Resident (Name or Phone)", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [_cache[22] || (_cache[22] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
     "class": "input-group-text bg-white border-2 border-end-0"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "ti ti-search text-muted"
@@ -44752,23 +45282,23 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     type: "text",
     "class": "form-control form-control-md border-2 border-start-0",
     placeholder: "Search by Name or Phone...",
-    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
+    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
       return $data.search = $event;
     }),
-    onInput: _cache[5] || (_cache[5] = function () {
+    onInput: _cache[4] || (_cache[4] = function () {
       return $options.onSearchInput && $options.onSearchInput.apply($options, arguments);
     })
-  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.search]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Rows Selection "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [_cache[27] || (_cache[27] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.search]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Rows Selection "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [_cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "class": "form-label fw-semibold text-dark"
   }, "Rows Per Page", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
     "class": "form-select form-select-md border-2",
-    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
+    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
       return $data.perPage = $event;
     }),
-    onChange: _cache[7] || (_cache[7] = function ($event) {
+    onChange: _cache[6] || (_cache[6] = function ($event) {
       return $options.fetchPayments(1);
     })
-  }, _cache[26] || (_cache[26] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, _cache[24] || (_cache[24] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: 10
   }, "10 Rows", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: 20
@@ -44780,12 +45310,12 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     number: true
   }]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Reset Button "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-outline-secondary btn-md w-100",
-    onClick: _cache[8] || (_cache[8] = function () {
+    onClick: _cache[7] || (_cache[7] = function () {
       return $options.resetFilters && $options.resetFilters.apply($options, arguments);
     })
-  }, _cache[28] || (_cache[28] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, _cache[26] || (_cache[26] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "ti ti-clear-all me-1"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Reset Filters ")]))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Loader "), $data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_17, _cache[29] || (_cache[29] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Reset Filters ")]))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Loader "), $data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_17, _cache[27] || (_cache[27] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "spinner-border text-primary fs-3",
     role: "status",
     style: {
@@ -44798,16 +45328,16 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "mt-2 text-muted fw-semibold"
   }, "Fetching monthly rent list...", -1 /* HOISTED */)]))) : $data.payments.length === 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
     key: 1
-  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Empty State "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [_cache[30] || (_cache[30] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Empty State "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [_cache[28] || (_cache[28] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     style: {
       "font-size": "55px",
       "filter": "grayscale(0.2)"
     }
-  }, "💸", -1 /* HOISTED */)), _cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
+  }, "💸", -1 /* HOISTED */)), _cache[29] || (_cache[29] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
     "class": "mt-3 fw-bold text-dark"
   }, "No billing records found", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", _hoisted_19, "No monthly rent invoices exist for \"" + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatMonthYear($data.selectedMonth)) + "\". Click \"Generate Bills\" to create them.", 1 /* TEXT */)])], 2112 /* STABLE_FRAGMENT, DEV_ROOT_FRAGMENT */)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
     key: 2
-  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Billing Grid Table "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_21, [_cache[41] || (_cache[41] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", {
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Billing Grid Table "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_21, [_cache[39] || (_cache[39] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", {
     "class": "table-light"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", {
     "class": "text-uppercase text-dark small fw-bold"
@@ -44840,27 +45370,27 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   }, "Action")])], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.payments, function (pay, idx) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
       key: pay.id
-    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(($data.pagination.current_page - 1) * $data.pagination.per_page + idx + 1), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_25, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(pay.full_name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_26, [_cache[32] || (_cache[32] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(($data.pagination.current_page - 1) * $data.pagination.per_page + idx + 1), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_25, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(pay.full_name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_26, [_cache[30] || (_cache[30] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "ti ti-phone me-1 text-primary"
-    }, null, -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(pay.phone), 1 /* TEXT */)])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_27, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_28, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_29, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(pay.roomnumber), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_30, [_cache[33] || (_cache[33] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    }, null, -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(pay.phone), 1 /* TEXT */)])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_27, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_28, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_29, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(pay.roomnumber), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_30, [_cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "ti ti-layers-half me-1"
-    }, null, -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(pay.floornumber), 1 /* TEXT */)])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_31, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_32, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatMonthYear(pay.payment_month)), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_33, "৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(Number(pay.amount).toFixed(2)), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_34, "৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(Number(pay.paid_amount || 0).toFixed(2)), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_35, [$options.getDueAmount(pay) > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_36, " ৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(Number($options.getDueAmount(pay)).toFixed(2)), 1 /* TEXT */)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_37, "৳ 0.00"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("  <td class=\"py-3 text-center\">\n                      <span class=\"text-muted small\">{{ formatDate(pay.due_date) }}</span>\n                    </td> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_38, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" PAID "), pay.status === 'paid' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_39, _toConsumableArray(_cache[34] || (_cache[34] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    }, null, -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(pay.floornumber), 1 /* TEXT */)])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_31, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_32, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatMonthYear(pay.payment_month)), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_33, "৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(Number(pay.amount).toFixed(2)), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_34, "৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(Number(pay.paid_amount || 0).toFixed(2)), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_35, [$options.getDueAmount(pay) > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_36, " ৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(Number($options.getDueAmount(pay)).toFixed(2)), 1 /* TEXT */)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_37, "৳ 0.00"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("  <td class=\"py-3 text-center\">\n                      <span class=\"text-muted small\">{{ formatDate(pay.due_date) }}</span>\n                    </td> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_38, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" PAID "), pay.status === 'paid' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_39, _toConsumableArray(_cache[32] || (_cache[32] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "ti ti-circle-check me-1 fs-6"
     }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Paid ")])))) : pay.status === 'partial' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
       key: 1
-    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" PARTIAL "), _cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" PARTIAL "), _cache[33] || (_cache[33] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
       "class": "badge bg-warning text-dark px-3 py-2 rounded-2 fs-7 fw-bold"
     }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "ti ti-adjustments-horizontal me-1 fs-6"
     }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Partial ")], -1 /* HOISTED */))], 2112 /* STABLE_FRAGMENT, DEV_ROOT_FRAGMENT */)) : $options.isOverdue(pay.due_date) ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
       key: 2
-    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" OVERDUE "), _cache[36] || (_cache[36] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" OVERDUE "), _cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
       "class": "badge bg-danger px-3 py-2 rounded-2 fs-7 fw-bold animate-pulse"
     }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "ti ti-alert-triangle me-1 fs-6"
     }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Overdue ")], -1 /* HOISTED */))], 2112 /* STABLE_FRAGMENT, DEV_ROOT_FRAGMENT */)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
       key: 3
-    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" PENDING "), _cache[37] || (_cache[37] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" PENDING "), _cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
       "class": "badge bg-secondary px-3 py-2 rounded-2 fs-7 fw-bold text-white"
     }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "ti ti-clock me-1 fs-6"
@@ -44868,7 +45398,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       key: 0,
       "class": "text-muted small text-truncate-custom",
       title: pay.note
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.getLatestLog(pay.note)), 9 /* TEXT, PROPS */, _hoisted_41)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), pay.received_by ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_42, [_cache[38] || (_cache[38] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.getLatestLog(pay.note)), 9 /* TEXT, PROPS */, _hoisted_41)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), pay.received_by ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_42, [_cache[36] || (_cache[36] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "ti ti-user-check me-1 text-success"
     }, null, -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.cleanReceivedBy(pay.received_by)), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), !pay.note && !pay.received_by ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_43, "—")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_44, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_45, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Collect Payment Button "), pay.status !== 'paid' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
       key: 0,
@@ -44876,7 +45406,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       onClick: function onClick($event) {
         return $options.openCollectModal(pay);
       }
-    }, _toConsumableArray(_cache[39] || (_cache[39] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    }, _toConsumableArray(_cache[37] || (_cache[37] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "ti ti-wallet fs-6"
     }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Collect ")])), 8 /* PROPS */, _hoisted_46)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Print Receipt Button "), Number(pay.paid_amount || 0) > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
       key: 1,
@@ -44884,7 +45414,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       onClick: function onClick($event) {
         return $options.printReceipt(pay);
       }
-    }, _toConsumableArray(_cache[40] || (_cache[40] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    }, _toConsumableArray(_cache[38] || (_cache[38] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "ti ti-printer fs-6"
     }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Receipt ")])), 8 /* PROPS */, _hoisted_47)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])])]);
   }), 128 /* KEYED_FRAGMENT */))])])])], 2112 /* STABLE_FRAGMENT, DEV_ROOT_FRAGMENT */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Pagination Controls "), $data.payments.length > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_48, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_49, " Showing " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.payments.length) + " of " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pagination.total) + " records | Page " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pagination.current_page) + " of " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pagination.last_page), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("nav", _hoisted_50, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", _hoisted_51, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Previous Button "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", {
@@ -44893,10 +45423,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     }])
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "page-link shadow-none",
-    onClick: _cache[9] || (_cache[9] = function ($event) {
+    onClick: _cache[8] || (_cache[8] = function ($event) {
       return $options.fetchPayments($data.pagination.current_page - 1);
     })
-  }, _cache[42] || (_cache[42] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, _cache[40] || (_cache[40] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "ti ti-chevron-left"
   }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Previous ")]))], 2 /* CLASS */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Page numbers "), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.pagination.last_page, function (page) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", {
@@ -44916,38 +45446,38 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     }])
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "page-link shadow-none",
-    onClick: _cache[10] || (_cache[10] = function ($event) {
+    onClick: _cache[9] || (_cache[9] = function ($event) {
       return $options.fetchPayments($data.pagination.current_page + 1);
     })
-  }, _cache[43] || (_cache[43] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Next "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, _cache[41] || (_cache[41] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Next "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "ti ti-chevron-right"
-  }, null, -1 /* HOISTED */)]))], 2 /* CLASS */)])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" COLLECT PAYMENT MODAL "), _cache[59] || (_cache[59] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("` ")), $data.showModal ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_53, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_54, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_55, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_56, [_cache[44] || (_cache[44] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
+  }, null, -1 /* HOISTED */)]))], 2 /* CLASS */)])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" COLLECT PAYMENT MODAL "), _cache[57] || (_cache[57] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("` ")), $data.showModal ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_53, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_54, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_55, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_56, [_cache[42] || (_cache[42] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
     "class": "modal-title fw-bold text-white"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "ti ti-cash me-1"
   }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Collect Monthly Rent")], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "btn-close btn-close-white",
-    onClick: _cache[11] || (_cache[11] = function () {
+    onClick: _cache[10] || (_cache[10] = function () {
       return $options.closeCollectModal && $options.closeCollectModal.apply($options, arguments);
     }),
     "aria-label": "Close"
   })]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
-    onSubmit: _cache[16] || (_cache[16] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
+    onSubmit: _cache[15] || (_cache[15] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function () {
       return $options.submitCollectPayment && $options.submitCollectPayment.apply($options, arguments);
     }, ["prevent"]))
-  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_57, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Guest Overview "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_58, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_59, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_60, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.activePayment.full_name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_61, "Monthly Rent: ৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(Number($data.activePayment.amount).toFixed(2)), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_62, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Room: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.activePayment.roomnumber), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Month: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatMonthYear($data.activePayment.payment_month)), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Carry Forward Due "), Number($data.activePayment.carried_forward_due) > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_63, [_cache[45] || (_cache[45] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "⚠ Carry Forward Due:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "+ ৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(Number($data.activePayment.carried_forward_due).toFixed(2)), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_64, [_cache[46] || (_cache[46] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_57, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Guest Overview "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_58, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_59, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_60, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.activePayment.full_name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_61, "Monthly Rent: ৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(Number($data.activePayment.amount).toFixed(2)), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_62, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Room: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.activePayment.roomnumber), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Month: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatMonthYear($data.activePayment.payment_month)), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Carry Forward Due "), Number($data.activePayment.carried_forward_due) > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_63, [_cache[43] || (_cache[43] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "⚠ Carry Forward Due:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "+ ৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(Number($data.activePayment.carried_forward_due).toFixed(2)), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_64, [_cache[44] || (_cache[44] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
     "class": "text-success fw-bold"
-  }, "Paid So Far:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_65, "৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(Number($data.activePayment.paid_amount || 0).toFixed(2)), 1 /* TEXT */)]), $options.remainingAfterCollection > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_66, [_cache[47] || (_cache[47] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "🔴 Remaining Due after this payment:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.remainingAfterCollection.toFixed(2)), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Amount to Collect "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_67, [_cache[49] || (_cache[49] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, "Paid So Far:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_65, "৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(Number($data.activePayment.paid_amount || 0).toFixed(2)), 1 /* TEXT */)]), $options.remainingAfterCollection > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_66, [_cache[45] || (_cache[45] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "🔴 Remaining Due after this payment:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.remainingAfterCollection.toFixed(2)), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Amount to Collect "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_67, [_cache[47] || (_cache[47] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "class": "form-label fw-semibold text-dark"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Amount to Collect "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
     "class": "text-danger"
-  }, "*")], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_68, [_cache[48] || (_cache[48] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+  }, "*")], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_68, [_cache[46] || (_cache[46] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
     "class": "input-group-text fw-bold"
   }, "৳", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "number",
     "class": "form-control border-2",
-    "onUpdate:modelValue": _cache[12] || (_cache[12] = function ($event) {
+    "onUpdate:modelValue": _cache[11] || (_cache[11] = function ($event) {
       return $data.form.amount_to_collect = $event;
     }),
     step: "0.01",
@@ -44956,64 +45486,64 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     required: ""
   }, null, 8 /* PROPS */, _hoisted_69), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.form.amount_to_collect, void 0, {
     number: true
-  }]])]), _cache[50] || (_cache[50] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  }]])]), _cache[48] || (_cache[48] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "form-text text-muted small mt-1"
-  }, "Default is set to the full due amount. You can change it for partial payments.", -1 /* HOISTED */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Payment Method Selector "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_70, [_cache[52] || (_cache[52] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, "Default is set to the full due amount. You can change it for partial payments.", -1 /* HOISTED */))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Payment Method Selector "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_70, [_cache[50] || (_cache[50] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "class": "form-label fw-semibold text-dark"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Payment Method "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
     "class": "text-danger"
   }, "*")], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
     "class": "form-select border-2",
-    "onUpdate:modelValue": _cache[13] || (_cache[13] = function ($event) {
+    "onUpdate:modelValue": _cache[12] || (_cache[12] = function ($event) {
       return $data.form.payment_method = $event;
     }),
     required: ""
-  }, _cache[51] || (_cache[51] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<option value=\"Cash\" data-v-3a41a03f>Cash</option><option value=\"Bkash\" data-v-3a41a03f>bKash</option><option value=\"Nagad\" data-v-3a41a03f>Nagad</option><option value=\"Rocket\" data-v-3a41a03f>Rocket</option><option value=\"Bank Transfer\" data-v-3a41a03f>Bank Transfer</option>", 5)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.form.payment_method]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Transaction ID "), $data.form.payment_method !== 'Cash' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_71, [_cache[53] || (_cache[53] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, _cache[49] || (_cache[49] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<option value=\"Cash\" data-v-3a41a03f>Cash</option><option value=\"Bkash\" data-v-3a41a03f>bKash</option><option value=\"Nagad\" data-v-3a41a03f>Nagad</option><option value=\"Rocket\" data-v-3a41a03f>Rocket</option><option value=\"Bank Transfer\" data-v-3a41a03f>Bank Transfer</option>", 5)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.form.payment_method]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Transaction ID "), $data.form.payment_method !== 'Cash' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_71, [_cache[51] || (_cache[51] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "class": "form-label fw-semibold text-dark"
   }, "Transaction ID (Optional)", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
     "class": "form-control border-2",
     placeholder: "Enter Mobile Banking TrxID...",
-    "onUpdate:modelValue": _cache[14] || (_cache[14] = function ($event) {
+    "onUpdate:modelValue": _cache[13] || (_cache[13] = function ($event) {
       return $data.form.trx_id = $event;
     })
   }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.form.trx_id]])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Short Note / Comments "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("\n              <div class=\"mb-3\">\n                <label class=\"form-label fw-semibold text-dark\">Short Note / Comments (Optional)</label>\n                <textarea \n                  class=\"form-control border-2\" \n                  rows=\"2\" \n                  placeholder=\"Any payment references or comments...\" \n                  v-model=\"form.note\"\n                ></textarea>\n              </div>\n              ")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_72, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "btn btn-outline-secondary px-4",
-    onClick: _cache[15] || (_cache[15] = function () {
+    onClick: _cache[14] || (_cache[14] = function () {
       return $options.closeCollectModal && $options.closeCollectModal.apply($options, arguments);
     })
   }, "Cancel"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "submit",
     "class": "btn btn-success px-4",
     disabled: $data.submitting
-  }, [$data.submitting ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_74)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), _cache[54] || (_cache[54] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Confirm Collect "))], 8 /* PROPS */, _hoisted_73)])], 32 /* NEED_HYDRATION */)])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" GENERATE BILLS CONFIRMATION MODAL "), $data.showGenerateModal ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_75, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_76, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_77, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Header "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_78, [_cache[55] || (_cache[55] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
+  }, [$data.submitting ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_74)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), _cache[52] || (_cache[52] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Confirm Collect "))], 8 /* PROPS */, _hoisted_73)])], 32 /* NEED_HYDRATION */)])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" GENERATE BILLS CONFIRMATION MODAL "), $data.showGenerateModal ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_75, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_76, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_77, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Header "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_78, [_cache[53] || (_cache[53] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
     "class": "modal-title fw-bold text-white d-flex align-items-center gap-2"
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "ti ti-file-invoice fs-4"
   }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Generate Monthly Bills ")], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "btn-close btn-close-white",
-    onClick: _cache[17] || (_cache[17] = function () {
+    onClick: _cache[16] || (_cache[16] = function () {
       return $options.closeGenerateModal && $options.closeGenerateModal.apply($options, arguments);
     }),
     "aria-label": "Close"
-  })]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Body "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_79, [_cache[57] || (_cache[57] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"mb-3\" data-v-3a41a03f><div class=\"d-inline-flex align-items-center justify-content-center bg-light-primary text-primary rounded-circle p-3 shadow-sm\" style=\"width:75px;height:75px;background:#e0f2fe;\" data-v-3a41a03f><i class=\"ti ti-refresh text-primary fs-1\" data-v-3a41a03f></i></div></div><h5 class=\"fw-bold text-dark mb-2\" data-v-3a41a03f>Confirm Bill Generation</h5><p class=\"text-muted mb-3 fs-6\" data-v-3a41a03f> You are about to generate monthly rent bills for all active residents for: </p>", 3)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_80, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_81, " 📅 " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatMonthYear($data.selectedMonth)), 1 /* TEXT */), _cache[56] || (_cache[56] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", {
+  })]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Body "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_79, [_cache[55] || (_cache[55] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"mb-3\" data-v-3a41a03f><div class=\"d-inline-flex align-items-center justify-content-center bg-light-primary text-primary rounded-circle p-3 shadow-sm\" style=\"width:75px;height:75px;background:#e0f2fe;\" data-v-3a41a03f><i class=\"ti ti-refresh text-primary fs-1\" data-v-3a41a03f></i></div></div><h5 class=\"fw-bold text-dark mb-2\" data-v-3a41a03f>Confirm Bill Generation</h5><p class=\"text-muted mb-3 fs-6\" data-v-3a41a03f> You are about to generate monthly rent bills for all active residents for: </p>", 3)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_80, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_81, " 📅 " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatMonthYear($data.selectedMonth)), 1 /* TEXT */), _cache[54] || (_cache[54] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", {
     "class": "small text-muted mb-0 mt-2"
   }, " This will calculate the monthly rent for each active resident and sync their due balances. ", -1 /* HOISTED */))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Footer "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_82, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "btn btn-outline-secondary px-4 py-2 fw-semibold",
-    onClick: _cache[18] || (_cache[18] = function () {
+    onClick: _cache[17] || (_cache[17] = function () {
       return $options.closeGenerateModal && $options.closeGenerateModal.apply($options, arguments);
     })
   }, " Cancel "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "btn btn-primary px-4 py-2 fw-bold d-flex align-items-center gap-2 shadow-sm",
-    onClick: _cache[19] || (_cache[19] = function () {
+    onClick: _cache[18] || (_cache[18] = function () {
       return $options.executeGenerateBills && $options.executeGenerateBills.apply($options, arguments);
     }),
     disabled: $data.generating
-  }, [$data.generating ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_84)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("i", _hoisted_85)), _cache[58] || (_cache[58] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Yes, Generate Bills", -1 /* HOISTED */))], 8 /* PROPS */, _hoisted_83)])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]);
+  }, [$data.generating ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_84)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("i", _hoisted_85)), _cache[56] || (_cache[56] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Yes, Generate Bills", -1 /* HOISTED */))], 8 /* PROPS */, _hoisted_83)])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]);
 }
 
 /***/ }),
@@ -46855,45 +47385,34 @@ var _hoisted_36 = {
 var _hoisted_37 = {
   "class": "text-center"
 };
-var _hoisted_38 = {
-  key: 0,
-  "class": "badge bg-danger-light text-danger fw-bold border border-danger px-3 py-1 shadow-sm"
-};
+var _hoisted_38 = ["onClick"];
 var _hoisted_39 = {
-  key: 1,
-  "class": "badge bg-success-light text-success fw-bold border border-success px-3 py-1 shadow-sm"
-};
-var _hoisted_40 = {
-  "class": "text-center"
-};
-var _hoisted_41 = ["onClick"];
-var _hoisted_42 = {
   key: 1
 };
-var _hoisted_43 = {
+var _hoisted_40 = {
   colspan: "8",
   "class": "text-center py-5 text-muted"
 };
-var _hoisted_44 = {
+var _hoisted_41 = {
   key: 0
 };
-var _hoisted_45 = {
+var _hoisted_42 = {
   key: 1,
   "class": "py-4"
 };
-var _hoisted_46 = {
+var _hoisted_43 = {
   key: 0,
   "class": "pagination-footer border-top bg-light-50"
 };
-var _hoisted_47 = {
+var _hoisted_44 = {
   "class": "pagination-info text-muted"
 };
-var _hoisted_48 = {
+var _hoisted_45 = {
   "class": "pagination-actions"
 };
-var _hoisted_49 = ["disabled"];
-var _hoisted_50 = ["onClick"];
-var _hoisted_51 = ["disabled"];
+var _hoisted_46 = ["disabled"];
+var _hoisted_47 = ["onClick"];
+var _hoisted_48 = ["disabled"];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Header "), _cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "card-header d-flex flex-wrap gap-2 justify-content-between align-items-center py-3 bg-light-orange-gradient"
@@ -46944,8 +47463,6 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "text-center"
   }, "Checkout Date"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     "class": "text-center"
-  }, "Outstanding Due"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
-    "class": "text-center"
   }, "Action")])], -1 /* HOISTED */)), !$data.loading && $data.history.length ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tbody", _hoisted_20, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.history, function (r, idx) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
       key: r.id,
@@ -46965,7 +47482,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         key: i,
         "class": "d-inline-flex align-items-center gap-1 justify-content-center"
       }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_31, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.floornumber), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_32, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)((item.roomnumber || '').split('-')[0]), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_33, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)((item.roomnumber || '').split('-').slice(1).join('-') || '-'), 1 /* TEXT */)]);
-    }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_34, "-"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_35, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatDate(r.check_in)), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_36, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatDateTime(r.today_check_out || r.check_out)), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_37, [r.due_amount > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_38, " ৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.due_amount.toFixed(2)) + " (Due) ", 1 /* TEXT */)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_39, " ৳ 0.00 (No Due) "))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_40, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_34, "-"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_35, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatDate(r.check_in)), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_36, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatDateTime(r.today_check_out || r.check_out)), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_37, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
       "class": "btn btn-sm btn-outline-primary fw-bold",
       title: "Print Clearance Slip",
       onClick: function onClick($event) {
@@ -46973,35 +47490,35 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       }
     }, _toConsumableArray(_cache[10] || (_cache[10] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "ti ti-printer me-1"
-    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Print Slip ")])), 8 /* PROPS */, _hoisted_41)])]);
-  }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tbody", _hoisted_42, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_43, [$data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_44, _cache[11] || (_cache[11] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Print Slip ")])), 8 /* PROPS */, _hoisted_38)])]);
+  }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tbody", _hoisted_39, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_40, [$data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_41, _cache[11] || (_cache[11] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     "class": "spinner-border spinner-border-sm text-warning me-2",
     role: "status"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Loading release history...", -1 /* HOISTED */)]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_45, _cache[12] || (_cache[12] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "Loading release history...", -1 /* HOISTED */)]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_42, _cache[12] || (_cache[12] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "ti ti-folder-off fs-1 text-muted"
   }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h6", {
     "class": "mt-2 text-muted fw-semibold"
-  }, "No release history records found", -1 /* HOISTED */)])))])])]))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Pagination "), $data.history.length && $data.pagination.last_page > 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_46, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_47, " Showing entries " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(($data.pagination.current_page - 1) * $data.pagination.per_page + 1) + " to " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(Math.min($data.pagination.current_page * $data.pagination.per_page, $data.pagination.total)) + " of " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pagination.total), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_48, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, "No release history records found", -1 /* HOISTED */)])))])])]))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Pagination "), $data.history.length && $data.pagination.last_page > 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_43, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_44, " Showing entries " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(($data.pagination.current_page - 1) * $data.pagination.per_page + 1) + " to " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(Math.min($data.pagination.current_page * $data.pagination.per_page, $data.pagination.total)) + " of " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.pagination.total), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_45, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-outline-secondary btn-sm",
     disabled: $data.pagination.current_page <= 1,
     onClick: _cache[2] || (_cache[2] = function ($event) {
       return $options.goToPage($data.pagination.current_page - 1);
     })
-  }, " Previous ", 8 /* PROPS */, _hoisted_49), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.pagination.last_page, function (page) {
+  }, " Previous ", 8 /* PROPS */, _hoisted_46), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.pagination.last_page, function (page) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
       key: page,
       "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["btn btn-sm mx-1", page === $data.pagination.current_page ? 'btn-warning text-white fw-bold' : 'btn-outline-secondary']),
       onClick: function onClick($event) {
         return $options.goToPage(page);
       }
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(page), 11 /* TEXT, CLASS, PROPS */, _hoisted_50);
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(page), 11 /* TEXT, CLASS, PROPS */, _hoisted_47);
   }), 128 /* KEYED_FRAGMENT */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-outline-secondary btn-sm",
     disabled: $data.pagination.current_page >= $data.pagination.last_page,
     onClick: _cache[3] || (_cache[3] = function ($event) {
       return $options.goToPage($data.pagination.current_page + 1);
     })
-  }, " Next ", 8 /* PROPS */, _hoisted_51)])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])])])])]);
+  }, " Next ", 8 /* PROPS */, _hoisted_48)])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])])])])]);
 }
 
 /***/ }),
@@ -48044,10 +48561,10 @@ var _hoisted_1 = {
   "class": "container-xxl flex-grow-1 container-p-y"
 };
 var _hoisted_2 = {
-  "class": "row justify-content-center"
+  "class": "row"
 };
 var _hoisted_3 = {
-  "class": "col-12 col-lg-10 col-xl-12"
+  "class": "col-12"
 };
 var _hoisted_4 = {
   "class": "card mb-4 shadow-sm"
@@ -48056,370 +48573,393 @@ var _hoisted_5 = {
   "class": "card-header d-flex flex-wrap gap-2 justify-content-between align-items-center py-3"
 };
 var _hoisted_6 = {
-  style: {
-    "width": "22%"
-  }
+  "class": "d-flex align-items-center gap-2"
 };
 var _hoisted_7 = {
-  key: 0,
-  "class": "px-3 pt-3"
-};
-var _hoisted_8 = {
-  "class": "d-flex mb-4"
-};
-var _hoisted_9 = ["value"];
-var _hoisted_10 = {
-  "class": "ms-4 align-items-end"
-};
-var _hoisted_11 = {
-  key: 0,
-  "class": "card-header d-flex flex-wrap gap-2 justify-content-between align-items-center py-3"
-};
-var _hoisted_12 = {
-  "class": "px-3 pt-3"
-};
-var _hoisted_13 = {
-  "class": "d-flex mb-4"
-};
-var _hoisted_14 = {
-  "class": "ms-4"
-};
-var _hoisted_15 = {
-  "class": "ms-4 d-flex align-items-end"
-};
-var _hoisted_16 = {
   "class": "card-body"
 };
-var _hoisted_17 = {
-  "class": "d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3"
+var _hoisted_8 = {
+  "class": "d-flex align-items-center gap-2 mb-3"
 };
-var _hoisted_18 = {
-  "class": "d-flex align-items-center gap-2"
-};
-var _hoisted_19 = {
-  "class": "d-flex align-items-center gap-2"
-};
-var _hoisted_20 = {
+var _hoisted_9 = {
   "class": "table-responsive"
 };
-var _hoisted_21 = {
+var _hoisted_10 = {
   "class": "table table-bordered table-hover align-middle"
 };
-var _hoisted_22 = {
+var _hoisted_11 = {
   "class": "table-light"
 };
-var _hoisted_23 = {
+var _hoisted_12 = {
   key: 0,
   style: {
     "width": "160px"
   }
 };
-var _hoisted_24 = {
+var _hoisted_13 = {
   key: 1,
   style: {
     "width": "140px"
   }
 };
-var _hoisted_25 = {
+var _hoisted_14 = {
   key: 2,
   style: {
     "width": "140px"
   }
 };
-var _hoisted_26 = {
+var _hoisted_15 = {
   key: 3,
   style: {
     "width": "150px"
   }
 };
-var _hoisted_27 = {
+var _hoisted_16 = {
   key: 4,
   style: {
     "width": "150px"
   }
 };
-var _hoisted_28 = {
+var _hoisted_17 = {
   key: 5,
   style: {
     "width": "140px"
   }
 };
-var _hoisted_29 = {
+var _hoisted_18 = {
   key: 6,
   style: {
     "width": "140px"
   }
 };
-var _hoisted_30 = {
+var _hoisted_19 = {
   key: 7,
   style: {
     "width": "140px"
   }
 };
-var _hoisted_31 = {
+var _hoisted_20 = {
   key: 8,
   style: {
     "width": "140px"
   }
 };
-var _hoisted_32 = {
+var _hoisted_21 = {
   key: 9,
   style: {
     "width": "160px"
   }
 };
-var _hoisted_33 = {
+var _hoisted_22 = {
   key: 10,
   style: {
     "width": "140px"
   }
 };
-var _hoisted_34 = {
+var _hoisted_23 = {
   key: 0
 };
-var _hoisted_35 = ["src"];
-var _hoisted_36 = {
+var _hoisted_24 = ["src"];
+var _hoisted_25 = {
   key: 1,
   "class": "text-muted small"
 };
-var _hoisted_37 = {
+var _hoisted_26 = {
   "class": "fw-semibold"
 };
-var _hoisted_38 = {
+var _hoisted_27 = {
   "class": "badge bg-label-secondary fw-semibold"
 };
-var _hoisted_39 = {
+var _hoisted_28 = {
   key: 0
 };
-var _hoisted_40 = {
+var _hoisted_29 = {
   key: 1
 };
-var _hoisted_41 = {
+var _hoisted_30 = {
   key: 0
 };
-var _hoisted_42 = {
+var _hoisted_31 = {
   "class": "badge bg-primary font-monospace px-2 py-1 fs-6 fw-bold"
 };
-var _hoisted_43 = {
+var _hoisted_32 = {
   key: 1
 };
-var _hoisted_44 = {
+var _hoisted_33 = {
   key: 0
 };
-var _hoisted_45 = {
+var _hoisted_34 = {
   "class": "badge bg-danger font-monospace px-2 py-1 fs-6 fw-bold"
 };
-var _hoisted_46 = {
+var _hoisted_35 = {
   key: 1
+};
+var _hoisted_36 = {
+  "class": "fw-semibold"
+};
+var _hoisted_37 = {
+  "class": "fw-bold text-success"
+};
+var _hoisted_38 = {
+  key: 0,
+  "class": "fw-bold text-warning"
+};
+var _hoisted_39 = {
+  key: 1,
+  "class": "fw-semibold text-muted"
+};
+var _hoisted_40 = {
+  key: 2,
+  "class": "text-muted"
+};
+var _hoisted_41 = {
+  "class": "fw-semibold"
+};
+var _hoisted_42 = {
+  key: 0
+};
+var _hoisted_43 = {
+  "class": "fw-semibold"
+};
+var _hoisted_44 = {
+  key: 1
+};
+var _hoisted_45 = {
+  "class": "fw-semibold"
+};
+var _hoisted_46 = {
+  key: 2
 };
 var _hoisted_47 = {
   "class": "fw-semibold"
 };
 var _hoisted_48 = {
-  "class": "fw-bold text-success"
-};
-var _hoisted_49 = {
-  key: 0,
-  "class": "fw-bold text-warning"
-};
-var _hoisted_50 = {
-  key: 1,
-  "class": "fw-semibold text-muted"
-};
-var _hoisted_51 = {
-  key: 2,
-  "class": "text-muted"
-};
-var _hoisted_52 = {
-  "class": "fw-semibold"
-};
-var _hoisted_53 = {
-  key: 0
-};
-var _hoisted_54 = {
-  "class": "fw-semibold"
-};
-var _hoisted_55 = {
-  key: 1
-};
-var _hoisted_56 = {
-  "class": "fw-semibold"
-};
-var _hoisted_57 = {
-  key: 2
-};
-var _hoisted_58 = {
-  "class": "fw-semibold"
-};
-var _hoisted_59 = {
   key: 3
 };
-var _hoisted_60 = {
+var _hoisted_49 = {
   "class": "fw-semibold"
 };
-var _hoisted_61 = {
+var _hoisted_50 = {
   key: 4
 };
-var _hoisted_62 = {
+var _hoisted_51 = {
   "class": "fw-semibold"
 };
-var _hoisted_63 = {
+var _hoisted_52 = {
   key: 5
+};
+var _hoisted_53 = {
+  "class": "fw-semibold"
+};
+var _hoisted_54 = {
+  key: 6
+};
+var _hoisted_55 = {
+  "class": "fw-semibold"
+};
+var _hoisted_56 = {
+  key: 7
+};
+var _hoisted_57 = {
+  "class": "fw-semibold"
+};
+var _hoisted_58 = {
+  key: 8
+};
+var _hoisted_59 = {
+  "class": "fw-semibold"
+};
+var _hoisted_60 = {
+  key: 9
+};
+var _hoisted_61 = {
+  "class": "fw-semibold"
+};
+var _hoisted_62 = {
+  key: 10
+};
+var _hoisted_63 = {
+  "class": "fw-semibold"
 };
 var _hoisted_64 = {
   "class": "fw-semibold"
 };
 var _hoisted_65 = {
-  key: 6
+  "class": "fw-semibold"
 };
 var _hoisted_66 = {
   "class": "fw-semibold"
 };
 var _hoisted_67 = {
-  key: 7
+  "class": "fw-semibold"
 };
 var _hoisted_68 = {
   "class": "fw-semibold"
 };
 var _hoisted_69 = {
-  key: 8
-};
-var _hoisted_70 = {
-  "class": "fw-semibold"
-};
-var _hoisted_71 = {
-  key: 9
-};
-var _hoisted_72 = {
-  "class": "fw-semibold"
-};
-var _hoisted_73 = {
-  key: 10
-};
-var _hoisted_74 = {
-  "class": "fw-semibold"
-};
-var _hoisted_75 = {
-  "class": "fw-semibold"
-};
-var _hoisted_76 = {
-  "class": "fw-semibold"
-};
-var _hoisted_77 = {
-  "class": "fw-semibold"
-};
-var _hoisted_78 = {
-  "class": "fw-semibold"
-};
-var _hoisted_79 = {
-  "class": "fw-semibold"
-};
-var _hoisted_80 = {
   key: 0,
   "class": "fw-semibold text-success"
 };
-var _hoisted_81 = {
+var _hoisted_70 = {
   key: 1,
   "class": "fw-semibold text-primary"
 };
-var _hoisted_82 = {
+var _hoisted_71 = {
   key: 2
 };
-var _hoisted_83 = {
+var _hoisted_72 = {
   "class": "text-center"
 };
-var _hoisted_84 = {
+var _hoisted_73 = {
   "class": "d-flex align-items-center justify-content-center gap-1"
 };
-var _hoisted_85 = ["onClick"];
-var _hoisted_86 = ["onClick"];
-var _hoisted_87 = {
+var _hoisted_74 = ["onClick"];
+var _hoisted_75 = ["onClick"];
+var _hoisted_76 = ["onClick"];
+var _hoisted_77 = {
   key: 1
 };
-var _hoisted_88 = ["colspan"];
-var _hoisted_89 = {
+var _hoisted_78 = ["colspan"];
+var _hoisted_79 = {
   key: 0
 };
-var _hoisted_90 = {
+var _hoisted_80 = {
   key: 1
 };
-var _hoisted_91 = {
+var _hoisted_81 = {
   "class": "d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2"
 };
-var _hoisted_92 = {
+var _hoisted_82 = {
   "class": "small text-muted"
 };
-var _hoisted_93 = {
+var _hoisted_83 = {
   "class": "d-flex align-items-center gap-2"
 };
-var _hoisted_94 = ["disabled"];
-var _hoisted_95 = ["disabled"];
+var _hoisted_84 = ["disabled"];
+var _hoisted_85 = ["disabled"];
+var _hoisted_86 = {
+  "class": "modal fade",
+  id: "bookingReceiptModal",
+  tabindex: "-1",
+  "aria-hidden": "true"
+};
+var _hoisted_87 = {
+  "class": "modal-dialog modal-dialog-centered modal-lg"
+};
+var _hoisted_88 = {
+  "class": "modal-content shadow-lg border-0"
+};
+var _hoisted_89 = {
+  key: 0,
+  "class": "modal-body p-4",
+  id: "receiptPrintArea"
+};
+var _hoisted_90 = {
+  "class": "d-flex justify-content-between align-items-center mb-3 bg-light p-2 rounded border"
+};
+var _hoisted_91 = {
+  "class": "fw-bold text-success"
+};
+var _hoisted_92 = {
+  "class": "fw-bold text-dark"
+};
+var _hoisted_93 = {
+  "class": "table-responsive mb-3"
+};
+var _hoisted_94 = {
+  "class": "table table-sm table-bordered align-middle mb-0",
+  style: {
+    "font-size": "0.9rem"
+  }
+};
+var _hoisted_95 = {
+  "class": "fw-bold text-dark",
+  style: {
+    "width": "25%"
+  }
+};
+var _hoisted_96 = {
+  "class": "fw-bold text-dark",
+  style: {
+    "width": "25%"
+  }
+};
+var _hoisted_97 = {
+  colspan: "3",
+  "class": "fw-bold text-dark"
+};
+var _hoisted_98 = {
+  colspan: "3",
+  "class": "fw-semibold text-dark"
+};
+var _hoisted_99 = {
+  "class": "table-info"
+};
+var _hoisted_100 = {
+  "class": "fw-bold text-dark"
+};
+var _hoisted_101 = {
+  "class": "fw-bold text-dark"
+};
+var _hoisted_102 = {
+  "class": "badge bg-primary me-1"
+};
+var _hoisted_103 = {
+  "class": "badge bg-danger"
+};
+var _hoisted_104 = {
+  "class": "p-3 mb-4 rounded-3 shadow-sm",
+  style: {
+    "background-color": "#fdf8e6",
+    "border": "2px solid #f59e0b"
+  }
+};
+var _hoisted_105 = {
+  "class": "d-flex justify-content-between align-items-center py-1"
+};
+var _hoisted_106 = {
+  "class": "fs-6 fw-bold text-dark"
+};
+var _hoisted_107 = {
+  key: 0,
+  "class": "d-flex justify-content-between align-items-center py-1"
+};
+var _hoisted_108 = {
+  "class": "fs-6 fw-bold text-warning"
+};
+var _hoisted_109 = {
+  "class": "d-flex justify-content-between align-items-center pt-1"
+};
+var _hoisted_110 = {
+  "class": "fs-4 fw-extrabold text-success"
+};
+var _hoisted_111 = {
+  "class": "modal-footer bg-light py-2"
+};
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_cache[40] || (_cache[40] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-    "class": "card-header d-flex flex-wrap gap-2 justify-content-between align-items-center py-3"
-  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
-    "class": "card-title mb-0"
-  }, "Room Booking History ")])], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [$props.isAdmin ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
-      return $data.selectedGuest = $event;
-    }),
-    "class": "form-select",
-    onChange: _cache[1] || (_cache[1] = function ($event) {
-      return $options.fetchRooms(1);
-    }),
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [_cache[5] || (_cache[5] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
+    "class": "card-title mb-0 fw-bold"
+  }, "Room Booking History", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "text",
+    "class": "form-control form-control-sm",
     style: {
-      "max-width": "300px"
-    }
-  }, [_cache[13] || (_cache[13] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-    value: ""
-  }, "Select Guest", -1 /* HOISTED */)), ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.guestNames, function (guest) {
-    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("option", {
-      key: guest.full_name,
-      value: guest.full_name
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(guest.full_name), 9 /* TEXT, PROPS */, _hoisted_9);
-  }), 128 /* KEYED_FRAGMENT */))], 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.selectedGuest]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    "class": "btn btn-outline-secondary",
-    onClick: _cache[2] || (_cache[2] = function () {
-      return $options.clearFilters && $options.clearFilters.apply($options, arguments);
+      "width": "260px"
+    },
+    placeholder: "Search room / floor / name / phone...",
+    "onUpdate:modelValue": _cache[0] || (_cache[0] = function ($event) {
+      return $data.search = $event;
     })
-  }, "Clear")])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [$props.isAdmin ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "class": "mb-2 text-black"
-  }, "Start Date", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "class": "form-control",
-    type: "date",
-    "onUpdate:modelValue": _cache[3] || (_cache[3] = function ($event) {
-      return $data.startDate = $event;
-    }),
-    onChange: _cache[4] || (_cache[4] = function ($event) {
-      return $options.fetchRooms(1);
-    })
-  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.startDate]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [_cache[15] || (_cache[15] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "class": "mb-2 text-black"
-  }, "End Date", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "class": "form-control",
-    type: "date",
-    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
-      return $data.endDate = $event;
-    }),
-    onChange: _cache[6] || (_cache[6] = function ($event) {
-      return $options.fetchRooms(1);
-    })
-  }, null, 544 /* NEED_HYDRATION, NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.endDate]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    "class": "btn btn-outline-secondary",
-    onClick: _cache[7] || (_cache[7] = function () {
-      return $options.clearFilters && $options.clearFilters.apply($options, arguments);
-    })
-  }, "Clear")])])])])])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [_cache[17] || (_cache[17] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.search]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [_cache[7] || (_cache[7] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "class": "small text-muted mb-0"
   }, "Rows:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
     "class": "form-select form-select-sm",
     style: {
       "width": "90px"
     },
-    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
+    "onUpdate:modelValue": _cache[1] || (_cache[1] = function ($event) {
       return $data.perPage = $event;
     })
-  }, _cache[16] || (_cache[16] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
+  }, _cache[6] || (_cache[6] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: 5
   }, "5", -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
     value: 10
@@ -48429,99 +48969,79 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     value: 50
   }, "50", -1 /* HOISTED */)]), 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.perPage, void 0, {
     number: true
-  }]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [!$props.isAdmin ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
-    key: 0,
-    type: "button",
-    "class": "btn btn-primary btn-sm fw-bold",
-    onClick: _cache[9] || (_cache[9] = function () {
-      return $options.printTable && $options.printTable.apply($options, arguments);
-    }),
-    title: "Confirm Booking Document"
-  }, _cache[18] || (_cache[18] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
-    "class": "fa fa-print me-1"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Confirm Booking Document ")]))) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    type: "text",
-    "class": "form-control form-control-sm",
-    style: {
-      "width": "240px"
-    },
-    placeholder: "Search room / floor / name / phone...",
-    "onUpdate:modelValue": _cache[10] || (_cache[10] = function ($event) {
-      return $data.search = $event;
-    })
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.search]])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [_cache[19] || (_cache[19] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", _hoisted_11, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [_cache[8] || (_cache[8] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "70px"
     }
-  }, "Sl", -1 /* HOISTED */)), _cache[20] || (_cache[20] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Sl", -1 /* HOISTED */)), _cache[9] || (_cache[9] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "130px"
     }
-  }, "Image", -1 /* HOISTED */)), _cache[21] || (_cache[21] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Image", -1 /* HOISTED */)), _cache[10] || (_cache[10] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "160px"
     }
-  }, "Name", -1 /* HOISTED */)), _cache[22] || (_cache[22] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Name", -1 /* HOISTED */)), _cache[11] || (_cache[11] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "130px"
     }
-  }, "User Type", -1 /* HOISTED */)), _cache[23] || (_cache[23] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "User Type", -1 /* HOISTED */)), _cache[12] || (_cache[12] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "130px"
     }
-  }, "Floor", -1 /* HOISTED */)), _cache[24] || (_cache[24] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Floor", -1 /* HOISTED */)), _cache[13] || (_cache[13] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "100px"
     }
-  }, "Room", -1 /* HOISTED */)), _cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Room", -1 /* HOISTED */)), _cache[14] || (_cache[14] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "120px"
     }
-  }, "Seat", -1 /* HOISTED */)), _cache[26] || (_cache[26] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Seat", -1 /* HOISTED */)), _cache[15] || (_cache[15] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "180px"
     }
-  }, "Booking Date & Time", -1 /* HOISTED */)), _cache[27] || (_cache[27] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Booking Date & Time", -1 /* HOISTED */)), _cache[16] || (_cache[16] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "150px"
     }
-  }, "Monthly Amount", -1 /* HOISTED */)), _cache[28] || (_cache[28] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Monthly Amount", -1 /* HOISTED */)), _cache[17] || (_cache[17] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "150px"
     }
-  }, "Development Fee", -1 /* HOISTED */)), _cache[29] || (_cache[29] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Development Fee", -1 /* HOISTED */)), _cache[18] || (_cache[18] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "180px"
     }
-  }, "Email", -1 /* HOISTED */)), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_23, "Institution Name")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_24, "Education System")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_25, "Class / Semester")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_26, "Father Name")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_27, "Mother Name")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_28, "Father NID")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_29, "NID / Mother NID")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_30, "Father Phone")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_31, "Mother Phone")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showNidColumn ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_32, "Workplace Name")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showNidColumn ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_33, "NID")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), _cache[30] || (_cache[30] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Email", -1 /* HOISTED */)), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_12, "Institution Name")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_13, "Education System")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_14, "Class / Semester")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_15, "Father Name")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_16, "Mother Name")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_17, "Father NID")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_18, "NID / Mother NID")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_19, "Father Phone")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_20, "Mother Phone")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showNidColumn ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_21, "Workplace Name")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showNidColumn ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("th", _hoisted_22, "NID")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), _cache[19] || (_cache[19] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "140px"
     }
-  }, "Phone", -1 /* HOISTED */)), _cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Phone", -1 /* HOISTED */)), _cache[20] || (_cache[20] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "120px"
     }
-  }, "Division", -1 /* HOISTED */)), _cache[32] || (_cache[32] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Division", -1 /* HOISTED */)), _cache[21] || (_cache[21] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "120px"
     }
-  }, "District", -1 /* HOISTED */)), _cache[33] || (_cache[33] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "District", -1 /* HOISTED */)), _cache[22] || (_cache[22] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "120px"
     }
-  }, "Thana", -1 /* HOISTED */)), _cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Thana", -1 /* HOISTED */)), _cache[23] || (_cache[23] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "160px"
     }
-  }, "Address", -1 /* HOISTED */)), _cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Address", -1 /* HOISTED */)), _cache[24] || (_cache[24] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "120px"
     }
-  }, "Payment", -1 /* HOISTED */)), _cache[36] || (_cache[36] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
+  }, "Payment", -1 /* HOISTED */)), _cache[25] || (_cache[25] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", {
     style: {
       "width": "110px"
     }
-  }, "Action", -1 /* HOISTED */))])]), $data.rooms.length ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tbody", _hoisted_34, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.rooms, function (r, idx) {
+  }, "Action", -1 /* HOISTED */))])]), $data.rooms.length ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tbody", _hoisted_23, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.rooms, function (r, idx) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
       key: r.group_key
     }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.from + idx + 1), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [r.image ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("img", {
@@ -48529,58 +49049,126 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       src: $options.imageSrc(r.image),
       "class": "img-thumb",
       alt: "booking"
-    }, null, 8 /* PROPS */, _hoisted_35)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_36, "No image"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_37, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.full_name || "-"), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_38, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.user_type || 'Student'), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [r.room_items && r.room_items.length ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_39, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(r.room_items, function (item, i) {
+    }, null, 8 /* PROPS */, _hoisted_24)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_25, "No image"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.full_name || "-"), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_27, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.user_type || 'Student'), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [r.room_items && r.room_items.length ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_28, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(r.room_items, function (item, i) {
       return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
         key: 'f-' + r.id + '-' + i,
         "class": "py-1 fw-semibold text-dark"
       }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(item.floornumber || "-"), 1 /* TEXT */);
-    }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_40, "-"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [r.room_items && r.room_items.length ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_41, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(r.room_items, function (item, i) {
+    }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_29, "-"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [r.room_items && r.room_items.length ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_30, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(r.room_items, function (item, i) {
       return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
         key: 'r-' + r.id + '-' + i,
         "class": "py-1"
-      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_42, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.getRoomNo(item.roomnumber)), 1 /* TEXT */)]);
-    }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_43, "-"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [r.room_items && r.room_items.length ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_44, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(r.room_items, function (item, i) {
+      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_31, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.getRoomNo(item.roomnumber)), 1 /* TEXT */)]);
+    }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_32, "-"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [r.room_items && r.room_items.length ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_33, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(r.room_items, function (item, i) {
       return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
         key: 's-' + r.id + '-' + i,
         "class": "py-1"
-      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_45, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.getSeatNo(item.roomnumber)), 1 /* TEXT */)]);
-    }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_46, "-"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_47, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatDateTime(r.created_at)), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_48, "৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatCurrency(r.monthly_amount)), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [r.development_fee !== null && r.development_fee !== undefined && Number(r.development_fee) > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_49, " ৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatCurrency(r.development_fee)), 1 /* TEXT */)) : r.development_fee !== null && r.development_fee !== undefined ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_50, " ৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatCurrency(r.development_fee)), 1 /* TEXT */)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_51, "-"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_52, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.email || "-"), 1 /* TEXT */)]), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_53, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_54, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent(r) ? r.institution_name || '-' : '—'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_55, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_56, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent(r) ? r.education_level || '-' : '—'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_57, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_58, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent(r) ? r.education_class || '-' : '—'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_59, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_60, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent(r) ? r.father_name || '-' : '—'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_61, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_62, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent(r) ? r.mother_name || '-' : '—'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_63, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_64, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent(r) ? r.father_nid || '-' : '—'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_65, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_66, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent(r) ? r.mother_nid || '-' : '—'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_67, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_68, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent(r) ? r.father_phone || '-' : '—'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_69, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_70, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent(r) ? r.mother_phone || '-' : '—'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showNidColumn ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_71, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_72, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isProfessional(r) ? r.workplace_name || "-" : "—"), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showNidColumn ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_73, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_74, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isProfessional(r) ? r.nid || "-" : "—"), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_75, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.phone || "-"), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_76, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.division_name || "-"), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_77, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.district_name || "-"), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_78, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.thana_name || "-"), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_79, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.address || "-"), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [r.pay_online ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_80, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.pay_online), 1 /* TEXT */)) : r.pay_cash_in ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_81, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.pay_cash_in), 1 /* TEXT */)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_82, "-"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_83, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_84, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_34, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.getSeatNo(item.roomnumber)), 1 /* TEXT */)]);
+    }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_35, "-"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_36, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatDateTime(r.created_at)), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_37, "৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatCurrency(r.monthly_amount)), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [r.development_fee !== null && r.development_fee !== undefined && Number(r.development_fee) > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_38, " ৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatCurrency(r.development_fee)), 1 /* TEXT */)) : r.development_fee !== null && r.development_fee !== undefined ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_39, " ৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatCurrency(r.development_fee)), 1 /* TEXT */)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_40, "-"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_41, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.email || "-"), 1 /* TEXT */)]), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_42, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_43, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent(r) ? r.institution_name || '-' : '—'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_44, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_45, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent(r) ? r.education_level || '-' : '—'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_46, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_47, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent(r) ? r.education_class || '-' : '—'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_48, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_49, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent(r) ? r.father_name || '-' : '—'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_50, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_51, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent(r) ? r.mother_name || '-' : '—'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_52, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_53, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent(r) ? r.father_nid || '-' : '—'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_54, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_55, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent(r) ? r.mother_nid || '-' : '—'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_56, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_57, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent(r) ? r.father_phone || '-' : '—'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showFamilyColumns ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_58, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_59, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isStudent(r) ? r.mother_phone || '-' : '—'), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showNidColumn ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_60, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_61, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isProfessional(r) ? r.workplace_name || "-" : "—"), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), $options.showNidColumn ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("td", _hoisted_62, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_63, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.isProfessional(r) ? r.nid || "-" : "—"), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_64, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.phone || "-"), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_65, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.division_name || "-"), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_66, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.district_name || "-"), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_67, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.thana_name || "-"), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_68, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.address || "-"), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [r.pay_online ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_69, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.pay_online), 1 /* TEXT */)) : r.pay_cash_in ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_70, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(r.pay_cash_in), 1 /* TEXT */)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_71, "-"))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_72, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_73, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
       type: "button",
       "class": "btn btn-sm btn-primary fw-bold text-nowrap",
       onClick: function onClick($event) {
         return $options.printResidentForm(r);
       },
-      title: "Confirm Booking Document"
-    }, _toConsumableArray(_cache[37] || (_cache[37] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+      title: "Document"
+    }, _toConsumableArray(_cache[26] || (_cache[26] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "fa fa-print me-1"
-    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Document ")])), 8 /* PROPS */, _hoisted_85), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Document ")])), 8 /* PROPS */, _hoisted_74), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
       type: "button",
       "class": "btn btn-sm btn-info fw-bold text-nowrap",
       onClick: function onClick($event) {
         return $options.printResidentIdCard(r);
       },
       title: "Print Resident ID Card"
-    }, _toConsumableArray(_cache[38] || (_cache[38] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    }, _toConsumableArray(_cache[27] || (_cache[27] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
       "class": "fa fa-id-card me-1"
-    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" ID Card ")])), 8 /* PROPS */, _hoisted_86)])])]);
-  }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tbody", _hoisted_87, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
+    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" ID Card ")])), 8 /* PROPS */, _hoisted_75), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+      type: "button",
+      "class": "btn btn-sm btn-success fw-bold text-nowrap",
+      onClick: function onClick($event) {
+        return $options.openBookingReceiptModal(r);
+      },
+      title: "Booking Money Receipt"
+    }, _toConsumableArray(_cache[28] || (_cache[28] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+      "class": "ti ti-receipt me-1"
+    }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Booking Receipt ")])), 8 /* PROPS */, _hoisted_76)])])]);
+  }), 128 /* KEYED_FRAGMENT */))])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tbody", _hoisted_77, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
     colspan: $options.totalColumns,
     "class": "text-center py-4 text-muted"
-  }, [$data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_89, _cache[39] || (_cache[39] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  }, [$data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_79, _cache[29] || (_cache[29] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "fa fa-spinner fa-spin me-2"
-  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Loading... ")]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_90, "No booking history found"))], 8 /* PROPS */, _hoisted_88)])]))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_91, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_92, " Total: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.total) + " | Page: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.currentPage) + " / " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.totalPages), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_93, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Loading... ")]))) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("span", _hoisted_80, "No booking history found"))], 8 /* PROPS */, _hoisted_78)])]))])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_81, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_82, " Total: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.total) + " | Page: " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.currentPage) + " / " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.totalPages), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_83, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-sm btn-secondary",
     disabled: $data.currentPage <= 1 || $data.loading,
-    onClick: _cache[11] || (_cache[11] = function ($event) {
+    onClick: _cache[2] || (_cache[2] = function ($event) {
       return $options.fetchRooms($data.currentPage - 1);
     })
-  }, " Previous ", 8 /* PROPS */, _hoisted_94), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, " Previous ", 8 /* PROPS */, _hoisted_84), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     "class": "btn btn-sm btn-secondary",
     disabled: $data.currentPage >= $data.totalPages || $data.loading,
-    onClick: _cache[12] || (_cache[12] = function ($event) {
+    onClick: _cache[3] || (_cache[3] = function ($event) {
       return $options.fetchRooms($data.currentPage + 1);
     })
-  }, " Next ", 8 /* PROPS */, _hoisted_95)])])])])])])]);
+  }, " Next ", 8 /* PROPS */, _hoisted_85)])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Booking Money Receipt Modal "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_86, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_87, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_88, [_cache[50] || (_cache[50] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+    "class": "modal-header bg-success text-white py-3"
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
+    "class": "modal-title text-white fw-bold"
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    "class": "ti ti-receipt me-2"
+  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("বুকিং মানি রসিদ (Booking Money Receipt) ")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    type: "button",
+    "class": "btn-close btn-close-white",
+    "data-bs-dismiss": "modal",
+    "aria-label": "Close"
+  })], -1 /* HOISTED */)), $data.selectedReceiptBooking ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_89, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Pad Header "), _cache[46] || (_cache[46] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"text-center pb-3 mb-3 border-bottom border-2 border-success\" data-v-93b29d88><h2 class=\"fw-bold mb-1 text-success\" style=\"font-size:26px;\" data-v-93b29d88>টি এস এস ভিলা (TSS Villa)</h2><p class=\"mb-0 fw-semibold text-dark fs-7\" data-v-93b29d88>কলেজ রোড, নেসকোগেট সংলগ্ন, রংপুর | ফোন: +8801977270920</p><div class=\"mt-2\" data-v-93b29d88><span class=\"badge bg-success px-3 py-2 fs-6 text-uppercase fw-bold shadow-sm\" style=\"letter-spacing:0.5px;\" data-v-93b29d88><i class=\"ti ti-receipt me-1\" data-v-93b29d88></i> বুকিং মানি রসিদ (BOOKING MONEY RECEIPT) </span></div></div>", 1)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Receipt Meta Info "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_90, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_cache[30] || (_cache[30] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("small", {
+    "class": "text-muted fw-bold"
+  }, "রসিদ নং (Receipt No):", -1 /* HOISTED */)), _cache[31] || (_cache[31] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)()), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_91, "TSSB-" + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.selectedReceiptBooking.id), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", null, [_cache[32] || (_cache[32] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("small", {
+    "class": "text-muted fw-bold"
+  }, "তারিখ ও সময় (Date & Time):", -1 /* HOISTED */)), _cache[33] || (_cache[33] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)()), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_92, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatDateTime($data.selectedReceiptBooking.created_at)), 1 /* TEXT */)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Guest & Room Info Table "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_93, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_94, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [_cache[34] || (_cache[34] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
+    "class": "bg-light fw-bold text-muted",
+    style: {
+      "width": "25%"
+    }
+  }, "গেস্টের নাম (Name):", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_95, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.selectedReceiptBooking.full_name || '-'), 1 /* TEXT */), _cache[35] || (_cache[35] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
+    "class": "bg-light fw-bold text-muted",
+    style: {
+      "width": "25%"
+    }
+  }, "মোবাইল (Phone):", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_96, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.selectedReceiptBooking.phone || '-'), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [_cache[36] || (_cache[36] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
+    "class": "bg-light fw-bold text-muted"
+  }, "প্রতিষ্ঠান/কর্মস্থল (Institution):", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_97, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.selectedReceiptBooking.institution_name || $data.selectedReceiptBooking.workplace_name || '-'), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [_cache[37] || (_cache[37] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
+    "class": "bg-light fw-bold text-muted"
+  }, "ঠিকানা (Address):", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_98, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.selectedReceiptBooking.address || '') + " " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.selectedReceiptBooking.thana_name ? ', ' + $data.selectedReceiptBooking.thana_name : '') + " " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.selectedReceiptBooking.district_name ? ', ' + $data.selectedReceiptBooking.district_name : ''), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", _hoisted_99, [_cache[40] || (_cache[40] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
+    "class": "fw-bold text-dark"
+  }, "তলা (Floor):", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_100, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.getSelectedFloorNo($data.selectedReceiptBooking)), 1 /* TEXT */), _cache[41] || (_cache[41] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
+    "class": "fw-bold text-dark"
+  }, "রুম & সিট (Room & Seat):", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_101, [_cache[38] || (_cache[38] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Room: ")), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_102, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.getSelectedRoomNo($data.selectedReceiptBooking)), 1 /* TEXT */), _cache[39] || (_cache[39] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Seat: ")), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_103, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.getSelectedSeatNo($data.selectedReceiptBooking)), 1 /* TEXT */)])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Fee Summary Card (Matching Attached Image Design!) "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_104, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_105, [_cache[42] || (_cache[42] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+    "class": "fs-6 text-muted"
+  }, "Advance Deposit / Room Price:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_106, "৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatCurrency($options.getAdvanceDepositAmount($data.selectedReceiptBooking))), 1 /* TEXT */)]), $options.getDevFeeAmount($data.selectedReceiptBooking) > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_107, [_cache[43] || (_cache[43] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+    "class": "fs-6 text-warning-dark fw-semibold"
+  }, "Development Fee (One-time):", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_108, "+ ৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatCurrency($options.getDevFeeAmount($data.selectedReceiptBooking))), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), _cache[45] || (_cache[45] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("hr", {
+    "class": "my-2",
+    style: {
+      "border-top": "2px dashed #f59e0b",
+      "opacity": "0.6"
+    }
+  }, null, -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_109, [_cache[44] || (_cache[44] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+    "class": "fs-5 fw-bold text-dark"
+  }, "Total Amount Payable:", -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_110, "৳ " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.formatCurrency($options.calculateTotalAmountPayable($data.selectedReceiptBooking))), 1 /* TEXT */)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Signatures "), _cache[47] || (_cache[47] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"d-flex justify-content-between align-items-end pt-4 mt-2\" data-v-93b29d88><div class=\"text-center\" style=\"width:180px;\" data-v-93b29d88><div class=\"border-bottom border-dark mb-1\" data-v-93b29d88></div><small class=\"fw-bold text-dark\" data-v-93b29d88>বোর্ডারের স্বাক্ষর</small></div><div class=\"text-center\" style=\"width:180px;\" data-v-93b29d88><div class=\"border-bottom border-dark mb-1\" data-v-93b29d88></div><small class=\"fw-bold text-dark\" data-v-93b29d88>কর্তৃপক্ষের স্বাক্ষর</small></div></div>", 1))])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_111, [_cache[49] || (_cache[49] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    type: "button",
+    "class": "btn btn-secondary btn-sm fw-bold",
+    "data-bs-dismiss": "modal"
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    "class": "ti ti-x me-1"
+  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" বন্ধ করুন (Close) ")], -1 /* HOISTED */)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    type: "button",
+    "class": "btn btn-success btn-sm fw-bold",
+    onClick: _cache[4] || (_cache[4] = function ($event) {
+      return $options.printBookingReceipt($data.selectedReceiptBooking);
+    })
+  }, _cache[48] || (_cache[48] = [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+    "class": "ti ti-printer me-1"
+  }, null, -1 /* HOISTED */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" প্রিন্ট করুন (Print Receipt) ")]))])])])])]);
 }
 
 /***/ }),
@@ -63568,6 +64156,30 @@ ___CSS_LOADER_EXPORT___.push([module.id, "/*!\n * Toastify js 1.12.0\n * https:/
 
 /***/ }),
 
+/***/ "./node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=style&index=0&id=6b1ad9d3&scoped=true&lang=css":
+/*!**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=style&index=0&id=6b1ad9d3&scoped=true&lang=css ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_laravel_mix_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/laravel-mix/node_modules/css-loader/dist/runtime/api.js */ "./node_modules/laravel-mix/node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_laravel_mix_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_laravel_mix_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
+// Imports
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_laravel_mix_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "\n.form-control[data-v-6b1ad9d3],\n.form-select[data-v-6b1ad9d3] {\n  border-radius: 8px;\n  padding: 0.55rem 0.75rem;\n  border: 1px solid #dce0e4;\n}\n.table td[data-v-6b1ad9d3] {\n  vertical-align: middle;\n}\n.table thead th[data-v-6b1ad9d3] {\n  vertical-align: middle;\n  text-align: center;\n  font-size: 13px;\n  font-weight: 700;\n  color: #374151;\n  background: #f3f4f6;\n}\n", ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
 /***/ "./node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/backend/Brand.vue?vue&type=style&index=0&id=3a1ccdf1&scoped=true&lang=css":
 /*!**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/backend/Brand.vue?vue&type=style&index=0&id=3a1ccdf1&scoped=true&lang=css ***!
@@ -64650,6 +65262,36 @@ module.exports = function (cssWithMappingToString) {
 
   return list;
 };
+
+/***/ }),
+
+/***/ "./node_modules/laravel-mix/node_modules/style-loader/dist/cjs.js!./node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=style&index=0&id=6b1ad9d3&scoped=true&lang=css":
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/laravel-mix/node_modules/style-loader/dist/cjs.js!./node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=style&index=0&id=6b1ad9d3&scoped=true&lang=css ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_laravel_mix_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/laravel-mix/node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/laravel-mix/node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_laravel_mix_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_laravel_mix_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_laravel_mix_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_AdvanceFeeManager_vue_vue_type_style_index_0_id_6b1ad9d3_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./AdvanceFeeManager.vue?vue&type=style&index=0&id=6b1ad9d3&scoped=true&lang=css */ "./node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=style&index=0&id=6b1ad9d3&scoped=true&lang=css");
+
+            
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = _node_modules_laravel_mix_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_laravel_mix_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_AdvanceFeeManager_vue_vue_type_style_index_0_id_6b1ad9d3_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"], options);
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_laravel_mix_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_AdvanceFeeManager_vue_vue_type_style_index_0_id_6b1ad9d3_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
 
 /***/ }),
 
@@ -73319,6 +73961,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_backend_ResidentReleaseHistory_vue__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./components/backend/ResidentReleaseHistory.vue */ "./resources/js/components/backend/ResidentReleaseHistory.vue");
 /* harmony import */ var _components_backend_RoomChangeManager_vue__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./components/backend/RoomChangeManager.vue */ "./resources/js/components/backend/RoomChangeManager.vue");
 /* harmony import */ var _components_backend_DevelopmentFeeManager_vue__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./components/backend/DevelopmentFeeManager.vue */ "./resources/js/components/backend/DevelopmentFeeManager.vue");
+/* harmony import */ var _components_backend_AdvanceFeeManager_vue__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./components/backend/AdvanceFeeManager.vue */ "./resources/js/components/backend/AdvanceFeeManager.vue");
+
 
 
 
@@ -73376,7 +74020,8 @@ var app = (0,vue__WEBPACK_IMPORTED_MODULE_2__.createApp)({
     ResidentReleaseManager: _components_backend_ResidentReleaseManager_vue__WEBPACK_IMPORTED_MODULE_25__["default"],
     ResidentReleaseHistory: _components_backend_ResidentReleaseHistory_vue__WEBPACK_IMPORTED_MODULE_26__["default"],
     RoomChangeManager: _components_backend_RoomChangeManager_vue__WEBPACK_IMPORTED_MODULE_27__["default"],
-    DevelopmentFeeManager: _components_backend_DevelopmentFeeManager_vue__WEBPACK_IMPORTED_MODULE_28__["default"]
+    DevelopmentFeeManager: _components_backend_DevelopmentFeeManager_vue__WEBPACK_IMPORTED_MODULE_28__["default"],
+    AdvanceFeeManager: _components_backend_AdvanceFeeManager_vue__WEBPACK_IMPORTED_MODULE_29__["default"]
   }
 });
 app.use(_store_js__WEBPACK_IMPORTED_MODULE_1__["default"]);
@@ -73427,6 +74072,82 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
 //     enabledTransports: ['ws', 'wss'],
 // });
+
+/***/ }),
+
+/***/ "./resources/js/components/backend/AdvanceFeeManager.vue":
+/*!***************************************************************!*\
+  !*** ./resources/js/components/backend/AdvanceFeeManager.vue ***!
+  \***************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _AdvanceFeeManager_vue_vue_type_template_id_6b1ad9d3_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AdvanceFeeManager.vue?vue&type=template&id=6b1ad9d3&scoped=true */ "./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=template&id=6b1ad9d3&scoped=true");
+/* harmony import */ var _AdvanceFeeManager_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AdvanceFeeManager.vue?vue&type=script&lang=js */ "./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=script&lang=js");
+/* harmony import */ var _AdvanceFeeManager_vue_vue_type_style_index_0_id_6b1ad9d3_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./AdvanceFeeManager.vue?vue&type=style&index=0&id=6b1ad9d3&scoped=true&lang=css */ "./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=style&index=0&id=6b1ad9d3&scoped=true&lang=css");
+/* harmony import */ var _node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/dist/exportHelper.js */ "./node_modules/vue-loader/dist/exportHelper.js");
+
+
+
+
+;
+
+
+const __exports__ = /*#__PURE__*/(0,_node_modules_vue_loader_dist_exportHelper_js__WEBPACK_IMPORTED_MODULE_3__["default"])(_AdvanceFeeManager_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"], [['render',_AdvanceFeeManager_vue_vue_type_template_id_6b1ad9d3_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render],['__scopeId',"data-v-6b1ad9d3"],['__file',"resources/js/components/backend/AdvanceFeeManager.vue"]])
+/* hot reload */
+if (false) {}
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__exports__);
+
+/***/ }),
+
+/***/ "./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=script&lang=js":
+/*!***************************************************************************************!*\
+  !*** ./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=script&lang=js ***!
+  \***************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_AdvanceFeeManager_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"])
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_AdvanceFeeManager_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./AdvanceFeeManager.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=script&lang=js");
+ 
+
+/***/ }),
+
+/***/ "./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=style&index=0&id=6b1ad9d3&scoped=true&lang=css":
+/*!***********************************************************************************************************************!*\
+  !*** ./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=style&index=0&id=6b1ad9d3&scoped=true&lang=css ***!
+  \***********************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_laravel_mix_node_modules_style_loader_dist_cjs_js_node_modules_laravel_mix_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_use_1_node_modules_vue_loader_dist_stylePostLoader_js_node_modules_laravel_mix_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_use_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_AdvanceFeeManager_vue_vue_type_style_index_0_id_6b1ad9d3_scoped_true_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/laravel-mix/node_modules/style-loader/dist/cjs.js!../../../../node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./AdvanceFeeManager.vue?vue&type=style&index=0&id=6b1ad9d3&scoped=true&lang=css */ "./node_modules/laravel-mix/node_modules/style-loader/dist/cjs.js!./node_modules/laravel-mix/node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/laravel-mix/node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=style&index=0&id=6b1ad9d3&scoped=true&lang=css");
+
+
+/***/ }),
+
+/***/ "./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=template&id=6b1ad9d3&scoped=true":
+/*!*********************************************************************************************************!*\
+  !*** ./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=template&id=6b1ad9d3&scoped=true ***!
+  \*********************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_AdvanceFeeManager_vue_vue_type_template_id_6b1ad9d3_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_AdvanceFeeManager_vue_vue_type_template_id_6b1ad9d3_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./AdvanceFeeManager.vue?vue&type=template&id=6b1ad9d3&scoped=true */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/backend/AdvanceFeeManager.vue?vue&type=template&id=6b1ad9d3&scoped=true");
+
 
 /***/ }),
 

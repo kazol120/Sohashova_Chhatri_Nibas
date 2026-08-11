@@ -71,23 +71,37 @@ class DashboardController extends Controller
         // Student/Resident User Specific Data
         if (!$user->hasRole('admin') && !$user->hasRole('staffs')) {
             $cleanPhone = preg_replace('/[^0-9]/', '', $user->phone ?? '');
+            $cleanPhone10 = strlen($cleanPhone) >= 6 ? (strlen($cleanPhone) > 10 ? substr($cleanPhone, -10) : $cleanPhone) : '';
+
             $userBooking = RoomBookingHistory::with(['division', 'district', 'thana'])->where('status', 0)
-                ->where(function ($q) use ($user, $cleanPhone) {
-                    if (!empty($user->email)) {
-                        $q->orWhere('email', $user->email);
-                    }
-                    if (!empty($cleanPhone)) {
-                        $q->orWhere('phone', 'like', "%{$cleanPhone}%");
+                ->where(function ($q) use ($user, $cleanPhone10) {
+                    if (!empty($cleanPhone10)) {
+                        $q->whereRaw("REPLACE(REPLACE(REPLACE(phone, ' ', ''), '-', ''), '+', '') LIKE ?", ["%{$cleanPhone10}%"]);
+                    } elseif (!empty($user->email)) {
+                        $q->where('email', $user->email);
+                    } else {
+                        $q->whereRaw('1 = 0');
                     }
                 })->latest()->first();
 
             $data['userBooking'] = $userBooking;
             $data['myMealCount'] = Meal::where('user_id', $user->id)->count();
 
+            $mealDepositInfo = app(\App\Services\MealService::class)->getUserMealDepositBalance($user->id);
+            $data['mealDepositBalance'] = $mealDepositInfo['balance'];
+            $data['mealDepositWarning'] = $mealDepositInfo['is_zero_deposit'] ? $mealDepositInfo['warning_message'] : null;
+
+            app(\App\Services\MealService::class)->ensureAutoMealGeneratedForUsers(collect([$user]), today());
+            $data['todayMealStatus']   = Meal::where('user_id', $user->id)->whereDate('date', today())->first();
+
             if ($userBooking) {
                 $data['myTotalPaid'] = MonthlyPayment::where('room_booking_history_id', $userBooking->id)->sum('paid_amount');
+                $data['myOutstandingDue'] = MonthlyPayment::where('room_booking_history_id', $userBooking->id)
+                    ->where('status', '!=', 'paid')
+                    ->sum('due_amount');
             } else {
                 $data['myTotalPaid'] = 0;
+                $data['myOutstandingDue'] = 0;
             }
         }
 

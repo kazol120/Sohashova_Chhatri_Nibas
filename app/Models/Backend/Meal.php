@@ -17,10 +17,12 @@ class Meal extends Model
         'full_meal',
         'made_by',
         'note',
+        'is_off',
     ];
     protected $casts = [
         'half_meal' => 'boolean',
         'full_meal' => 'boolean',
+        'is_off' => 'boolean',
     ];
 
     public function user()

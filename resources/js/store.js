@@ -4,7 +4,6 @@ const store = createStore({
     state: {
     url: 'http://localhost:8000/',
     // url: 'https://tssvilla.nsmlimited.com/',
-  
     },
     mutations: {
     },
@@ -13,5 +12,6 @@ const store = createStore({
     getters: {
     },
 });
+
 export default store;
 

@@ -111,16 +111,18 @@ class MealService
             }
 
             foreach ($request->meal as $userId => $mealData) {
+                $isOff = !empty($mealData['is_off']) ? 1 : 0;
                 Meal::updateOrCreate(
                     [
                         'user_id' => $userId,
                         'date' => $request->date,
                     ],
                     [
-                        'half_meal' => !empty($mealData['half_meal']) ? 1 : 0,
-                        'full_meal' => !empty($mealData['full_meal']) ? 1 : 0,
-                        'made_by' => auth()->id(),
-                        'note' => !empty($mealData['note']) ? $mealData['note'] : null,
+                        'half_meal' => ($isOff ? 0 : (!empty($mealData['half_meal']) ? 1 : 0)),
+                        'full_meal' => ($isOff ? 0 : (!empty($mealData['full_meal']) ? 1 : 0)),
+                        'is_off'    => $isOff,
+                        'made_by'   => auth()->id(),
+                        'note'      => !empty($mealData['note']) ? $mealData['note'] : null,
                     ]
                 );
             }
@@ -473,5 +475,260 @@ class MealService
             'total_meal' => $totalMeal,
             'meal_cost' => $mealCost,
         ];
+    }
+
+    public function toggleMealOffStatus($userId, $date = null, $isOff = 1)
+    {
+        $date = $date ? Carbon::parse($date)->format('Y-m-d') : now()->format('Y-m-d');
+        $isOff = $isOff ? 1 : 0;
+
+        $meal = Meal::updateOrCreate(
+            [
+                'user_id' => $userId,
+                'date'    => $date,
+            ],
+            [
+                'is_off'    => $isOff,
+                'half_meal' => $isOff ? 0 : 0,
+                'full_meal' => $isOff ? 0 : 1,
+                'made_by'   => auth()->id() ?? $userId,
+                'note'      => $isOff ? 'Meal turned OFF by user' : 'Meal turned ON by user',
+            ]
+        );
+
+        return $meal;
+    }
+
+    public function getUserMealDepositBalance($userId, $selectedMonth = null)
+    {
+        $selectedMonth = $selectedMonth ?: now()->format('Y-m');
+        $user = \App\Models\User::find($userId);
+
+        if (!$user) {
+            return [
+                'deposit_total' => 0,
+                'meal_cost' => 0,
+                'balance' => 0,
+                'is_zero_deposit' => true,
+                'warning_message' => '⚠️ আপনার মেল ডিপোজিট (Meal Deposit) ব্যালেন্স ৳ 0 টাকা! সার্ভিস চালু রাখতে অনুগ্রহ করে মেল ডিপোজিট জমা দিন এবং মেল চালু করতে এডমিন এর সাথে যোগাযোগ করুন।',
+            ];
+        }
+
+        $singleHistory = $this->singleUserMealHistory($selectedMonth, $user);
+
+        $depositTotal = (float) $singleHistory->deposit_total;
+        $mealCost     = (float) $singleHistory->meal_cost;
+        $balance      = (float) $singleHistory->balance;
+
+        $isZero = ($depositTotal <= 0 || $balance <= 0);
+        $warningMessage = null;
+
+        if ($isZero) {
+            $warningMessage = "⚠️ আপনার মেল ডিপোজিট (Meal Deposit) ব্যালেন্স ৳ " . number_format($balance, 2) . " টাকা! সার্ভিস চালু রাখতে অনুগ্রহ করে মেল ডিপোজিট রিচার্জ/প্রদান করুন এবং মেল চালু করতে এডমিন এর সাথে যোগাযোগ করুন।";
+        }
+
+        return [
+            'deposit_total'   => $depositTotal,
+            'meal_cost'       => $mealCost,
+            'balance'         => $balance,
+            'is_zero_deposit' => $isZero,
+            'warning_message' => $warningMessage,
+        ];
+    }
+
+    public function ensureAutoMealGeneratedForUsers($users, $date = null)
+    {
+        $date = $date ? Carbon::parse($date)->format('Y-m-d') : now()->format('Y-m-d');
+        $authId = auth()->id() ?? 1;
+
+        foreach ($users as $user) {
+            // Check if user has an active checked-in booking (status = 0 and check_in <= date)
+            $cleanPhone = preg_replace('/[^0-9]/', '', $user->phone ?? '');
+            $cleanPhone10 = strlen($cleanPhone) >= 6 ? (strlen($cleanPhone) > 10 ? substr($cleanPhone, -10) : $cleanPhone) : '';
+
+            $hasActiveCheckIn = \App\Models\Backend\RoomBookingHistory::where('status', 0)
+                ->whereDate('check_in', '<=', $date)
+                ->where(function ($q) use ($user, $cleanPhone10) {
+                    if (!empty($cleanPhone10)) {
+                        $q->whereRaw("REPLACE(REPLACE(REPLACE(phone, ' ', ''), '-', ''), '+', '') LIKE ?", ["%{$cleanPhone10}%"]);
+                    } elseif (!empty($user->email)) {
+                        $q->where('email', $user->email);
+                    } else {
+                        $q->whereRaw('1 = 0');
+                    }
+                })->exists();
+
+            if ($hasActiveCheckIn) {
+                // Check if user has an approved MealRequest covering $date
+                $activeOffReq = \App\Models\Backend\MealRequest::where('user_id', $user->id)
+                    ->where('status', 1)
+                    ->whereDate('date', '<=', $date)
+                    ->where(function($q) use ($date) {
+                        $q->whereDate('end_date', '>=', $date)
+                          ->orWhereNull('end_date');
+                    })
+                    ->latest()
+                    ->first();
+
+                $nowTime = now()->format('H:i');
+                $isDayShiftPassed = $nowTime >= '16:00';
+                $isNightShiftPassed = $nowTime >= '23:00';
+
+                // Check if a Meal OFF period or shift OFF just expired
+                $expiredOffReq = \App\Models\Backend\MealRequest::where('user_id', $user->id)
+                    ->where('status', 1)
+                    ->where(function($q) use ($date, $isDayShiftPassed, $isNightShiftPassed) {
+                        $q->whereDate('end_date', '<', $date);
+                        if ($isDayShiftPassed) {
+                            $q->orWhere(function($sub) use ($date) {
+                                $sub->whereDate('date', $date)->where('request_type', 'half_night');
+                            });
+                        }
+                        if ($isNightShiftPassed) {
+                            $q->orWhere(function($sub) use ($date) {
+                                $sub->whereDate('date', $date)->where('request_type', 'half_day');
+                            });
+                        }
+                    })
+                    ->latest()
+                    ->first();
+
+                if ($expiredOffReq) {
+                    $alreadyCreatedResume = \App\Models\Backend\MealRequest::where('user_id', $user->id)
+                        ->whereDate('date', '>=', $date)
+                        ->where('admin_note', 'LIKE', '%Auto Resume%')
+                        ->exists();
+
+                    if (!$alreadyCreatedResume) {
+                        \App\Models\Backend\MealRequest::create([
+                            'user_id'       => $user->id,
+                            'date'          => $date,
+                            'end_date'      => $date,
+                            'total_days'    => 1,
+                            'request_type'  => 'full',
+                            'status'        => 0, // Pending Admin approval for auto-resume
+                            'user_notified' => 0,
+                            'admin_note'    => 'Auto Resume: সময়সীমা/মেয়াদ শেষে স্বয়ংক্রিয়ভাবে মিল চালুর অনুমতি',
+                        ]);
+                    }
+                }
+
+                $depositInfo = $this->getUserMealDepositBalance($user->id);
+                $isZeroDeposit = $depositInfo['is_zero_deposit'];
+
+                $meal = Meal::where('user_id', $user->id)->whereDate('date', $date)->first();
+
+                if ($activeOffReq) {
+                    $hMeal = 0; $fMeal = 0; $isO = 0; $nNote = null;
+                    if ($activeOffReq->request_type === 'off') {
+                        $isO = 1; $nNote = 'Meal OFF (Approved Request)';
+                    } elseif ($activeOffReq->request_type === 'half_day') {
+                        $hMeal = 1; $nNote = 'day';
+                    } elseif ($activeOffReq->request_type === 'half_night') {
+                        $hMeal = 1; $nNote = 'night';
+                    } elseif ($activeOffReq->request_type === 'full') {
+                        $fMeal = 1; $nNote = 'Full Meal';
+                    }
+
+                    if (!$meal) {
+                        Meal::create([
+                            'user_id'   => $user->id,
+                            'date'      => $date,
+                            'half_meal' => $hMeal,
+                            'full_meal' => $fMeal,
+                            'is_off'    => $isO,
+                            'made_by'   => $authId,
+                            'note'      => $nNote,
+                        ]);
+                    } else {
+                        $meal->update([
+                            'half_meal' => $hMeal,
+                            'full_meal' => $fMeal,
+                            'is_off'    => $isO,
+                            'note'      => $nNote,
+                        ]);
+                    }
+                } else {
+                    if (!$meal) {
+                        if ($isZeroDeposit) {
+                            Meal::create([
+                                'user_id'   => $user->id,
+                                'date'      => $date,
+                                'half_meal' => 0,
+                                'full_meal' => 0,
+                                'is_off'    => 1,
+                                'made_by'   => $authId,
+                                'note'      => 'Auto Meal OFF (Zero Deposit)',
+                            ]);
+                        } else {
+                            Meal::create([
+                                'user_id'   => $user->id,
+                                'date'      => $date,
+                                'half_meal' => 0,
+                                'full_meal' => 1,
+                                'is_off'    => 0,
+                                'made_by'   => $authId,
+                                'note'      => 'Auto Full Meal',
+                            ]);
+                        }
+                    } else {
+                        if ($isZeroDeposit && str_contains($meal->note ?? '', 'Auto')) {
+                            $meal->update([
+                                'half_meal' => 0,
+                                'full_meal' => 0,
+                                'is_off'    => 1,
+                                'note'      => 'Auto Meal OFF (Zero Deposit)',
+                            ]);
+                        } elseif (!$isZeroDeposit && $meal->is_off && $meal->note === 'Auto Meal OFF (Zero Deposit)') {
+                            $meal->update([
+                                'half_meal' => 0,
+                                'full_meal' => 1,
+                                'is_off'    => 0,
+                                'note'      => 'Auto Full Meal',
+                            ]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public function updateUserMealStatus($userId, $date, $mealType)
+    {
+        $date = $date ? Carbon::parse($date)->format('Y-m-d') : now()->format('Y-m-d');
+        $authId = auth()->id() ?? $userId;
+
+        $halfMeal = 0;
+        $fullMeal = 0;
+        $isOff    = 0;
+        $note     = null;
+
+        if ($mealType === 'full') {
+            $fullMeal = 1;
+            $note = 'Full Meal';
+        } elseif ($mealType === 'half_day') {
+            $halfMeal = 1;
+            $note = 'day';
+        } elseif ($mealType === 'half_night') {
+            $halfMeal = 1;
+            $note = 'night';
+        } elseif ($mealType === 'off') {
+            $isOff = 1;
+            $note = 'Meal Turned OFF';
+        }
+
+        return Meal::updateOrCreate(
+            [
+                'user_id' => $userId,
+                'date'    => $date,
+            ],
+            [
+                'half_meal' => $halfMeal,
+                'full_meal' => $fullMeal,
+                'is_off'    => $isOff,
+                'made_by'   => $authId,
+                'note'      => $note,
+            ]
+        );
     }
 }

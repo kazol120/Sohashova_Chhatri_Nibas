@@ -58,6 +58,11 @@ class DepositService
                 'made_by' => auth()->id(),
             ]);
 
+            $user = User::find($request->user_id);
+            if ($user) {
+                app(MealService::class)->ensureAutoMealGeneratedForUsers(collect([$user]), today());
+            }
+
             DB::commit();
 
             return [
