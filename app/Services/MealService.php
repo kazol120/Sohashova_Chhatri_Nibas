@@ -629,8 +629,9 @@ class MealService
                     }
                 }
 
-                $depositInfo = $this->getUserMealDepositBalance($user->id);
+                $depositInfo   = $this->getUserMealDepositBalance($user->id);
                 $isZeroDeposit = $depositInfo['is_zero_deposit'];
+                $isNewUser     = $depositInfo['is_new_user'] ?? false;
 
                 $meal = Meal::where('user_id', $user->id)->whereDate('date', $date)->first();
 
@@ -666,7 +667,7 @@ class MealService
                     }
                 } else {
                     if (!$meal) {
-                        if ($isZeroDeposit) {
+                        if ($isZeroDeposit || $isNewUser) {
                             Meal::create([
                                 'user_id'   => $user->id,
                                 'date'      => $date,
@@ -674,7 +675,7 @@ class MealService
                                 'full_meal' => 0,
                                 'is_off'    => 1,
                                 'made_by'   => $authId,
-                                'note'      => 'Auto Meal OFF (Zero Deposit)',
+                                'note'      => $isNewUser ? 'Auto Meal OFF (New Boarder - Waiting Admin Activation)' : 'Auto Meal OFF (Zero Deposit)',
                             ]);
                         } else {
                             Meal::create([
@@ -688,14 +689,14 @@ class MealService
                             ]);
                         }
                     } else {
-                        if ($isZeroDeposit && str_contains($meal->note ?? '', 'Auto')) {
+                        if (($isZeroDeposit || $isNewUser) && str_contains($meal->note ?? '', 'Auto')) {
                             $meal->update([
                                 'half_meal' => 0,
                                 'full_meal' => 0,
                                 'is_off'    => 1,
-                                'note'      => 'Auto Meal OFF (Zero Deposit)',
+                                'note'      => $isNewUser ? 'Auto Meal OFF (New Boarder - Waiting Admin Activation)' : 'Auto Meal OFF (Zero Deposit)',
                             ]);
-                        } elseif (!$isZeroDeposit && $meal->is_off && $meal->note === 'Auto Meal OFF (Zero Deposit)') {
+                        } elseif (!$isZeroDeposit && !$isNewUser && $meal->is_off && str_contains($meal->note ?? '', 'Auto Meal OFF')) {
                             $meal->update([
                                 'half_meal' => 0,
                                 'full_meal' => 1,
@@ -705,6 +706,7 @@ class MealService
                         }
                     }
                 }
+
             }
         }
     }
