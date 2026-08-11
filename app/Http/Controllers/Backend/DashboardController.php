@@ -76,13 +76,19 @@ class DashboardController extends Controller
             $userBooking = RoomBookingHistory::with(['division', 'district', 'thana'])->where('status', 0)
                 ->where(function ($q) use ($user, $cleanPhone10) {
                     if (!empty($cleanPhone10)) {
-                        $q->whereRaw("REPLACE(REPLACE(REPLACE(phone, ' ', ''), '-', ''), '+', '') LIKE ?", ["%{$cleanPhone10}%"]);
-                    } elseif (!empty($user->email)) {
-                        $q->where('email', $user->email);
-                    } else {
-                        $q->whereRaw('1 = 0');
+                        $q->orWhereRaw("REPLACE(REPLACE(REPLACE(phone, ' ', ''), '-', ''), '+', '') LIKE ?", ["%{$cleanPhone10}%"]);
+                    }
+                    if (!empty($user->phone)) {
+                        $q->orWhere('phone', 'like', "%" . trim($user->phone) . "%");
+                    }
+                    if (!empty($user->email)) {
+                        $q->orWhere('email', $user->email);
+                    }
+                    if (!empty($user->name)) {
+                        $q->orWhere('full_name', $user->name);
                     }
                 })->latest()->first();
+
 
             $data['userBooking'] = $userBooking;
             $data['myMealCount'] = Meal::where('user_id', $user->id)->count();

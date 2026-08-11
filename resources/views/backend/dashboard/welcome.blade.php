@@ -916,6 +916,62 @@ function printResidentDocument() {
         `;
     }
 
+    function getAdvanceDepositAmount(b) {
+      if (!b) return 0;
+      if (roomItems && roomItems.length) {
+        var sum = 0;
+        roomItems.forEach(function(item) {
+          sum += Number(item.advance_price || item.original_advance_price || item.price || 0);
+        });
+        if (sum > 0) return sum;
+      }
+      if (b.advance_fee !== null && b.advance_fee !== undefined && Number(b.advance_fee) > 0) {
+        return Number(b.advance_fee);
+      }
+      if (b.roomprice !== null && b.roomprice !== undefined && Number(b.roomprice) > 0) {
+        return Number(b.roomprice);
+      }
+      return Number(b.monthly_amount || 0);
+    }
+
+    function getDevFeeAmount(b) {
+      if (!b) return 0;
+      if (b.development_fee === null || b.development_fee === undefined) return 0;
+      return Number(b.development_fee);
+    }
+
+    function formatCurrency(val) {
+      if (val === null || val === undefined || isNaN(val)) return '0';
+      return Number(val).toLocaleString('en-US');
+    }
+
+    var advance = getAdvanceDepositAmount(r);
+    var devFee = getDevFeeAmount(r);
+    var totalAmount = advance + devFee;
+
+    var devFeeDocHtml = devFee > 0 ? `
+        <div style="display: flex; justify-content: space-between; font-size: 14.5px; padding: 3px 0;">
+          <span style="color: #b45309; font-weight: 700;">Development Fee (One-time):</span>
+          <span style="font-weight: 800; color: #d97706;">+ ৳ ${formatCurrency(devFee)}</span>
+        </div>
+        <hr style="border-top: 1.5px dashed #f59e0b; margin: 6px 0; opacity: 0.7;">
+    ` : '';
+
+    var feeSectionHtml = `
+        <div class="section-title" style="margin-top: 10px; margin-bottom: 8px;">পেমেন্ট ও ফি বিবরণী</div>
+        <div style="background-color: #fdf8e6; border: 2px solid #f59e0b; border-radius: 10px; padding: 10px 18px; margin-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between; font-size: 14.5px; padding: 3px 0;">
+            <span style="color: #555; font-weight: 700;">Advance Deposit / Room Price:</span>
+            <span style="font-weight: 800; color: #111;">৳ ${formatCurrency(advance)}</span>
+          </div>
+          ${devFeeDocHtml}
+          <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 800; padding-top: 2px;">
+            <span style="color: #111;">Total Amount Payable:</span>
+            <span style="color: #059669; font-size: 18px;">৳ ${formatCurrency(totalAmount)}</span>
+          </div>
+        </div>
+    `;
+
     var html = `
         <!DOCTYPE html>
         <html lang="bn">
@@ -1014,6 +1070,8 @@ function printResidentDocument() {
                 </div>
               </div>
               ${infoSectionHtml}
+
+
               <div class="section-title">স্থায়ী ঠিকানা</div>
               <div class="address-row">
                 <span><span class="akey">গ্রাম/রাস্তা:</span> ${address}</span>
@@ -1021,7 +1079,9 @@ function printResidentDocument() {
                 <span><span class="akey">উপজেলা:</span> ${thanaName}</span>
                 <span><span class="akey">জেলা:</span> ${districtName}</span>
               </div>
+              ${feeSectionHtml}
               <div class="section-title">নিয়মাবলী</div>
+
               <div class="rules-box">
                 ${isProf ? `
                 <ul class="rules-list">
