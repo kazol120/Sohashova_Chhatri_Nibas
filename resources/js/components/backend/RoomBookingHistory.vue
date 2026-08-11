@@ -1258,9 +1258,8 @@ watch: {
                 <span><span class="akey">জেলা:</span> ${districtName}</span>
               </div>
 
-              ${feeSectionHtml}
-
               <div class="section-title">নিয়মাবলী</div>
+
 
 
               <div class="rules-box">

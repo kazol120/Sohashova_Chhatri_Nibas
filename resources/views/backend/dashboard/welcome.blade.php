@@ -1079,8 +1079,8 @@ function printResidentDocument() {
                 <span><span class="akey">উপজেলা:</span> ${thanaName}</span>
                 <span><span class="akey">জেলা:</span> ${districtName}</span>
               </div>
-              ${feeSectionHtml}
               <div class="section-title">নিয়মাবলী</div>
+
 
               <div class="rules-box">
                 ${isProf ? `
