@@ -838,6 +838,34 @@ watch: {
         r.user_type.toLowerCase().includes('passenger')
       );
 
+      const advance = this.getAdvanceDepositAmount(r);
+      const devFee = this.getDevFeeAmount(r);
+      const totalAmount = advance + devFee;
+
+      const devFeeDocHtml = devFee > 0 ? `
+        <div style="display: flex; justify-content: space-between; font-size: 14.5px; padding: 3px 0;">
+          <span style="color: #b45309; font-weight: 700;">Development Fee (One-time):</span>
+          <span style="font-weight: 800; color: #d97706;">+ ৳ ${this.formatCurrency(devFee)}</span>
+        </div>
+        <hr style="border-top: 1.5px dashed #f59e0b; margin: 6px 0; opacity: 0.7;">
+      ` : '';
+
+      const feeSectionHtml = `
+        <div class="section-title" style="margin-top: 10px; margin-bottom: 8px;">পেমেন্ট ও ফি বিবরণী</div>
+        <div style="background-color: #fdf8e6; border: 2px solid #f59e0b; border-radius: 10px; padding: 10px 18px; margin-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between; font-size: 14.5px; padding: 3px 0;">
+            <span style="color: #555; font-weight: 700;">Advance Deposit / Room Price:</span>
+            <span style="font-weight: 800; color: #111;">৳ ${this.formatCurrency(advance)}</span>
+          </div>
+          ${devFeeDocHtml}
+          <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 800; padding-top: 2px;">
+            <span style="color: #111;">Total Amount Payable:</span>
+            <span style="color: #059669; font-size: 18px;">৳ ${this.formatCurrency(totalAmount)}</span>
+          </div>
+        </div>
+      `;
+
+
       const docTitle = isProf ? 'কর্মজীবীর তথ্য - টি এস এস ভিলা' : 'শিক্ষার্থীর তথ্য - টি এস এস ভিলা';
       const sectionTitleText = isProf ? 'কর্মজীবীর তথ্য' : 'শিক্ষার্থীর তথ্য';
       const signatureLabelText = isProf ? 'বোর্ডারের স্বাক্ষর' : 'শিক্ষার্থীর স্বাক্ষর';
@@ -1230,7 +1258,10 @@ watch: {
                 <span><span class="akey">জেলা:</span> ${districtName}</span>
               </div>
 
+              ${feeSectionHtml}
+
               <div class="section-title">নিয়মাবলী</div>
+
 
               <div class="rules-box">
                 ${isProf ? `
