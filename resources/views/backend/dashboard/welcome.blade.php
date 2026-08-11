@@ -1127,7 +1127,10 @@ function printResidentDocument() {
     } else {
         alert('Please allow popups for this site to print document.');
     }
+}
+
 function dismissMealNotif(id) {
+
     fetch('/meal-requests/' + id + '/dismiss-user-notif', {
         method: 'POST',
         headers: {
