@@ -427,7 +427,12 @@ public function store(Request $request)
         return back()->withErrors($validator)->withInput();
     }
 
-    $adminEmail = 'mr2798492@gmail.com';
+    $webSetting = \App\Services\SettingService::getSettingContentBySlug('web_setting');
+    $adminEmails = array_values(array_filter(array_unique([
+        'mr2798492@gmail.com',
+        $webSetting['email'] ?? null,
+        config('mail.from.address')
+    ])));
     $cleanPhone = preg_replace('/[^0-9]/', '', $request->phone);
 
     $existingUser = null;
@@ -574,7 +579,7 @@ public function store(Request $request)
 
         $appSettings = \App\Services\SettingService::getSettingContentBySlug('app_setting');
         $devFeeActive = ($appSettings['development_fee_status'] ?? '1') == '1';
-        $devFee = $devFeeActive ? (float) ($appSettings['development_fee'] ?? 3000) : 0.00;
+        $devFee = $devFeeActive ? (float) ($request->development_fee ?? $appSettings['development_fee'] ?? 0.00) : 0.00;
 
         RoomBookingHistory::create([
             'image'                              => $imagePath,
@@ -613,18 +618,32 @@ public function store(Request $request)
             'full_name'      => $request->full_name,
             'email'          => $request->email,
             'phone'          => $request->phone,
-            'user_type'      => $request->user_type ?? 'student',
-            'nid'            => $request->nid ?: $request->mother_nid,
-            'mother_nid'     => $request->mother_nid,
-            'father_nid'     => $request->father_nid,
-            'father_name'    => $request->father_name,
-            'mother_name'    => $request->mother_name,
+            'blood_group'      => $request->blood_group,
+            'temp_password'    => $tempPassword,
+            'password'         => $tempPassword,
+            'user_type'        => $request->user_type ?? 'student',
+            'institution_name' => $request->institution_name,
+            'education_level'  => $request->education_level,
+            'education_class'  => $request->education_class,
+            'nid'              => $request->nid ?: $request->mother_nid,
+            'mother_nid'       => $request->mother_nid,
+            'father_nid'       => $request->father_nid,
+            'father_name'      => $request->father_name,
+            'father_phone'     => $request->father_phone,
+            'mother_name'      => $request->mother_name,
+            'mother_phone'     => $request->mother_phone,
+            'workplace_name'   => $request->workplace_name,
             'floor_name'     => implode(', ', array_unique(array_filter($floorNames))),
             'room_numbers'   => implode(', ', $selectedRoomNumbers),
             'room_acstatus'  => implode(', ', $selectedAcStatus),
             'check_in'       => $request->check_in,
             'check_out'      => $request->check_out,
             'total_amount'   => $totalAmount,
+            'monthly_amount' => $totalAmount,
+            'advance_total'  => $totalAmount,
+            'dev_fee'        => $devFee,
+            'development_fee'=> $devFee,
+            'booking_total'  => $totalAmount + $devFee,
             'division_name'  => $divisionName,
             'district_name'  => $districtName,
             'thana_name'     => $thanaName,
@@ -637,7 +656,15 @@ public function store(Request $request)
         ];
 
         try {
-            Mail::to($adminEmail)->send(new RoomBookingMail($mailData));
+            foreach ($adminEmails as $aEmail) {
+                if (filter_var($aEmail, FILTER_VALIDATE_EMAIL)) {
+                    Mail::to($aEmail)->send(new RoomBookingMail($mailData));
+                }
+            }
+            $guestEmail = trim($request->email ?? '');
+            if (!empty($guestEmail) && filter_var($guestEmail, FILTER_VALIDATE_EMAIL)) {
+                Mail::to($guestEmail)->send(new RoomBookingMail($mailData));
+            }
         } catch (\Throwable $mailError) {
             \Log::error('Room booking email failed: ' . $mailError->getMessage());
         }

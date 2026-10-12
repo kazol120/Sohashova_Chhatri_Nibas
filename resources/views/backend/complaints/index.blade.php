@@ -51,7 +51,7 @@
                 <thead class="table-light">
                     <tr>
                         <th style="width: 50px;">SL</th>
-                        <th>Resident Info (ছাত্রীর তথ্য)</th>
+                        <th>Resident Info (শিক্ষার্থীর তথ্য)</th>
                         <th>Seat / Room / Floor (স্থান)</th>
                         <th>Complaint Details (অভিযোগের বিবরণ)</th>
                         <th>Date & Time (তারিখ ও সময়)</th>
@@ -80,16 +80,31 @@
                             @if($complaint->booking)
                                 @php
                                     $roomItems = $complaint->booking->floor_number_room_number_roomprice ?? [];
+                                    if (is_string($roomItems)) {
+                                        $roomItems = json_decode($roomItems, true) ?? [];
+                                    }
                                     $floors = [];
                                     $rooms = [];
                                     $seats = [];
                                     if(is_array($roomItems)) {
                                         foreach($roomItems as $item) {
-                                            if(isset($item['floornumber'])) $floors[] = $item['floornumber'];
-                                            if(isset($item['roomnumber'])) {
-                                                $parts = explode('-', $item['roomnumber']);
-                                                $rooms[] = $parts[0] ?? '';
-                                                if(count($parts) > 1) $seats[] = $parts[1];
+                                            if(!empty($item['floornumber'])) $floors[] = $item['floornumber'];
+                                            if(!empty($item['roomnumber'])) {
+                                                $rStr = trim((string)$item['roomnumber']);
+                                                if (preg_match('/^(\d+)\-Block\s+([A-Za-z])(\-(\d+))?$/i', $rStr, $m)) {
+                                                    $rooms[] = "{$m[1]}-Block " . strtoupper($m[2]);
+                                                    $seats[] = $rStr;
+                                                } elseif (preg_match('/^([A-Za-z]+)[\-_](\d+)(.*)$/', $rStr, $m)) {
+                                                    $let = strtoupper($m[1]);
+                                                    $num = (int)$m[2];
+                                                    $sub = '';
+                                                    if (preg_match('/(\d+)$/', $m[3], $sm)) $sub = '-' . $sm[1];
+                                                    $rooms[] = "{$num}-Block {$let}";
+                                                    $seats[] = "{$num}-Block {$let}{$sub}";
+                                                } else {
+                                                    $rooms[] = $rStr;
+                                                    $seats[] = $rStr;
+                                                }
                                             }
                                         }
                                     }

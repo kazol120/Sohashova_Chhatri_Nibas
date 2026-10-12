@@ -4,98 +4,184 @@
       <div class="col-12">
         <div class="card mb-4 shadow-sm">
 
-          <!-- Header -->
-          <div class="card-header d-flex flex-wrap gap-2 justify-content-between align-items-center py-3">
-            <h5 class="card-title mb-0">Profit / Loss Report </h5>
+          <!-- Top Header -->
+          <div class="card-header d-flex flex-wrap gap-2 justify-content-between align-items-center py-3 border-bottom">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ti ti-chart-pie-2 text-primary fs-3"></i>
+              <div>
+                <h5 class="card-title mb-0 fw-bold">Profit / Loss Report (লাভ-ক্ষতি রিপোর্ট)</h5>
+                <small class="text-muted">দৈনিক, মাসিক ও বাৎসরিক পূর্ণাঙ্গ আর্থিক আয়-ব্যয় বিবরণী</small>
+              </div>
+            </div>
             <div class="d-flex gap-2">
-              <button class="btn btn-success" type="button" @click="exportProfitReportCSV">
+              <button class="btn btn-success btn-sm px-3 shadow-sm fw-semibold" type="button" @click="exportProfitReportCSV">
                 <i class="fa fa-file-excel me-1"></i> Export Excel
               </button>
-              <button class="btn btn-primary" type="button" @click="printTable">
+              <button class="btn btn-primary btn-sm px-3 shadow-sm fw-semibold" type="button" @click="printTable">
                 <i class="ti ti-printer me-1"></i> Print
               </button>
             </div>
           </div>
 
-          <!-- Filter -->
-          <div class="card-header">
-            <div class="d-flex align-items-end gap-3">
-              <div>
-                <label class="mb-2 text-black">Select Year</label>
-                <select class="form-select" v-model="selectedYear" @change="loadProfitReport">
-                  <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
-                </select>
+          <!-- Mode Selection & Filters -->
+          <div class="card-header bg-light py-3 border-bottom">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+              
+              <!-- 3 Tab Buttons (Daily, Monthly, Yearly) -->
+              <div class="btn-group shadow-sm" role="group">
+                <button type="button" class="btn px-4 fw-bold"
+                  :class="profitViewMode === 'daily' ? 'btn-primary' : 'btn-outline-primary'"
+                  @click="setProfitMode('daily')">
+                  <i class="ti ti-calendar-event me-1"></i> Daily (দৈনিক)
+                </button>
+                <button type="button" class="btn px-4 fw-bold"
+                  :class="profitViewMode === 'monthly' ? 'btn-primary' : 'btn-outline-primary'"
+                  @click="setProfitMode('monthly')">
+                  <i class="ti ti-calendar-month me-1"></i> Monthly (মাসিক)
+                </button>
+                <button type="button" class="btn px-4 fw-bold"
+                  :class="profitViewMode === 'yearly' ? 'btn-primary' : 'btn-outline-primary'"
+                  @click="setProfitMode('yearly')">
+                  <i class="ti ti-calendar me-1"></i> Yearly (বাৎসরিক)
+                </button>
               </div>
-              <button class="btn btn-outline-secondary" @click="clearFilter">Clear</button>
+
+              <!-- Filter Controls depending on Mode -->
+              <div class="d-flex flex-wrap align-items-center gap-2">
+                
+                <!-- Daily Filter Controls -->
+                <template v-if="profitViewMode === 'daily'">
+                  <div class="d-flex align-items-center gap-1">
+                    <label class="small text-muted fw-bold mb-0">From:</label>
+                    <input type="date" class="form-control form-control-sm" v-model="filterStartDate" style="width: 145px;" />
+                  </div>
+                  <div class="d-flex align-items-center gap-1">
+                    <label class="small text-muted fw-bold mb-0">To:</label>
+                    <input type="date" class="form-control form-control-sm" v-model="filterEndDate" style="width: 145px;" />
+                  </div>
+                  <button class="btn btn-primary btn-sm px-3 fw-bold" @click="loadProfitReport">
+                    <i class="ti ti-filter me-1"></i> Filter
+                  </button>
+                  <button class="btn btn-outline-secondary btn-sm" @click="clearDailyFilter" v-if="filterStartDate || filterEndDate">
+                    <i class="ti ti-rotate-clockwise me-1"></i> Reset
+                  </button>
+                </template>
+
+                <!-- Monthly Filter Controls -->
+                <template v-else-if="profitViewMode === 'monthly'">
+                  <div class="d-flex align-items-center gap-2">
+                    <label class="small text-muted fw-bold mb-0">Select Year:</label>
+                    <select class="form-select form-select-sm" v-model="selectedYear" @change="loadProfitReport" style="width: 130px;">
+                      <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
+                    </select>
+                  </div>
+                  <button class="btn btn-outline-secondary btn-sm" @click="clearFilter">Reset</button>
+                </template>
+
+                <!-- Yearly Filter Controls -->
+                <template v-else-if="profitViewMode === 'yearly'">
+                  <div class="d-flex align-items-center gap-2">
+                    <label class="small text-muted fw-bold mb-0">Select Year:</label>
+                    <select class="form-select form-select-sm" v-model="selectedYearlyFilter" @change="loadProfitReport" style="width: 145px;">
+                      <option value="all">All Years (সকল)</option>
+                      <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
+                    </select>
+                  </div>
+                  <button class="btn btn-outline-secondary btn-sm" @click="clearYearlyFilter">Reset</button>
+                </template>
+
+              </div>
+
             </div>
           </div>
 
-          <!-- Product Stock Table -->
-          <div class="card-body">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-              <h6 class="fw-bold mb-0" style="color:#f59e0b;">Product Stock Report</h6>
-            </div>
-            <div class="table-responsive">
-              <table class="table table-bordered table-hover align-middle text-center">
-                <thead style="background:#f59e0b; color:#fff;">
-                  <tr>
-                    <th style="width:60px">SL</th>
-                    <th>Current Stock Quantity</th>
-                    <th>Total Stock Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td class="fw-semibold">{{ stockData.total_qty }}</td>
-                    <td class="fw-bold text-info">
-                      {{ parseFloat(stockData.total_amount || 0).toFixed(2) }} ৳
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+          <!-- Summary Highlights Cards -->
+          <div class="card-body pb-0 pt-3">
+            <div class="row g-3">
+              <div class="col-12 col-md-4">
+                <div class="d-flex align-items-center p-3 rounded-3 shadow-none border" style="background: #f0fdf4; border-color: #86efac !important;">
+                  <div class="avatar avatar-md me-3 rounded-3 d-flex align-items-center justify-content-center" style="background: #22c55e; color: #fff;">
+                    <i class="ti ti-arrow-down-left fs-3"></i>
+                  </div>
+                  <div>
+                    <span class="text-muted d-block small fw-bold text-uppercase">Total Income (সর্বমোট আয়)</span>
+                    <h4 class="mb-0 fw-bold font-monospace text-success">{{ formatAmount(profitGrand.total_income) }}</h4>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <div class="d-flex align-items-center p-3 rounded-3 shadow-none border" style="background: #fff1f2; border-color: #fca5a5 !important;">
+                  <div class="avatar avatar-md me-3 rounded-3 d-flex align-items-center justify-content-center" style="background: #ef4444; color: #fff;">
+                    <i class="ti ti-arrow-up-right fs-3"></i>
+                  </div>
+                  <div>
+                    <span class="text-muted d-block small fw-bold text-uppercase">Total Cost (সর্বমোট ব্যয়)</span>
+                    <h4 class="mb-0 fw-bold font-monospace text-danger">{{ formatAmount(profitGrand.total_cost) }}</h4>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <div class="d-flex align-items-center p-3 rounded-3 shadow-none border" 
+                  :style="profitGrand.profit_loss >= 0 
+                    ? 'background: #eff6ff; border-color: #93c5fd !important;' 
+                    : 'background: #fff1f2; border-color: #fca5a5 !important;'">
+                  <div class="avatar avatar-md me-3 rounded-3 d-flex align-items-center justify-content-center" 
+                    :style="profitGrand.profit_loss >= 0 ? 'background: #3b82f6; color: #fff;' : 'background: #dc2626; color: #fff;'">
+                    <i :class="profitGrand.profit_loss >= 0 ? 'ti ti-trending-up fs-3' : 'ti ti-trending-down fs-3'"></i>
+                  </div>
+                  <div>
+                    <span class="text-muted d-block small fw-bold text-uppercase">Net Result (নিট ফলাফল)</span>
+                    <h4 class="mb-0 fw-bold font-monospace" :class="profitGrand.profit_loss >= 0 ? 'text-primary' : 'text-danger'">
+                      {{ profitGrand.profit_loss >= 0 ? '▲ Profit ' : '▼ Loss ' }} {{ formatAbsAmount(profitGrand.profit_loss) }}
+                    </h4>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Profit / Loss Table -->
+          <!-- Profit / Loss Main Table -->
           <div class="card-body">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-              <h6 class="fw-bold mb-0" style="color:#f59e0b;">Profit / Loss Report</h6>
-              <div class="btn-group" role="group">
-                <button type="button" class="btn btn-sm"
-                  :class="profitViewMode === 'monthly' ? 'btn-warning' : 'btn-outline-warning'"
-                  @click="setProfitMode('monthly')">Monthly</button>
-                <button type="button" class="btn btn-sm"
-                  :class="profitViewMode === 'yearly' ? 'btn-warning' : 'btn-outline-warning'"
-                  @click="setProfitMode('yearly')">Yearly</button>
-              </div>
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <h6 class="fw-bold mb-0 text-dark">
+                <span v-if="profitViewMode === 'daily'">📅 Daily Statement Breakdown (দৈনিক বিবরণী)</span>
+                <span v-else-if="profitViewMode === 'monthly'">📆 Monthly Statement Breakdown for {{ selectedYear }} (মাসিক বিবরণী)</span>
+                <span v-else>🗓️ Yearly Comparative Statement (বাৎসরিক বিবরণী)</span>
+              </h6>
+              <span class="small text-muted">Showing {{ profitRows.length }} rows</span>
             </div>
 
-            <div class="table-responsive" id="printArea">
-              <table class="table table-bordered table-hover align-middle text-center">
-                <thead style="background:#f59e0b; color:#fff;">
+            <div class="border rounded-3 shadow-xs" id="printArea">
+              <table class="table table-bordered table-hover align-middle text-center mb-0 statement-table">
+                <thead style="background:#033364; color:#fff;">
                   <tr>
-                    <th rowspan="2" style="width:120px; vertical-align:middle;">{{ profitViewMode === 'monthly' ? 'Month' : 'Year' }}</th>
-                    <!-- Income -->
-                    <th colspan="5" style="background:#16a34a; color:#fff;">আয় (Income)</th>
-                    <!-- Cost -->
-                    <th colspan="5" style="background:#dc2626; color:#fff;">ব্যয় (Expense)</th>
+                    <th rowspan="2" style="width: 9%; vertical-align:middle; background: #0f172a; color: #fff;">
+                      <span v-if="profitViewMode === 'daily'">Date<br><small class="fw-normal text-light opacity-75">(তারিখ)</small></span>
+                      <span v-else-if="profitViewMode === 'monthly'">Month<br><small class="fw-normal text-light opacity-75">(মাস)</small></span>
+                      <span v-else>Year<br><small class="fw-normal text-light opacity-75">(বছর)</small></span>
+                    </th>
+                    <!-- Income Columns -->
+                    <th colspan="6" style="background:#15803d; color:#fff; font-size: 0.85rem; padding: 5px 2px;">🟢 আয় (INCOME)</th>
+                    <!-- Expense Columns -->
+                    <th colspan="4" style="background:#b91c1c; color:#fff; font-size: 0.85rem; padding: 5px 2px;">🔴 ব্যয় (EXPENSE)</th>
                     <!-- Result -->
-                    <th rowspan="2" style="vertical-align:middle; background:#1d4ed8; color:#fff;">Profit / Loss</th>
+                    <th rowspan="2" style="width: 9%; vertical-align:middle; background:#1e40af; color:#fff;">Net Result<br><small class="fw-normal text-light opacity-75">(লাভ / ক্ষতি)</small></th>
                     <!-- Action -->
-                    <th rowspan="2" style="vertical-align:middle; background:#475569; color:#fff;">Action</th>
+                    <th rowspan="2" style="width: 5%; vertical-align:middle; background:#475569; color:#fff;">Action<br><small class="fw-normal text-light opacity-75">(প্রিন্ট)</small></th>
                   </tr>
-                  <tr>
-                    <th style="background:#dcfce7; color:#166534;">advance booking fee</th>
-                    <th style="background:#dcfce7; color:#166534;">Monthly Rent</th>
-                    <th style="background:#dcfce7; color:#166534;">Product Sales</th>
-                    <th style="background:#dcfce7; color:#166534;">Room Change Fee</th>
-                    <th style="background:#bbf7d0; color:#166534; font-weight:700;">Total Income</th>
-                    <th style="background:#fee2e2; color:#991b1b;">General Expense</th>
-                    <th style="background:#fee2e2; color:#991b1b;">Staff Salary</th>
-                    <th style="background:#fee2e2; color:#991b1b;">Product Purchase</th>
-                    <th style="background:#fee2e2; color:#991b1b;">Advance Refund</th>
-                    <th style="background:#fecaca; color:#991b1b; font-weight:700;">Total Cost</th>
+                  <tr class="sub-headers">
+                    <th style="width: 7.5%; background:#f0fdf4; color:#166534;">Advance<br>Booking</th>
+                    <th style="width: 7.5%; background:#f0fdf4; color:#166534;">Development<br>Fee</th>
+                    <th style="width: 7.5%; background:#f0fdf4; color:#166534;">Monthly<br>Rent</th>
+                    <th style="width: 7.5%; background:#f0fdf4; color:#166534;">Electricity<br>Bill</th>
+                    <th style="width: 7%; background:#f0fdf4; color:#166534;">Room Change<br>Fee</th>
+                    <th style="width: 8.5%; background:#dcfce7; color:#14532d; font-weight:800;">Total<br>Income</th>
+                    <th style="width: 7.5%; background:#fff1f2; color:#991b1b;">General<br>Expense</th>
+                    <th style="width: 7.5%; background:#fff1f2; color:#991b1b;">Staff<br>Salary</th>
+                    <th style="width: 7.5%; background:#fff1f2; color:#991b1b;">Advance<br>Refund</th>
+                    <th style="width: 8.5%; background:#fee2e2; color:#7f1d1d; font-weight:800;">Total<br>Cost</th>
                   </tr>
                 </thead>
 
@@ -103,42 +189,50 @@
                   <template v-for="row in profitRows" :key="row.label">
                     <tr :class="profitViewMode === 'yearly' ? 'clickable-cell' : ''"
                         @click="profitViewMode === 'yearly' ? toggleYearExpand(row.label) : null">
-                      <td class="fw-bold">
-                        {{ row.label }}
-                        <span v-if="profitViewMode === 'yearly' && row.monthly_breakdown && row.monthly_breakdown.length" class="ms-1 text-warning">
-                          {{ expandedYear === row.label ? '⌃' : '⌄' }}
+                      <td class="fw-bold text-dark">
+                        <span class="num-val text-dark">{{ row.label }}</span>
+                        <span v-if="profitViewMode === 'yearly' && row.monthly_breakdown && row.monthly_breakdown.length" class="ms-1 text-primary">
+                          {{ expandedYear === row.label ? '▲' : '▼' }}
                         </span>
                       </td>
                       <!-- Income -->
-                      <td class="text-success fw-semibold">{{ formatAmount(row.room_booking) }}</td>
-                      <td class="text-success fw-semibold">{{ formatAmount(row.monthly_payment) }}</td>
-                      <td class="text-success fw-semibold">{{ formatAmount(row.product_sales) }}</td>
-                      <td class="text-success fw-semibold">{{ formatAmount(row.room_change_fee) }}</td>
-                      <td class="fw-bold" style="background:#f0fdf4;">{{ formatAmount(row.total_income) }}</td>
+                      <td class="text-success"><span class="num-val">{{ formatAmount(row.room_booking) }}</span></td>
+                      <td class="text-success"><span class="num-val">{{ formatAmount(row.development_fee) }}</span></td>
+                      <td class="text-success"><span class="num-val">{{ formatAmount(row.monthly_payment) }}</span></td>
+                      <td class="text-success"><span class="num-val">{{ formatAmount(row.electricity_bill) }}</span></td>
+                      <td class="text-success"><span class="num-val">{{ formatAmount(row.room_change_fee) }}</span></td>
+                      <td style="background:#f0fdf4; color: #15803d;"><span class="total-num-val">{{ formatAmount(row.total_income) }}</span></td>
                       <!-- Cost -->
-                      <td class="text-danger fw-semibold">{{ formatAmount(row.expense) }}</td>
-                      <td class="text-danger fw-semibold">{{ formatAmount(row.salary) }}</td>
-                      <td class="text-danger fw-semibold">{{ formatAmount(row.product_purchase) }}</td>
-                      <td class="text-danger fw-semibold">{{ formatAmount(row.advance_refund) }}</td>
-                      <td class="fw-bold" style="background:#fff1f2;">{{ formatAmount(row.total_cost) }}</td>
+                      <td class="text-danger"><span class="num-val">{{ formatAmount(row.expense) }}</span></td>
+                      <td class="text-danger"><span class="num-val">{{ formatAmount(row.salary) }}</span></td>
+                      <td class="text-danger"><span class="num-val">{{ formatAmount(row.advance_refund) }}</span></td>
+                      <td style="background:#fff1f2; color: #b91c1c;"><span class="total-num-val">{{ formatAmount(row.total_cost) }}</span></td>
                       <!-- Profit/Loss -->
-                      <td class="fw-bold">
-                        <span class="badge px-3 py-2" style="font-size:0.82rem;"
+                      <td class="p-1">
+                        <span class="badge px-2 py-1 font-monospace d-inline-block text-truncate fw-bold" style="font-size:0.80rem; max-width: 100%; border-radius: 4px;"
                           :class="row.profit_loss >= 0 ? 'bg-success' : 'bg-danger'">
-                          {{ row.profit_loss >= 0 ? '▲ Profit' : '▼ Loss' }}
-                          {{ formatAbsAmount(row.profit_loss) }}
+                          {{ row.profit_loss >= 0 ? '▲ ' : '▼ ' }} {{ formatAbsAmount(row.profit_loss) }}
                         </span>
                       </td>
                       <!-- Action -->
-                      <td class="text-center" @click.stop>
-                        <button v-if="profitViewMode === 'monthly'"
-                          class="btn btn-xs btn-outline-primary shadow-sm px-2 py-1"
-                          :disabled="loadingDetail === row.label"
-                          @click="fetchAndPrintDetail(row.label)">
-                          <i v-if="loadingDetail === row.label" class="fa fa-spinner fa-spin me-1"></i>
-                          <i v-else class="ti ti-printer me-1"></i> Details Print
+                      <td class="text-center p-1" @click.stop>
+                        <button v-if="profitViewMode === 'daily'"
+                          class="btn btn-xs btn-outline-primary shadow-xs px-2 py-1"
+                          :disabled="loadingDetail === row.date"
+                          @click="fetchAndPrintDailyDetail(row.date, row.label)"
+                          title="Print Daily Details">
+                          <i v-if="loadingDetail === row.date" class="fa fa-spinner fa-spin"></i>
+                          <i v-else class="ti ti-printer fs-6"></i>
                         </button>
-                        <span v-else class="text-muted" style="font-size: 0.8rem;">Expand for Monthly</span>
+                        <button v-else-if="profitViewMode === 'monthly'"
+                          class="btn btn-xs btn-outline-primary shadow-xs px-2 py-1"
+                          :disabled="loadingDetail === row.label"
+                          @click="fetchAndPrintMonthlyDetail(row.label)"
+                          title="Print Monthly Details">
+                          <i v-if="loadingDetail === row.label" class="fa fa-spinner fa-spin"></i>
+                          <i v-else class="ti ti-printer fs-6"></i>
+                        </button>
+                        <span v-else class="text-muted small">Expand</span>
                       </td>
                     </tr>
 
@@ -146,57 +240,56 @@
                     <tr v-if="profitViewMode === 'yearly' && expandedYear === row.label" :key="row.label + '-expand'">
                       <td colspan="13" class="p-0">
                         <div class="detail-box-profit">
-                          <div class="detail-title">📅 {{ row.label }} - Monthly Breakdown</div>
-                          <table class="table table-sm table-bordered mb-0 text-center">
-                            <thead style="background:#fff8e1;">
-                              <tr>
-                                <th>Month</th>
-                                <th style="color:#16a34a;">advance booking fee </th>
-                                <th style="color:#16a34a;">Monthly Rent</th>
-                                <th style="color:#16a34a;">Product Sales</th>
-                                <th style="color:#16a34a;">Room Change Fee</th>
-                                <th style="color:#166534; font-weight:700;">Total Income</th>
-                                <th style="color:#dc2626;">Expense</th>
-                                <th style="color:#dc2626;">Salary</th>
-                                <th style="color:#dc2626;">Product Purchase</th>
-                                <th style="color:#dc2626;">Advance Refund</th>
-                                <th style="color:#991b1b; font-weight:700;">Total Cost</th>
-                                <th>Profit / Loss</th>
-                                <th>Action</th>
+                          <div class="detail-title text-primary fw-bold">📅 {{ row.label }} - Month-by-Month Statement Breakdown</div>
+                          <table class="table table-sm table-bordered mb-0 text-center bg-white statement-table">
+                            <thead style="background:#f1f5f9;">
+                              <tr class="sub-headers">
+                                <th style="width:9%;">Month</th>
+                                <th style="width:7.5%; color:#16a34a;">Advance Booking</th>
+                                <th style="width:7.5%; color:#16a34a;">Development Fee</th>
+                                <th style="width:7.5%; color:#16a34a;">Monthly Rent</th>
+                                <th style="width:7.5%; color:#16a34a;">Electricity Bill</th>
+                                <th style="width:7%; color:#16a34a;">Room Change</th>
+                                <th style="width:8.5%; color:#14532d; font-weight:800; background:#dcfce7;">Total Income</th>
+                                <th style="width:7.5%; color:#dc2626;">Expense</th>
+                                <th style="width:7.5%; color:#dc2626;">Salary</th>
+                                <th style="width:7.5%; color:#dc2626;">Advance Refund</th>
+                                <th style="width:8.5%; color:#7f1d1d; font-weight:800; background:#fee2e2;">Total Cost</th>
+                                <th style="width:9%;">Profit / Loss</th>
+                                <th style="width:5%;">Action</th>
                               </tr>
                             </thead>
                             <tbody v-if="row.monthly_breakdown && row.monthly_breakdown.length">
                               <tr v-for="m in row.monthly_breakdown" :key="m.month">
                                 <td class="fw-bold">{{ m.month }} {{ row.label }}</td>
-                                <td class="text-success">{{ formatAmount(m.room_booking) }}</td>
-                                <td class="text-success">{{ formatAmount(m.monthly_payment) }}</td>
-                                <td class="text-success">{{ formatAmount(m.product_sales) }}</td>
-                                <td class="text-success">{{ formatAmount(m.room_change_fee) }}</td>
-                                <td class="fw-bold" style="background:#f0fdf4;">{{ formatAmount(m.total_income) }}</td>
-                                <td class="text-danger">{{ formatAmount(m.expense) }}</td>
-                                <td class="text-danger">{{ formatAmount(m.salary) }}</td>
-                                <td class="text-danger">{{ formatAmount(m.product_purchase) }}</td>
-                                <td class="text-danger">{{ formatAmount(m.advance_refund) }}</td>
-                                <td class="fw-bold" style="background:#fff1f2;">{{ formatAmount(m.total_cost) }}</td>
-                                <td>
-                                  <span class="badge px-2 py-1"
-                                    :class="m.profit_loss >= 0 ? 'bg-success' : 'bg-danger'">
-                                    {{ m.profit_loss >= 0 ? '▲' : '▼' }}
-                                    {{ formatAbsAmount(m.profit_loss) }}
+                                <td class="text-success"><span class="num-val">{{ formatAmount(m.room_booking) }}</span></td>
+                                <td class="text-success"><span class="num-val">{{ formatAmount(m.development_fee) }}</span></td>
+                                <td class="text-success"><span class="num-val">{{ formatAmount(m.monthly_payment) }}</span></td>
+                                <td class="text-success"><span class="num-val">{{ formatAmount(m.electricity_bill) }}</span></td>
+                                <td class="text-success"><span class="num-val">{{ formatAmount(m.room_change_fee) }}</span></td>
+                                <td style="background:#f0fdf4; color:#14532d;"><span class="total-num-val">{{ formatAmount(m.total_income) }}</span></td>
+                                <td class="text-danger"><span class="num-val">{{ formatAmount(m.expense) }}</span></td>
+                                <td class="text-danger"><span class="num-val">{{ formatAmount(m.salary) }}</span></td>
+                                <td class="text-danger"><span class="num-val">{{ formatAmount(m.advance_refund) }}</span></td>
+                                <td style="background:#fff1f2; color:#7f1d1d;"><span class="total-num-val">{{ formatAmount(m.total_cost) }}</span></td>
+                                <td class="p-1">
+                                  <span class="badge px-2 py-1 font-monospace fw-bold"
+                                    :class="m.profit_loss >= 0 ? 'bg-success' : 'bg-danger'" style="font-size:0.78rem;">
+                                    {{ m.profit_loss >= 0 ? '▲ ' : '▼ ' }}{{ formatAbsAmount(m.profit_loss) }}
                                   </span>
                                 </td>
-                                <td>
-                                  <button class="btn btn-xs btn-outline-primary shadow-sm px-2 py-1"
+                                <td class="p-1">
+                                  <button class="btn btn-xs btn-outline-primary shadow-xs px-2 py-1"
                                     :disabled="loadingDetail === (m.month + ' ' + row.label)"
-                                    @click="fetchAndPrintDetail(m.month + ' ' + row.label)">
-                                    <i v-if="loadingDetail === (m.month + ' ' + row.label)" class="fa fa-spinner fa-spin me-1"></i>
-                                    <i v-else class="ti ti-printer me-1"></i> Details Print
+                                    @click="fetchAndPrintMonthlyDetail(m.month + ' ' + row.label)">
+                                    <i v-if="loadingDetail === (m.month + ' ' + row.label)" class="fa fa-spinner fa-spin"></i>
+                                    <i v-else class="ti ti-printer fs-6"></i>
                                   </button>
                                 </td>
                               </tr>
                             </tbody>
                             <tbody v-else>
-                              <tr><td colspan="13" class="text-center text-muted">No data</td></tr>
+                              <tr><td colspan="13" class="text-center text-muted">No monthly records</td></tr>
                             </tbody>
                           </table>
                         </div>
@@ -204,35 +297,38 @@
                     </tr>
                   </template>
 
-                  <!-- Grand Total -->
-                  <tr style="background:#fff8e1;" class="fw-bold">
-                    <td>Grand Total</td>
-                    <td class="text-success">{{ formatAmount(profitGrand.room_booking) }}</td>
-                    <td class="text-success">{{ formatAmount(profitGrand.monthly_payment) }}</td>
-                    <td class="text-success">{{ formatAmount(profitGrand.product_sales) }}</td>
-                    <td class="text-success">{{ formatAmount(profitGrand.room_change_fee) }}</td>
-                    <td style="background:#f0fdf4;">{{ formatAmount(profitGrand.total_income) }}</td>
-                    <td class="text-danger">{{ formatAmount(profitGrand.expense) }}</td>
-                    <td class="text-danger">{{ formatAmount(profitGrand.salary) }}</td>
-                    <td class="text-danger">{{ formatAmount(profitGrand.product_purchase) }}</td>
-                    <td class="text-danger">{{ formatAmount(profitGrand.advance_refund) }}</td>
-                    <td style="background:#fff1f2;">{{ formatAmount(profitGrand.total_cost) }}</td>
-                    <td>
-                      <span class="badge px-3 py-2" style="font-size:0.82rem;"
+                  <!-- Grand Total Row -->
+                  <tr style="background:#f8fafc;" class="fw-bold border-top border-2">
+                    <td class="text-dark font-monospace" style="font-size:0.88rem;">TOTAL</td>
+                    <td class="text-success"><span class="total-num-val">{{ formatAmount(profitGrand.room_booking) }}</span></td>
+                    <td class="text-success"><span class="total-num-val">{{ formatAmount(profitGrand.development_fee) }}</span></td>
+                    <td class="text-success"><span class="total-num-val">{{ formatAmount(profitGrand.monthly_payment) }}</span></td>
+                    <td class="text-success"><span class="total-num-val">{{ formatAmount(profitGrand.electricity_bill) }}</span></td>
+                    <td class="text-success"><span class="total-num-val">{{ formatAmount(profitGrand.room_change_fee) }}</span></td>
+                    <td style="background:#dcfce7; color: #14532d;"><span class="total-num-val" style="font-size: 0.94rem;">{{ formatAmount(profitGrand.total_income) }}</span></td>
+                    <td class="text-danger"><span class="total-num-val">{{ formatAmount(profitGrand.expense) }}</span></td>
+                    <td class="text-danger"><span class="total-num-val">{{ formatAmount(profitGrand.salary) }}</span></td>
+                    <td class="text-danger"><span class="total-num-val">{{ formatAmount(profitGrand.advance_refund) }}</span></td>
+                    <td style="background:#fee2e2; color: #7f1d1d;"><span class="total-num-val" style="font-size: 0.94rem;">{{ formatAmount(profitGrand.total_cost) }}</span></td>
+                    <td class="p-1">
+                      <span class="badge px-2 py-1 font-monospace fw-bold" style="font-size:0.84rem;"
                         :class="profitGrand.profit_loss >= 0 ? 'bg-success' : 'bg-danger'">
-                        {{ profitGrand.profit_loss >= 0 ? '▲ Profit' : '▼ Loss' }}
-                        {{ formatAbsAmount(profitGrand.profit_loss) }}
+                        {{ profitGrand.profit_loss >= 0 ? '▲ ' : '▼ ' }}{{ formatAbsAmount(profitGrand.profit_loss) }}
                       </span>
                     </td>
-                    <td style="background:#fff8e1;">-</td>
+                    <td style="background:#f8fafc;">-</td>
                   </tr>
                 </tbody>
 
                 <tbody v-else>
                   <tr>
                     <td colspan="13" class="text-center py-5 text-muted">
-                      <span v-if="profitLoading"><i class="fa fa-spinner fa-spin me-2"></i>Loading...</span>
-                      <span v-else>No data found</span>
+                      <span v-if="profitLoading"><i class="fa fa-spinner fa-spin me-2"></i>Loading report data...</span>
+                      <span v-else-if="profitViewMode === 'daily' && !filterStartDate">
+                        <i class="ti ti-calendar-search fs-2 d-block mb-2 text-primary"></i>
+                        <span class="fw-semibold text-dark">দৈনিক রিপোর্ট দেখতে উপরে "From" এবং "To" তারিখ সিলেক্ট করে <span class="badge bg-primary px-2 py-1">Filter</span> বাটনে ক্লিক করুন।</span>
+                      </span>
+                      <span v-else>কোনো তথ্য পাওয়া যায়নি (No records found for this period)</span>
                     </td>
                   </tr>
                 </tbody>
@@ -254,6 +350,24 @@ import "toastify-js/src/toastify.css";
 export default {
   name: "Report",
 
+  data() {
+    const currentYear = new Date().getFullYear() >= 2026 ? new Date().getFullYear() : 2026;
+    const todayStr = new Date().toISOString().substring(0, 10);
+
+    return {
+      profitRows: [],
+      profitLoading: false,
+      profitViewMode: 'daily',
+      availableYears: [currentYear],
+      selectedYear: currentYear,
+      selectedYearlyFilter: 'all',
+      filterStartDate: todayStr,
+      filterEndDate: todayStr,
+      expandedYear: "",
+      loadingDetail: null,
+    };
+  },
+
   computed: {
     url() {
       return this.$store.state.url;
@@ -261,93 +375,106 @@ export default {
     profitGrand() {
       return this.profitRows.reduce(
         (acc, row) => {
-          acc.room_booking     += row.room_booking     || 0;
-          acc.monthly_payment  += row.monthly_payment  || 0;
-          acc.product_sales    += row.product_sales    || 0;
-          acc.room_change_fee  += row.room_change_fee  || 0;
-          acc.total_income     += row.total_income     || 0;
-          acc.expense          += row.expense          || 0;
-          acc.salary           += row.salary           || 0;
-          acc.product_purchase += row.product_purchase || 0;
-          acc.advance_refund   += row.advance_refund   || 0;
-          acc.total_cost       += row.total_cost       || 0;
-          acc.profit_loss      += row.profit_loss      || 0;
+          acc.room_booking     += Number(row.room_booking     || 0);
+          acc.development_fee  += Number(row.development_fee  || 0);
+          acc.monthly_payment  += Number(row.monthly_payment  || 0);
+          acc.electricity_bill += Number(row.electricity_bill || 0);
+          acc.room_change_fee  += Number(row.room_change_fee  || 0);
+          acc.total_income     += Number(row.total_income     || 0);
+          acc.expense          += Number(row.expense          || 0);
+          acc.salary           += Number(row.salary           || 0);
+          acc.advance_refund   += Number(row.advance_refund   || 0);
+          acc.total_cost       += Number(row.total_cost       || 0);
+          acc.profit_loss      += Number(row.profit_loss      || 0);
           return acc;
         },
-        { room_booking: 0, monthly_payment: 0, product_sales: 0, room_change_fee: 0, total_income: 0,
-          expense: 0, salary: 0, product_purchase: 0, advance_refund: 0, total_cost: 0, profit_loss: 0 }
+        { room_booking: 0, development_fee: 0, monthly_payment: 0, electricity_bill: 0, room_change_fee: 0, total_income: 0,
+          expense: 0, salary: 0, advance_refund: 0, total_cost: 0, profit_loss: 0 }
       );
     },
   },
 
-  data() {
-    const currentYear = new Date().getFullYear();
-    return {
-      profitRows: [],
-      profitLoading: false,
-      profitViewMode: 'monthly',
-      availableYears: [currentYear],
-      selectedYear: currentYear,
-      expandedYear: "",
-      stockData: {},
-      stockLoading: false,
-      loadingDetail: null,
-    };
-  },
-
   mounted() {
     this.loadAvailableYears();
-    this.loadProductStock();
+    this.loadProfitReport();
   },
 
   methods: {
     async loadAvailableYears() {
       try {
         const res = await axios.get(`${this.url}get-available-years`);
-        this.availableYears = res.data.years || [new Date().getFullYear()];
+        this.availableYears = res.data.years || [2026];
         this.selectedYear = this.availableYears[0];
       } catch (e) {
-        this.availableYears = [new Date().getFullYear()];
-      }
-      this.loadProfitReport();
-    },
-
-    async loadProductStock() {
-      this.stockLoading = true;
-      try {
-        const res = await axios.get('/get-productstock');
-        this.stockData = res.data;
-      } catch (e) {
-        console.error(e);
-      } finally {
-        this.stockLoading = false;
-      }
-    },
-
-    async loadProfitReport() {
-      this.profitLoading = true;
-      this.expandedYear = "";
-      try {
-        const params = this.profitViewMode === 'monthly'
-          ? { mode: 'monthly', year: this.selectedYear }
-          : { mode: 'yearly' };
-        const res = await axios.get(`${this.url}get-profit-loss-report`, { params });
-        this.profitRows = res.data.data || [];
-      } catch (e) {
-        this.toast("Failed to load profit/loss report", "error");
-      } finally {
-        this.profitLoading = false;
+        this.availableYears = [2026];
       }
     },
 
     setProfitMode(mode) {
       this.profitViewMode = mode;
+      if (mode === 'daily') {
+        if (!this.filterStartDate) {
+          const todayStr = new Date().toISOString().substring(0, 10);
+          this.filterStartDate = todayStr;
+          this.filterEndDate = todayStr;
+        }
+      }
+      this.loadProfitReport();
+    },
+
+    clearDailyFilter() {
+      const todayStr = new Date().toISOString().substring(0, 10);
+      this.filterStartDate = todayStr;
+      this.filterEndDate = todayStr;
       this.loadProfitReport();
     },
 
     clearFilter() {
-      this.selectedYear = new Date().getFullYear();
+      this.selectedYear = this.availableYears[0] || 2026;
       this.loadProfitReport();
+    },
+
+    clearYearlyFilter() {
+      this.selectedYearlyFilter = 'all';
+      this.loadProfitReport();
+    },
+
+    async loadProfitReport() {
+      this.expandedYear = "";
+      let params = { mode: this.profitViewMode };
+
+      if (this.profitViewMode === 'daily') {
+        if (!this.filterStartDate && !this.filterEndDate) {
+          this.toast("অনুগ্রহ করে শুরুর তারিখ (From Date) নির্বাচন করুন", "warning");
+          return;
+        }
+        if (this.filterStartDate && !this.filterEndDate) {
+          this.filterEndDate = this.filterStartDate;
+        } else if (!this.filterStartDate && this.filterEndDate) {
+          this.filterStartDate = this.filterEndDate;
+        }
+        params.start_date = this.filterStartDate;
+        params.end_date = this.filterEndDate;
+      } else if (this.profitViewMode === 'monthly') {
+        params.year = this.selectedYear;
+      } else if (this.profitViewMode === 'yearly') {
+        if (this.selectedYearlyFilter && this.selectedYearlyFilter !== 'all') {
+          params.year = this.selectedYearlyFilter;
+        }
+      }
+
+      this.profitLoading = true;
+      try {
+        const res = await axios.get(`${this.url}get-profit-loss-report`, { params });
+        this.profitRows = res.data.data || [];
+        if (this.profitViewMode === 'yearly' && this.selectedYearlyFilter && this.selectedYearlyFilter !== 'all') {
+          this.expandedYear = String(this.selectedYearlyFilter);
+        }
+      } catch (e) {
+        this.toast("Failed to load profit/loss report", "error");
+      } finally {
+        this.profitLoading = false;
+      }
     },
 
     toggleYearExpand(label) {
@@ -362,7 +489,29 @@ export default {
       return `${Math.abs(Number(value || 0)).toFixed(2)} ৳`;
     },
 
-    async fetchAndPrintDetail(rowLabel) {
+    // Detailed statement for Daily
+    async fetchAndPrintDailyDetail(dateStr, label) {
+      this.loadingDetail = dateStr;
+      try {
+        const res = await axios.get(`${this.url}get-daily-detail-report`, {
+          params: { date: dateStr }
+        });
+
+        if (res.data && res.data.status) {
+          this.printDetailedReportWindow(res.data, `Daily Itemized Statement - ${label}`);
+        } else {
+          this.toast("Failed to load daily details", "error");
+        }
+      } catch (e) {
+        console.error(e);
+        this.toast("Error loading details for " + label, "error");
+      } finally {
+        this.loadingDetail = null;
+      }
+    },
+
+    // Detailed statement for Monthly
+    async fetchAndPrintMonthlyDetail(rowLabel) {
       let year = this.selectedYear;
       let monthName = "";
 
@@ -391,7 +540,7 @@ export default {
         });
 
         if (res.data && res.data.status) {
-          this.printMonthlyDetailedReportWindow(res.data);
+          this.printDetailedReportWindow(res.data, `Monthly Itemized Statement - ${rowLabel}`);
         } else {
           this.toast("Failed to load monthly details", "error");
         }
@@ -403,14 +552,13 @@ export default {
       }
     },
 
-    printMonthlyDetailedReportWindow(data) {
+    printDetailedReportWindow(data, statementTitle) {
       const inc = data.income || {};
       const cost = data.cost || {};
       const netPL = data.profit_loss || 0;
 
       const formatVal = (v) => `${Number(v || 0).toFixed(2)} ৳`;
 
-      // Helper table generator
       const buildTable = (title, headers, rows, totalKey, totalLabel) => {
         let rowsHtml = '';
         if (rows && rows.length > 0) {
@@ -453,21 +601,21 @@ export default {
         `;
       };
 
-      // 1. Room Booking Advance Table
       const roomBookingHtml = buildTable(
-        '1. Advance Booking Fees (অগ্রিম বুকিং ফি)',
+        '1. Advance Booking & Development Fees (অগ্রিম বুকিং ও উন্নয়ন ফি)',
         [
           { key: 'name', label: 'Name', align: 'text-left' },
           { key: 'phone', label: 'Phone' },
           { key: 'check_in', label: 'Check-In Date' },
-          { key: 'advance_price', label: 'Advance Amount', isAmount: true, align: 'text-right' }
+          { key: 'advance_price', label: 'Advance Fee', isAmount: true, align: 'text-right' },
+          { key: 'development_fee', label: 'Development Fee', isAmount: true, align: 'text-right' },
+          { key: 'total_booking_fee', label: 'Total Amount', isAmount: true, align: 'text-right' }
         ],
         inc.room_bookings,
-        'advance_price',
-        'Advance Booking'
+        'total_booking_fee',
+        'Advance & Development Fees'
       );
 
-      // 2. Monthly Rent Table
       const monthlyPaymentHtml = buildTable(
         '2. Monthly Rent Receipts (মাসিক ভাড়া)',
         [
@@ -483,30 +631,27 @@ export default {
         'Monthly Rent'
       );
 
-      // 3. Product Sales Table
-      const productSalesHtml = buildTable(
-        '3. Product Sales (পণ্য বিক্রি)',
-        [
-          { key: 'memo_number', label: 'Memo No' },
-          { key: 'customer_name', label: 'Name', align: 'text-left' },
-          { key: 'product_name', label: 'Product Name', align: 'text-left' },
-          { key: 'quantity', label: 'Qty' },
-          { key: 'date', label: 'Date' },
-          { key: 'amount', label: 'Sales Amount', isAmount: true, align: 'text-right' }
-        ],
-        inc.product_sales,
-        'amount',
-        'Product Sales'
-      );
-
-      // 4. Room Change Fee Table
-      const roomChangeHtml = buildTable(
-        '4. Room Change Fees (রুম পরিবর্তন ফি)',
+      const electricityBillHtml = buildTable(
+        '3. Electricity Bills (বিদ্যুৎ বিল)',
         [
           { key: 'resident_name', label: 'Name', align: 'text-left' },
           { key: 'phone', label: 'Phone' },
-          { key: 'old_room', label: 'Old Room / Seat', align: 'text-left' },
-          { key: 'new_room', label: 'New Room / Seat', align: 'text-left' },
+          { key: 'payment_month', label: 'Payment Month' },
+          { key: 'payment_method', label: 'Method' },
+          { key: 'date', label: 'Date' },
+          { key: 'bill_amount', label: 'Bill Amount', isAmount: true, align: 'text-right' }
+        ],
+        inc.electricity_bills,
+        'bill_amount',
+        'Electricity Bill'
+      );
+
+      const roomChangeHtml = buildTable(
+        '4. Room Change Fees (রুম পরিবর্তন ফি)',
+        [
+          { key: 'resident_name', label: 'Resident Name', align: 'text-left' },
+          { key: 'old_room', label: 'Old Room' },
+          { key: 'new_room', label: 'New Room' },
           { key: 'date', label: 'Date' },
           { key: 'fee_amount', label: 'Fee Amount', isAmount: true, align: 'text-right' }
         ],
@@ -515,7 +660,6 @@ export default {
         'Room Change Fee'
       );
 
-      // 5. General Expenses Table
       const expenseHtml = buildTable(
         '5. General Expenses (সাধারণ খরচ)',
         [
@@ -529,7 +673,6 @@ export default {
         'General Expenses'
       );
 
-      // 6. Staff Salary Table
       const salaryHtml = buildTable(
         '6. Staff Salary Payments (স্টাফদের বেতন)',
         [
@@ -544,25 +687,8 @@ export default {
         'Staff Salary'
       );
 
-      // 7. Product Purchases Table
-      const purchaseHtml = buildTable(
-        '7. Product Purchases (পণ্য ক্রয়)',
-        [
-          { key: 'memo_number', label: 'Memo No' },
-          { key: 'supplier_name', label: 'Supplier Name', align: 'text-left' },
-          { key: 'product_name', label: 'Product Name', align: 'text-left' },
-          { key: 'quantity', label: 'Qty' },
-          { key: 'date', label: 'Date' },
-          { key: 'total_price', label: 'Purchase Amount', isAmount: true, align: 'text-right' }
-        ],
-        cost.product_purchases,
-        'total_price',
-        'Product Purchases'
-      );
-
-      // 8. Advance Refund Table
       const refundHtml = buildTable(
-        '8. Advance Refunds (এডভান্স অফার রিফান্ড)',
+        '7. Advance Refunds (এডভান্স অফার রিফান্ড)',
         [
           { key: 'name', label: 'Name', align: 'text-left' },
           { key: 'phone', label: 'Phone' },
@@ -577,7 +703,7 @@ export default {
       const html = `<!DOCTYPE html>
 <html>
 <head>
-  <title>Monthly Itemized Profit Loss Statement - ${data.period}</title>
+  <title>${statementTitle || 'Profit Loss Statement'}</title>
   <style>
     @page { size: A4 portrait; margin: 10mm; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -622,8 +748,8 @@ export default {
 </head>
 <body>
   <div class="header-box">
-    <h1>TSS Villa - Sohashova Chhatri Nibas</h1>
-    <h3>Monthly Itemized Profit & Loss Statement</h3>
+    <h1>টি এস এস ভিলা (TSS Villa)</h1>
+    <h3>${statementTitle || 'Profit & Loss Detailed Statement'}</h3>
     <p>Statement Period: <strong>${data.period}</strong> &nbsp;|&nbsp; Printed On: ${new Date().toLocaleString()}</p>
   </div>
 
@@ -634,7 +760,7 @@ export default {
   </div>
   ${roomBookingHtml}
   ${monthlyPaymentHtml}
-  ${productSalesHtml}
+  ${electricityBillHtml}
   ${roomChangeHtml}
 
   <!-- EXPENSE SECTION -->
@@ -644,7 +770,6 @@ export default {
   </div>
   ${expenseHtml}
   ${salaryHtml}
-  ${purchaseHtml}
   ${refundHtml}
 
   <!-- SUMMARY BOX -->
@@ -667,6 +792,12 @@ export default {
     </div>
   </div>
 
+  <div class="footer-signatures">
+    <div class="sig-box">Prepared By (প্রস্তুতকারী)</div>
+    <div class="sig-box">Audited By (যাচাইকারী)</div>
+    <div class="sig-box">Authorized Signature (কর্তৃপক্ষের স্বাক্ষর)</div>
+  </div>
+
   <script>
     window.onload = function() {
       window.print();
@@ -677,44 +808,49 @@ export default {
 </html>`;
 
       const win = window.open("", "_blank");
-      win.document.write(html);
-      win.document.close();
+      if (win) {
+        win.document.write(html);
+        win.document.close();
+      } else {
+        alert("Pop-up window print blocked by browser. Please allow pop-ups for this site.");
+      }
     },
 
     printTable() {
       const printContents = document.getElementById("printArea").innerHTML;
+      const modeTitle = this.profitViewMode === 'daily' 
+        ? `Daily Report (${this.filterStartDate} to ${this.filterEndDate})`
+        : (this.profitViewMode === 'monthly' ? `Monthly Report (${this.selectedYear})` : 'Yearly Report (All Years)');
+
       const html = `<!DOCTYPE html>
 <html>
 <head>
-  <title>Profit Loss Report</title>
+  <title>Profit Loss Report - ${modeTitle}</title>
   <style>
-    @page { size: A4 landscape; margin: 12mm; }
+    @page { size: A4 landscape; margin: 10mm; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Arial, sans-serif; font-size: 10px; color: #333; }
+    body { font-family: Arial, sans-serif; font-size: 10px; color: #333; padding: 10px; }
     .print-header { text-align: center; margin-bottom: 12px; }
-    .print-header h2 { font-size: 16px; font-weight: bold; margin-bottom: 3px; }
+    .print-header h2 { font-size: 18px; font-weight: bold; margin-bottom: 3px; color: #033364; }
     .print-header p { font-size: 11px; color: #666; }
     table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-    th, td { border: 1px solid #ccc; padding: 5px 6px; text-align: center; }
+    th, td { border: 1px solid #ccc; padding: 4px 5px; text-align: center; }
     thead th { font-weight: bold; font-size: 10px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .text-success { color: #16a34a !important; font-weight: 600; }
     .text-danger  { color: #dc2626 !important; font-weight: 600; }
     .fw-bold { font-weight: bold; }
     .fw-semibold { font-weight: 600; }
     .detail-box-profit { display: none !important; }
-    .badge { display: inline-block !important; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .badge { display: inline-block !important; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .bg-success { background: #22c55e !important; }
     .bg-danger  { background: #ef4444 !important; }
   </style>
 </head>
 <body>
   <div class="print-header">
-    <h2>Profit / Loss Report</h2>
-    <p>
-      ${this.profitViewMode === 'monthly' ? 'Year: ' + this.selectedYear : 'All Years Summary'}
-      &nbsp;|&nbsp; Mode: ${this.profitViewMode === 'monthly' ? 'Monthly' : 'Yearly'}
-      &nbsp;|&nbsp; Printed: ${new Date().toLocaleString()}
-    </p>
+    <h2>টি এস এস ভিলা (TSS Villa)</h2>
+    <h4>Profit / Loss Statement (${modeTitle})</h4>
+    <p>Printed: ${new Date().toLocaleString()}</p>
   </div>
   ${printContents}
   <script>
@@ -727,8 +863,12 @@ export default {
 </html>`;
 
       const win = window.open("", "_blank");
-      win.document.write(html);
-      win.document.close();
+      if (win) {
+        win.document.write(html);
+        win.document.close();
+      } else {
+        alert("Pop-up window print blocked by browser. Please allow pop-ups for this site.");
+      }
     },
 
     toast(text, type = "success") {
@@ -745,35 +885,53 @@ export default {
         this.toast("এক্সপোর্ট করার মতো কোনো ডাটা পাওয়া যায়নি", "warning");
         return;
       }
+      const labelCol = this.profitViewMode === 'daily' ? 'Date' : (this.profitViewMode === 'monthly' ? 'Month' : 'Year');
       const headers = [
-        this.profitViewMode === 'monthly' ? 'Month' : 'Year',
+        labelCol,
         "Advance Booking Fee",
+        "Development Fee",
         "Monthly Rent",
-        "Product Sales",
+        "Electricity Bill",
         "Room Change Fee",
         "Total Income",
         "General Expense",
         "Staff Salary",
-        "Product Purchase",
         "Advance Refund",
         "Total Cost",
         "Profit / Loss"
       ];
       const rows = this.profitRows.map(r => [
         r.label,
-        r.booking_fee || 0,
-        r.monthly_rent || 0,
-        r.product_sales || 0,
+        r.room_booking || 0,
+        r.development_fee || 0,
+        r.monthly_payment || 0,
+        r.electricity_bill || 0,
         r.room_change_fee || 0,
         r.total_income || 0,
-        r.general_expense || 0,
-        r.staff_salary || 0,
-        r.product_purchase || 0,
+        r.expense || 0,
+        r.salary || 0,
         r.advance_refund || 0,
         r.total_cost || 0,
-        r.net_profit || 0
+        r.profit_loss || 0
       ]);
-      const filename = `Profit_Loss_Report_${this.profitViewMode}_${this.selectedYear || 'All'}.csv`;
+
+      // Add Grand Total Row
+      rows.push([
+        "GRAND TOTAL",
+        this.profitGrand.room_booking,
+        this.profitGrand.development_fee,
+        this.profitGrand.monthly_payment,
+        this.profitGrand.electricity_bill,
+        this.profitGrand.room_change_fee,
+        this.profitGrand.total_income,
+        this.profitGrand.expense,
+        this.profitGrand.salary,
+        this.profitGrand.advance_refund,
+        this.profitGrand.total_cost,
+        this.profitGrand.profit_loss
+      ]);
+
+      const filename = `Profit_Loss_Report_${this.profitViewMode}_${new Date().toISOString().substring(0,10)}.csv`;
       this.downloadCSV(filename, headers, rows);
     },
 
@@ -796,39 +954,77 @@ export default {
 </script>
 
 <style scoped>
-.form-select {
-  border-radius: 8px;
-  padding: .58rem .75rem;
+.form-select, .form-control {
+  border-radius: 6px;
   border: 1px solid #dce0e4;
 }
-.form-select:focus {
-  border-color: #0d6efd;
-  box-shadow: 0 0 0 .22rem rgba(13,110,253,.12);
+.form-select:focus, .form-control:focus {
+  border-color: #033364;
+  box-shadow: 0 0 0 .15rem rgba(3, 51, 100, 0.15);
 }
-.table th,
-.table td {
+.statement-table {
+  width: 100% !important;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+.statement-table th,
+.statement-table td {
   vertical-align: middle;
+  padding: 6px 3px !important;
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+.statement-table thead th {
+  white-space: normal;
+  word-wrap: break-word;
+}
+.sub-headers th {
+  font-size: 0.76rem !important;
+  font-weight: 700;
+  padding: 5px 2px !important;
+  line-height: 1.2;
+}
+.num-val {
   white-space: nowrap;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+.total-num-val {
+  white-space: nowrap;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: -0.2px;
 }
 .clickable-cell {
   cursor: pointer;
 }
 .clickable-cell:hover {
-  background: #fffbeb;
+  background: #f8fafc;
 }
 .detail-box-profit {
-  background: #fffbeb;
-  padding: 12px;
-  border-left: 3px solid #f59e0b;
+  background: #f8fafc;
+  padding: 10px;
+  border-left: 4px solid #033364;
 }
 .detail-title {
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.90rem;
   text-align: left;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 .btn-xs {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-  border-radius: 0.2rem;
+  padding: 0.25rem 0.45rem;
+  font-size: 0.78rem;
+  border-radius: 0.25rem;
+}
+.bg-label-info {
+  background-color: #e0f2fe !important;
+  color: #0369a1 !important;
+}
+.fs-7 {
+  font-size: 0.82rem;
 }
 </style>

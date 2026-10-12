@@ -501,6 +501,11 @@ export default {
         </html>
       `;
 
+      if (typeof window.printOrDownloadPdf === 'function') {
+        window.printOrDownloadPdf(html, 'Expense_Voucher');
+        return;
+      }
+
       const old = document.getElementById('print-iframe');
       if (old) old.remove();
 

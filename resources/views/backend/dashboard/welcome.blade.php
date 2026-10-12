@@ -5,28 +5,186 @@
     <div class="row g-6 mb-6">
         
         <!-- RESIDENT / STUDENT USER SPECIFIC STAT CARDS -->
-        @unlessrole('admin|staffs')
+        @unlessrole('admin|super-admin|staffs|manager')
+        @php
+            $studentActiveCheckout = null;
+            if (isset($userBooking) && $userBooking) {
+                $studentActiveCheckout = \App\Models\Backend\ResidentCheckInOut::where('room_booking_history_id', $userBooking->id)
+                    ->where('status', 0)
+                    ->latest('check_out_date')
+                    ->first();
+            }
+            if (!$studentActiveCheckout && Auth::check()) {
+                $studentActiveCheckout = \App\Models\Backend\ResidentCheckInOut::where('user_id', Auth::id())
+                    ->where('status', 0)
+                    ->latest('check_out_date')
+                    ->first();
+            }
+            
+            $isCurrentlyOutside = false;
+            $isUpcomingCheckout = false;
+            if ($studentActiveCheckout) {
+                $checkoutDate = \Carbon\Carbon::parse($studentActiveCheckout->check_out_date)->startOfDay();
+                $todayDate = \Carbon\Carbon::today();
+                if ($checkoutDate->lte($todayDate)) {
+                    $isCurrentlyOutside = true;
+                } else {
+                    $isUpcomingCheckout = true;
+                }
+            }
+
+            $residentPhoneForCheckout = $userBooking->phone ?? (Auth::user()->phone ?? '');
+            $residentNameForCheckout = $userBooking->full_name ?? (Auth::user()->name ?? 'শিক্ষার্থী');
+        @endphp
         
         <div class="col-12 mb-2">
             <div class="card border-0 shadow-sm p-3 bg-white" style="border-left: 5px solid #6366f1 !important;">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
                     <div>
-                        <h5 class="fw-bold mb-1 text-dark">
-                            <i class="fa fa-user-circle text-primary me-2"></i>Resident Dashboard (বোর্ডার ড্যাশবোর্ড)
-                        </h5>
+                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                            <h5 class="fw-bold mb-0 text-dark">
+                                <i class="fa fa-user-circle text-primary me-1"></i>Resident Dashboard (শিক্ষার্থী ড্যাশবোর্ড)
+                            </h5>
+                            @if($isCurrentlyOutside)
+                                <span class="badge bg-warning text-dark border border-warning px-2.5 py-1 fw-bold rounded-pill small">
+                                    🟡 বর্তমানে বাইরে / ছুটিতে আছেন
+                                </span>
+                            @elseif($isUpcomingCheckout)
+                                <span class="badge bg-info text-dark border border-info px-2.5 py-1 fw-bold rounded-pill small">
+                                    📅 আসন্ন ছুটি: {{ \Carbon\Carbon::parse($studentActiveCheckout->check_out_date)->format('d M, Y') }}
+                                </span>
+                            @else
+                                <span class="badge bg-success text-white px-2.5 py-1 fw-bold rounded-pill small">
+                                    🟢 হোস্টেলে উপস্থিত
+                                </span>
+                            @endif
+                        </div>
                         <small class="text-muted d-block mb-1">📌 <strong>নির্দেশাবলী:</strong> কনফার্ম বুকিং ডকুমেন্টটি প্রিন্ট করে এডমিন এর কাছে জমা দিয়ে আপনার বুকিং রসিদ বুঝে নিন।</small>
                         <small class="text-dark fw-semibold"><i class="fa fa-phone-alt me-1 text-success"></i> যেকোনো তথ্যের জন্য এই নম্বরে যোগাযোগ করুন: <a href="tel:01977270920" class="text-primary fw-bold text-decoration-none">01977270920</a></small>
                     </div>
-                    @if(isset($userBooking) && $userBooking)
-                    <div class="d-flex align-items-center gap-2">
-                        <button type="button" onclick="printResidentDocument()" class="btn btn-primary fw-bold waves-effect waves-light shadow-sm">
-                            <i class="fa fa-print me-2"></i> Confirm Booking Document
-                        </button>
+                    
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        @if($isCurrentlyOutside)
+                            <a href="{{ route('check-in-out.index') }}" class="btn btn-success fw-bold waves-effect waves-light shadow-sm">
+                                <i class="fa fa-door-open me-1"></i> হোস্টেলে ফিরে এসেছি (Check In)
+                            </a>
+                        @elseif($isUpcomingCheckout)
+                            {{-- Don't show check out button when upcoming check out is already registered --}}
+                        @else
+                            <a href="{{ route('check-in-out.index') }}" class="btn btn-warning text-dark fw-bold waves-effect waves-light shadow-sm">
+                                <i class="fa fa-walking me-1"></i> বাড়ি যাওয়া / Check Out
+                            </a>
+                        @endif
+
+                        @if(isset($userBooking) && $userBooking)
+                            <button type="button" onclick="printResidentDocument()" class="btn btn-primary fw-bold waves-effect waves-light shadow-sm">
+                                <i class="fa fa-print me-2"></i> Confirm Booking Document
+                            </button>
+                        @endif
                     </div>
-                    @endif
                 </div>
             </div>
         </div>
+
+        @if($isCurrentlyOutside)
+        <div class="col-12 mb-3">
+            <div class="alert alert-warning border-warning shadow-sm rounded-3 p-3.5 mb-0 d-flex align-items-center justify-content-between flex-wrap gap-3" style="background: #fffbeb; border: 2px solid #f59e0b;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-warning text-dark p-2.5 d-flex align-items-center justify-content-center shadow-sm" style="width: 48px; height: 48px; min-width: 48px;">
+                        <i class="fa fa-walking fs-4"></i>
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                            <span class="badge bg-warning text-dark fw-bold px-2.5 py-1 rounded-pill">🟡 বর্তমানে বাইরে / ছুটিতে আছেন</span>
+                            <span class="text-muted small">চেক-আউট: <strong>{{ $studentActiveCheckout->check_out_date ? $studentActiveCheckout->check_out_date->format('d M, Y') : '' }}</strong></span>
+                            @if($studentActiveCheckout->expected_return_date)
+                                <span class="text-primary small fw-semibold">| সম্ভাব্য ফেরার তারিখ: <strong>{{ \Carbon\Carbon::parse($studentActiveCheckout->expected_return_date)->format('d M, Y') }}</strong></span>
+                            @endif
+                        </div>
+                        <div class="fw-medium text-dark small">
+                            কারণ: <strong>{{ $studentActiveCheckout->leave_reason ?: 'বাড়ি যাওয়া' }}</strong>
+                            @if($studentActiveCheckout->emergency_contact)
+                                | জরুরি যোগাযোগ: <strong>{{ $studentActiveCheckout->emergency_contact }}</strong>
+                            @endif
+                        </div>
+                        <small class="d-block text-danger fw-semibold mt-1">
+                            <i class="fa fa-utensils me-1"></i> চেক-আউট থাকায় আপনার মিল (Meal) স্বয়ংক্রিয়ভাবে বন্ধ আছে। হোস্টেলে ফিরে চেক-ইন করলে পরদিন থেকে মিল পুনরায় স্বয়ংক্রিয়ভাবে চালু হবে।
+                        </small>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-success fw-bold px-4 py-2 rounded-3 shadow-sm d-inline-flex align-items-center gap-2" onclick="handleStudentCheckInFromDash()">
+                    <i class="fa fa-door-open"></i>
+                    <span>হোস্টেলে ফিরে এসেছি (Check In Now)</span>
+                </button>
+            </div>
+        </div>
+        @elseif($isUpcomingCheckout)
+        <div class="col-12 mb-3">
+            <div class="alert alert-info border-info shadow-sm rounded-3 p-3.5 mb-0 d-flex align-items-center justify-content-between flex-wrap gap-3" style="background: #eff6ff; border: 2px solid #3b82f6;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-primary text-white p-2.5 d-flex align-items-center justify-content-center shadow-sm" style="width: 48px; height: 48px; min-width: 48px;">
+                        <i class="fa fa-calendar-alt fs-4"></i>
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                            <span class="badge bg-primary text-white fw-bold px-2.5 py-1 rounded-pill">📅 আসন্ন ছুটি / চেক-আউট এন্ট্রি</span>
+                            <span class="text-dark small">চেক-আউট তারিখ: <strong>{{ $studentActiveCheckout->check_out_date ? $studentActiveCheckout->check_out_date->format('d M, Y') : '' }}</strong></span>
+                            @if($studentActiveCheckout->expected_return_date)
+                                <span class="text-primary small fw-semibold">| সম্ভাব্য ফেরার তারিখ: <strong>{{ \Carbon\Carbon::parse($studentActiveCheckout->expected_return_date)->format('d M, Y') }}</strong></span>
+                            @endif
+                        </div>
+                        <div class="text-muted small">
+                            <span class="text-success fw-bold">🟢 আপনি বর্তমানে হোস্টেলে উপস্থিত আছেন।</span> আপনার ছুটি নির্ধারিত তারিখ ({{ $studentActiveCheckout->check_out_date->format('d M, Y') }}) থেকে কার্যকর হবে।
+                        </div>
+                        <small class="d-block text-primary fw-semibold mt-1">
+                            <i class="fa fa-utensils me-1"></i> চেক-আউট তারিখ থেকে মিল স্বয়ংক্রিয়ভাবে বন্ধ থাকবে এবং হোস্টেলে ফিরে চেক-ইন করলে আবার চালু হবে।
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
+
+        @if(isset($upcomingSpecialMeals) && $upcomingSpecialMeals->count() > 0)
+            @foreach($upcomingSpecialMeals as $sm)
+                <div class="col-12 mb-3">
+                    <div class="card border-0 shadow-sm rounded-3 overflow-hidden text-white" style="background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);">
+                        <div class="card-body p-3 p-md-4">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-white text-primary p-3 me-3 d-flex align-items-center justify-content-center shadow-sm" style="width: 52px; height: 52px; min-width: 52px;">
+                                        <i class="ti ti-star fs-3 text-warning"></i>
+                                    </div>
+                                    <div>
+                                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                            <span class="badge bg-warning text-dark fw-bold px-2.5 py-1 rounded-pill" style="font-size: 11px;">
+                                                <i class="ti ti-sparkles me-1"></i> স্পেশাল মিল আয়োজন
+                                            </span>
+                                            <span class="badge bg-white text-dark fw-bold px-2.5 py-1 rounded-pill font-monospace" style="font-size: 11px;">
+                                                <i class="ti ti-calendar me-1 text-primary"></i> {{ \Carbon\Carbon::parse($sm->date)->format('d M Y (l)') }}
+                                            </span>
+                                        </div>
+                                        <h5 class="fw-bold text-white mb-1">
+                                            {{ $sm->title ?: 'স্পেশাল মিল আয়োজন' }}
+                                        </h5>
+                                        <p class="mb-0 text-white-50 small">
+                                            রেগুলার মিল রেটের বদলে এই তারিখে স্পেশাল মিল রেট কার্যকর হবে।
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="text-end bg-white bg-opacity-10 p-2.5 px-3 rounded-3 border border-white border-opacity-25 ms-auto ms-md-0">
+                                    <span class="text-white-50 small d-block mb-1">স্পেশাল মিল রেট</span>
+                                    <h4 class="mb-0 text-warning fw-bold font-monospace">
+                                        ৳ {{ number_format($sm->full_rate, 2) }}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        @endif
 
         @if(session('success'))
             <div class="col-12 mb-3">
@@ -75,9 +233,7 @@
                 ->get();
 
             $mealTypeLabels = [
-                'full'       => 'ফুল মিল (Full Meal)',
-                'half_day'   => 'দিনের হাফ মিল',
-                'half_night' => 'রাতের হাফ মিল',
+                'full'       => 'মিল চালু (Meal ON)',
                 'off'        => 'মিল বন্ধ (Meal OFF)',
             ];
         @endphp
@@ -101,13 +257,8 @@
                                             $resumeDate = \Carbon\Carbon::parse($un->end_date ?: $un->date)->addDay()->format('d-M-Y');
                                         @endphp
                                         <br><span class="text-success fw-bold mt-1 d-inline-block"><i class="fa fa-info-circle me-1"></i> <strong>{{ $resumeDate }}</strong> তারিখ থেকে আপনার মিল স্বয়ংক্রিয়ভাবে পুনরায় চালু থাকবে।</span>
-                                    @elseif($un->request_type == 'half_night')
-                                        <br><span class="text-success fw-bold mt-1 d-inline-block"><i class="fa fa-sun me-1"></i> ☀️ দুপুরের মিল বন্ধ রাখা হয়েছে। আজ রাত থেকে রাতের মিল চালু থাকবে।</span>
-                                    @elseif($un->request_type == 'half_day')
-                                        @php
-                                            $resumeDate = \Carbon\Carbon::parse($un->date)->addDay()->format('d-M-Y');
-                                        @endphp
-                                        <br><span class="text-success fw-bold mt-1 d-inline-block"><i class="fa fa-moon me-1"></i> 🌙 রাতের মিল বন্ধ রাখা হয়েছে। <strong>{{ $resumeDate }}</strong> তারিখ থেকে পুনরায় স্বাভাবিক মিল চালু থাকবে।</span>
+                                    @elseif($un->request_type == 'full')
+                                        <br><span class="text-success fw-bold mt-1 d-inline-block"><i class="fa fa-check-circle me-1"></i> আপনার মিল চালু করা হয়েছে।</span>
                                     @endif
                                 @endif
                                 @if($un->admin_note)
@@ -121,7 +272,28 @@
                 </div>
             </div>
         @endforeach
-        @if(isset($mealDepositWarning) && $mealDepositWarning)
+        @if(!auth()->user()->hasAnyRole(['admin', 'staffs']) && isset($isAdminTurnedOff) && $isAdminTurnedOff && !$isCurrentlyOutside)
+        <div class="col-12 mb-3" id="adminMealOffNoticeBanner">
+            <div class="alert alert-danger border-danger d-flex align-items-center justify-content-between flex-wrap gap-2 p-3 mb-0 shadow-sm rounded-3" role="alert">
+                <div class="d-flex align-items-center">
+                    <span class="alert-icon text-danger me-3 fs-3">
+                        <i class="fa fa-ban"></i>
+                    </span>
+                    <div>
+                        <h6 class="alert-heading mb-1 text-danger fw-bold fs-6">🚫 কর্তৃপক্ষ কর্তৃক আপনার মিল বন্ধ রাখা হয়েছে</h6>
+                        <div class="fw-medium text-dark fs-7">
+                            কর্তৃপক্ষ/এডমিন আপনার মিল বন্ধ করে দিয়েছেন। মিল পুনরায় চালু করার জন্য অনুগ্রহ করে মেস কর্তৃপক্ষের সাথে যোগাযোগ করুন।
+                        </div>
+                    </div>
+                </div>
+                <a href="tel:{{ $webSetting['phone'] ?? '01977270920' }}" class="btn btn-danger fw-bold shadow-sm waves-effect waves-light px-3 py-2">
+                    <i class="fa fa-phone-alt me-1"></i> মিল চালুর জন্য কল করুন ({{ $webSetting['phone'] ?? '01977270920' }})
+                </a>
+            </div>
+        </div>
+        @endif
+
+        @if(!auth()->user()->hasAnyRole(['admin', 'staffs']) && isset($mealDepositWarning) && $mealDepositWarning && (!isset($isAdminTurnedOff) || !$isAdminTurnedOff))
         <div class="col-12 mb-3" id="mealNoticeBanner">
             <div class="alert alert-info border-info d-flex align-items-center justify-content-between flex-wrap gap-2 p-3 mb-0 shadow-sm rounded-3" role="alert">
                 <div class="d-flex align-items-center">
@@ -135,7 +307,7 @@
                         </div>
                     </div>
                 </div>
-                <a href="tel:01977270920" class="btn btn-sm btn-info fw-bold shadow-sm waves-effect waves-light px-3 py-2">
+                <a href="tel:{{ $webSetting['phone'] ?? '01977270920' }}" class="btn btn-sm btn-info fw-bold shadow-sm waves-effect waves-light px-3 py-2">
                     <i class="fa fa-phone-alt me-1"></i> এডমিন এর সাথে যোগাযোগ করুন
                 </a>
             </div>
@@ -159,20 +331,47 @@
             }
 
             $bRooms = collect($bookingItems)->map(function($i) {
-                $parts = explode('-', $i['roomnumber'] ?? '');
-                return $parts[0] ?? ($i['roomnumber'] ?? '');
-            })->filter()->implode(', ');
+                $rStr = trim((string)($i['roomnumber'] ?? ''));
+                if (preg_match('/^(\d+)\-Block\s+([A-Za-z])(\-(\d+))?$/i', $rStr, $m)) {
+                    return "{$m[1]}-Block " . strtoupper($m[2]);
+                }
+                if (preg_match('/^([A-Za-z]+)[\-_](\d+)/', $rStr, $m)) {
+                    return ((int)$m[2]) . '-Block ' . strtoupper($m[1]);
+                }
+                return $rStr ?: '-';
+            })->filter()->unique()->implode(', ');
             if (!$bRooms && isset($userBooking) && $userBooking) {
                 $bRooms = $userBooking->room_number ?? $userBooking->roomnumber ?? '-';
             }
 
             $bSeats = collect($bookingItems)->map(function($i) {
-                $parts = explode('-', $i['roomnumber'] ?? '');
-                return count($parts) > 1 ? implode('-', array_slice($parts, 1)) : '-';
+                $rStr = trim((string)($i['roomnumber'] ?? ''));
+                if (preg_match('/^(\d+)\-Block\s+([A-Za-z])(\-(\d+))?$/i', $rStr, $m)) {
+                    return $rStr;
+                }
+                if (preg_match('/^([A-Za-z]+)[\-_](\d+)(.*)$/', $rStr, $m)) {
+                    $let = strtoupper($m[1]);
+                    $num = (int)$m[2];
+                    $sub = '';
+                    if (preg_match('/(\d+)$/', $m[3], $sm)) {
+                        $sub = '-' . $sm[1];
+                    }
+                    return "{$num}-Block {$let}{$sub}";
+                }
+                return $rStr ?: '-';
             })->filter()->implode(', ');
             if (!$bSeats && isset($userBooking) && $userBooking) {
                 $bSeats = '-';
             }
+
+            $bAdvanceTotal = collect($bookingItems)->sum(function($i) {
+                return (float)($i['advance_price'] ?? 0);
+            });
+            if ($bAdvanceTotal <= 0 && isset($userBooking) && isset($userBooking->advance_fee) && is_numeric($userBooking->advance_fee)) {
+                $bAdvanceTotal = (float)$userBooking->advance_fee;
+            }
+            $bDevFee = isset($userBooking) ? (float)($userBooking->development_fee ?? 0) : 0;
+            $bTotalInitialFee = $bAdvanceTotal + $bDevFee;
         @endphp
 
         <div class="col-sm-6 col-xl-3">
@@ -201,14 +400,28 @@
                             <span class="text-muted"><i class="fa fa-door-open text-primary me-1"></i> Room/Section:</span>
                             <span class="fw-bold text-dark">{{ $bRooms ?: '-' }}</span>
                         </div>
-                        <div class="d-flex justify-content-between small">
+                        <div class="d-flex justify-content-between small mb-2 pb-1 border-bottom">
                             <span class="text-muted"><i class="fa fa-bed text-primary me-1"></i> Seat No:</span>
                             <span class="badge bg-label-danger font-monospace fw-bold">{{ $bSeats ?: '-' }}</span>
                         </div>
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted"><i class="fa fa-shield-alt text-success me-1"></i> Advance Deposit:</span>
+                            <span class="fw-bold text-dark">৳ {{ number_format($bAdvanceTotal) }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted"><i class="fa fa-cogs text-warning me-1"></i> Development Fee:</span>
+                            <span class="fw-bold text-dark">৳ {{ number_format($bDevFee) }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between small pt-1 border-top mt-1">
+                            <span class="fw-bold text-primary"><i class="fa fa-calculator me-1"></i> Total Booking Fee:</span>
+                            <span class="fw-bold text-primary">৳ {{ number_format($bTotalInitialFee) }}</span>
+                        </div>
                     </div>
-                    <small class="mb-0 text-primary fw-bold">
-                        <i class="fa fa-tag me-1"></i> ৳ {{ number_format($userBooking->monthly_amount ?? 0) }}/month
-                    </small>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="mb-0 text-primary fw-bold">
+                            <i class="fa fa-tag me-1"></i> ৳ {{ number_format($userBooking->monthly_amount ?? 0) }}/month
+                        </small>
+                    </div>
                     @else
                     <small class="mb-0 text-muted">No Active Booking Record</small>
                     @endif
@@ -236,6 +449,41 @@
                             </div>
                         </div>
                         <div id="chart-mypayments" class="mt-2" style="min-height: 45px;"></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- My Electricity Bill Card -->
+        <div class="col-sm-6 col-xl-3">
+            <a href="{{ route('dashboard.my-electricity-bills') }}" class="text-decoration-none">
+                <div class="card h-100 position-relative overflow-hidden border-0 shadow-sm" style="border-top: 4px solid #f59e0b !important; cursor: pointer;">
+                    <div class="card-body pb-2">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span class="text-heading fw-semibold text-warning">
+                                    <i class="ti ti-bolt text-warning"></i> Electricity Bills
+                                </span>
+                                <div class="d-flex align-items-center my-1">
+                                    <h4 class="mb-0 me-2 text-warning fw-bold">
+                                        ⚡ ৳ {{ number_format($myTotalElectBill ?? 0, 2) }}
+                                    </h4>
+                                </div>
+                                <small class="mb-0 text-muted">
+                                    বর্তমান মাস: <strong class="text-dark">৳ {{ number_format($myCurrentMonthElectBill ?? 0, 2) }}</strong>
+                                </small>
+                            </div>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-warning">
+                                   <i class="ti ti-bolt fs-3 text-warning"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <span class="badge bg-label-warning text-dark w-100 py-1.5 fw-bold d-flex align-items-center justify-content-center gap-1">
+                                <i class="ti ti-receipt"></i> মাসের বিদ্যুৎ বিল বিবরণী দেখুন
+                            </span>
+                        </div>
                     </div>
                 </div>
             </a>
@@ -280,9 +528,13 @@
                             <span class="text-heading fw-semibold">Today's Meal (আজকের মিল)</span>
                             <div class="my-1" id="todayMealBadgeWrap">
                                 @if(isset($todayMealStatus) && $todayMealStatus->is_off)
-                                    <span class="badge bg-danger fs-6 px-2 py-1"><i class="fa fa-ban me-1"></i> Meal OFF (বন্ধ)</span>
+                                    <span class="badge bg-danger fs-6 px-2 py-1"><i class="fa fa-ban me-1"></i> Meal OFF (মিল বন্ধ)</span>
                                 @elseif(isset($todayMealStatus) && $todayMealStatus->half_meal)
-                                    <span class="badge bg-info fs-6 px-2 py-1"><i class="fa fa-sun me-1"></i> Half Meal (হাফ)</span>
+                                    @if($todayMealStatus->note == 'night' || $todayMealStatus->note == 'half_night')
+                                        <span class="badge bg-warning text-dark fs-6 px-2 py-1" title="রাতের মিল চালু / দুপুরের মিল বন্ধ"><i class="fa fa-moon me-1"></i> Night Half (রাত চালু / দুপুর বন্ধ)</span>
+                                    @else
+                                        <span class="badge bg-info text-white fs-6 px-2 py-1" title="দুপুরের মিল চালু / রাতের মিল বন্ধ"><i class="fa fa-sun me-1"></i> Day Half (দুপুর চালু / রাত বন্ধ)</span>
+                                    @endif
                                 @else
                                     <span class="badge bg-success fs-6 px-2 py-1"><i class="fa fa-check-circle me-1"></i> Full Meal (অটো চালু)</span>
                                 @endif
@@ -296,13 +548,44 @@
                             </span>
                         </div>
                     </div>
-                    <div class="mt-2">
-                        <a href="{{ route('meals.create') }}" class="btn btn-sm btn-outline-info w-100 fw-bold shadow-sm waves-effect">
-                            <i class="fa fa-cog me-1"></i> Change / Turn OFF Meal
-                        </a>
+                    <div class="mt-2" id="todayMealActionBtnWrap">
+                        @if(isset($isAdminTurnedOff) && $isAdminTurnedOff && !$isCurrentlyOutside)
+                            <a href="tel:{{ $webSetting['phone'] ?? '01977270920' }}" class="btn btn-sm btn-danger w-100 fw-bold shadow-sm waves-effect">
+                                <i class="fa fa-phone-alt me-1"></i> মিল চালুর জন্য কল করুন
+                            </a>
+                        @else
+                            <a href="{{ route('meals.create') }}" class="btn btn-sm btn-outline-info w-100 fw-bold shadow-sm waves-effect">
+                                <i class="fa fa-cog me-1"></i> Change / Turn OFF Meal
+                            </a>
+                        @endif
                         <small class="d-block text-muted text-center mt-1" style="font-size: 0.72rem;">
                             ☀️ লাঞ্চ কাটঅফ: ১০:০০ AM | 🌙 ডিনার: ০৪:০০ PM
                         </small>
+                    </div>
+
+                    <div id="todayMealOffResumeWrap">
+                        @if(isset($latestMealRequest) && $latestMealRequest)
+                            @php
+                                $endDate = $latestMealRequest->end_date ?: $latestMealRequest->date;
+                                $resumeDate = \Carbon\Carbon::parse($endDate)->addDay()->format('d-M-Y');
+                                $daysText = $latestMealRequest->request_type == 'off'
+                                    ? 'আগামী ' . ($latestMealRequest->total_days ?? 1) . ' দিনের বন্ধের অনুরোধ'
+                                    : 'মিল চালুর অনুরোধ';
+                            @endphp
+                            <div class="mt-2 p-2 bg-light-warning rounded border border-warning text-dark text-start" style="font-size: 0.74rem;">
+                                <div class="fw-bold text-danger mb-1 d-flex align-items-center justify-content-between">
+                                    <span><i class="fa fa-calendar-times me-1"></i> {{ $daysText }}</span>
+                                    @if($latestMealRequest->status == 0)
+                                        <span class="badge bg-warning text-dark px-1 py-0" style="font-size: 0.62rem;">অপেক্ষমাণ</span>
+                                    @else
+                                        <span class="badge bg-success text-white px-1 py-0" style="font-size: 0.62rem;">অনুমোদিত</span>
+                                    @endif
+                                </div>
+                                <div class="text-primary fw-semibold" style="font-size: 0.73rem;">
+                                    <i class="fa fa-sync-alt me-1 text-primary"></i> 🔄 <strong>{{ $resumeDate }}</strong> তারিখ থেকে অটো মিল চালু
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -333,13 +616,110 @@
             </a>
         </div>
 
+        <!-- Notice Board (জরুরি বিজ্ঞপ্তি) Card -->
+        @php
+            $activeNotices = \App\Models\Backend\ResidentNotice::where('status', 1)->latest()->get();
+            $activeNoticesCount = $activeNotices->count();
+            $latestSingleNotice = $activeNotices->first();
+        @endphp
+        <div class="col-sm-6 col-xl-3">
+            <a href="{{ route('dashboard.resident-notices') }}" class="text-decoration-none">
+                <div class="card h-100 position-relative overflow-hidden border-0 shadow-sm" style="border-top: 4px solid #6366f1 !important; cursor: pointer;">
+                    <div class="card-body pb-2">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span class="text-heading fw-semibold" style="color: #4f46e5;">Notice Board (বিজ্ঞপ্তি)</span>
+                                <div class="d-flex align-items-center my-1">
+                                    <h4 class="mb-0 me-2 fw-bold" style="color: #4f46e5;">{{ $activeNoticesCount }} টি</h4>
+                                </div>
+                                <small class="mb-0 text-muted">
+                                    @if($latestSingleNotice)
+                                        সর্বশেষ: {{ \Illuminate\Support\Str::limit($latestSingleNotice->title, 18) }}
+                                    @else
+                                        জরুরি বিজ্ঞপ্তি সমূহ
+                                    @endif
+                                </small>
+                            </div>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded" style="background: #eef2ff; color: #4f46e5;">
+                                   <i class="fa fa-bullhorn"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <span class="btn btn-sm w-100 py-1 fw-bold shadow-none d-block text-center" style="background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe;">
+                                <i class="fa fa-list-alt me-1"></i> সকল বিজ্ঞপ্তি দেখুন
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Student Check In / Check Out Card -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="card h-100 position-relative overflow-hidden border-0 shadow-sm" style="border-top: 4px solid {{ $isCurrentlyOutside ? '#f59e0b' : ($isUpcomingCheckout ? '#3b82f6' : '#10b981') }} !important;">
+                <div class="card-body pb-2">
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div class="content-left">
+                            <span class="text-heading fw-semibold {{ $isCurrentlyOutside ? 'text-warning' : ($isUpcomingCheckout ? 'text-primary' : 'text-success') }}">
+                                Check In / Out
+                            </span>
+                            <div class="my-1">
+                                @if($isCurrentlyOutside)
+                                    <span class="badge bg-warning text-dark fs-6 px-2.5 py-1">
+                                        <i class="fa fa-walking me-1"></i> Outside / On Leave
+                                    </span>
+                                @elseif($isUpcomingCheckout)
+                                    <span class="badge bg-info text-dark fs-6 px-2.5 py-1">
+                                        <i class="fa fa-calendar-alt me-1"></i> Upcoming Leave
+                                    </span>
+                                @else
+                                    <span class="badge bg-success fs-6 px-2.5 py-1">
+                                        <i class="fa fa-home me-1"></i> In Hostel
+                                    </span>
+                                @endif
+                            </div>
+                            <small class="mb-0 text-muted">
+                                @if($isCurrentlyOutside)
+                                    Check-out: {{ $studentActiveCheckout->check_out_date ? $studentActiveCheckout->check_out_date->format('d M, Y') : '' }}
+                                @elseif($isUpcomingCheckout)
+                                    Starts: {{ $studentActiveCheckout->check_out_date ? $studentActiveCheckout->check_out_date->format('d M, Y') : '' }}
+                                @else
+                                    Present in Hostel
+                                @endif
+                            </small>
+                        </div>
+                        <div class="avatar">
+                            <span class="avatar-initial rounded {{ $isCurrentlyOutside ? 'bg-label-warning text-warning' : ($isUpcomingCheckout ? 'bg-label-info text-info' : 'bg-label-success text-success') }}">
+                               <i class="fa {{ $isCurrentlyOutside ? 'fa-door-closed' : ($isUpcomingCheckout ? 'fa-calendar-check' : 'fa-door-open') }}"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        @if($isCurrentlyOutside)
+                            <a href="{{ route('check-in-out.index') }}" class="btn btn-sm btn-success w-100 fw-bold shadow-sm py-1">
+                                <i class="fa fa-door-open me-1"></i> Check In Now
+                            </a>
+                        @elseif($isUpcomingCheckout)
+                            <span class="badge bg-label-info text-info w-100 py-1.5 fw-bold">আসন্ন ছুটি নির্ধারিত</span>
+                        @else
+                            <a href="{{ route('check-in-out.index') }}" class="btn btn-sm btn-outline-warning text-dark w-100 fw-bold shadow-sm py-1">
+                                <i class="fa fa-walking me-1"></i> Check Out Entry
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
 
         @endunlessrole
 
 
+
         <!-- ADMIN & STAFF STAT CARDS -->
         <!-- Floor -->
-        @role('admin')
+        @role('admin|super-admin')
         <div class="col-sm-6 col-xl-3">
             <a href="{{ url('floor') }}">
                 <div class="card h-100 position-relative overflow-hidden">
@@ -366,7 +746,7 @@
         @endrole
 
         <!-- Total Rooms -->
-        @role('admin')
+        @role('admin|super-admin')
         <div class="col-sm-6 col-xl-3">
             <a href="{{ url('room-list') }}">
                 <div class="card h-100 position-relative overflow-hidden">
@@ -393,9 +773,9 @@
         @endrole
 
         <!-- Total Seats -->
-        @role('admin|staffs')
+        @role('admin|super-admin|staffs')
         <div class="col-sm-6 col-xl-3">
-            <a href="{{ route('room-list.index') }}">
+            <a href="{{ route('room-list.index') }}?seat_status=with_seats">
                 <div class="card h-100 position-relative overflow-hidden">
                     <div class="card-body pb-1">
                         <div class="d-flex align-items-start justify-content-between">
@@ -420,9 +800,9 @@
         @endrole
 
         <!-- Available Seats -->
-        @role('admin|staffs')
+        @role('admin|super-admin|staffs')
         <div class="col-sm-6 col-xl-3">
-            <a href="{{ route('room-list.index') }}">
+            <a href="{{ route('room-list.index') }}?seat_status=0">
                 <div class="card h-100 position-relative overflow-hidden">
                     <div class="card-body pb-1">
                         <div class="d-flex align-items-start justify-content-between">
@@ -447,9 +827,9 @@
         @endrole
 
         <!-- Booked Seats for Admin -->
-        @role('admin')
+        @role('admin|super-admin')
         <div class="col-sm-6 col-xl-3">
-            <a href="{{ url('room-booking-history') }}">
+            <a href="{{ route('room-list.index') }}?seat_status=1">
                 <div class="card h-100 position-relative overflow-hidden">
                     <div class="card-body pb-1">
                         <div class="d-flex align-items-start justify-content-between">
@@ -473,8 +853,105 @@
         </div>
         @endrole
 
+        <!-- Pending Bookings for Admin -->
+        @role('admin|super-admin')
+        <div class="col-sm-6 col-xl-3">
+            <a href="{{ url('room-booking-history') }}">
+                <div class="card h-100 position-relative overflow-hidden" style="border-top: 3px solid #f59e0b;">
+                    <div class="card-body pb-1">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                                <span class="text-heading">Pending Bookings</span>
+                                <div class="d-flex align-items-center my-1">
+                                    <h4 class="mb-0 me-2 text-warning">{{ $pendingbookingcount }}</h4>
+                                </div>
+                                <small class="mb-0 text-muted">Awaiting Approval</small>
+                            </div>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-warning">
+                                   <i class="fa fa-clock"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div id="chart-pendingbooking" class="mt-2" style="min-height: 45px;"></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        @endrole
+
+        <!-- Check In / Check Out Status Cards for Admin -->
+        @hasanyrole('admin|super-admin|staffs|manager')
+        <!-- Currently in Hostel -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="card h-100 position-relative overflow-hidden border-0 shadow-sm cursor-pointer" 
+                 role="button"
+                 data-bs-toggle="modal" 
+                 data-bs-target="#inHostelListModal"
+                 style="border-top: 4px solid #10b981 !important; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
+                 onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(16, 185, 129, 0.15)';"
+                 onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
+                <div class="card-body pb-2">
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div class="content-left">
+                            <span class="text-heading fw-semibold text-success">In Hostel</span>
+                            <div class="d-flex align-items-center my-1">
+                                <h4 class="mb-0 me-2 text-success fw-bold">{{ $dashInsideCount ?? 0 }}</h4>
+                            </div>
+                            <small class="mb-0 text-muted">Currently In Hostel</small>
+                        </div>
+                        <div class="avatar">
+                            <span class="avatar-initial rounded bg-label-success">
+                               <i class="fa fa-home"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <button type="button" class="btn btn-sm btn-outline-success w-100 py-1 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-none" data-bs-toggle="modal" data-bs-target="#inHostelListModal">
+                            <i class="fa fa-door-open me-1"></i> View In Hostel List ({{ $dashInsideCount ?? 0 }})
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Currently Checked Out (Outside) -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="card h-100 position-relative overflow-hidden border-0 shadow-sm cursor-pointer" 
+                 role="button"
+                 data-bs-toggle="modal" 
+                 data-bs-target="#outsideListModal"
+                 style="border-top: 4px solid #f59e0b !important; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
+                 onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(245, 158, 11, 0.15)';"
+                 onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
+                <div class="card-body pb-2">
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div class="content-left">
+                            <span class="text-heading fw-semibold text-warning">Outside / On Leave</span>
+                            <div class="d-flex align-items-center my-1">
+                                <h4 class="mb-0 me-2 text-warning fw-bold">{{ $dashOutsideCount ?? 0 }}</h4>
+                            </div>
+                            <small class="mb-0 text-muted">Currently Checked Out</small>
+                        </div>
+                        <div class="avatar">
+                            <span class="avatar-initial rounded bg-label-warning">
+                               <i class="fa fa-walking"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <button type="button" class="btn btn-sm btn-outline-warning text-dark w-100 py-1 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-none" data-bs-toggle="modal" data-bs-target="#outsideListModal">
+                            <i class="fa fa-door-closed me-1"></i> View Outside List ({{ $dashOutsideCount ?? 0 }})
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endhasanyrole
+
+
         <!-- Staffs -->
-        @hasanyrole('admin|staffs')
+        @hasanyrole('admin|super-admin|staffs|manager')
         <div class="col-sm-6 col-xl-3">
             <a href="{{ url('staffs') }}">
                 <div class="card h-100 position-relative overflow-hidden">
@@ -501,7 +978,7 @@
         @endhasanyrole
 
         <!-- Release History -->
-        @role('admin')
+        @role('admin|super-admin')
         <div class="col-sm-6 col-xl-3">
             <a href="{{ route('room-release.history') }}">
                 <div class="card h-100 position-relative overflow-hidden">
@@ -527,62 +1004,9 @@
         </div>
         @endrole
 
-        <!-- This Month Rent Collection -->
-        @role('admin|staffs')
-        <div class="col-sm-6 col-xl-3">
-            <a href="{{ route('monthly-payments.index') }}">
-                <div class="card h-100 position-relative overflow-hidden">
-                    <div class="card-body pb-1">
-                        <div class="d-flex align-items-start justify-content-between">
-                            <div class="content-left">
-                                <span class="text-heading">This Month Rent</span>
-                                <div class="d-flex align-items-center my-1">
-                                    <h4 class="mb-0 me-2 text-success">৳ {{ number_format($thisMonthCollection) }}</h4>
-                                </div>
-                                <small class="mb-0 text-muted">{{ \Carbon\Carbon::now()->format('F Y') }} Collection</small>
-                            </div>
-                            <div class="avatar">
-                                <span class="avatar-initial rounded bg-label-success">
-                                   <i class="fa fa-wallet"></i>
-                                </span>
-                            </div>
-                        </div>
-                        <div id="chart-rent" class="mt-2" style="min-height: 45px;"></div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        @endrole
-
-        <!-- This Month Due Rent -->
-        @role('admin|staffs')
-        <div class="col-sm-6 col-xl-3">
-            <a href="{{ route('monthly-payments.index') }}">
-                <div class="card h-100 position-relative overflow-hidden">
-                    <div class="card-body pb-1">
-                        <div class="d-flex align-items-start justify-content-between">
-                            <div class="content-left">
-                                <span class="text-heading">This Month Due</span>
-                                <div class="d-flex align-items-center my-1">
-                                    <h4 class="mb-0 me-2 text-danger">৳ {{ number_format($thisMonthDue) }}</h4>
-                                </div>
-                                <small class="mb-0 text-danger">Unpaid Rent Total</small>
-                            </div>
-                            <div class="avatar">
-                                <span class="avatar-initial rounded bg-label-danger">
-                                   <i class="fa fa-exclamation-circle"></i>
-                                </span>
-                            </div>
-                        </div>
-                        <div id="chart-due" class="mt-2" style="min-height: 45px;"></div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        @endrole
-
+       
         <!-- Today Meal Entries -->
-        @role('admin|staffs')
+        @role('admin|super-admin|staffs')
         <div class="col-sm-6 col-xl-3">
             <a href="{{ route('meals.index') }}">
                 <div class="card h-100 position-relative overflow-hidden">
@@ -609,7 +1033,7 @@
         @endrole
 
         <!-- Complaints Card for Admin -->
-        @role('admin|staffs')
+        @role('admin|super-admin|staffs')
         <div class="col-sm-6 col-xl-3">
             <a href="{{ route('complaints.index') }}" class="text-decoration-none">
                 <div class="card h-100 position-relative overflow-hidden border-0 shadow-sm" style="border-top: 4px solid #ef4444 !important;">
@@ -636,7 +1060,7 @@
         @endrole
 
         <!-- Today Expense -->
-        @role('admin')
+        @role('admin|super-admin')
         <div class="col-sm-6 col-xl-3">
            <a href="{{ url('today-expense') }}">
                 <div class="card h-100 position-relative overflow-hidden">
@@ -663,7 +1087,7 @@
         @endrole
 
         <!-- Today Product Distribution -->
-        @role('admin')
+        @role('admin|super-admin')
         <div class="col-sm-6 col-xl-3">
            <a href="{{ url('today-product-distribution') }}">
                 <div class="card h-100 position-relative overflow-hidden">
@@ -692,7 +1116,345 @@
     </div>
 </div>
 
+@unlessrole('admin|super-admin|staffs|manager')
+<!-- RESIDENT NOTICE BOARD MODAL -->
+<div class="modal fade notranslate" translate="no" id="residentNoticeBoardModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+            <div class="modal-header py-3 px-4 text-white" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); border-radius: 16px 16px 0 0;">
+                <h5 class="modal-title fw-bold text-white d-flex align-items-center gap-2 mb-0">
+                    <i class="fa fa-bullhorn"></i>
+                    <span>জরুরি নোটিশ বোর্ড (Notice Board)</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto;">
+                @if(isset($activeNoticesCount) && $activeNoticesCount > 0)
+                    <div class="d-flex flex-column gap-3">
+                        @foreach($activeNotices as $idx => $notice)
+                            <div class="card border rounded-3 shadow-none p-3 mb-0" style="border-left: 5px solid {{ $notice->priority == 'urgent' ? '#ef4444' : ($notice->priority == 'important' ? '#f59e0b' : '#4f46e5') }} !important; background: {{ $idx === 0 ? '#f8faff' : '#ffffff' }};">
+                                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+                                    <div>
+                                        <h6 class="fw-bold mb-1 text-dark fs-6">{{ $notice->title ?: 'জরুরি বিজ্ঞপ্তি' }}</h6>
+                                        <div class="d-flex align-items-center gap-2">
+                                            @if($idx === 0)
+                                                <span class="badge bg-primary rounded-pill px-2 py-0.5" style="font-size: 11px;">
+                                                    <i class="fa fa-sparkles me-1"></i> সর্বশেষ বিজ্ঞপ্তি
+                                                </span>
+                                            @endif
+                                            <span class="text-muted small">
+                                                <i class="fa fa-calendar-alt me-1"></i> {{ \Carbon\Carbon::parse($notice->created_at)->format('d M, Y (h:i A)') }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        @if($notice->priority == 'urgent')
+                                            <span class="badge bg-danger">অতি জরুরি</span>
+                                        @elseif($notice->priority == 'important')
+                                            <span class="badge bg-warning text-dark">গুরুত্বপূর্ণ</span>
+                                        @else
+                                            <span class="badge bg-secondary">সাধারণ</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="text-secondary small mt-2" style="white-space: pre-line; line-height: 1.6; font-size: 13.5px;">
+                                    {{ $notice->notice }}
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-5 text-muted">
+                        <i class="fa fa-bell-slash fs-1 text-muted opacity-50 d-block mb-3"></i>
+                        <h6>বর্তমানে কোনো নোটিশ নেই</h6>
+                        <p class="small mb-0">কর্তৃপক্ষ নতুন নোটিশ দিলে এখানে স্বয়ংক্রিয়ভাবে দেখতে পাবেন।</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+@endunlessrole
+
+@hasanyrole('admin|super-admin|staffs|manager')
+<!-- Modal: Currently In Hostel List -->
+<div class="modal fade" id="inHostelListModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-label-success text-success py-3 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="avatar avatar-sm bg-success text-white rounded d-flex align-items-center justify-content-center">
+                        <i class="fa fa-home"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold text-success mb-0">বর্তমানে হোস্টেলে অবস্থানরত রেসিডেন্ট তালিকা (Currently In Hostel)</h5>
+                        <small class="text-muted">হোস্টেলে উপস্থিত মোট রেসিডেন্ট সংখ্যা: <strong class="text-success">{{ $dashInsideCount ?? count($insideResidents ?? []) }} জন</strong></small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3 p-md-4">
+                <!-- Search & Actions Bar -->
+                <div class="row g-2 mb-3 align-items-center">
+                    <div class="col-md-7">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="fa fa-search text-muted"></i></span>
+                            <input type="text" id="inHostelSearchInput" class="form-control bg-light border-start-0 ps-0" placeholder="নাম, মোবাইল নম্বর বা রুম/সিট লিখে খুঁজুন..." onkeyup="filterInHostelTable()">
+                        </div>
+                    </div>
+                    <div class="col-md-5 text-md-end">
+                        <span class="badge bg-label-success py-2 px-3 fw-semibold">
+                            <i class="fa fa-users me-1"></i> মোট রেসিডেন্ট: {{ $dashInsideCount ?? count($insideResidents ?? []) }} জন
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Residents Table -->
+                <div class="table-responsive border rounded-3">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th>রেসিডেন্টের নাম</th>
+                                <th>মোবাইল নম্বর</th>
+                                <th>রুম ও সিট নম্বর</th>
+                                <th>হোস্টেলে প্রবেশের তারিখ</th>
+                                <th>অভিভাবক / ইমারজেন্সি</th>
+                                <th class="text-center">স্ট্যাটাস</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inHostelTableBody">
+                            @forelse($insideResidents ?? [] as $index => $res)
+                            <tr>
+                                <td class="fw-semibold text-muted">{{ $index + 1 }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar avatar-sm bg-label-success text-success rounded-circle me-2 fw-bold d-flex align-items-center justify-content-center">
+                                            {{ strtoupper(substr($res['name'] ?? 'R', 0, 1)) }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">{{ $res['name'] }}</div>
+                                            @if(!empty($res['email']))
+                                                <small class="text-muted">{{ $res['email'] }}</small>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="tel:{{ $res['phone'] }}" class="fw-semibold text-primary text-decoration-none d-inline-flex align-items-center gap-1">
+                                        <i class="fa fa-phone fs-7"></i> {{ $res['phone'] }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="badge bg-label-info border border-info-subtle px-2 py-1">
+                                        {{ $res['floor_room_seat'] }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="fw-medium text-dark">
+                                        <i class="fa fa-calendar-check text-success me-1"></i> {{ $res['check_in_date'] }}
+                                    </div>
+                                </td>
+                                <td>
+                                    @if($res['guardian_phone'] && $res['guardian_phone'] !== '-')
+                                        <a href="tel:{{ $res['guardian_phone'] }}" class="text-muted small text-decoration-none">
+                                            <i class="fa fa-phone-alt text-danger me-1"></i>{{ $res['guardian_phone'] }}
+                                        </a>
+                                    @else
+                                        <span class="text-muted small">-</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-success text-white px-2.5 py-1.5 rounded-pill shadow-xs">
+                                        <i class="fa fa-check-circle me-1"></i> হোস্টেলে উপস্থিত
+                                    </span>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">
+                                    <i class="fa fa-user-slash fs-2 d-block mb-2 text-muted"></i>
+                                    বর্তমানে কোনো রেসিডেন্ট তথ্য পাওয়া যায়নি।
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <div id="inHostelNoResults" class="text-center py-4 text-muted d-none">
+                    <i class="fa fa-search fs-2 d-block mb-2 text-muted"></i>
+                    কোনো রেসিডেন্টের তথ্যের সাথে মিল পাওয়া যায়নি।
+                </div>
+            </div>
+            <div class="modal-footer bg-light py-2 border-top d-flex justify-content-between">
+                <a href="{{ route('check-in-out.index') }}" class="btn btn-outline-primary btn-sm">
+                    <i class="fa fa-list me-1"></i> চেক-ইন / আউট ব্যবস্থাপনা পেজ
+                </a>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">বন্ধ করুন</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Currently Outside / On Leave List -->
+<div class="modal fade" id="outsideListModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-label-warning text-warning py-3 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="avatar avatar-sm bg-warning text-white rounded d-flex align-items-center justify-content-center">
+                        <i class="fa fa-walking"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold text-warning mb-0">বর্তমানে বাইরে / ছুটিতে থাকা রেসিডেন্ট তালিকা (Outside / On Leave)</h5>
+                        <small class="text-muted">বর্তমানে বাইরে মোট রেসিডেন্ট সংখ্যা: <strong class="text-warning">{{ $dashOutsideCount ?? count($outsideResidents ?? []) }} জন</strong></small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3 p-md-4">
+                <!-- Search & Actions Bar -->
+                <div class="row g-2 mb-3 align-items-center">
+                    <div class="col-md-7">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="fa fa-search text-muted"></i></span>
+                            <input type="text" id="outsideSearchInput" class="form-control bg-light border-start-0 ps-0" placeholder="নাম, মোবাইল নম্বর বা ছুটির কারণ লিখে খুঁজুন..." onkeyup="filterOutsideTable()">
+                        </div>
+                    </div>
+                    <div class="col-md-5 text-md-end">
+                        <span class="badge bg-label-warning text-dark py-2 px-3 fw-semibold">
+                            <i class="fa fa-walking me-1"></i> বাইরে আছেন: {{ $dashOutsideCount ?? count($outsideResidents ?? []) }} জন
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Outside Residents Table -->
+                <div class="table-responsive border rounded-3">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th>রেসিডেন্টের নাম</th>
+                                <th>মোবাইল নম্বর</th>
+                                <th>রুম ও সিট</th>
+                                <th>হোস্টেল ত্যাগের সময়</th>
+                                <th>প্রত্যাশিত ফেরার তারিখ</th>
+                                <th>ছুটির কারণ</th>
+                                <th>জরুরি নম্বর</th>
+                                <th class="text-center">স্ট্যাটাস</th>
+                                <th class="text-center" style="width: 130px;">অ্যাকশন</th>
+                            </tr>
+                        </thead>
+                        <tbody id="outsideTableBody">
+                            @forelse($outsideResidents ?? [] as $index => $res)
+                            <tr class="table-warning bg-opacity-10">
+                                <td class="fw-semibold text-muted">{{ $index + 1 }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar avatar-sm bg-label-warning text-warning rounded-circle me-2 fw-bold d-flex align-items-center justify-content-center">
+                                            {{ strtoupper(substr($res['name'] ?? 'R', 0, 1)) }}
+                                        </div>
+                                        <div class="fw-bold text-dark">{{ $res['name'] }}</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="tel:{{ $res['phone'] }}" class="fw-semibold text-primary text-decoration-none d-inline-flex align-items-center gap-1">
+                                        <i class="fa fa-phone fs-7"></i> {{ $res['phone'] }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border px-2 py-1">
+                                        {{ $res['floor_room_seat'] }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="fw-medium text-dark">
+                                        <i class="fa fa-clock text-warning me-1"></i> {{ $res['check_out_date'] }}
+                                    </div>
+                                </td>
+                                <td>
+                                    @if($res['is_overdue'])
+                                        <div class="fw-bold text-danger">{{ $res['expected_return_date'] }}</div>
+                                        <span class="badge bg-danger px-1.5 py-0.5" style="font-size: 10px;">⏰ Overdue</span>
+                                    @else
+                                        <div class="fw-medium text-dark">{{ $res['expected_return_date'] }}</div>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div class="small fw-medium text-dark">{{ $res['leave_reason'] }}</div>
+                                    @if(!empty($res['admin_notes']))
+                                        <small class="text-muted d-block" title="{{ $res['admin_notes'] }}">
+                                            <i class="fa fa-info-circle me-1"></i>{{ \Illuminate\Support\Str::limit($res['admin_notes'], 25) }}
+                                        </small>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($res['emergency_contact'] && $res['emergency_contact'] !== '-')
+                                        <a href="tel:{{ $res['emergency_contact'] }}" class="text-danger small text-decoration-none">
+                                            <i class="fa fa-phone-alt me-1"></i>{{ $res['emergency_contact'] }}
+                                        </a>
+                                    @else
+                                        <span class="text-muted small">-</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($res['is_overdue'])
+                                        <span class="badge bg-danger text-white px-2.5 py-1 rounded-pill">
+                                            <i class="fa fa-exclamation-triangle me-1"></i> সময় পার হয়েছে
+                                        </span>
+                                    @else
+                                        <span class="badge bg-warning text-dark px-2.5 py-1 rounded-pill fw-bold">
+                                            <i class="fa fa-walking me-1"></i> বাইরে আছেন
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-success py-1 px-2 fw-semibold shadow-xs" onclick="handleAdminCheckInFromModal({{ $res['id'] }}, '{{ addslashes($res['name']) }}')">
+                                        <i class="fa fa-sign-in-alt me-1"></i> চেক-ইন করান
+                                    </button>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="10" class="text-center py-4 text-muted">
+                                    <i class="fa fa-user-check fs-2 d-block mb-2 text-success"></i>
+                                    বর্তমানে কোনো রেসিডেন্ট বাইরে বা ছুটিতে নেই। সবাই হোস্টেলে উপস্থিত আছেন।
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <div id="outsideNoResults" class="text-center py-4 text-muted d-none">
+                    <i class="fa fa-search fs-2 d-block mb-2 text-muted"></i>
+                    কোনো রেসিডেন্টের তথ্যের সাথে মিল পাওয়া যায়নি।
+                </div>
+            </div>
+            <div class="modal-footer bg-light py-2 border-top d-flex justify-content-between">
+                <a href="{{ route('check-in-out.index') }}?status=outside" class="btn btn-outline-warning text-dark btn-sm">
+                    <i class="fa fa-list me-1"></i> সকল চেক-আউট হিস্ট্রি পেজ
+                </a>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">বন্ধ করুন</button>
+            </div>
+        </div>
+    </div>
+</div>
+@endhasanyrole
+
 <style type="text/css">
+.modal {
+    z-index: 1085 !important;
+}
+.modal-backdrop {
+    z-index: 1075 !important;
+}
+#residentNoticeBoardModal {
+    z-index: 99999 !important;
+}
+#residentNoticeBoardModal .modal-dialog {
+    z-index: 100000 !important;
+    position: relative !important;
+}
 .card {
     transition: transform 0.2s, box-shadow 0.2s;
     border-radius: 10px;
@@ -795,13 +1557,27 @@ function printResidentDocument() {
 
     function getRoomNo(str) {
         if (!str) return '-';
-        var parts = String(str).split('-');
-        return parts[0] || str;
+        var s = String(str).trim();
+        var m = s.match(/^(\d+)\-Block\s+([A-Za-z])/i);
+        if (m) return m[1] + '-Block ' + m[2].toUpperCase();
+        var m2 = s.match(/^([A-Za-z]+)[\-_](\d+)/);
+        if (m2) return parseInt(m2[2], 10) + '-Block ' + m2[1].toUpperCase();
+        return s;
     }
     function getSeatNo(str) {
         if (!str) return '-';
-        var parts = String(str).split('-');
-        return parts.length > 1 ? parts.slice(1).join('-') : '-';
+        var s = String(str).trim();
+        if (/^\d+\-Block\s+[A-Za-z]/i.test(s)) return s;
+        var m = s.match(/^([A-Za-z]+)[\-_](\d+)(.*)$/);
+        if (m) {
+            var let = m[1].toUpperCase();
+            var num = parseInt(m[2], 10);
+            var sub = '';
+            var sm = m[3].match(/(\d+)$/);
+            if (sm) sub = '-' + sm[1];
+            return num + '-Block ' + let + sub;
+        }
+        return s;
     }
 
     var roomNo = roomItems.length
@@ -828,7 +1604,7 @@ function printResidentDocument() {
 
     var docTitle = isProf ? 'কর্মজীবীর তথ্য - টি এস এস ভিলা' : 'শিক্ষার্থীর তথ্য - টি এস এস ভিলা';
     var sectionTitleText = isProf ? 'কর্মজীবীর তথ্য' : 'শিক্ষার্থীর তথ্য';
-    var signatureLabelText = isProf ? 'বোর্ডারের স্বাক্ষর' : 'শিক্ষার্থীর স্বাক্ষর';
+    var signatureLabelText = isProf ? 'কর্মজীবীর স্বাক্ষর' : 'শিক্ষার্থীর স্বাক্ষর';
 
     var institutionName = r.institution_name || u.institution_name || '-';
     var workplaceName = r.workplace_name || u.workplace_name || '-';
@@ -1144,6 +1920,7 @@ function dismissMealNotif(id) {
     });
 }
 
+@unlessrole('admin|super-admin|staffs|manager')
 document.addEventListener('DOMContentLoaded', function() {
     function checkDashboardUserNotifsLive() {
         fetch("{{ route('meal-requests.check-user-notifs') }}", {
@@ -1192,10 +1969,90 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (noticeBanner) noticeBanner.remove();
                 }
 
+                // Live Admin Turned OFF Banner & Action Button update / real-time removal
+                const adminBanner = document.getElementById('adminMealOffNoticeBanner');
+                const actionBtnWrap = document.getElementById('todayMealActionBtnWrap');
+                const mealCreateUrl = "{{ route('meals.create') }}";
+                const phoneNum = "{{ $webSetting['phone'] ?? '01977270920' }}";
+
+                if (data.is_admin_turned_off) {
+                    if (!adminBanner) {
+                        const container = document.querySelector('.container-xxl .row.g-6');
+                        if (container) {
+                            const newAdminBanner = document.createElement('div');
+                            newAdminBanner.className = 'col-12 mb-3';
+                            newAdminBanner.id = 'adminMealOffNoticeBanner';
+                            newAdminBanner.innerHTML = `
+                                <div class="alert alert-danger border-danger d-flex align-items-center justify-content-between flex-wrap gap-2 p-3 mb-0 shadow-sm rounded-3" role="alert">
+                                    <div class="d-flex align-items-center">
+                                        <span class="alert-icon text-danger me-3 fs-3">
+                                            <i class="fa fa-ban"></i>
+                                        </span>
+                                        <div>
+                                            <h6 class="alert-heading mb-1 text-danger fw-bold fs-6">🚫 কর্তৃপক্ষ কর্তৃক আপনার মিল বন্ধ রাখা হয়েছে</h6>
+                                            <div class="fw-medium text-dark fs-7">
+                                                কর্তৃপক্ষ/এডমিন আপনার মিল বন্ধ করে দিয়েছেন। মিল পুনরায় চালু করার জন্য অনুগ্রহ করে মেস কর্তৃপক্ষের সাথে যোগাযোগ করুন।
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a href="tel:${phoneNum}" class="btn btn-danger fw-bold shadow-sm waves-effect waves-light px-3 py-2">
+                                        <i class="fa fa-phone-alt me-1"></i> মিল চালুর জন্য কল করুন (${phoneNum})
+                                    </a>
+                                </div>
+                            `;
+                            container.prepend(newAdminBanner);
+                        }
+                    }
+                    if (actionBtnWrap) {
+                        actionBtnWrap.innerHTML = `
+                            <a href="tel:${phoneNum}" class="btn btn-sm btn-danger w-100 fw-bold shadow-sm waves-effect">
+                                <i class="fa fa-phone-alt me-1"></i> মিল চালুর জন্য কল করুন
+                            </a>
+                            <small class="d-block text-muted text-center mt-1" style="font-size: 0.72rem;">
+                                ☀️ লাঞ্চ কাটঅফ: ১০:০০ AM | 🌙 ডিনার: ০৪:০০ PM
+                            </small>
+                        `;
+                    }
+                } else {
+                    if (adminBanner) adminBanner.remove();
+                    if (actionBtnWrap && actionBtnWrap.innerHTML.includes('মিল চালুর জন্য কল করুন')) {
+                        actionBtnWrap.innerHTML = `
+                            <a href="${mealCreateUrl}" class="btn btn-sm btn-outline-info w-100 fw-bold shadow-sm waves-effect">
+                                <i class="fa fa-cog me-1"></i> Change / Turn OFF Meal
+                            </a>
+                            <small class="d-block text-muted text-center mt-1" style="font-size: 0.72rem;">
+                                ☀️ লাঞ্চ কাটঅফ: ১০:০০ AM | 🌙 ডিনার: ০৪:০০ PM
+                            </small>
+                        `;
+                    }
+                }
+
                 // Live Today's Meal Badge update
                 const badgeWrap = document.getElementById('todayMealBadgeWrap');
                 if (badgeWrap && data.today_meal_badge_text) {
                     badgeWrap.innerHTML = `<span class="badge ${data.today_meal_badge_class} fs-6 px-2 py-1"><i class="fa ${data.today_meal_badge_icon} me-1"></i> ${data.today_meal_badge_text}</span>`;
+                }
+
+                // Live Auto Resume Info Box update
+                const resumeWrap = document.getElementById('todayMealOffResumeWrap');
+                if (resumeWrap) {
+                    if (data.latest_meal_req) {
+                        const req = data.latest_meal_req;
+                        const badgeColor = req.status == 1 ? 'bg-success text-white' : 'bg-warning text-dark';
+                        resumeWrap.innerHTML = `
+                            <div class="mt-2 p-2 bg-light-warning rounded border border-warning text-dark text-start" style="font-size: 0.74rem;">
+                                <div class="fw-bold text-danger mb-1 d-flex align-items-center justify-content-between">
+                                    <span><i class="fa fa-calendar-times me-1"></i> ${req.days_text}</span>
+                                    <span class="badge ${badgeColor} px-1 py-0" style="font-size: 0.62rem;">${req.status_text}</span>
+                                </div>
+                                <div class="text-primary fw-semibold" style="font-size: 0.73rem;">
+                                    <i class="fa fa-sync-alt me-1 text-primary"></i> 🔄 <strong>${req.resume_date}</strong> তারিখ থেকে অটো মিল চালু
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        resumeWrap.innerHTML = '';
+                    }
                 }
 
                 // User notifications modal/alerts
@@ -1233,6 +2090,148 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(err => console.log('Dashboard live notif poll skipped', err));
     }
     setInterval(checkDashboardUserNotifsLive, 5000);
+
+    // Move notice modal to body to prevent backdrop stacking issues in Sneat layout
+    const resNoticeModal = document.getElementById('residentNoticeBoardModal');
+    if (resNoticeModal && resNoticeModal.parentElement !== document.body) {
+        document.body.appendChild(resNoticeModal);
+    }
 });
+
+function handleStudentCheckInFromDash() {
+    Swal.fire({
+        title: 'Check In Confirmation',
+        text: 'আপনি কি নিশ্চিত যে হোস্টেলে ফিরে এসেছেন এবং Check In করতে চান? চেক-ইন সম্পন্ন হলে পরদিন থেকে আপনার মিল পুনরায় স্বয়ংক্রিয়ভাবে চালু হবে। (Are you sure you want to Check In? Meal will resume from tomorrow)',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#10b981',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, Check In Now',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const formData = new FormData();
+            formData.append('phone', '{{ $residentPhoneForCheckout }}');
+
+            fetch("{{ route('resident.check-in') }}", {
+                method: "POST",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Welcome Back!',
+                        text: data.message,
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire('Error!', data.message || 'Check-in could not be processed.', 'error');
+                }
+            })
+            .catch(() => {
+                Swal.fire('Error!', 'Server connection error.', 'error');
+            });
+        }
+    });
+}
+@endunlessrole
+
+function filterInHostelTable() {
+    const input = document.getElementById('inHostelSearchInput');
+    if (!input) return;
+    const filter = input.value.toLowerCase().trim();
+    const rows = document.querySelectorAll('#inHostelTableBody tr');
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        if (text.includes(filter)) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    const noRes = document.getElementById('inHostelNoResults');
+    if (noRes) {
+        noRes.classList.toggle('d-none', visibleCount > 0);
+    }
+}
+
+function filterOutsideTable() {
+    const input = document.getElementById('outsideSearchInput');
+    if (!input) return;
+    const filter = input.value.toLowerCase().trim();
+    const rows = document.querySelectorAll('#outsideTableBody tr');
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        if (text.includes(filter)) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    const noRes = document.getElementById('outsideNoResults');
+    if (noRes) {
+        noRes.classList.toggle('d-none', visibleCount > 0);
+    }
+}
+
+function handleAdminCheckInFromModal(id, name) {
+    Swal.fire({
+        title: 'হোস্টেলে প্রবেশ নিশ্চিতকরণ',
+        text: `'${name}' কি হোস্টেলে ফিরে এসেছেন? চেক-ইন সম্পন্ন হলে পরদিন থেকে মিল পুনরায় স্বয়ংক্রিয়ভাবে চালু হবে।`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#10b981',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'হ্যাঁ, চেক-ইন সম্পন্ন করুন',
+        cancelButtonText: 'বাতিল'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/check-in-out/${id}/check-in-admin`, {
+                method: "POST",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'সফল!',
+                        text: data.message,
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire('ত্রুটি!', data.message || 'চেক-ইন ব্যর্থ হয়েছে।', 'error');
+                }
+            })
+            .catch(() => {
+                Swal.fire('ত্রুটি!', 'সার্ভার যোগাযোগে সমস্যা হয়েছে।', 'error');
+            });
+        }
+    });
+}
 </script>
 @endsection

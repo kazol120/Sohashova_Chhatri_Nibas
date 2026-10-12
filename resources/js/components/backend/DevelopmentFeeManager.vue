@@ -382,7 +382,7 @@ export default {
     isStudent(r) {
       if (!r || !r.user_type) return false;
       const u = String(r.user_type).toLowerCase().trim();
-      return u === "student" || u === "ছাত্রী";
+      return u === "student" || u === "ছাত্রী" || u === "শিক্ষার্থী";
     },
 
     formatDate(d) {
@@ -497,21 +497,7 @@ export default {
 
     printReceiptNow() {
       const content = document.getElementById("printableReceiptArea").innerHTML;
-      let iframe = document.getElementById("receiptPrintIframe");
-      if (!iframe) {
-        iframe = document.createElement("iframe");
-        iframe.id = "receiptPrintIframe";
-        iframe.style.position = "fixed";
-        iframe.style.right = "0";
-        iframe.style.bottom = "0";
-        iframe.style.width = "0px";
-        iframe.style.height = "0px";
-        iframe.style.border = "0";
-        document.body.appendChild(iframe);
-      }
-      const doc = iframe.contentWindow.document;
-      doc.open();
-      doc.write(`
+      const html = `
         <!DOCTYPE html>
         <html>
           <head>
@@ -530,7 +516,29 @@ export default {
             ${content}
           </body>
         </html>
-      `);
+      `;
+
+      if (typeof window.printOrDownloadPdf === 'function') {
+        const guestName = (this.selectedResident && this.selectedResident.full_name) ? this.selectedResident.full_name : 'Guest';
+        window.printOrDownloadPdf(html, `Development_Fee_Receipt_${guestName}`);
+        return;
+      }
+
+      let iframe = document.getElementById("receiptPrintIframe");
+      if (!iframe) {
+        iframe = document.createElement("iframe");
+        iframe.id = "receiptPrintIframe";
+        iframe.style.position = "fixed";
+        iframe.style.right = "0";
+        iframe.style.bottom = "0";
+        iframe.style.width = "0px";
+        iframe.style.height = "0px";
+        iframe.style.border = "0";
+        document.body.appendChild(iframe);
+      }
+      const doc = iframe.contentWindow.document;
+      doc.open();
+      doc.write(html);
       doc.close();
       setTimeout(() => {
         iframe.contentWindow.focus();

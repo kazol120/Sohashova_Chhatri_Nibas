@@ -19,6 +19,8 @@ class StaffSalaryPayment extends Model
         'salary_year',
         'payment_type',
         'amount',
+        'advance_deducted',
+        'gross_salary',
         'payment_date',
         'note',
         'created_by',

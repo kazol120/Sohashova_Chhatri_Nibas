@@ -69,7 +69,17 @@
               <div class="t-side-right">
                 <div class="t-box">
                   <div class="t-new inportent">Floor : <span class="spanstatus">{{ $room->floor->name }}</span></div>
-                  <div class="t-new">Room No : <span class="spanstatus">{{ $room->room_no }}</span></div>
+                  @php
+                    $rNo = (string)($room->room_no ?? '');
+                    $blockLetter = 'A';
+                    $roomNum = 1;
+                    if (preg_match('/^([A-Za-z]+)[\-_](\d+)$/', $rNo, $m)) {
+                        $blockLetter = strtoupper($m[1]);
+                        $roomNum = (int)$m[2];
+                    }
+                    $roomFormatted = "{$roomNum}-Block {$blockLetter}";
+                  @endphp
+                  <div class="t-new">Room No : <span class="spanstatus">{{ $roomFormatted }}</span></div>
                 </div>
                 <div class="t-box">
                   <div class="t-new">Room Type : <span class="spanstatus">{{ $room->room_type }}</span></div>

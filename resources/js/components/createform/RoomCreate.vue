@@ -125,10 +125,7 @@
                       <label class="form-label fw-semibold">Room Type <code class="req">*</code></label>
                       <select class="form-select border-2-focus" v-model="form.room_type" required>
                         <option value="">Select Room Type</option>
-                        <option value="Seat A - Single Room">Seat A - Single Room</option>
-                        <option value="Seat A - Double Room">Seat A - Double Room</option>
-                        <option value="Seat B - Single Room">Seat B - Single Room</option>
-                        <option value="Seat B - Double Room">Seat B - Double Room</option>
+                        <option v-for="opt in availableRoomTypeOptions" :key="opt" :value="opt">{{ opt }}</option>
                       </select>
                     </div>
                   </div>
@@ -156,7 +153,7 @@
                         <tbody>
                           <tr v-for="(seat, idx) in form.seats" :key="idx">
                             <td>
-                              <input type="text" class="form-control form-control-sm text-center" v-model="seat.seat_no" placeholder="e.g. Seat A" required />
+                              <input type="text" class="form-control form-control-sm text-center" v-model="seat.seat_no" placeholder="e.g. Block A" required />
                             </td>
                             <td>
                               <input type="number" class="form-control form-control-sm text-center" v-model.number="seat.price" min="0" placeholder="Monthly rent" required />
@@ -222,6 +219,20 @@ export default {
     url() {
       return this.$store.state.url;
     },
+    selectedFloorName() {
+      if (!this.form.floor_id || !this.floors.length) return "";
+      const f = this.floors.find(item => item.id === this.form.floor_id);
+      return f ? f.name : "";
+    },
+    availableRoomTypeOptions() {
+      const blocks = ["Block A", "Block B", "Block C", "Block D", "Block E", "Block F"];
+      const options = [];
+      blocks.forEach(b => {
+        options.push(`${b} - Single Room`);
+        options.push(`${b} - Double Room`);
+      });
+      return options;
+    },
   },
 
   watch: {
@@ -243,10 +254,7 @@ export default {
 
     "form.room_type"(newVal) {
       if (!newVal) return;
-      let prefix = "Seat A";
-      if (newVal.includes("Seat B")) {
-        prefix = "Seat B";
-      }
+      let prefix = newVal.split(" - ")[0] || "Block A";
       if (newVal.includes("Single") || newVal === "Singel") {
         this.form.seats = [
           { seat_no: prefix, price: this.form.price || "", advance_price: 0 }
@@ -261,6 +269,7 @@ export default {
 
     "form.floor_id"(v) {
       this.form.room_id = "";
+      this.form.room_type = "";
       this.rooms = [];
       if (v) this.loadRoomsByFloor(v);
     },
@@ -282,7 +291,7 @@ export default {
         windows: "",
         images: [],
         seats: [
-          { seat_no: "Seat A", price: "", advance_price: 0 }
+          { seat_no: "Block A", price: "", advance_price: 0 }
         ],
       };
     },
@@ -439,8 +448,9 @@ export default {
     },
 
     addSeat() {
+      let prefix = (this.form.room_type || "").split(" - ")[0] || "Block A";
       this.form.seats.push({
-        seat_no: "Seat-" + String.fromCharCode(65 + this.form.seats.length),
+        seat_no: `${prefix}-${this.form.seats.length + 1}`,
         price: this.form.price || "",
         advance_price: 0
       });

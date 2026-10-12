@@ -24,8 +24,103 @@
             </div>
           </div>
 
+          <!-- Summary Metrics Cards -->
+          <div class="card-body pb-0 pt-4">
+            <div class="row g-3 mb-2">
+              <!-- Card 1: Total Cash Collected In Hand -->
+              <div class="col-12 col-sm-6 col-lg-3">
+                <div class="card border-0 shadow-none h-100" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-radius: 12px; border-left: 5px solid #2e7d32 !important;">
+                  <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                    <div>
+                      <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                        মোট আদায় (হাতে পাওয়া ক্যাশ)
+                      </span>
+                      <h4 class="mb-0 fw-bold text-success font-monospace">
+                        ৳ {{ Number(stats.total_collected_in_hand || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                      </h4>
+                      <small class="text-muted fw-semibold" style="font-size: 0.72rem;">
+                        <i class="ti ti-check me-1 text-success"></i>বকেয়া ও চলতি মাস সহ সংগৃহীত
+                      </small>
+                    </div>
+                    <div class="rounded-circle p-2 bg-white text-success shadow-sm d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                      <i class="ti ti-wallet fs-3"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 2: Current Month Total Bill (Rent + Electricity) -->
+              <div class="col-12 col-sm-6 col-lg-3">
+                <div class="card border-0 shadow-none h-100" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-radius: 12px; border-left: 5px solid #1976d2 !important;">
+                  <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                    <div>
+                      <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                        চলতি মাসের মোট বিল
+                      </span>
+                      <h4 class="mb-0 fw-bold text-primary font-monospace">
+                        ৳ {{ Number(stats.total_current_bill || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                      </h4>
+                      <small class="text-muted fw-semibold" style="font-size: 0.72rem;">
+                        ভাড়া: ৳ {{ Number(stats.total_rent || 0).toFixed(0) }} + ⚡ ৳ {{ Number(stats.total_electricity || 0).toFixed(0) }}
+                      </small>
+                    </div>
+                    <div class="rounded-circle p-2 bg-white text-primary shadow-sm d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                      <i class="ti ti-receipt-2 fs-3"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 3: Total Outstanding Due -->
+              <div class="col-12 col-sm-6 col-lg-3">
+                <div class="card border-0 shadow-none h-100" style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); border-radius: 12px; border-left: 5px solid #c62828 !important;">
+                  <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                    <div>
+                      <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                        সর্বমোট অবশিষ্ট বকেয়া
+                      </span>
+                      <h4 class="mb-0 fw-bold text-danger font-monospace">
+                        ৳ {{ Number(stats.total_due || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                      </h4>
+                      <small class="text-muted fw-semibold" style="font-size: 0.72rem;">
+                        <i class="ti ti-alert-circle me-1 text-danger"></i>মোট অবশিষ্ট বকেয়া ব্যালেন্স
+                      </small>
+                    </div>
+                    <div class="rounded-circle p-2 bg-white text-danger shadow-sm d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                      <i class="ti ti-clock-exclamation fs-3"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 4: Residents Collection Status -->
+              <div class="col-12 col-sm-6 col-lg-3">
+                <div class="card border-0 shadow-none h-100" style="background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border-radius: 12px; border-left: 5px solid #7b1fa2 !important;">
+                  <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                    <div>
+                      <span class="text-muted small fw-bold text-uppercase d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                        পেমেন্ট স্ট্যাটাস সামারি
+                      </span>
+                      <div class="d-flex align-items-center gap-1 my-1">
+                        <span class="badge bg-success py-1 px-2" style="font-size: 0.75rem;">{{ stats.paid_count || 0 }} Paid</span>
+                        <span class="badge bg-warning text-dark py-1 px-2" style="font-size: 0.75rem;">{{ stats.partial_count || 0 }} Partial</span>
+                        <span class="badge bg-secondary py-1 px-2" style="font-size: 0.75rem;">{{ stats.pending_count || 0 }} Pending</span>
+                      </div>
+                      <small class="text-muted fw-semibold" style="font-size: 0.72rem;">
+                        মোট শিক্ষার্থী: {{ stats.total_residents || 0 }} জন
+                      </small>
+                    </div>
+                    <div class="rounded-circle p-2 bg-white shadow-sm d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; color: #7b1fa2;">
+                      <i class="ti ti-users fs-3"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Filters Section -->
-          <div class="card-body pt-4">
+          <div class="card-body pt-2">
             <div class="row g-3 align-items-end mb-4 bg-light p-3 rounded-3">
               <!-- Month Filter -->
               <div class="col-12 col-md-3">
@@ -129,12 +224,30 @@
                     <td class="py-3 text-center">
                       <span class="badge bg-label-info fw-bold">{{ formatMonthYear(pay.payment_month) }}</span>
                     </td>
-                    <td class="py-3 text-end fw-bold text-dark">৳ {{ Number(pay.amount).toFixed(2) }}</td>
+                    <td class="py-3 text-end fw-bold text-dark">
+                      <div>৳ {{ Number(pay.amount).toFixed(2) }}</div>
+                      <div v-if="Number(pay.electricity_bill) > 0" class="badge bg-label-warning text-dark font-monospace mt-1" style="font-size: 0.72rem;">
+                        + ⚡ ৳ {{ Number(pay.electricity_bill).toFixed(2) }}
+                      </div>
+                    </td>
                     <td class="py-3 text-end fw-bold text-success">৳ {{ Number(pay.paid_amount || 0).toFixed(2) }}</td>
                     <td class="py-3 text-end fw-bold">
-                      <span v-if="getDueAmount(pay) > 0" class="text-danger">
-                        ৳ {{ Number(getDueAmount(pay)).toFixed(2) }}
-                      </span>
+                      <div v-if="getDueAmount(pay) > 0" class="d-flex flex-column align-items-end">
+                        <span class="text-danger fs-6">
+                          ৳ {{ Number(getDueAmount(pay)).toFixed(2) }}
+                        </span>
+                        <div v-if="pay.due_breakdown && pay.due_breakdown.length > 0" class="mt-1">
+                          <button
+                            type="button"
+                            class="btn btn-outline-danger btn-sm py-0 px-2 fw-semibold"
+                            style="font-size: 0.73rem;"
+                            @click="openDueBreakdownModal(pay)"
+                            title="মাসিক বকেয়ার বিবরণ দেখুন"
+                          >
+                            <i class="ti ti-list-details me-1"></i>বকেয়া বিবরণ
+                          </button>
+                        </div>
+                      </div>
                       <span v-else class="text-success">৳ 0.00</span>
                     </td>
                    <!--  <td class="py-3 text-center">
@@ -171,7 +284,7 @@
                       <div class="d-flex gap-2 justify-content-center">
                         <!-- Collect Payment Button -->
                         <button 
-                          v-if="pay.status !== 'paid'"
+                          v-if="pay.status !== 'paid' && getDueAmount(pay) > 0.01"
                           class="btn btn-success btn-sm px-3 d-flex align-items-center gap-1 shadow-sm"
                           @click="openCollectModal(pay)"
                         >
@@ -255,19 +368,49 @@
                   <span>Room: {{ activePayment.roomnumber }}</span>
                   <span>Month: {{ formatMonthYear(activePayment.payment_month) }}</span>
                 </div>
+                <!-- Electricity Bill in Overview if entered -->
+                <div v-if="Number(form.electricity_bill) > 0" class="small text-primary fw-bold d-flex justify-content-between mt-1 border-top pt-2">
+                  <span>⚡ Electricity Bill (বিদ্যুৎ বিল):</span>
+                  <span>৳ {{ Number(form.electricity_bill).toFixed(2) }}</span>
+                </div>
                 <!-- Carry Forward Due -->
                 <div v-if="Number(activePayment.carried_forward_due) > 0" class="small text-warning fw-bold d-flex justify-content-between mt-1 border-top pt-2">
                   <span>⚠ Carry Forward Due:</span>
                   <span>+ ৳ {{ Number(activePayment.carried_forward_due).toFixed(2) }}</span>
                 </div>
+                <!-- Total Payable Bill -->
+                <div class="small fw-bold d-flex justify-content-between mt-1 border-top pt-2 text-dark">
+                  <span>Total Payable Bill:</span>
+                  <span>৳ {{ calculatedModalTotalBill.toFixed(2) }}</span>
+                </div>
                 <div class="small d-flex justify-content-between mt-1 border-top pt-2">
                   <span class="text-success fw-bold">Paid So Far:</span>
                   <span class="text-success fw-bold">৳ {{ Number(activePayment.paid_amount || 0).toFixed(2) }}</span>
                 </div>
-                <div v-if="remainingAfterCollection > 0" class="small text-danger fw-bold d-flex justify-content-between mt-1">
+                <div v-if="remainingAfterCollection > 0" class="small text-danger fw-bold d-flex justify-content-between mt-1 border-top pt-2">
                   <span>🔴 Remaining Due after this payment:</span>
                   <span>৳ {{ remainingAfterCollection.toFixed(2) }}</span>
                 </div>
+              </div>
+
+              <!-- Electricity Bill Input -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold text-dark d-flex justify-content-between">
+                  <span>Electricity Bill / বিদ্যুৎ বিল (৳)</span>
+                  <span class="text-muted small">Optional</span>
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text fw-bold text-primary"><i class="ti ti-bolt me-1"></i> ৳</span>
+                  <input 
+                    type="number" 
+                    class="form-control border-2" 
+                    v-model.number="form.electricity_bill"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                  />
+                </div>
+                <div class="form-text text-muted small mt-1">বিদ্যুৎ বিলের পরিমাণ লিখুন (এটি রিসিট ও রেকর্ডে সংরক্ষিত থাকবে)।</div>
               </div>
 
               <!-- Amount to Collect -->
@@ -281,7 +424,7 @@
                     v-model.number="form.amount_to_collect"
                     step="0.01"
                     :min="1"
-                    :max="Math.max(1, Number(getDueAmount(activePayment)))"
+                    :max="Math.max(1, calculatedModalDue)"
                     required
                   />
                 </div>
@@ -394,6 +537,84 @@
       </div>
     </div>
 
+    <!-- MONTHLY DUE BREAKDOWN MODAL -->
+    <div 
+      class="modal fade show" 
+      id="dueBreakdownModal" 
+      tabindex="-1" 
+      style="display: block; background: rgba(0, 0, 0, 0.5);" 
+      v-if="showBreakdownModal"
+      role="dialog"
+    >
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;" role="document">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+          <div class="modal-header bg-danger text-white py-3 px-4">
+            <h5 class="modal-title fw-bold text-white d-flex align-items-center gap-2 mb-0" style="font-size: 1rem;">
+              <i class="ti ti-file-invoice"></i>
+              <span>মাসভিত্তিক বকেয়ার বিবরণ (Due Breakdown)</span>
+            </h5>
+            <button type="button" class="btn-close btn-close-white" @click="closeDueBreakdownModal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4" v-if="activeBreakdownPayment">
+            <!-- Resident Info Banner -->
+            <div class="bg-light p-3 rounded-3 mb-3 border">
+              <div class="d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold text-dark mb-0">{{ activeBreakdownPayment.full_name }}</h6>
+                <span class="badge bg-primary font-monospace">{{ activeBreakdownPayment.roomnumber }}</span>
+              </div>
+              <div class="small text-muted mt-1">
+                <i class="ti ti-phone me-1 text-primary"></i>{{ activeBreakdownPayment.phone }}
+              </div>
+            </div>
+
+            <!-- Due Breakdown List Table -->
+            <div class="table-responsive border rounded-3 overflow-hidden mb-3">
+              <table class="table table-sm table-striped align-middle mb-0" style="font-size: 0.85rem;">
+                <thead class="table-dark">
+                  <tr>
+                    <th class="py-2 ps-3">মাস (Month)</th>
+                    <th class="py-2 text-end">ভাড়া (Rent)</th>
+                    <th class="py-2 text-end">জমা (Paid)</th>
+                    <th class="py-2 text-end pe-3">বকেয়া (Due)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in activeBreakdownPayment.due_breakdown" :key="item.id">
+                    <td class="ps-3 py-2 fw-semibold text-dark">{{ formatMonthYear(item.payment_month) }}</td>
+                    <td class="text-end py-2 text-dark">
+                      <div>৳ {{ Number(item.amount).toFixed(2) }}</div>
+                      <div v-if="Number(item.electricity_bill) > 0" class="text-muted small" style="font-size: 0.72rem;">
+                        (বিদ্যুৎ বিল: ৳ {{ Number(item.electricity_bill).toFixed(0) }})
+                      </div>
+                    </td>
+                    <td class="text-end py-2 text-success fw-bold">
+                      ৳ {{ (Number(item.paid_amount || 0)).toFixed(2) }}
+                    </td>
+                    <td class="text-end py-2 pe-3 fw-bold text-danger">
+                      ৳ {{ Math.max(0, (Number(item.amount) + Number(item.electricity_bill || 0)) - Number(item.paid_amount || 0)).toFixed(2) }}
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot class="table-light border-top">
+                  <tr>
+                    <th colspan="3" class="ps-3 py-2 fw-bold text-dark">সর্বমোট বকেয়া (Total Due):</th>
+                    <th class="text-end py-2 pe-3 fw-extrabold text-danger fs-6">
+                      ৳ {{ getDueAmount(activeBreakdownPayment).toFixed(2) }}
+                    </th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer bg-light py-2 px-3 justify-content-end">
+            <button type="button" class="btn btn-secondary btn-sm fw-bold px-3" @click="closeDueBreakdownModal">
+              ✕ বন্ধ করুন (Close)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -419,9 +640,12 @@ export default {
       // Modal management
       showModal: false,
       showGenerateModal: false,
+      showBreakdownModal: false,
       activePayment: null,
+      activeBreakdownPayment: null,
       form: {
         amount_to_collect: 0,
+        electricity_bill: 0,
         payment_method: "Cash",
         trx_id: "",
         note: ""
@@ -432,14 +656,41 @@ export default {
         current_page: 1,
         last_page: 1,
         per_page: 10
+      },
+
+      stats: {
+        total_collected_in_hand: 0,
+        total_rent: 0,
+        total_electricity: 0,
+        total_current_bill: 0,
+        total_due: 0,
+        total_residents: 0,
+        paid_count: 0,
+        partial_count: 0,
+        pending_count: 0
       }
     };
   },
   computed: {
+    // Total payable calculation for the collect modal (Rent + Carry Forward Due)
+    calculatedModalTotalBill() {
+      if (!this.activePayment) return 0;
+      const rent = Number(this.activePayment.amount || 0);
+      const carry = Number(this.activePayment.carried_forward_due || 0);
+      const elec = Number(this.form.electricity_bill || 0);
+      return rent + carry + elec;
+    },
+    // Net due for the collect modal (Total - Paid So Far)
+    calculatedModalDue() {
+      if (!this.activePayment) return 0;
+      const paid = Number(this.activePayment.paid_amount || 0);
+      const due = this.calculatedModalTotalBill - paid;
+      return due > 0 ? due : 0;
+    },
     // Live preview of remaining balance after this collection
     remainingAfterCollection() {
       if (!this.activePayment) return 0;
-      const due = this.getDueAmount(this.activePayment);
+      const due = this.calculatedModalDue;
       const collecting = Number(this.form.amount_to_collect) || 0;
       const remaining = due - collecting;
       return remaining > 0.009 ? remaining : 0;
@@ -479,6 +730,17 @@ export default {
           current_page: res.data.pagination?.current_page || res.data.current_page || 1,
           last_page: res.data.pagination?.last_page || res.data.last_page || 1,
           per_page: res.data.pagination?.per_page || res.data.per_page || 10
+        };
+        this.stats = res.data.stats || {
+          total_collected_in_hand: 0,
+          total_rent: 0,
+          total_electricity: 0,
+          total_current_bill: 0,
+          total_due: 0,
+          total_residents: 0,
+          paid_count: 0,
+          partial_count: 0,
+          pending_count: 0
         };
       } catch (err) {
         console.error(err);
@@ -531,15 +793,32 @@ export default {
       }
     },
 
+    openDueBreakdownModal(payment) {
+      this.activeBreakdownPayment = payment;
+      this.showBreakdownModal = true;
+    },
+
+    closeDueBreakdownModal() {
+      this.showBreakdownModal = false;
+      this.activeBreakdownPayment = null;
+    },
+
     openCollectModal(payment) {
       this.activePayment = payment;
+      const elec = Number(payment.electricity_bill || 0);
+      
       this.form = {
         amount_to_collect: this.getDueAmount(payment),
+        electricity_bill: elec,
         payment_method: "Cash",
         trx_id: "",
         note: ""
       };
       this.showModal = true;
+    },
+
+    onElectricityBillChange() {
+      this.form.amount_to_collect = this.calculatedModalDue;
     },
 
     closeCollectModal() {
@@ -553,6 +832,7 @@ export default {
         const res = await axios.post(`${window.location.origin}/monthly-payments/collect`, {
           id: this.activePayment.id,
           amount_to_collect: this.form.amount_to_collect,
+          electricity_bill: this.form.electricity_bill,
           payment_method: this.form.payment_method,
           trx_id: this.form.trx_id,
           note: this.form.note
@@ -617,55 +897,127 @@ export default {
 
     getDueAmount(pay) {
       if (!pay) return 0;
+      if (pay.status === 'paid') return 0;
       const due = Number(pay.due_amount);
       const paid = Number(pay.paid_amount || 0);
-      const total = Number(pay.amount || 0);
+      const rent = Number(pay.amount || 0);
+      const elec = Number(pay.electricity_bill || 0);
+      const carry = Number(pay.carried_forward_due || 0);
+      const total = rent + elec + carry;
+      
       if (pay.status !== 'paid' && due === 0 && paid === 0) {
         return total;
       }
       if (due > 0) return due;
       const remaining = total - paid;
-      return remaining > 0 ? remaining : 0;
+      return remaining > 0.01 ? remaining : 0;
     },
 
     printReceipt(pay) {
+      if (!pay) return;
       const formattedMonth = this.formatMonthYear(pay.payment_month);
-      const logLines = pay.note ? pay.note.split("\n") : [];
-      let logHtml = "";
-      if (logLines.length > 0) {
-        logHtml = `
-          <h6 class="fw-bold mb-2 border-bottom pb-1 text-primary">Payment Transactions Log (আদায়ের বিবরণ)</h6>
-          <div class="mb-4">
-        `;
-        logLines.forEach(line => {
-          logHtml += `<div class="p-2 mb-1 rounded bg-light border small text-dark">${line}</div>`;
+      
+      let transactions = (pay.parsed_transactions && pay.parsed_transactions.length > 0)
+        ? pay.parsed_transactions
+        : [];
+
+      if (transactions.length === 0 && pay.note) {
+        const lines = typeof pay.note === 'string' ? pay.note.split('\n') : (Array.isArray(pay.note) ? pay.note : []);
+        lines.forEach(line => {
+          line = line.trim();
+          if (!line) return;
+          const matchFull = line.match(/^\[([^\]]+)\]\s*\[([^\]]+)\]\s*Collected\s*৳\s*([0-9.]+)\s*via\s*([^(]+)(?:\(([^)]+)\))?/i);
+          const matchSimple = line.match(/^\[([^\]]+)\]\s*Collected\s*৳\s*([0-9.]+)\s*via\s*([^(]+)(?:\(([^)]+)\))?/i);
+          if (matchFull) {
+            transactions.push({
+              month: matchFull[1].trim(),
+              datetime: matchFull[2].trim(),
+              amount: parseFloat(matchFull[3]) || 0,
+              method: matchFull[4].trim(),
+              trx: matchFull[5] ? matchFull[5].replace(/TRX:\s*/i, '').trim() : ''
+            });
+          } else if (matchSimple) {
+            transactions.push({
+              month: formattedMonth,
+              datetime: matchSimple[1].trim(),
+              amount: parseFloat(matchSimple[2]) || 0,
+              method: matchSimple[3].trim(),
+              trx: matchSimple[4] ? matchSimple[4].replace(/TRX:\s*/i, '').trim() : ''
+            });
+          }
         });
-        logHtml += `</div>`;
       }
-      const carriedForward = Number(pay.carried_forward_due || 0);
+
+      let latestDatetime = "";
+      if (transactions.length > 0) {
+        const latestTx = transactions[transactions.length - 1];
+        latestDatetime = latestTx.datetime;
+      }
+
       const rentAmount = Number(pay.amount || 0);
-      const totalBill = rentAmount + carriedForward;
-      const paidAmount = Number(pay.paid_amount || 0);
+      const electricityAmount = Number(pay.electricity_bill || 0);
+      
+      let previousMonthsBreakdown = [];
+      let calculatedCarriedForward = 0;
+
+      if (pay.all_history && pay.all_history.length > 0) {
+        const prevItems = pay.all_history.filter(item => item.payment_month < pay.payment_month);
+        
+        prevItems.forEach(item => {
+          let monthName = this.formatMonthYear(item.payment_month);
+          let monthDue = Number(item.due_amount || 0);
+          let elecBill = Number(item.electricity_bill || 0);
+          
+          let paidInLatest = 0;
+          if (latestDatetime) {
+            const txs = transactions.filter(t => t.month === monthName && t.datetime === latestDatetime);
+            paidInLatest = txs.reduce((sum, t) => sum + Number(t.amount), 0);
+          }
+          
+          let originalDue = monthDue + paidInLatest;
+          
+          if (originalDue > 0) {
+            let elecText = elecBill > 0 ? ` (বিদ্যুৎ: ৳ ${elecBill.toFixed(0)})` : '';
+            previousMonthsBreakdown.push({
+              month: monthName + elecText,
+              amount: originalDue
+            });
+            calculatedCarriedForward += originalDue;
+          }
+        });
+      }
+
+      const totalBill = rentAmount + calculatedCarriedForward + electricityAmount;
       const dueAmount = Number(pay.due_amount || 0);
+      
+      let totalPaidSoFar = (dueAmount <= 0) ? totalBill : Math.max(0, totalBill - dueAmount);
+      let remainingDue = Math.max(0, totalBill - totalPaidSoFar);
+
       const rawDate = (pay.updated_at || pay.created_at || '').substring(0, 10);
       const printDate = rawDate || new Date().toISOString().substring(0, 10);
+
       const htmlContent = `
         <!DOCTYPE html>
         <html>
           <head>
-            <title>Money Receipt - টি এস এস ভিলা</title>
+            <meta charset="utf-8">
+            <title>Money Receipt - #${pay.id} - ${pay.full_name || 'Resident'}</title>
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
             <style>
-              body { font-family: 'Segoe UI', Arial, sans-serif; padding: 25px; background-color: #f9f9f9; color: #222; }
-              .receipt-card { max-width: 680px; margin: auto; background: #fff; padding: 35px; border-radius: 12px; border: 2px solid #033364; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-              .receipt-header { border-bottom: 2px solid #033364; padding-bottom: 15px; margin-bottom: 20px; }
-              .table-details th { font-weight: 600; color: #444; width: 45%; }
-              .table-details td { font-weight: 700; color: #111; }
-              .badge-paid { background-color: #198754; color: #fff; font-size: 14px; font-weight: 800; padding: 5px 15px; border-radius: 4px; text-transform: uppercase; }
-              .badge-partial { background-color: #ffc107; color: #000; font-size: 14px; font-weight: 800; padding: 5px 15px; border-radius: 4px; text-transform: uppercase; }
+              @page { size: A4 portrait; margin: 12mm 15mm; }
+              * { box-sizing: border-box; }
+              body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background-color: #f8fafc; color: #222; }
+              .receipt-card { max-width: 720px; margin: auto; background: #fff; padding: 25px 30px; border-radius: 8px; border: 1.5px solid #94a3b8; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+              .receipt-header { border-bottom: 2px solid #033364; padding-bottom: 12px; margin-bottom: 15px; }
+              .table-details { font-size: 0.86rem; margin-bottom: 10px !important; }
+              .table-details th, .table-details td { padding: 5px 10px !important; }
+              .table-details th { font-weight: 600; color: #334155; width: 45%; }
+              .table-details td { font-weight: 700; color: #0f172a; }
+              .badge-paid { color: #16a34a; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
+              .badge-partial { color: #d97706; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
               @media print {
                 body { background-color: #fff; padding: 0; }
-                .receipt-card { border: 2px solid #000 !important; box-shadow: none; max-width: 100%; padding: 25px; }
+                .receipt-card { border: 1.5px solid #000 !important; box-shadow: none; max-width: 100%; padding: 20px; page-break-inside: avoid; }
                 .no-print-btn { display: none !important; }
               }
             </style>
@@ -679,43 +1031,40 @@ export default {
 
               <!-- Header Info -->
               <div class="receipt-header text-center">
-                <h3 class="fw-bold mb-1" style="color: #033364;">টি এস এস ভিলা</h3>
-                <div class="fw-semibold text-dark mb-1">কলেজ রোড, নেসকো গেট সংলগ্ন, রংপুর</div>
-                <div class="small text-muted mb-2">মোবাইল: +8801977270920</div>
-                <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
-                  <span class="badge bg-primary px-3 py-2 fs-6">মাসিক ভাড়া আদায় রিসিট (Monthly Rent Receipt)</span>
-                  ${pay.status === 'paid'
-                    ? '<span class="badge-paid">Payment Fully Paid</span>'
-                    : '<span class="badge-partial">Partially Paid</span>'}
+                <h3 class="fw-bold mb-1" style="color: #033364;">টি এস এস ভিলা (TSS Villa)</h3>
+                <div class="fw-semibold text-dark mb-1" style="font-size: 0.88rem;">কলেজ রোড, নেসকো গেট সংলগ্ন, রংপুর | মোবাইল: +8801977270920</div>
+                <div class="d-flex justify-content-center align-items-center gap-3 mt-2">
+                  <span class="text-muted fw-semibold" style="font-size: 0.85rem;">মাসিক ভাড়া আদায় রিসিট (Monthly Rent Receipt)</span>
+                  ${(dueAmount <= 0)
+                    ? '<span class="badge-paid">PAYMENT FULLY PAID</span>'
+                    : '<span class="badge-partial">PARTIALLY PAID</span>'}
                 </div>
               </div>
 
               <!-- Invoice Metadata -->
               <div class="row mb-3 pb-2 border-bottom">
                 <div class="col-6">
-                  <small class="text-muted d-block">Invoice No / রিসিট নং:</small>
-                  <strong class="text-dark">#RENT-INV-${pay.id}</strong>
+                  <small class="text-muted d-block">Invoice No / রিসিট নং: <strong class="text-dark">#RENT-INV-${pay.id}</strong></small>
                 </div>
                 <div class="col-6 text-end">
-                  <small class="text-muted d-block">Date / তারিখ:</small>
-                  <strong class="text-dark">${printDate}</strong>
+                  <small class="text-muted d-block">Date / তারিখ: <strong class="text-dark">${printDate}</strong></small>
                 </div>
               </div>
 
               <!-- Resident & Room Details -->
-              <h6 class="fw-bold mb-2 border-bottom pb-1 text-primary">Resident Details (বোর্ডারের বিবরণ)</h6>
+              <h6 class="fw-bold mb-2 border-bottom pb-1 text-primary" style="font-size: 0.90rem;">Resident Details (শিক্ষার্থীর বিবরণ)</h6>
               <table class="table table-sm table-borderless table-details mb-3">
                 <tr>
-                  <th>Resident Name (বোর্ডারের নাম):</th>
-                  <td>${pay.full_name}</td>
+                  <th>Resident Name (শিক্ষার্থীর নাম):</th>
+                  <td>${pay.full_name || '-'}</td>
                 </tr>
                 <tr>
                   <th>Phone Number (মোবাইল নম্বর):</th>
-                  <td>${pay.phone}</td>
+                  <td>${pay.phone || '-'}</td>
                 </tr>
                 <tr>
                   <th>Room & Seat No (রুম ও সিট):</th>
-                  <td>${pay.roomnumber} (${pay.floornumber})</td>
+                  <td>${pay.roomnumber || '-'} (${pay.floornumber || '-'})</td>
                 </tr>
                 <tr>
                   <th>Billing Month (ভাড়ার মাস):</th>
@@ -724,47 +1073,49 @@ export default {
               </table>
 
               <!-- Financial Summary -->
-              <h6 class="fw-bold mb-2 border-bottom pb-1 text-primary">Financial Summary (হিসাবের বিবরণ)</h6>
+              <h6 class="fw-bold mb-2 border-bottom pb-1 text-primary" style="font-size: 0.90rem;">Financial Summary (হিসাবের বিবরণ)</h6>
               <table class="table table-sm table-bordered table-details mb-3">
                 <tbody>
                   <tr>
                     <th>Monthly Rent (মাসিক ভাড়া):</th>
-                    <td class="text-end">৳ ${rentAmount.toFixed(2)}</td>
+                    <td class="text-end font-monospace">৳ ${rentAmount.toFixed(2)}</td>
                   </tr>
-                  ${carriedForward > 0 ? `
+                  ${electricityAmount > 0 ? `
+                  <tr class="table-info">
+                    <th>Electricity Bill (বিদ্যুৎ বিল):</th>
+                    <td class="text-end font-monospace fw-bold">৳ ${electricityAmount.toFixed(2)}</td>
+                  </tr>` : ''}
+                  ${previousMonthsBreakdown.map(b => `
                   <tr class="table-warning">
-                    <th>Previous Carried Forward Due (আগের মাসের বকেয়া):</th>
-                    <td class="text-end text-danger font-monospace">৳ ${carriedForward.toFixed(2)}</td>
-                  </tr>
+                    <th>${b.month} (বকেয়া):</th>
+                    <td class="text-end text-danger font-monospace">৳ ${b.amount.toFixed(2)}</td>
+                  </tr>`).join('')}
+                  ${(calculatedCarriedForward > 0 || electricityAmount > 0) ? `
                   <tr class="table-light">
                     <th>Total Payable Bill (সর্বমোট দেয় বিল):</th>
-                    <td class="text-end fw-bold">৳ ${totalBill.toFixed(2)}</td>
+                    <td class="text-end fw-bold font-monospace">৳ ${totalBill.toFixed(2)}</td>
                   </tr>` : ''}
                   <tr class="table-success">
                     <th>Amount Paid So Far (সর্বমোট আদায়):</th>
-                    <td class="text-end text-success font-monospace fw-bold">৳ ${(pay.status === 'paid' && carriedForward > 0 && paidAmount < totalBill) ? totalBill.toFixed(2) : paidAmount.toFixed(2)}</td>
+                    <td class="text-end text-success font-monospace fw-bold">৳ ${totalPaidSoFar.toFixed(2)}</td>
                   </tr>
-                   ${dueAmount > 0 ? `
-                    <tr class="table-danger">
-                      <th>Remaining Due Balance (অবশিষ্ট বকেয়া):</th>
-                      <td class="text-end text-danger font-monospace fw-bold">
-                        ৳ ${dueAmount.toFixed(2)}
-                      </td>
-                    </tr>
-                    ` : ''}
+                  ${remainingDue > 0.009 ? `
+                  <tr class="table-danger">
+                    <th>Remaining Due Balance (অবশিষ্ট বকেয়া):</th>
+                    <td class="text-end text-danger font-monospace fw-bold">৳ ${remainingDue.toFixed(2)}</td>
+                  </tr>` : ''}
                 </tbody>
               </table>
 
-
               <!-- Received By & Signatures -->
-              <div class="mt-3 pt-2">
-                <div class="small fw-semibold text-muted mb-4">
-                  Received By / আদায়কারী: <strong class="text-dark">${this.cleanReceivedBy(pay.received_by)}</strong>
-                </div>
+              <div class="mt-4 pt-2">
+                <div class="d-flex justify-content-between align-items-end">
+                  <div class="small fw-semibold text-muted">
+                    Received By / আদায়কারী: <strong class="text-dark">${this.cleanReceivedBy(pay.received_by)}</strong>
+                  </div>
 
-                <div class="d-flex justify-content-end align-items-end mt-4 pt-2">
                   <div class="text-center" style="width: 220px;">
-                    <div style="border-top: 1px solid #000; padding-top: 4px;" class="small fw-bold">
+                    <div style="border-top: 1.5px solid #000; padding-top: 4px;" class="small fw-bold">
                       অফিস কর্তৃপক্ষের স্বাক্ষর
                     </div>
                   </div>
@@ -775,6 +1126,12 @@ export default {
                 টি এস এস ভিলা মেসে থাকার জন্য ধন্যবাদ।
               </div>
             </div>
+
+            <script>
+              window.onload = function() {
+                window.print();
+              };
+            <\/script>
           </body>
         </html>
       `;

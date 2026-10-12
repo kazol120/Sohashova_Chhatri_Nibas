@@ -153,12 +153,18 @@
           <small class="text-muted d-block">Monthly Rent</small>
           <strong>৳{{ number_format($currentMonthPayment['amount'], 2) }}</strong>
         </div>
+        @if(isset($currentMonthPayment['carried_forward_due']) && $currentMonthPayment['carried_forward_due'] > 0)
+        <div>
+          <small class="text-danger d-block">Prev. Due (জের)</small>
+          <strong class="text-danger">+৳{{ number_format($currentMonthPayment['carried_forward_due'], 2) }}</strong>
+        </div>
+        @endif
         <div>
           <small class="text-muted d-block">Paid</small>
           <strong class="text-success">৳{{ number_format($currentMonthPayment['paid_amount'], 2) }}</strong>
         </div>
         <div>
-          <small class="text-muted d-block">Due</small>
+          <small class="text-muted d-block">Total Due</small>
           <strong class="text-danger">৳{{ number_format($currentMonthPayment['due_amount'], 2) }}</strong>
         </div>
       </div>
@@ -190,8 +196,9 @@
             <th>Month</th>
             <th>Room & Seat</th>
             <th class="text-end">Rent</th>
+            <th class="text-end text-danger">Prev. Due</th>
             <th class="text-end text-success">Paid</th>
-            <th class="text-end text-danger">Due</th>
+            <th class="text-end text-danger">Net Due</th>
             <th class="text-center">Status</th>
             <th>Payment Log & Note</th>
           </tr>
@@ -210,12 +217,19 @@
               <small class="text-muted">{{ $pay['floornumber'] }}</small>
             </td>
             <td class="text-end fw-bold text-dark">৳{{ number_format($pay['amount'], 2) }}</td>
-            <td class="text-end fw-bold text-success">৳{{ number_format($pay['paid_amount'], 2) }}</td>
-            <td class="text-end fw-bold text-danger">
-              @if($pay['paid_amount'] > 0)
-                ৳{{ number_format($pay['due_amount'], 2) }}
+            <td class="text-end fw-semibold">
+              @if(isset($pay['carried_forward_due']) && $pay['carried_forward_due'] > 0)
+                <span class="text-danger fw-bold">+৳{{ number_format($pay['carried_forward_due'], 2) }}</span>
               @else
                 <span class="text-muted">৳0.00</span>
+              @endif
+            </td>
+            <td class="text-end fw-bold text-success">৳{{ number_format($pay['paid_amount'], 2) }}</td>
+            <td class="text-end fw-bold text-danger">
+              @if($pay['status'] === 'paid')
+                <span class="text-muted">৳0.00</span>
+              @else
+                ৳{{ number_format($pay['due_amount'], 2) }}
               @endif
             </td>
             <td class="text-center">

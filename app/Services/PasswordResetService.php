@@ -51,6 +51,15 @@ class PasswordResetService{
         $user->password = bcrypt($request->password);
         $user->save();
 
+        if ($user->phone) {
+            $raw = preg_replace('/[^0-9]/', '', (string)$user->phone);
+            $last10 = strlen($raw) >= 10 ? substr($raw, -10) : $raw;
+            $variants = array_unique([$user->phone, $raw, '0'.$last10, '+880'.$last10, '880'.$last10, '+88'.$last10, $last10]);
+            \App\Models\Backend\RoomBookingHistory::where(function($q) use ($variants) {
+                foreach ($variants as $v) { $q->orWhere('phone', $v); }
+            })->update(['password' => $request->password]);
+        }
+
         Otp::where('email', $email)->delete();
         session()->forget(['user_email', 'url_token', 'expires_at']);
         return $user;

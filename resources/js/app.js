@@ -1,4 +1,5 @@
 import './bootstrap';
+import './utils/printHelper.js';
 import store from './store.js';
 import { createApp } from 'vue';
 import { createStore } from 'vuex';
@@ -8,6 +9,7 @@ import Floor from './components/backend/Floor.vue';
 import Room from './components/backend/Room.vue';
 import NoticeComponent from './components/frontend/Notice.vue';
 import GalleryComponent from './components/frontend/Gallery.vue';
+import SliderComponent from './components/backend/Slider.vue';
 import ResidenceOverviewComponent from './components/frontend/ResidenceOverview.vue';
 import RoomBookingHistory from './components/backend/RoomBookingHistory.vue';
 import TodayRoomBookingHistory from './components/backend/TodayRoomBookingHistory.vue';
@@ -31,11 +33,15 @@ import ResidentReleaseHistory from './components/backend/ResidentReleaseHistory.
 import RoomChangeManager from './components/backend/RoomChangeManager.vue';
 import DevelopmentFeeManager from './components/backend/DevelopmentFeeManager.vue';
 import AdvanceFeeManager from './components/backend/AdvanceFeeManager.vue';
+import HostelRule from './components/backend/HostelRule.vue';
+import DeletedBookingHistory from './components/backend/DeletedBookingHistory.vue';
+import ResidentNoticeManager from './components/backend/ResidentNoticeManager.vue';
 
 const app = createApp({
     components:{
         NoticeComponent,
         GalleryComponent,
+        SliderComponent,
         ResidenceOverviewComponent,
         Room,
         Floor,
@@ -61,6 +67,9 @@ const app = createApp({
         RoomChangeManager,
         DevelopmentFeeManager,
         AdvanceFeeManager,
+        HostelRule,
+        DeletedBookingHistory,
+        ResidentNoticeManager,
     }
 });
 

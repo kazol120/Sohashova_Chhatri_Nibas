@@ -12,6 +12,8 @@
         </div>
     </div>
 
+
+
     <!-- Submit Complaint Card -->
     <div class="card mb-4 shadow-sm border-0" style="border-top: 4px solid #6366f1 !important;">
         <div class="card-header bg-label-primary py-3">
@@ -54,7 +56,7 @@
                         <th>Admin Response / Note (এডমিন ফিডব্যাক)</th>
                     </tr>
                 </thead>
-                <tbody class="table-border-bottom-0">
+                <tbody class="table-border-bottom-0" id="userComplaintsTableBody">
                     @forelse($complaints as $key => $complaint)
                     <tr>
                         <td>{{ $complaints->firstItem() + $key }}</td>
@@ -98,4 +100,54 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function pollComplaintsLive() {
+        fetch("{{ route('complaints.user-check') }}")
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success || !data.complaints) return;
+
+                let tbodyHtml = '';
+                data.complaints.forEach((c, index) => {
+                    const statusBadge = c.status === 1 
+                        ? `<span class="badge bg-label-success rounded-pill px-3 py-2 fs-7"><i class="fa fa-check-circle me-1"></i> Accepted & Resolved</span>`
+                        : `<span class="badge bg-label-warning rounded-pill px-3 py-2 fs-7"><i class="fa fa-clock me-1"></i> Pending Review</span>`;
+
+                    const adminNoteHtml = c.admin_note 
+                        ? `<span class="text-success fw-semibold fs-7"><i class="fa fa-comment-dots me-1"></i> ${c.admin_note}</span>`
+                        : `<span class="text-muted fs-8">Awaiting Admin Response</span>`;
+
+                    tbodyHtml += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td style="white-space: normal; min-width: 250px;">
+                                <div class="p-2 bg-light rounded border text-wrap fs-7 text-dark fw-medium">
+                                    ${c.complaint_text}
+                                </div>
+                            </td>
+                            <td>
+                                <small class="text-dark fw-medium">${c.date_formatted}</small><br>
+                                <small class="text-muted">${c.time_formatted}</small>
+                            </td>
+                            <td>${statusBadge}</td>
+                            <td>${adminNoteHtml}</td>
+                        </tr>
+                    `;
+                });
+
+                const tbody = document.getElementById('userComplaintsTableBody');
+                if (tbody && tbodyHtml) {
+                    tbody.innerHTML = tbodyHtml;
+                }
+            })
+            .catch(err => console.error('Complaints live poll error:', err));
+    }
+
+    // Run immediately & poll every 3 seconds
+    pollComplaintsLive();
+    setInterval(pollComplaintsLive, 3000);
+});
+</script>
 @endsection

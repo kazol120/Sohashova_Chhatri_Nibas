@@ -44,5 +44,33 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+
+        $this->renderable(function (\Illuminate\Session\TokenMismatchException $e, $request) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'message' => 'আপনার সেশনের মেয়াদ শেষ হয়েছিল। অনুগ্রহ করে পেজটি রিফ্রেশ করুন।',
+                    'csrf_token' => csrf_token(),
+                ], 419);
+            }
+
+            return redirect()->back()
+                ->withInput($request->except('password', 'password_confirmation', '_token'))
+                ->with('warning', 'আপনার সেশনের মেয়াদ শেষ হয়েছিল। পেজটি রিফ্রেশ করে পুনরায় চেষ্টা করুন।');
+        });
+
+        $this->renderable(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {
+            if ($e->getStatusCode() === 419) {
+                if ($request->wantsJson() || $request->ajax()) {
+                    return response()->json([
+                        'message' => 'আপনার সেশনের মেয়াদ শেষ হয়েছিল। অনুগ্রহ করে পেজটি রিফ্রেশ করুন।',
+                        'csrf_token' => csrf_token(),
+                    ], 419);
+                }
+
+                return redirect()->back()
+                    ->withInput($request->except('password', 'password_confirmation', '_token'))
+                    ->with('warning', 'আপনার সেশনের মেয়াদ শেষ হয়েছিল। পেজটি রিফ্রেশ করে পুনরায় চেষ্টা করুন।');
+            }
+        });
     }
 }

@@ -58,10 +58,8 @@
                                     <tbody>
                                     @php
                                         $labels = [
-                                            'full'       => 'Full Meal (মিল চালু)',
-                                            'half_day'   => '☀️ Day Half Meal',
-                                            'half_night' => '🌙 Night Half Meal',
-                                            'off'        => 'Meal OFF (মিল বন্ধ)',
+                                            'full' => 'Full Meal (মিল চালু)',
+                                            'off'  => 'Meal OFF (মিল বন্ধ)',
                                         ];
                                     @endphp
 
@@ -101,30 +99,9 @@
                                                         @endif
                                                         <small class="text-success fw-bold mt-1"><i class="ti ti-refresh me-1"></i>🔄 {{ $nextDateStr }} তারিখ থেকে অটো মিল চালু</small>
                                                     </div>
-                                                @elseif($mr->request_type == 'full')
+                                                @else
                                                     <span class="badge bg-primary fs-7 px-3 py-2 shadow-sm">
                                                         <i class="fa fa-check-circle me-1"></i> Full Meal (মিল চালু)
-                                                    </span>
-                                                @elseif($mr->request_type == 'half_day')
-                                                    @php
-                                                        $nextDateStr = \Carbon\Carbon::parse($mr->date)->addDay()->format('d-M-Y');
-                                                    @endphp
-                                                    <div class="d-inline-flex flex-column align-items-start">
-                                                        <span class="badge bg-info fs-7 px-3 py-2 shadow-sm">
-                                                            ☀️ Day Half Meal (দুপুরের মিল চালু / রাতের মিল বন্ধ)
-                                                        </span>
-                                                        <small class="text-success fw-bold mt-1"><i class="ti ti-refresh me-1"></i>🔄 {{ $nextDateStr }} তারিখ থেকে স্বাভাবিক মিল চালু</small>
-                                                    </div>
-                                                @elseif($mr->request_type == 'half_night')
-                                                    <div class="d-inline-flex flex-column align-items-start">
-                                                        <span class="badge bg-info fs-7 px-3 py-2 shadow-sm">
-                                                            🌙 Night Half Meal (রাতের মিল চালু / দুপুরের মিল বন্ধ)
-                                                        </span>
-                                                        <small class="text-success fw-bold mt-1"><i class="ti ti-check me-1"></i>☀️ দুপুরের মিল বন্ধ, আজ রাত থেকে রাতের মিল চালু</small>
-                                                    </div>
-                                                @else
-                                                    <span class="badge bg-info fs-7 px-3 py-2">
-                                                        {{ $labels[$mr->request_type] ?? $mr->request_type }}
                                                     </span>
                                                 @endif
                                             </td>

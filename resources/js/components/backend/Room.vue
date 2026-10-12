@@ -24,6 +24,12 @@
                 </select>
               </div>
               <div class="d-flex gap-2 align-items-center">
+                <select class="form-select form-select-sm" style="width: 180px;" v-model="seatStatusFilter" @change="getRooms(1)">
+                  <option value="all">All Rooms (সব রুম)</option>
+                  <option value="with_seats">Configured Seats (সিট যুক্ত)</option>
+                  <option value="0">Available Seats (ফ্রি সিট)</option>
+                  <option value="1">Booked Seats (বুকিং সিট)</option>
+                </select>
                 <input
                   type="text"
                   class="form-control form-control-sm"
@@ -49,48 +55,56 @@
                   </tr>
                 </thead>
                 <tbody v-if="rooms.length">
-                 <tr  v-for="(r, idx) in rooms" :key="r.id" :class="{ 'room-received': r.status == 1 }">
+                 <tr v-for="(r, idx) in rooms" :key="r.id" :class="{ 'room-received': isRoomFullBooked(r) }">
                     <td>{{ from + idx }}</td>
                     <td>
                       <img v-if="r.image_url" :src="r.image_url" class="img-thumb" alt="room" />
                       <span v-else class="text-muted small">No image</span>
                     </td>
                     <td>
-                      <div class="fw-semibold">Room {{ r.room_no }}</div>
+                      <div class="fw-semibold">Room {{ formatRoomNo(r.room_no) }}</div>
                       <div class="mt-1 d-flex flex-wrap gap-1">
                         <span v-for="s in r.seats" :key="s.id" class="badge" :class="s.status == 1 ? 'bg-danger' : 'bg-success'" style="font-size: 10px;">
-                          {{ s.seat_no }} (৳{{ s.price }}<span v-if="Number(s.advance_price) > 0">| Adv: ৳{{ s.advance_price }}</span>)
+                          {{ formatSeatBadge(r, s) }} (৳{{ s.price }}<span v-if="Number(s.advance_price) > 0">| Adv: ৳{{ s.advance_price }}</span>)
                         </span>
                       </div>
                     </td>
                     <td><div class="fw-semibold">{{ r.floor?.name || "-" }}</div></td>
                     <td><span class="fw-semibold">{{ r.windows ?? "-" }}</span></td>
                     <td><span class="fw-semibold">{{ r.room_type ?? "-" }}</span></td>
-                  <td>
-                    <span v-if="r.status == 0" class="fw-semibold text-success">
-                      Available Room
-                    </span>
-                    <span v-else-if="r.status == 1" class="received-badge">
-                      <i class="ti ti-alert-circle me-1"></i> Received Room
-                    </span>
-                    <span v-else>-</span>
-                  </td>
-                 <td>
-                    <div class="d-flex gap-2 align-items-center">
-                      <button 
-                        v-if="r.status != 1"
-                        class="btn btn-sm btn-primary" 
-                        @click="openEditModal(r)">
-                        <i class="ti ti-edit"></i>
-                      </button>
-                      <button 
-                        v-if="r.status != 1"
-                        class="btn btn-sm btn-danger" 
-                        @click="openDeleteModal(r)">
-                        <i class="ti ti-trash"></i>
-                      </button>
-                    </div>
-                  </td>
+                    <td>
+                      <span v-if="getRoomBookingStatus(r) === 'available'" class="fw-semibold text-success">
+                        <i class="ti ti-check me-1"></i> Available Room
+                      </span>
+                      <span v-else-if="getRoomBookingStatus(r) === 'booked'" class="received-badge">
+                        <i class="ti ti-alert-circle me-1"></i> Received Room
+                      </span>
+                      <span v-else-if="getRoomBookingStatus(r) === 'partial'" class="badge" style="background:#fef08a; color:#78350f; border:1px solid #d97706; font-size:11px;">
+                        <i class="ti ti-clock me-1"></i> Partial ({{ getBookedSeatCount(r) }}/{{ r.seats.length }} বুকড)
+                      </span>
+                      <span v-else>-</span>
+                    </td>
+                    <td>
+                      <div class="d-flex gap-2 align-items-center">
+                        <button 
+                          v-if="!hasAnyBookedSeats(r)"
+                          class="btn btn-sm btn-primary" 
+                          @click="openEditModal(r)"
+                          title="Edit Room">
+                          <i class="ti ti-edit"></i>
+                        </button>
+                        <button 
+                          v-if="!hasAnyBookedSeats(r)"
+                          class="btn btn-sm btn-danger" 
+                          @click="openDeleteModal(r)"
+                          title="Delete Room">
+                          <i class="ti ti-trash"></i>
+                        </button>
+                        <span v-else class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size: 11px;">
+                          <i class="ti ti-lock me-1"></i> Booked
+                        </span>
+                      </div>
+                    </td>
                   </tr>
                 </tbody>
                 <tbody v-else>
@@ -224,10 +238,7 @@
                         <label class="form-label fw-bold">Room Type <code>*</code></label>
                         <select class="form-select" v-model="edit.form.room_type" required>
                           <option value="">Select Room Type</option>
-                          <option value="Seat A - Single Room">Seat A - Single Room</option>
-                          <option value="Seat A - Double Room">Seat A - Double Room</option>
-                          <option value="Seat B - Single Room">Seat B - Single Room</option>
-                          <option value="Seat B - Double Room">Seat B - Double Room</option>
+                          <option v-for="opt in editRoomTypeOptions" :key="opt" :value="opt">{{ opt }}</option>
                         </select>
                       </div>
                     </div>
@@ -256,7 +267,7 @@
                           <tbody>
                             <tr v-for="(seat, idx) in edit.form.seats" :key="idx">
                               <td>
-                                <input type="text" class="form-control form-control-sm text-center py-0" v-model="seat.seat_no" placeholder="e.g. Seat A" required />
+                                <input type="text" class="form-control form-control-sm text-center py-0" v-model="seat.seat_no" placeholder="e.g. Block A" required />
                               </td>
                               <td>
                                 <input type="number" class="form-control form-control-sm text-center py-0" v-model.number="seat.price" min="0" placeholder="Monthly rent" required />
@@ -375,6 +386,7 @@ export default {
       savingDelete: false,
       errors: {},
       _t: null,
+      seatStatusFilter: "all",
     };
   },
 
@@ -382,9 +394,47 @@ export default {
     url() {
       return this.$store.state.url;
     },
+    editRoomTypeOptions() {
+      const fName = (this.edit.form?.floor_name || "").toLowerCase();
+      const rNo = (this.edit.form?.room_no || "").toUpperCase();
+      let blocks = ["Block A", "Block B"];
+      if (fName.includes("second") || fName.includes("2nd")) {
+        blocks = ["Block C", "Block D"];
+      } else if (fName.includes("fourth") || fName.includes("4th") || fName.includes("third") || fName.includes("3rd")) {
+        blocks = ["Block E", "Block F"];
+      } else if (fName.includes("fifth") || fName.includes("5th")) {
+        blocks = ["Block G", "Block H"];
+      }
+
+      const m = rNo.match(/^([A-Za-z]+)[\-_](\d+)$/) || rNo.match(/Block[\-_ ]*([A-Za-z]+)/i) || rNo.match(/([A-Za-z])/);
+      if (m) {
+        const blk = `Block ${m[1].toUpperCase()}`;
+        if (!blocks.includes(blk)) {
+          blocks.unshift(blk);
+        }
+      }
+
+      const options = [];
+      blocks.forEach(b => {
+        options.push(`${b} - Single Room`);
+        options.push(`${b} - Double Room`);
+      });
+
+      if (this.edit.form?.room_type && !options.includes(this.edit.form.room_type)) {
+        options.unshift(this.edit.form.room_type);
+      }
+
+      return Array.from(new Set(options));
+    },
   },
 
   mounted() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has("seat_status")) {
+      this.seatStatusFilter = urlParams.get("seat_status");
+    } else if (urlParams.has("status")) {
+      this.seatStatusFilter = urlParams.get("status");
+    }
     this.getRooms(1);
   },
 
@@ -411,10 +461,7 @@ export default {
       if (this.isEditInitializing) return;
       if (!this.edit.form || !this.edit.form.seats) return;
       if (!newVal) return;
-      let prefix = "Seat A";
-      if (newVal.includes("Seat B")) {
-        prefix = "Seat B";
-      }
+      let prefix = newVal.split(" - ")[0] || "Block A";
       if (newVal.includes("Single") || newVal === "Singel") {
         this.edit.form.seats = [
           { seat_no: prefix, price: this.edit.form.price || "", advance_price: 0 }
@@ -459,7 +506,7 @@ export default {
       this.loading = true;
       try {
         const res = await axios.get(`${this.url}rooms-get`, {
-          params: { page, per_page: this.perPage, search: this.search },
+          params: { page, per_page: this.perPage, search: this.search, seat_status: this.seatStatusFilter },
         });
         this.rooms       = res.data.data         || [];
         this.currentPage = res.data.current_page || 1;
@@ -482,7 +529,115 @@ export default {
       await this.getRooms(this.currentPage);
     },
 
-    //  Edit modal open - DB images load
+    isRoomFullBooked(r) {
+      if (!r) return false;
+      if (!r.seats || !r.seats.length) return Number(r.status) === 1;
+      return r.seats.every(s => Number(s.status) === 1);
+    },
+
+    hasAnyBookedSeats(r) {
+      if (!r) return false;
+      if (!r.seats || !r.seats.length) return Number(r.status) === 1;
+      return r.seats.some(s => Number(s.status) === 1);
+    },
+
+    getBookedSeatCount(r) {
+      if (!r || !r.seats) return 0;
+      return r.seats.filter(s => Number(s.status) === 1).length;
+    },
+
+    getRoomBookingStatus(r) {
+      if (!r) return 'available';
+      if (!r.seats || !r.seats.length) {
+        return Number(r.status) === 1 ? 'booked' : 'available';
+      }
+      const bookedCount = r.seats.filter(s => Number(s.status) === 1).length;
+      const total = r.seats.length;
+      if (bookedCount === 0) return 'available';
+      if (bookedCount >= total) return 'booked';
+      return 'partial';
+    },
+
+    formatRoomNo(roomNo) {
+      if (!roomNo) return '-';
+      const rNo = String(roomNo).trim();
+      const m1 = rNo.match(/^([A-Za-z]+)[\-_](\d+)$/);
+      if (m1) {
+        return `${parseInt(m1[2], 10)}-Block ${m1[1].toUpperCase()}`;
+      }
+      const m2 = rNo.match(/^(\d+)[\-_ ]*Block[\-_ ]*([A-Za-z]+)/i);
+      if (m2) {
+        return `${parseInt(m2[1], 10)}-Block ${m2[2].toUpperCase()}`;
+      }
+      return rNo;
+    },
+
+    formatSeatBadge(r, s) {
+      const roomNo = r?.room_no || '';
+      const seatNo = s?.seat_no || '';
+      const roomSeatsCount = r?.seats ? r.seats.length : 1;
+      
+      const rNo = String(roomNo).trim();
+      const sNo = String(seatNo).trim();
+
+      let blockLetter = null;
+      let roomNum = null;
+
+      const m1 = rNo.match(/^([A-Za-z]+)[\-_](\d+)$/);
+      if (m1) {
+        blockLetter = m1[1].toUpperCase();
+        roomNum = parseInt(m1[2], 10);
+      }
+      if (!blockLetter) {
+        const m2 = rNo.match(/^(\d+)[\-_ ]*Block[\-_ ]*([A-Za-z]+)/i);
+        if (m2) {
+          roomNum = parseInt(m2[1], 10);
+          blockLetter = m2[2].toUpperCase();
+        }
+      }
+      if (!blockLetter && sNo) {
+        const ms = sNo.match(/Block[\-_ ]*([A-Za-z]+)/i);
+        if (ms) {
+          blockLetter = ms[1].toUpperCase();
+        }
+      }
+
+      if (!blockLetter) {
+        if (roomSeatsCount > 1 && sNo) {
+          const sm = sNo.match(/(\d+)$/);
+          const seatSub = sm ? sm[1] : '';
+          if (seatSub && seatSub !== rNo) {
+            return `${rNo}-${seatSub}`;
+          }
+        }
+        return rNo;
+      }
+
+      if (roomNum === null) {
+        const numMatch = rNo.match(/(\d+)/);
+        roomNum = numMatch ? parseInt(numMatch[1], 10) : rNo;
+      }
+
+      // Determine double from room_type first, then fallback to seat count
+      const rawType = (r?.room_type || '').toLowerCase();
+      const isDouble = rawType.includes('double') || rawType.includes('doubel') || roomSeatsCount > 1;
+
+      if (!isDouble) {
+        // Single room — never show seat suffix
+        return `${roomNum}-Block ${blockLetter}`;
+      }
+
+      // Double room — determine seat number (1 or 2)
+      let seatSub = '1';
+      const sm = sNo.match(/(\d+)$/);
+      if (sm) {
+        seatSub = sm[1];
+      } else if (sNo.toLowerCase().includes('2') || sNo.toLowerCase().includes('b')) {
+        seatSub = '2';
+      }
+      return `${roomNum}-Block ${blockLetter}-${seatSub}`;
+    },
+
     openEditModal(r) {
       this.isEditInitializing = true;
       this.errors = {};
@@ -499,17 +654,51 @@ export default {
       this.edit.existingImages = [...existingUrls];
       this.edit.newPreviews    = [];
 
+      const floorName = r.floor?.name || "";
+      const fNameLower = floorName.toLowerCase();
+      let defaultBlock = "Block A";
+      if (fNameLower.includes("second") || fNameLower.includes("2nd")) {
+        defaultBlock = "Block C";
+      } else if (fNameLower.includes("fourth") || fNameLower.includes("4th") || fNameLower.includes("third") || fNameLower.includes("3rd")) {
+        defaultBlock = "Block E";
+      } else if (fNameLower.includes("fifth") || fNameLower.includes("5th")) {
+        defaultBlock = "Block G";
+      }
+
+      const rNo = (r.room_no || "").toUpperCase();
+      const m = rNo.match(/^([A-Za-z]+)[\-_](\d+)$/) || rNo.match(/Block[\-_ ]*([A-Za-z]+)/i) || rNo.match(/([A-Za-z])/);
+      if (m) {
+        defaultBlock = `Block ${m[1].toUpperCase()}`;
+      }
+
+      const rawType = (r.room_type || "").toLowerCase();
+      const seatsCount = (r.seats && r.seats.length) ? r.seats.length : 1;
+      let isDouble = rawType.includes("double") || rawType.includes("doubel") || seatsCount > 1;
+      let typeLabel = isDouble ? "Double Room" : "Single Room";
+
+      let selectedRoomType = `${defaultBlock} - ${typeLabel}`;
+      if (r.room_type) {
+        if (r.room_type.includes(" - Single Room") || r.room_type.includes(" - Double Room")) {
+          selectedRoomType = r.room_type;
+        } else if (r.room_type.trim() === "Single" || r.room_type.trim() === "Single Room") {
+          selectedRoomType = `${defaultBlock} - Single Room`;
+        } else if (r.room_type.trim() === "Double" || r.room_type.trim() === "Double Room") {
+          selectedRoomType = `${defaultBlock} - Double Room`;
+        }
+      }
+
       this.edit.form = {
         id:         r.id,
         room_no:    r.room_no,
+        floor_name: floorName,
         price:      r.price      ?? "",
         max_people: r.max_people ?? "",
-        room_type:  r.room_type  ?? "",
-        windows:    r.windows    ?? "",
+        room_type:  selectedRoomType,
+        windows:    r.windows    ?? "yes",
         newImages:  [],
         keepImages: [...existingFilenames],
-        seats:      r.seats ? JSON.parse(JSON.stringify(r.seats)) : [
-          { seat_no: "Seat-A", price: r.price || "", advance_price: 0 }
+        seats:      r.seats && r.seats.length ? JSON.parse(JSON.stringify(r.seats)) : [
+          { seat_no: defaultBlock, price: r.price || "", advance_price: 0 }
         ],
       };
 

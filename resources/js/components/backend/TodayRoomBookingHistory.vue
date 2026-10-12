@@ -10,13 +10,13 @@
           </div>
           <div class="card-header d-flex flex-wrap gap-2 justify-content-between align-items-center py-3">
             <div style="width:22%;">
-              <div v-if="isAdmin"   class="px-3 pt-3">
+              <div v-if="isAdmin" class="px-3 pt-3">
                 <div class="d-flex mb-4">
                   <select
-                      v-model="selectedGuest"
-                      class="form-select"
-                      @change="fetchRooms(1)"
-                      style="max-width: 300px;">
+                    v-model="selectedGuest"
+                    class="form-select"
+                    @change="fetchRooms(1)"
+                    style="max-width: 300px;">
                     <option value="">Select Guest</option>
                     <option
                       v-for="guest in guestNames"
@@ -25,24 +25,24 @@
                       {{ guest.full_name }}
                     </option>
                   </select>
-                    <div class="ms-4  align-items-end">
+                  <div class="ms-4 align-items-end">
                     <button class="btn btn-outline-secondary" @click="clearFilters">Clear</button>
                   </div>
                 </div>
               </div>
             </div>
             <div>
-          <div  v-if="isAdmin" class="card-header d-flex flex-wrap gap-2 justify-content-between align-items-center py-3">
-              <div>
-                <div class="px-3 pt-3">
-                  <div class="d-flex mb-4">
-                    <div>
+              <div v-if="isAdmin" class="card-header d-flex flex-wrap gap-2 justify-content-between align-items-center py-3">
+                <div>
+                  <div class="px-3 pt-3">
+                    <div class="d-flex mb-4">
+                      <div>
                         <label class="mb-2 text-black">Start Date</label>
-                        <input class="form-control" type="date" v-model="startDate"  @change="fetchRooms(1)">
-                    </div>
-                    <div class="ms-4">
-                      <label class="mb-2 text-black">End Date</label>
-                        <input class="form-control" type="date" v-model="endDate"  @change="fetchRooms(1)">
+                        <input class="form-control" type="date" v-model="startDate" @change="fetchRooms(1)">
+                      </div>
+                      <div class="ms-4">
+                        <label class="mb-2 text-black">End Date</label>
+                        <input class="form-control" type="date" v-model="endDate" @change="fetchRooms(1)">
                       </div>
                       <div class="ms-4 d-flex align-items-end">
                         <button class="btn btn-outline-secondary" @click="clearFilters">Clear</button>
@@ -119,15 +119,14 @@
                     <th style="width: 120px">Thana</th>
                     <th style="width: 160px">Address</th>
                     <th style="width: 120px">Payment</th>
-                    <th style="width: 110px">Action</th>
+                    <th class="sticky-action-col text-center" style="width: 150px">Action</th>
                   </tr>
                 </thead>
                 <tbody v-if="rooms.length">
-                  <tr v-for="(r, idx) in rooms" :key="r.group_key">
+                  <tr v-for="(r, idx) in rooms" :key="r.group_key || idx">
                     <td>{{ from + idx + 1 }}</td>
                     <td>
-                      <img v-if="r.image" :src="imageSrc(r.image)" class="img-thumb" alt="booking"
-                      />
+                      <img v-if="r.image" :src="imageSrc(r.image)" class="img-thumb" alt="booking" />
                       <span v-else class="text-muted small">No image</span>
                     </td>
 
@@ -160,7 +159,7 @@
                     <td>
                       <div v-if="r.room_items && r.room_items.length">
                         <div v-for="(item, i) in r.room_items" :key="'s-' + r.id + '-' + i" class="py-1">
-                          <span class="badge bg-danger font-monospace px-2 py-1 fs-6 fw-bold">{{ getSeatNo(item.roomnumber) }}</span>
+                          <span class="badge bg-danger font-monospace px-2 py-1 fs-6 fw-bold">{{ getSeatNo(item.roomnumber, item.room_type, item.seat_no) }}</span>
                         </div>
                       </div>
                       <span v-else>-</span>
@@ -270,7 +269,7 @@
                       <div v-else>-</div>
                     </td>
 
-                    <td class="text-center">
+                    <td class="sticky-action-col text-center">
                       <button
                         type="button"
                         class="btn btn-sm btn-primary fw-bold text-nowrap"
@@ -285,7 +284,7 @@
 
                 <tbody v-else>
                   <tr>
-                    <td colspan="18" class="text-center py-4 text-muted">
+                    <td colspan="32" class="text-center py-4 text-muted">
                       <span v-if="loading">
                         <i class="fa fa-spinner fa-spin me-2"></i> Loading...
                       </span>
@@ -323,16 +322,16 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
+
 <script>
 import axios from "axios";
 import Toastify from "toastify-js";
 import "toastify-js/src/toastify.css";
 
 export default {
-  name: "RoomBookingHistoryList",
+  name: "TodayRoomBookingHistoryList",
 
   props: {
     isAdmin: {
@@ -386,15 +385,15 @@ export default {
     }
   },
 
-watch: {
-  search() {
-    clearTimeout(this._t);
-    this._t = setTimeout(() => this.fetchRooms(1), 300);
+  watch: {
+    search() {
+      clearTimeout(this._t);
+      this._t = setTimeout(() => this.fetchRooms(1), 300);
+    },
+    perPage() {
+      this.fetchRooms(1);
+    },
   },
-  perPage() {
-    this.fetchRooms(1);
-  },
-},
 
   beforeUnmount() {
     clearTimeout(this._t);
@@ -408,17 +407,49 @@ watch: {
 
     getRoomNo(str) {
       if (!str) return '-';
-      const parts = String(str).split('-');
-      return parts[0] || str;
+      const s = String(str).trim();
+      const m1 = s.match(/^([A-Za-z]+)[\-_](\d+)/);       // A-4
+      if (m1) return parseInt(m1[2], 10) || m1[2];
+      const m2 = s.match(/^(\d+)[\-_ ]*(?:Block)?[\-_ ]*[A-Za-z]/i); // 4-Block-A or 4-A
+      if (m2) return parseInt(m2[1], 10) || m2[1];
+      return s.split('-')[0] || s;
     },
 
-    getSeatNo(str) {
+    getSeatNo(str, roomType, seatNo) {
       if (!str) return '-';
-      const parts = String(str).split('-');
-      if (parts.length > 1) {
-        return parts.slice(1).join('-');
+      const s = String(str).trim();
+      const rType = (roomType || '').toLowerCase();
+      const isSingle = rType.includes('single') || rType.includes('singel');
+      const isDouble = rType.includes('double') || rType.includes('doubel');
+
+      let block = null;
+      let seatSub = seatNo ? String(seatNo) : null;
+
+      const m1 = s.match(/^\d+[\-_ ]*Block[\-_ ]*([A-Za-z]+)(?:[\-_ ]*(\d+))?/i);
+      if (m1) {
+        block = m1[1].toUpperCase();
+        if (!seatSub && m1[2]) seatSub = m1[2];
       }
-      return '-';
+      if (!block) {
+        const m2 = s.match(/^(?:Block[\-_ ]*)?([A-Za-z]+)[\-_ ]*(\d+)(?:[\-_ ]*(\d+))?/i);
+        if (m2) {
+          block = m2[1].toUpperCase();
+          if (!seatSub && m2[3]) seatSub = m2[3];
+        }
+      }
+      if (!block) {
+        const m3 = s.match(/^\d+[\-_]([A-Za-z]+)(?:[\-_](\d+))?/i);
+        if (m3) {
+          block = m3[1].toUpperCase();
+          if (!seatSub && m3[2]) seatSub = m3[2];
+        }
+      }
+      if (!block) return s;
+      if (isSingle) return `Block ${block}`;
+      if (isDouble && seatSub) return `Block ${block}-${seatSub}`;
+      if (isDouble) return `Block ${block}`;
+      if (seatSub) return `Block ${block}-${seatSub}`;
+      return `Block ${block}`;
     },
 
     isStudent(r) {
@@ -507,15 +538,10 @@ watch: {
 
     formatDateTime(value) {
       if (!value) return "-";
-
       const raw = String(value).trim();
       const normalized = raw.includes("T") ? raw : raw.replace(" ", "T");
       const dateObj = new Date(normalized);
-
-      if (isNaN(dateObj.getTime())) {
-        return "-";
-      }
-
+      if (isNaN(dateObj.getTime())) return "-";
       return new Intl.DateTimeFormat("en-GB", {
         timeZone: "Asia/Dhaka",
         day: "2-digit",
@@ -527,6 +553,31 @@ watch: {
       }).format(dateObj);
     },
 
+    getAdvanceDepositAmount(r) {
+      if (!r) return 0;
+      if (r.room_items && r.room_items.length) {
+        let sum = 0;
+        r.room_items.forEach(item => {
+          const p = Number(item.advance_price ?? item.original_advance_price ?? item.price ?? 0);
+          sum += p;
+        });
+        if (sum > 0) return sum;
+      }
+      if (r.advance_fee !== null && r.advance_fee !== undefined && Number(r.advance_fee) > 0) {
+        return Number(r.advance_fee);
+      }
+      if (r.roomprice !== null && r.roomprice !== undefined && Number(r.roomprice) > 0) {
+        return Number(r.roomprice);
+      }
+      return Number(r.monthly_amount || 0);
+    },
+
+    getDevFeeAmount(r) {
+      if (!r) return 0;
+      if (r.development_fee === null || r.development_fee === undefined) return 0;
+      return Number(r.development_fee || 0);
+    },
+
     async fetchRooms(page = 1) {
       this.loading = true;
       try {
@@ -535,14 +586,17 @@ watch: {
           per_page: this.perPage,
           search: this.search,
         };
+
         if (this.isAdmin) {
           params.start_date = this.startDate;
           params.end_date = this.endDate;
           params.selected_guest = this.selectedGuest;
         }
+
         const res = await axios.get(this.endpoint("today-get-room-booking"), {
           params,
         });
+
         this.rooms = res.data.data || [];
         this.currentPage = res.data.current_page || 1;
         this.totalPages = res.data.last_page || 1;
@@ -555,6 +609,7 @@ watch: {
         this.loading = false;
       }
     },
+
     printTable() {
       if (this.rooms && this.rooms.length > 0) {
         this.printResidentForm(this.rooms[0]);
@@ -562,6 +617,7 @@ watch: {
         this.toast("প্রিন্ট করার মতো কোনো বুকিং ডাটা পাওয়া যায়নি", "warning");
       }
     },
+
     printResidentForm(r) {
       const logoUrl = window.location.origin + '/logo/logoimage (2).png';
       const userImgUrl = r.image ? this.imageSrc(r.image) : '';
@@ -589,9 +645,36 @@ watch: {
         r.user_type.toLowerCase().includes('passenger')
       );
 
+      const advance = this.getAdvanceDepositAmount(r);
+      const devFee = this.getDevFeeAmount(r);
+      const totalAmount = advance + devFee;
+
+      const devFeeDocHtml = devFee > 0 ? `
+        <div style="display: flex; justify-content: space-between; font-size: 14.5px; padding: 3px 0;">
+          <span style="color: #b45309; font-weight: 700;">Development Fee (One-time):</span>
+          <span style="font-weight: 800; color: #d97706;">+ ৳ ${this.formatCurrency(devFee)}</span>
+        </div>
+        <hr style="border-top: 1.5px dashed #f59e0b; margin: 6px 0; opacity: 0.7;">
+      ` : '';
+
+      const feeSectionHtml = `
+        <div class="section-title" style="margin-top: 10px; margin-bottom: 8px;">পেমেন্ট ও ফি বিবরণী</div>
+        <div style="background-color: #fdf8e6; border: 2px solid #f59e0b; border-radius: 10px; padding: 10px 18px; margin-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between; font-size: 14.5px; padding: 3px 0;">
+            <span style="color: #555; font-weight: 700;">Advance Deposit / Room Price:</span>
+            <span style="font-weight: 800; color: #111;">৳ ${this.formatCurrency(advance)}</span>
+          </div>
+          ${devFeeDocHtml}
+          <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 800; padding-top: 2px;">
+            <span style="color: #111;">Total Amount Payable:</span>
+            <span style="color: #059669; font-size: 18px;">৳ ${this.formatCurrency(totalAmount)}</span>
+          </div>
+        </div>
+      `;
+
       const docTitle = isProf ? 'কর্মজীবীর তথ্য - টি এস এস ভিলা' : 'শিক্ষার্থীর তথ্য - টি এস এস ভিলা';
       const sectionTitleText = isProf ? 'কর্মজীবীর তথ্য' : 'শিক্ষার্থীর তথ্য';
-      const signatureLabelText = isProf ? 'বোর্ডারের স্বাক্ষর' : 'শিক্ষার্থীর স্বাক্ষর';
+      const signatureLabelText = isProf ? 'কর্মজীবীর স্বাক্ষর' : 'শিক্ষার্থীর স্বাক্ষর';
 
       const institutionName = r.institution_name || '-';
       const fatherName = r.father_name || '-';
@@ -637,12 +720,7 @@ watch: {
               <div class="pill-val">${motherPhone}</div>
             </div>
           </div>
-          ` : `
-          <div class="form-pill-row">
-            <div class="pill-lbl">ইমেইল ঠিকানা:</div>
-            <div class="pill-val">${r.email || '-'}</div>
-          </div>
-          `}
+          ` : ''}
         `;
       } else {
         infoSectionHtml = `
@@ -687,8 +765,7 @@ watch: {
           <meta charset="UTF-8">
           <title>${docTitle}</title>
           <style>
-            @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=Hind+Siliguri:wght@400;500;600;700;800&display=swap');
-
+            @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&family=Tiro+Bangla&display=swap');
             @page {
               size: A4 portrait;
               margin: 5mm;
@@ -1042,6 +1119,11 @@ watch: {
         </html>
       `;
 
+      if (typeof window.printOrDownloadPdf === 'function') {
+        window.printOrDownloadPdf(html, 'Today_Booking_Document');
+        return;
+      }
+
       let iframe = document.getElementById("print-resident-iframe");
       if (!iframe) {
         iframe = document.createElement("iframe");
@@ -1065,8 +1147,8 @@ watch: {
     },
   },
 };
-
 </script>
+
 <style scoped>
 .img-thumb {
   width: 90px;
@@ -1081,200 +1163,41 @@ watch: {
 .form-select {
   border-radius: 8px;
   padding: 0.6rem 0.75rem;
-  border: 1px solid #dce0e4;
+  border: 1px solid #d1d5db;
 }
 
 .form-control:focus,
 .form-select:focus {
-  border-color: #0d6efd;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.table th {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #374151;
+  background: #f9fafb;
+  white-space: nowrap;
 }
 
 .table td {
-  vertical-align: top;
-}
-
-.table thead th {
-  vertical-align: middle;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 700;
-  color: #374151;
-  background: #f3f4f6;
-}
-
-.table tbody td {
-  padding-top: 14px;
-  padding-bottom: 14px;
-}
-
-/* Booking Card */
-.booking-card {
-  width: 100%;
-  background: #ffffff;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid #dbe2ea;
-}
-
-/* Each booking row */
-.booking-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
-  transition: all 0.2s ease;
-}
-
-.booking-row:not(:last-child) {
-  border-bottom: 1px solid #edf2f7;
-}
-
-.booking-row:hover {
-  background: #f9fafb;
-}
-
-/* Common column */
-.booking-col {
-  flex: 1;
-  display: flex;
-  align-items: center;
-}
-
-/* Floor */
-.booking-col.floor {
-  font-size: 14px;
-  font-weight: 600;
-  color: #6b7280;
-  text-transform: capitalize;
-}
-
-/* Room */
-.booking-col.room {
-  justify-content: center;
-}
-
-/* Price */
-.booking-col.price {
-  justify-content: flex-end;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 0.875rem;
   color: #111827;
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
-/* Premium room badge */
-.room-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 58px;
-  height: 34px;
-  padding: 0 14px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #111827, #1f2937);
-  color: #ff4d4f;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.4px;
-  box-shadow: 0 5px 12px rgba(17, 24, 39, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+.badge {
+  font-weight: 500;
+  border-radius: 6px;
 }
 
-/* Total row */
-.booking-total {
-  padding: 10px 16px;
-  border-top: 1px solid #dbe2ea;
-  background: #f8fafc;
-  font-size: 15px;
-  font-weight: 700;
-  color: #4b5563;
-  text-align: left;
-}
-
-/* Old helper classes kept if used elsewhere */
-.booking-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-width: 110px;
-}
-
-.booking-line {
-  min-height: 36px;
-  display: flex;
-  align-items: center;
-}
-
-.floor-text {
-  display: inline-block;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.35;
-  color: #4b5563;
-  text-transform: capitalize;
-}
-
-.room-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 58px;
-  height: 34px;
-  padding: 0 12px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #111827, #1f2937);
-  color: #ff4d4f;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  box-shadow: 0 4px 10px rgba(17, 24, 39, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.price-text {
-  display: inline-block;
-  font-size: 15px;
-  font-weight: 700;
-  color: #374151;
-}
-
-@media (max-width: 768px) {
-  .booking-stack {
-    min-width: 90px;
-    gap: 8px;
-  }
-
-  .booking-line {
-    min-height: 32px;
-  }
-
-  .room-chip,
-  .room-badge {
-    min-width: 50px;
-    height: 30px;
-    font-size: 13px;
-    padding: 0 10px;
-  }
-
-  .floor-text,
-  .price-text {
-    font-size: 13px;
-  }
-
-  .booking-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-  }
-
-  .booking-col {
-    width: 100%;
-    justify-content: space-between !important;
-  }
-
-  .booking-total {
-    font-size: 14px;
-    padding: 10px 14px;
-  }
+.sticky-action-col {
+  position: sticky;
+  right: 0;
+  background: #fff;
+  z-index: 2;
+  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.05);
 }
 </style>

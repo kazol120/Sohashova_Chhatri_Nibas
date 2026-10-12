@@ -2,6 +2,7 @@
     $appSettings = \App\Services\SettingService::getSettingContentBySlug('app_setting');
     $devFeeActive = ($appSettings['development_fee_status'] ?? '1') == '1';
     $devFeeAmount = (float) ($appSettings['development_fee'] ?? 3000);
+    $bookingButtonActive = ($appSettings['booking_button_status'] ?? '1') == '1';
 @endphp
 <style>
   /* ====== Room UI ====== */
@@ -23,6 +24,20 @@
     overflow: visible;
     font-size: 11px;
     padding: 0 4px;
+  }
+
+  .double-tag {
+    display: inline-flex;
+    align-items: center;
+    font-size: 9px;
+    font-weight: 700;
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+    border-radius: 4px;
+    padding: 1px 3px;
+    margin-right: 3px;
+    line-height: 1.1;
   }
 
   .room-box:hover{
@@ -49,6 +64,18 @@
   .room-box.is-disabled:hover .room-hover-info {
     background: #ffffff !important;
     border: 1.5px solid #ffa8a8 !important;
+  }
+
+  /* Pending Approval (Soft Orange/Yellow) */
+  .room-box.is-pending {
+    background: #fef3c7;
+    border-color: #f59e0b;
+    color: #b45309;
+    cursor: pointer;
+  }
+  .room-box.is-pending:hover {
+    background: #fde68a;
+    border-color: #d97706;
   }
 
   .room-box.is-disabled:hover .room-hover-info::after {
@@ -292,6 +319,7 @@
   }
 </style>
 
+@if($bookingButtonActive)
 <!-- Floating Book Room button -->
 <div class="floating-support">
     <button type="button" class="support-btn" onclick="openroombookingModal()">
@@ -299,6 +327,7 @@
         <span>Book Room</span>
     </button>
 </div>
+@endif
 
 <!-- ===================== BOOKING LEFT OFFCANVAS ===================== -->
 <div id="bookingCanvas" class="offcanvas offcanvas-end booking-canvas" tabindex="-1" aria-labelledby="bookingCanvasLabel">
@@ -340,11 +369,41 @@
                                 $seatsCollection->push(['room' => $room, 'seat' => $seat]);
                             }
                         }
-                        $seatSections = [
-                            'Section A' => $seatsCollection->filter(fn($item) => stripos(str_ireplace('seat', '', $item['seat']->seat_no), 'A') !== false),
-                            'Section B' => $seatsCollection->filter(fn($item) => stripos(str_ireplace('seat', '', $item['seat']->seat_no), 'B') !== false),
-                            'Other Seats' => $seatsCollection->filter(fn($item) => stripos(str_ireplace('seat', '', $item['seat']->seat_no), 'A') === false && stripos(str_ireplace('seat', '', $item['seat']->seat_no), 'B') === false)
-                        ];
+                        $groupedSections = [];
+                        foreach($seatsCollection as $item) {
+                            $rNo = (string)($item['room']->room_no ?? '');
+                            if (preg_match('/^([A-Za-z]+)[\-_]/', $rNo, $m)) {
+                                $sectionKey = 'Block ' . strtoupper($m[1]);
+                            } elseif (preg_match('/(Block[\-_ ]?[A-Za-z])/i', $rNo, $m)) {
+                                $sectionKey = ucwords(str_replace(['_', '-'], ' ', $m[1]));
+                            } else {
+                                $sectionKey = 'Block A';
+                            }
+                            $groupedSections[$sectionKey][] = $item;
+                        }
+                        uksort($groupedSections, function($a, $b) {
+                            return strnatcasecmp($a, $b);
+                        });
+                        $seatSections = collect($groupedSections)->map(function($items) {
+                            return collect($items)->sort(function($a, $b) {
+                                $rNoA = (string)($a['room']->room_no ?? '');
+                                $rNoB = (string)($b['room']->room_no ?? '');
+                                
+                                preg_match('/^([A-Za-z]+)[\-_](\d+)$/', $rNoA, $mA);
+                                preg_match('/^([A-Za-z]+)[\-_](\d+)$/', $rNoB, $mB);
+                                
+                                $numA = isset($mA[2]) ? (int)$mA[2] : 0;
+                                $numB = isset($mB[2]) ? (int)$mB[2] : 0;
+                                
+                                if ($numA !== $numB) {
+                                    return $numA <=> $numB;
+                                }
+                                
+                                $sA = (string)($a['seat']->seat_no ?? '');
+                                $sB = (string)($b['seat']->seat_no ?? '');
+                                return strnatcasecmp($sA, $sB);
+                            });
+                        });
                       @endphp
                       @foreach($seatSections as $sectionName => $secSeats)
                         @if($secSeats->count() > 0)
@@ -357,6 +416,28 @@
                               $seat = $item['seat'];
                               $seatUniqueName = $room->room_no . '-' . $seat->seat_no;
                               $isSeatBooked = (isset($bookedRoomNumbers) && in_array($seatUniqueName, $bookedRoomNumbers)) || $seat->status == 1;
+                              
+                              $rNo = (string)($room->room_no ?? '');
+                              $blockLetter = 'A';
+                              $roomNum = 1;
+                              if (preg_match('/^([A-Za-z]+)[\-_](\d+)$/', $rNo, $m)) {
+                                  $blockLetter = strtoupper($m[1]);
+                                  $roomNum = (int)$m[2];
+                              }
+                              
+                              $seatCount = $room->seats->count();
+                              if ($seatCount > 1) {
+                                  $sNo = (string)($seat->seat_no ?? '');
+                                  $seatSuffix = '1';
+                                  if (preg_match('/(\d+)$/', $sNo, $sm)) {
+                                      $seatSuffix = $sm[1];
+                                  } elseif (str_contains(strtolower($sNo), '2') || str_contains(strtolower($sNo), 'b')) {
+                                      $seatSuffix = '2';
+                                  }
+                                  $displaySeatLabel = "{$roomNum}-Block {$blockLetter}-{$seatSuffix}";
+                              } else {
+                                  $displaySeatLabel = "{$roomNum}-Block {$blockLetter}";
+                              }
                             @endphp
                             <div
                               class="seat room-box {{ $isSeatBooked ? 'is-disabled' : '' }}"
@@ -369,13 +450,13 @@
                               data-room-type="{{ $room->room_type }}"
                               data-ac-status="{{ $room->ac_status }}"
                               title="">
-                              {{ $seatUniqueName }}
+                              {{ $displaySeatLabel }}
                               <div class="room-hover-info">
                                  @if($isSeatBooked)
                                   <div class="text-center fw-bold" style="color: #ea580c;">Already Booked</div>
                                   @php
                                     $uType = $bookedSeatsUserTypes[$seatUniqueName] ?? 'student';
-                                    $uTypeLabel = ($uType === 'passenger' || $uType === 'Working Professional') ? 'Working Professional (চাকরিজীবী/পেশাজীবী)' : 'Student (ছাত্রী)';
+                                    $uTypeLabel = ($uType === 'passenger' || $uType === 'Working Professional') ? 'Working Professional (চাকরিজীবী/পেশাজীবী)' : 'Student (শিক্ষার্থী)';
                                   @endphp
                                   <div class="text-center small mt-1 fw-bold text-dark" style="border-top: 1px dashed #ddd; padding-top: 4px;">Occupant: {{ $uTypeLabel }}</div>
                                 @else
@@ -417,11 +498,41 @@
                                 $seatsCollection->push(['room' => $room, 'seat' => $seat]);
                             }
                         }
-                        $seatSections = [
-                            'Section A' => $seatsCollection->filter(fn($item) => stripos(str_ireplace('seat', '', $item['seat']->seat_no), 'A') !== false),
-                            'Section B' => $seatsCollection->filter(fn($item) => stripos(str_ireplace('seat', '', $item['seat']->seat_no), 'B') !== false),
-                            'Other Seats' => $seatsCollection->filter(fn($item) => stripos(str_ireplace('seat', '', $item['seat']->seat_no), 'A') === false && stripos(str_ireplace('seat', '', $item['seat']->seat_no), 'B') === false)
-                        ];
+                        $groupedSections = [];
+                        foreach($seatsCollection as $item) {
+                            $rNo = (string)($item['room']->room_no ?? '');
+                            if (preg_match('/^([A-Za-z]+)[\-_]/', $rNo, $m)) {
+                                $sectionKey = 'Block ' . strtoupper($m[1]);
+                            } elseif (preg_match('/(Block[\-_ ]?[A-Za-z])/i', $rNo, $m)) {
+                                $sectionKey = ucwords(str_replace(['_', '-'], ' ', $m[1]));
+                            } else {
+                                $sectionKey = 'Block A';
+                            }
+                            $groupedSections[$sectionKey][] = $item;
+                        }
+                        uksort($groupedSections, function($a, $b) {
+                            return strnatcasecmp($a, $b);
+                        });
+                        $seatSections = collect($groupedSections)->map(function($items) {
+                            return collect($items)->sort(function($a, $b) {
+                                $rNoA = (string)($a['room']->room_no ?? '');
+                                $rNoB = (string)($b['room']->room_no ?? '');
+                                
+                                preg_match('/^([A-Za-z]+)[\-_](\d+)$/', $rNoA, $mA);
+                                preg_match('/^([A-Za-z]+)[\-_](\d+)$/', $rNoB, $mB);
+                                
+                                $numA = isset($mA[2]) ? (int)$mA[2] : 0;
+                                $numB = isset($mB[2]) ? (int)$mB[2] : 0;
+                                
+                                if ($numA !== $numB) {
+                                    return $numA <=> $numB;
+                                }
+                                
+                                $sA = (string)($a['seat']->seat_no ?? '');
+                                $sB = (string)($b['seat']->seat_no ?? '');
+                                return strnatcasecmp($sA, $sB);
+                            });
+                        });
                       @endphp
                       @foreach($seatSections as $sectionName => $secSeats)
                         @if($secSeats->count() > 0)
@@ -434,6 +545,28 @@
                               $seat = $item['seat'];
                               $seatUniqueName = $room->room_no . '-' . $seat->seat_no;
                               $isSeatBooked = (isset($bookedRoomNumbers) && in_array($seatUniqueName, $bookedRoomNumbers)) || $seat->status == 1;
+                              
+                              $rNo = (string)($room->room_no ?? '');
+                              $blockLetter = 'A';
+                              $roomNum = 1;
+                              if (preg_match('/^([A-Za-z]+)[\-_](\d+)$/', $rNo, $m)) {
+                                  $blockLetter = strtoupper($m[1]);
+                                  $roomNum = (int)$m[2];
+                              }
+                              
+                              $seatCount = $room->seats->count();
+                              if ($seatCount > 1) {
+                                  $sNo = (string)($seat->seat_no ?? '');
+                                  $seatSuffix = '1';
+                                  if (preg_match('/(\d+)$/', $sNo, $sm)) {
+                                      $seatSuffix = $sm[1];
+                                  } elseif (str_contains(strtolower($sNo), '2') || str_contains(strtolower($sNo), 'b')) {
+                                      $seatSuffix = '2';
+                                  }
+                                  $displaySeatLabel = "{$roomNum}-Block {$blockLetter}-{$seatSuffix}";
+                              } else {
+                                  $displaySeatLabel = "{$roomNum}-Block {$blockLetter}";
+                              }
                             @endphp
                             <div
                               class="seat room-box {{ $isSeatBooked ? 'is-disabled' : '' }}"
@@ -446,13 +579,16 @@
                               data-room-type="{{ $room->room_type }}"
                               data-ac-status="{{ $room->ac_status }}"
                               title="">
-                              {{ $seatUniqueName }}
+                              @if($seatCount > 1)
+                                <span class="double-tag">Double</span>
+                              @endif
+                              {{ $displaySeatLabel }}
                               <div class="room-hover-info">
                                  @if($isSeatBooked)
                                   <div class="text-center fw-bold" style="color: #ea580c;">Already Booked</div>
                                   @php
                                     $uType = $bookedSeatsUserTypes[$seatUniqueName] ?? 'student';
-                                    $uTypeLabel = ($uType === 'passenger' || $uType === 'Working Professional') ? 'Working Professional (চাকরিজীবী/পেশাজীবী)' : 'Student (ছাত্রী)';
+                                    $uTypeLabel = ($uType === 'passenger' || $uType === 'Working Professional') ? 'Working Professional (চাকরিজীবী/পেশাজীবী)' : 'Student (শিক্ষার্থী)';
                                   @endphp
                                   <div class="text-center small mt-1 fw-bold text-dark" style="border-top: 1px dashed #ddd; padding-top: 4px;">Occupant: {{ $uTypeLabel }}</div>
                                 @else
@@ -590,6 +726,21 @@
           </div>
 
           <div class="col-12">
+            <label class="form-label">Blood Group (রক্তের গ্রুপ)</label>
+            <select class="form-select" id="blood_group" name="blood_group">
+              <option value="">Select Blood Group</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+            </select>
+          </div>
+
+          <div class="col-12">
               <div class="d-flex justify-content-between align-items-center mb-1">
                 <label class="form-label mb-0">Password <span class="req">*</span></label>
                 <div id="resetPasswordOption" style="display:none;">
@@ -601,31 +752,11 @@
                   </div>
                 </div>
               </div>
-              <input type="text" class="form-control" id="bookingPassword" name="password" placeholder="Max 6 digit password" autocomplete="off" maxlength="6">
-              <div class="form-text" id="passwordHint" style="color:#888; font-size:12px;">🔒 Maximum 6 digits. <strong>এই password আপনার login password হবে।</strong></div>
+              <input type="text" class="form-control font-monospace" id="bookingPassword" name="password" placeholder="Max 6 digit password" autocomplete="off" maxlength="6" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);">
+              <div class="form-text" id="passwordHint" style="color:#888; font-size:12px;">🔒 Maximum 6 digits (Only Numbers). <strong>এই password আপনার login password হবে।</strong></div>
           </div>
 
-          <div class="col-12">
-            <label class="form-label">User Type (গ্রাহকের ধরন) <span class="req">*</span></label>
-            <select class="form-select" id="user_type" name="user_type" required>
-              <option value="student" selected>Student (ছাত্রী)</option>
-              <option value="Working Professional">Working Professional (চাকরিজীবী/পেশাজীবী)</option>
-            </select>
-          </div>
-
-          <!-- Passenger NID/Passport & Workplace (Working Professional) -->
-          <div class="col-12 p-0 m-0" id="passenger_nid_div" style="display:none;">
-            <div class="row g-3 p-0 m-0">
-              <div class="col-12">
-                <label class="form-label">Workplace Name (কর্মক্ষেত্রের নাম) <span class="req">*</span></label>
-                <input type="text" class="form-control" id="workplace_name" name="workplace_name" placeholder="Enter Workplace Name">
-              </div>
-              <div class="col-12">
-                <label class="form-label">NID / Passport <span class="req">*</span></label>
-                <input type="text" class="form-control" id="nid" name="nid" placeholder="Enter NID or Passport number">
-              </div>
-            </div>
-          </div>
+          <input type="hidden" id="user_type" name="user_type" value="student">
 
           <!-- Student Guardian & Education Details -->
           <div class="col-12 p-0 m-0" id="student_fields">
@@ -664,22 +795,22 @@
               </div>
 
               <div class="col-6">
-                <label class="form-label">Father's NID <span class="req">*</span></label>
-                <input type="text" class="form-control" id="father_nid" name="father_nid" placeholder="Father's NID number" required>
+                <label class="form-label">Father's NID</label>
+                <input type="text" class="form-control" id="father_nid" name="father_nid" placeholder="Father's NID number">
               </div>
 
               <div class="col-6">
-                <label class="form-label">Mother's NID <span class="req">*</span></label>
-                <input type="text" class="form-control" id="mother_nid" name="mother_nid" placeholder="Mother's NID number" required>
+                <label class="form-label">Mother's NID</label>
+                <input type="text" class="form-control" id="mother_nid" name="mother_nid" placeholder="Mother's NID number">
               </div>
 
               <div class="col-6">
-                <label class="form-label">Father's Phone <small class="text-muted">(Optional)</small></label>
+                <label class="form-label">Father's Phone</label>
                 <input type="text" class="form-control" id="father_phone" name="father_phone" placeholder="01XXXXXXXXX" maxlength="11">
               </div>
 
               <div class="col-6">
-                <label class="form-label">Mother's Phone <small class="text-muted">(Optional)</small></label>
+                <label class="form-label">Mother's Phone</label>
                 <input type="text" class="form-control" id="mother_phone" name="mother_phone" placeholder="01XXXXXXXXX" maxlength="11">
               </div>
             </div>
@@ -899,36 +1030,63 @@ document.addEventListener('DOMContentLoaded', function () {
         els.formMsg.removeAttribute('style');
     }
 
+    function resetBookingForm() {
+        if (els.bookingForm) els.bookingForm.reset();
+
+        if (els.imgPreview) {
+            els.imgPreview.src = '';
+            els.imgPreview.style.display = 'none';
+        }
+        if (els.imgHint) {
+            els.imgHint.style.display = 'block';
+        }
+
+        const existingImgInput = document.getElementById('existingImageInput');
+        if (existingImgInput) {
+            existingImgInput.value = '';
+        }
+
+        if (els.guestImage) {
+            els.guestImage.value = '';
+            els.guestImage.setAttribute('required', 'required');
+        }
+
+        existingImageUrl = null;
+        existingImageName = null;
+        guestHasAccount = false;
+
+        const resetOpt = document.getElementById('resetPasswordOption');
+        if (resetOpt) resetOpt.style.display = 'none';
+        const pwHint = document.getElementById('passwordHint');
+        if (pwHint) pwHint.innerHTML = '';
+
+        if (els.district) els.district.innerHTML = '<option value="">Select District</option>';
+        if (els.thana) els.thana.innerHTML = '<option value="">Select Thana / Upazila</option>';
+    }
+
 function showSuccessAlert(message, redirectUrl) {
-    const old = document.getElementById('bkSuccessAlert');
-    if (old) old.remove();
+    if (typeof selected !== 'undefined') {
+        selected.clear();
+        if (typeof syncSticky === 'function') syncSticky();
+    }
 
-    const alertEl = document.createElement('div');
-    alertEl.id = 'bkSuccessAlert';
-    alertEl.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 99999;
-        background: #0a9f4b;
-        color: #fff;
-        border-radius: 16px;
-        padding: 16px 22px;
-        font-size: 15px;
-        font-weight: 700;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.16);
-        min-width: 280px;
-    `;
-    alertEl.innerHTML = `✅ ${message}`;
-    document.body.appendChild(alertEl);
+    if (els.openbooking) els.openbooking.classList.add('d-none');
+    if (els.seatWrap) els.seatWrap.classList.remove('d-none');
+    resetBookingForm();
 
-    const finalRedirect = (redirectUrl && redirectUrl.trim() !== '')
-        ? redirectUrl
-        : '/backend/dashboard';
+    const offcanvasEl = document.getElementById('bookingCanvas');
+    if (offcanvasEl && window.bootstrap) {
+        const bsOffcanvas = window.bootstrap.Offcanvas.getInstance(offcanvasEl);
+        if (bsOffcanvas) bsOffcanvas.hide();
+    }
 
-    setTimeout(() => {
-        window.location.href = finalRedirect;
-    }, 1800);
+    const modalEl = document.getElementById('bookingPendingModal');
+    if (modalEl && typeof bootstrap !== 'undefined') {
+        setTimeout(() => {
+            const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            bsModal.show();
+        }, 200);
+    }
 }
     window.openroombookingModal = function () {
         const canvasEl = document.getElementById('bookingCanvas');
@@ -999,6 +1157,18 @@ function showSuccessAlert(message, redirectUrl) {
         $$('.room-box').forEach(el => {
             el.addEventListener('click', () => {
                 if (el.classList.contains('is-disabled')) return;
+                if (el.classList.contains('is-pending')) {
+                    if (typeof Toastify === 'function') {
+                        Toastify({
+                            text: "⚠️ এই সিটটির একটি বুকিং আবেদন প্রসেসিংয়ে রয়েছে। এডমিন অনুমোদনের জন্য অপেক্ষা করুন।",
+                            duration: 4000,
+                            gravity: "top",
+                            position: "center",
+                            style: { background: "#d97706", color: "#fff", borderRadius: "10px", padding: "12px 18px" }
+                        }).showToast();
+                    }
+                    return;
+                }
                 const room = el.dataset.room;
                 const floor = el.dataset.floor || '';
                 const price = parseFloat(el.dataset.price || '0');
@@ -1143,44 +1313,12 @@ function showSuccessAlert(message, redirectUrl) {
     }
 
     function bindUserTypeToggle() {
-        const userTypeEl = document.getElementById('user_type');
         const studentFields = document.getElementById('student_fields');
-        const passengerNidDiv = document.getElementById('passenger_nid_div');
         const eduLevelEl = document.getElementById('education_level');
 
-        if (!userTypeEl) return;
-
-        function toggleFields() {
-            const val = userTypeEl.value;
-            if (val === 'student') {
-                if (studentFields) studentFields.style.display = 'block';
-                if (passengerNidDiv) passengerNidDiv.style.display = 'none';
-
-                // set required attributes for student fields
-                document.querySelectorAll('#student_fields input, #student_fields select').forEach(input => {
-                    input.setAttribute('required', 'required');
-                });
-                // remove required attribute for passenger nid & workplace fields
-                document.querySelectorAll('#passenger_nid_div input').forEach(input => {
-                    input.removeAttribute('required');
-                });
-            } else {
-                if (studentFields) studentFields.style.display = 'none';
-                if (passengerNidDiv) passengerNidDiv.style.display = 'block';
-
-                // remove required attributes for student fields
-                document.querySelectorAll('#student_fields input, #student_fields select').forEach(input => {
-                    input.removeAttribute('required');
-                });
-                // set required attribute for working professional fields
-                document.querySelectorAll('#passenger_nid_div input').forEach(input => {
-                    input.setAttribute('required', 'required');
-                });
-            }
+        if (studentFields) {
+            studentFields.style.display = 'block';
         }
-
-        userTypeEl.addEventListener('change', toggleFields);
-        toggleFields(); // run once on init
 
         eduLevelEl?.addEventListener('change', function () {
             updateEducationClassOptions(this.value);
@@ -1341,6 +1479,7 @@ function showSuccessAlert(message, redirectUrl) {
 
                         setVal('fullname', data.full_name);
                         setVal('guestEmail', data.email);
+                        setVal('blood_group', data.blood_group);
                         setVal('nid', data.nid);
                         setVal('mother_nid', data.mother_nid);
                         setVal('father_nid', data.father_nid);
@@ -1448,64 +1587,34 @@ function showSuccessAlert(message, redirectUrl) {
             return;
         }
 
-        const userTypeVal = document.getElementById('user_type')?.value || 'student';
-        if (userTypeVal === 'student') {
-            // STUDENT & FAMILY FIELDS CHECK
-            const instName   = document.getElementById('institution_name')?.value.trim();
-            const eduLevel   = document.getElementById('education_level')?.value;
-            const eduClass   = document.getElementById('education_class')?.value;
-            const fatherName = document.getElementById('father_name')?.value.trim();
-            const motherName = document.getElementById('mother_name')?.value.trim();
-            const fatherNid  = document.getElementById('father_nid')?.value.trim();
-            const motherNid  = document.getElementById('mother_nid')?.value.trim();
+        // STUDENT & FAMILY FIELDS CHECK
+        const instName   = document.getElementById('institution_name')?.value.trim();
+        const eduLevel   = document.getElementById('education_level')?.value;
+        const eduClass   = document.getElementById('education_class')?.value;
+        const fatherName = document.getElementById('father_name')?.value.trim();
+        const motherName = document.getElementById('mother_name')?.value.trim();
 
-            if (!instName || !eduLevel || !eduClass || !fatherName || !motherName || !fatherNid || !motherNid) {
-                const missing = [];
-                if (!instName)   missing.push("Institution Name");
-                if (!eduLevel)   missing.push("Education System");
-                if (!eduClass)   missing.push("Class / Semester");
-                if (!fatherName) missing.push("Father's Name");
-                if (!motherName) missing.push("Mother's Name");
-                if (!fatherNid)  missing.push("Father's NID");
-                if (!motherNid)  missing.push("Mother's NID");
-                showMsg('warning', `
-                    <div style="display:flex; gap:12px; align-items:flex-start;">
-                        <div style="font-size:22px; line-height:1;">🎓</div>
-                        <div>
-                            <div style="font-size:15px; font-weight:700; margin-bottom:6px;">Student Information Required</div>
-                            <div style="font-size:13px; line-height:1.6;">
-                                Please fill in the following required field(s):<br>
-                                <strong>${missing.join(', ')}</strong>
-                            </div>
+        if (!instName || !eduLevel || !eduClass || !fatherName || !motherName) {
+            const missing = [];
+            if (!instName)   missing.push("Institution Name");
+            if (!eduLevel)   missing.push("Education System");
+            if (!eduClass)   missing.push("Class / Semester");
+            if (!fatherName) missing.push("Father's Name");
+            if (!motherName) missing.push("Mother's Name");
+            showMsg('warning', `
+                <div style="display:flex; gap:12px; align-items:flex-start;">
+                    <div style="font-size:22px; line-height:1;">🎓</div>
+                    <div>
+                        <div style="font-size:15px; font-weight:700; margin-bottom:6px;">Student Information Required</div>
+                        <div style="font-size:13px; line-height:1.6;">
+                            Please fill in the following required field(s):<br>
+                            <strong>${missing.join(', ')}</strong>
                         </div>
                     </div>
-                `);
-                scrollToFormMsg();
-                return;
-            }
-        } else {
-            // WORKING PROFESSIONAL FIELDS CHECK
-            const workplaceName = document.getElementById('workplace_name')?.value.trim();
-            const nid           = document.getElementById('nid')?.value.trim();
-            if (!workplaceName || !nid) {
-                const missing = [];
-                if (!workplaceName) missing.push("Workplace Name");
-                if (!nid)           missing.push("NID / Passport");
-                showMsg('warning', `
-                    <div style="display:flex; gap:12px; align-items:flex-start;">
-                        <div style="font-size:22px; line-height:1;">💼</div>
-                        <div>
-                            <div style="font-size:15px; font-weight:700; margin-bottom:6px;">Professional Details Required</div>
-                            <div style="font-size:13px; line-height:1.6;">
-                                Please fill in the following required field(s):<br>
-                                <strong>${missing.join(', ')}</strong>
-                            </div>
-                        </div>
-                    </div>
-                `);
-                scrollToFormMsg();
-                return;
-            }
+                </div>
+            `);
+            scrollToFormMsg();
+            return;
         }
 
         if (els.guestImage && !els.guestImage.files.length && !document.getElementById('existingImageInput')?.value) {
@@ -1586,13 +1695,7 @@ function showSuccessAlert(message, redirectUrl) {
             }
 
             if (ok && data.status) {
-                const offcanvas = window.bootstrap?.Offcanvas?.getOrCreateInstance(els.bookingCanvas);
                 showSuccessAlert(data.message || 'Booking successfully!', data.redirect_url);
-                if (offcanvas) {
-                    setTimeout(() => {
-                        offcanvas.hide();
-                    }, 300);
-                }
                 return;
             }
 
@@ -1647,12 +1750,89 @@ function scrollToFormMsg() {
     }, 100);
 }
 
+function resetBookingForm() {
+    if (els.bookingForm) {
+        els.bookingForm.reset();
+    }
+
+    if (els.phone) els.phone.value = '';
+
+    if (els.guestImage) els.guestImage.value = '';
+    const existingImgInput = document.getElementById('existingImageInput');
+    if (existingImgInput) existingImgInput.value = '';
+
+    if (els.imgPreview) {
+        els.imgPreview.src = '';
+        els.imgPreview.style.display = 'none';
+    }
+    if (els.imgHint) els.imgHint.style.display = 'block';
+
+    selectedSeats = [];
+    if (els.selectedSeatsInput) els.selectedSeatsInput.value = '[]';
+
+    if (els.selectedSeatsList) els.selectedSeatsList.innerHTML = '<span class="text-muted small">No room selected</span>';
+    if (els.selectedSeatsCount) els.selectedSeatsCount.textContent = '0';
+    if (els.totalAdvancePrice) els.totalAdvancePrice.textContent = '৳ 0';
+
+    document.querySelectorAll('.seat-checkbox, .room-seat-select').forEach(cb => {
+        cb.checked = false;
+        cb.closest('.seat-card, .room-card')?.classList.remove('selected', 'active');
+    });
+
+    const pwInput = document.getElementById('bookingPassword');
+    if (pwInput) pwInput.value = '';
+    const pwHint = document.getElementById('passwordHint');
+    if (pwHint) {
+        pwHint.innerHTML = '';
+        pwHint.style.color = '';
+    }
+    const resetOpt = document.getElementById('resetPasswordOption');
+    if (resetOpt) resetOpt.style.display = 'none';
+
+    if (els.payCash) els.payCash.checked = true;
+    if (els.payOnline) els.payOnline.checked = false;
+    if (typeof togglePaymentUI === 'function') togglePaymentUI();
+
+    if (els.newGuestCheck) els.newGuestCheck.checked = true;
+    if (typeof toggleGuestForm === 'function') toggleGuestForm(true);
+
+    if (els.openbooking) els.openbooking.classList.add('d-none');
+    if (els.seatWrap) els.seatWrap.classList.remove('d-none');
+
+    hideMsg();
+}
+
 document.getElementById('phone')?.addEventListener('input', function () {
     this.value = this.value.replace(/\D/g, '');
     if (this.value.length > 11) {
         this.value = this.value.slice(0, 11);
     }
 });
+
+const bookingPwInputEl = document.getElementById('bookingPassword');
+if (bookingPwInputEl) {
+    bookingPwInputEl.addEventListener('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (this.value.length > 6) {
+            this.value = this.value.slice(0, 6);
+        }
+    });
+    bookingPwInputEl.addEventListener('keydown', function (e) {
+        // Allow backspace, delete, tab, escape, enter, arrows, and Ctrl/Cmd combos (copy/paste/select)
+        if ([46, 8, 9, 27, 13].indexOf(e.keyCode) !== -1 ||
+            (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+            (e.keyCode === 67 && (e.ctrlKey === true || e.metaKey === true)) ||
+            (e.keyCode === 86 && (e.ctrlKey === true || e.metaKey === true)) ||
+            (e.keyCode === 88 && (e.ctrlKey === true || e.metaKey === true)) ||
+            (e.keyCode >= 35 && e.keyCode <= 39)) {
+            return;
+        }
+        // If not a number key (top row 48-57 or numpad 96-105), prevent typing
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
+}
 
 function bindResetPasswordToggle() {
     const resetCb = document.getElementById('is_reset_password');
@@ -1683,6 +1863,11 @@ function bindOffcanvasFilter() {
     if (!bookingCanvasEl) return;
 
     bookingCanvasEl.addEventListener('show.bs.offcanvas', function (e) {
+        if (!selectedSeats || selectedSeats.length === 0) {
+            if (els.openbooking) els.openbooking.classList.add('d-none');
+            if (els.seatWrap) els.seatWrap.classList.remove('d-none');
+        }
+
         const triggerEl = e.relatedTarget;
         if (triggerEl && triggerEl.classList.contains('bookNowBtn')) {
             const targetRoomNo = triggerEl.getAttribute('data-room');
@@ -1705,6 +1890,73 @@ function bindOffcanvasFilter() {
     });
 }
 
+function checkAndShowSuccessModal() {
+    if (sessionStorage.getItem('showBookingSuccessModal') === 'true') {
+        sessionStorage.removeItem('showBookingSuccessModal');
+        const modalEl = document.getElementById('bookingPendingModal');
+        if (modalEl && typeof bootstrap !== 'undefined') {
+            setTimeout(() => {
+                const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                bsModal.show();
+            }, 200);
+        }
+    }
+}
+
+    function fetchLiveBookedSeats() {
+        fetch('/get-live-booked-seats')
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.success) {
+                    const approvedSet = new Set(data.approved_seats || data.booked_seats || []);
+                    const pendingSet  = new Set(data.pending_seats || []);
+
+                    document.querySelectorAll('#seatGridWrap .room-box').forEach(seatBox => {
+                        const roomNo = seatBox.dataset.room;
+
+                        if (approvedSet.has(roomNo)) {
+                            // APPROVED -> RED (Disabled / Already Booked)
+                            seatBox.classList.remove('is-pending', 'is-selected');
+                            seatBox.classList.add('is-disabled');
+                            seatBox.dataset.status = "1";
+                            let hoverInfo = seatBox.querySelector('.room-hover-info');
+                            if (!hoverInfo) {
+                                hoverInfo = document.createElement('div');
+                                hoverInfo.className = 'room-hover-info';
+                                seatBox.appendChild(hoverInfo);
+                            }
+                            hoverInfo.innerHTML = `
+                                <div class="text-center fw-bold" style="color: #ea580c;">Already Booked</div>
+                                <div class="text-center small mt-1 fw-bold text-dark" style="border-top: 1px dashed #ddd; padding-top: 4px;">Occupant: Booked</div>
+                            `;
+                        } else if (pendingSet.has(roomNo)) {
+                            // PENDING -> SOFT ORANGE/YELLOW (Booking Processing)
+                            seatBox.classList.remove('is-disabled', 'is-selected');
+                            seatBox.classList.add('is-pending');
+                            seatBox.dataset.status = "0";
+                            let hoverInfo = seatBox.querySelector('.room-hover-info');
+                            if (!hoverInfo) {
+                                hoverInfo = document.createElement('div');
+                                hoverInfo.className = 'room-hover-info';
+                                seatBox.appendChild(hoverInfo);
+                            }
+                            hoverInfo.innerHTML = `
+                                <div class="text-center fw-bold" style="color: #d97706;">⏳ বুকিং প্রসেসিং চলছে</div>
+                                <div class="text-center small mt-1 fw-bold text-dark" style="border-top: 1px dashed #ddd; padding-top: 4px;">Pending Approval</div>
+                            `;
+                        } else {
+                            // VACANT -> Normal State
+                            if (seatBox.classList.contains('is-disabled') || seatBox.classList.contains('is-pending')) {
+                                seatBox.classList.remove('is-disabled', 'is-pending');
+                                seatBox.dataset.status = "0";
+                            }
+                        }
+                    });
+                }
+            })
+            .catch(err => {});
+    }
+
 (async function init() {
     bindOpenCanvas();
     await bindLocationDropdowns();
@@ -1719,6 +1971,64 @@ function bindOffcanvasFilter() {
     bindResetPasswordToggle();
     syncSticky();
     bindPhoneAutofill();
+    checkAndShowSuccessModal();
+    fetchLiveBookedSeats();
+    setInterval(fetchLiveBookedSeats, 2500);
 })();
 });
 </script>
+
+<!-- Booking Pending Activation Success Modal -->
+<div class="modal fade notranslate" id="bookingPendingModal" tabindex="-1" aria-hidden="true" style="z-index: 99999;" translate="no" lang="bn">
+  <div class="modal-dialog modal-dialog-centered notranslate" style="max-width: 480px;" translate="no">
+    <div class="modal-content shadow-lg border-0 rounded-4 overflow-hidden notranslate" translate="no">
+      <div class="modal-header bg-success text-white py-3 px-4">
+        <h5 class="modal-title text-white fw-bold d-flex align-items-center gap-2 mb-0" style="font-size: 1.15rem;">
+          <i class="bi bi-check-circle-fill fs-4"></i>
+          <span>বুকিং আবেদন সফলভাবে জমা হয়েছে!</span>
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body p-4 text-center">
+        @php
+          $logoSetting = \App\Services\SettingService::getSettingContentBySlug('logo_setting');
+          $modalLogo   = isset($logoSetting['logo']) ? asset($logoSetting['logo']) : asset('logo/logoimage (2).png');
+        @endphp
+        <div class="mb-3">
+          <div class="d-inline-flex align-items-center justify-content-center rounded-circle p-2 shadow-sm" style="width: 85px; height: 85px; background: #ffffff; border: 3px solid #033364;">
+            <img src="{{ $modalLogo }}" alt="TSS Villa Logo" style="width: 100%; height: 100%; object-fit: contain;">
+          </div>
+        </div>
+
+        <h4 class="fw-extrabold mb-3" style="color: #033364 !important; font-size: 1.25rem; font-weight: 800;">টি এস এস ভিলায় (TSS Villa) আপনাকে স্বাগতম!</h4>
+        
+        <div class="card border-0 bg-light p-3 my-3 text-start rounded-3 border-start border-4 border-success">
+          <p class="mb-2 text-dark small fw-semibold">
+            <i class="bi bi-info-circle text-success me-1"></i>
+            আপনার বুকিং আবেদন এবং পেমেন্ট সংক্রান্ত তথ্য সফলভাবে সিস্টেমে জমা হয়েছে।
+          </p>
+          <p class="mb-0 text-muted small">
+            অ্যাডমিন আপনার বুকিং তথ্য যাচাই করে কনফার্ম ও একটিভ (Active) করার পর আপনি আপনার <strong>ফোন নম্বর ও পাসওয়ার্ড</strong> ব্যবহার করে ড্যাশবোর্ডে লগইন করতে পারবেন।
+          </p>
+        </div>
+
+        <div class="p-2 text-primary-emphasis rounded-3 small fw-semibold text-start mb-2" style="background-color: #eff6ff; border: 1px solid #bfdbfe;">
+          <i class="bi bi-telephone-outbound me-1 text-primary"></i>
+          অ্যাডমিনের সাথে যোগাযোগ করুন এবং আপনার বুকিং রসিদ বুঝে নিন।
+        </div>
+
+        <div class="p-2 text-warning-emphasis rounded-3 small fw-semibold text-start mb-2" style="background-color: #fff9e6; border: 1px solid #fef08a;">
+          <i class="bi bi-shield-lock me-1"></i>
+          অ্যাডমিন একটিভ (Active) করার পরই ড্যাশবোর্ডে লগইন সম্ভব হবে।
+        </div>
+      </div>
+
+      <div class="modal-footer bg-light py-3 px-4 justify-content-center">
+        <button type="button" class="btn btn-secondary fw-bold px-4 rounded-3" data-bs-dismiss="modal">
+          ✕ বন্ধ করুন
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

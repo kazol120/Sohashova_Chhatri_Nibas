@@ -19,7 +19,10 @@ class RoomBookingMail extends Mailable
 
     public function build()
     {
-        $mail = $this->subject('New Room Booking Received')
+        $webSetting = \App\Services\SettingService::getSettingContentBySlug('web_setting');
+        $siteTitle = $webSetting['title'] ?? 'Hostel';
+
+        $mail = $this->subject('New Room Booking Received - ' . $siteTitle)
             ->view('emails.roombookingmail')
             ->with($this->payload);
 

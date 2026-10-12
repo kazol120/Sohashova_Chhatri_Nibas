@@ -33,35 +33,117 @@
                 />
               </div>
             </div>
+
+            <!-- Status Color Legend Indicator -->
+            <div class="floor-legend-card mb-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+              <div class="d-flex flex-wrap align-items-center gap-3 small">
+                <span class="fw-bold text-dark"><i class="ti ti-info-circle text-primary me-1"></i>স্ট্যাটাস নির্দেশিকা:</span>
+                <div class="d-flex align-items-center gap-1.5">
+                  <span class="status-indicator available"></span>
+                  <span class="text-secondary fw-semibold">খালি (Available)</span>
+                </div>
+                <div class="d-flex align-items-center gap-1.5">
+                  <span class="status-indicator processing"></span>
+                  <span class="text-warning fw-semibold" style="color: #b45309 !important;">⏳ প্রসেসিং (Processing)</span>
+                </div>
+                <div class="d-flex align-items-center gap-1.5">
+                  <span class="status-indicator confirmed"></span>
+                  <span class="text-danger fw-semibold">🔒 বুকিং কনফার্মড (Booked)</span>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2 small">
+                <span class="badge bg-light text-dark border px-2.5 py-1 fw-semibold"><i class="ti ti-user text-primary me-1"></i>Single Room (১ সিট)</span>
+                <span class="badge bg-light text-dark border px-2.5 py-1 fw-semibold"><i class="ti ti-users text-warning me-1"></i>Double Room (২ সিট)</span>
+              </div>
+            </div>
+
             <div class="table-responsive">
               <table class="table table-bordered table-hover align-middle">
                 <thead class="table-light">
                   <tr>
-                    <th style="width:70px">Sl</th>
-                    <th style="width:130px">Image</th>
-                    <th>Floor name</th>
-                    <th>Room Number</th>
-                    <th style="width:170px">Actions</th>
+                    <th style="width:60px" class="text-center">Sl</th>
+                    <th style="width:120px" class="text-center">Image</th>
+                    <th style="width:190px">Floor Details</th>
+                    <th>Rooms & Seats</th>
+                    <th style="width:150px" class="text-center">Actions</th>
                   </tr>
                 </thead>
                 <tbody v-if="floors.length">
                   <tr v-for="(f, idx) in floors" :key="f.id">
-                    <td>{{ from + idx }}</td>
-                    <td>
+                    <td class="text-center fw-bold text-muted">{{ from + idx }}</td>
+                    <td class="text-center">
                       <img v-if="f.image_url" :src="f.image_url" class="img-thumb" alt="floor" />
                       <span v-else class="text-muted small">No image</span>
                     </td>
                     <td>
-                      <div class="fw-semibold">{{ f.name }}</div>
+                      <div class="fw-bold text-dark fs-6">{{ f.name }}</div>
+                      <div class="small text-muted mt-1 fw-semibold">
+                        <span class="text-primary font-monospace">{{ f.rooms ? f.rooms.length : 0 }} Rooms</span> · 
+                        <span class="text-success font-monospace">{{ getTotalSeats(f) }} Beds</span>
+                      </div>
+                      <div class="mt-1.5 d-flex flex-wrap gap-1">
+                        <span class="badge bg-light text-secondary border font-monospace" style="font-size: 11px;">
+                          Single: {{ getSingleRoomCount(f) }}
+                        </span>
+                        <span class="badge bg-light text-secondary border font-monospace" style="font-size: 11px;">
+                          Double: {{ getDoubleRoomCount(f) }} ({{ getDoubleSeatCount(f) }} Beds)
+                        </span>
+                      </div>
+                      <div class="mt-1.5 d-flex flex-wrap gap-1">
+                        <span class="badge bg-success-subtle text-success border border-success-subtle font-monospace" style="font-size: 10.5px;">
+                          খালি: {{ getAvailableSeatCount(f) }}
+                        </span>
+                        <span class="badge font-monospace" style="font-size: 10.5px; background: #fef08a; color: #78350f; border: 1px solid #d97706;">
+                          প্রসেসিং: {{ getProcessingSeatCount(f) }}
+                        </span>
+                        <span class="badge font-monospace" style="font-size: 10.5px; background: #fecaca; color: #991b1b; border: 1px solid #dc2626;">
+                          বুকিং: {{ getConfirmedSeatCount(f) }}
+                        </span>
+                      </div>
                     </td>
                     <td>
-                      <div v-if="f.rooms && f.rooms.length" class="room-wrap">
-                        <div
-                          v-for="room in f.rooms"
-                          :key="room.id"
-                          class="room-box"
-                        >
-                          {{ room.room_no }}
+                      <div v-if="f.rooms && f.rooms.length">
+                        <div class="floor-stats-strip mb-2.5 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                          <div class="d-flex flex-wrap align-items-center gap-2.5 small fw-semibold text-secondary">
+                            <span><i class="ti ti-door text-primary me-1"></i>মোট রুম: <strong class="text-dark">{{ f.rooms.length }}</strong> টি</span>
+                            <span class="text-muted">•</span>
+                            <span><i class="ti ti-user text-info me-1"></i>সিঙ্গেল রুম: <strong class="text-dark">{{ getSingleRoomCount(f) }}</strong> টি ({{ getSingleSeatCount(f) }} সিট)</span>
+                            <span class="text-muted">•</span>
+                            <span><i class="ti ti-users text-warning me-1"></i>ডাবল রুম: <strong class="text-dark">{{ getDoubleRoomCount(f) }}</strong> টি ({{ getDoubleSeatCount(f) }} সিট)</span>
+                            <span class="text-muted">•</span>
+                            <span><i class="ti ti-bed text-success me-1"></i>সর্বমোট সিট: <strong class="text-dark">{{ getTotalSeats(f) }}</strong> টি</span>
+                          </div>
+                        </div>
+                        <div class="room-wrap">
+                          <template v-for="room in getSortedRooms(f.rooms)" :key="room.id">
+                            <template v-if="room.seats && room.seats.length">
+                              <div
+                                v-for="seat in room.seats"
+                                :key="seat.id"
+                                class="room-box"
+                                :class="getSeatStatusClass(seat)"
+                                :title="getSeatTooltip(room, seat)"
+                                @click="showSeatBookingInfo(room, seat)"
+                              >
+                                <span v-if="seat.booking_status === 'processing'" class="me-1" style="font-size: 11px;">⏳</span>
+                                <span v-else-if="seat.booking_status === 'confirmed'" class="me-1" style="font-size: 11px;">🔒</span>
+                                <span v-if="isDoubleRoom(room)" class="double-tag">Double</span>
+                                <span>{{ formatSeatLabel(room.room_no, seat.seat_no, room.seats ? room.seats.length : 1, room) }}</span>
+                              </div>
+                            </template>
+                            <div
+                              v-else
+                              class="room-box"
+                              :class="getSeatStatusClass(room)"
+                              :title="getSeatTooltip(room, room)"
+                              @click="showSeatBookingInfo(room, room)"
+                            >
+                              <span v-if="room.booking_status === 'processing'" class="me-1" style="font-size: 11px;">⏳</span>
+                              <span v-else-if="room.booking_status === 'confirmed'" class="me-1" style="font-size: 11px;">🔒</span>
+                              <span v-if="isDoubleRoom(room)" class="double-tag">Double</span>
+                              <span>{{ formatSeatLabel(room.room_no, null, 1) }}</span>
+                            </div>
+                          </template>
                         </div>
                       </div>
                       <span v-else class="text-muted small">No rooms</span>
@@ -363,6 +445,7 @@
 
 <script>
 import axios from "axios";
+import Swal from "sweetalert2";
 import Toastify from "toastify-js";
 import "toastify-js/src/toastify.css";
 import FloorCreate from "../../components/createform/FloorCreate.vue";
@@ -435,6 +518,185 @@ export default {
   },
 
   methods: {
+    isDoubleRoom(room) {
+      if (!room) return false;
+      if (room.seats && room.seats.length > 1) return true;
+      if (room.room_type && (room.room_type.toLowerCase().includes('double') || room.room_type.toLowerCase().includes('doubel'))) return true;
+      return false;
+    },
+
+    getTotalSeats(floor) {
+      if (!floor || !floor.rooms) return 0;
+      return floor.rooms.reduce((acc, r) => {
+        return acc + (r.seats && r.seats.length ? r.seats.length : 1);
+      }, 0);
+    },
+
+    getSingleRoomCount(floor) {
+      if (!floor || !floor.rooms) return 0;
+      return floor.rooms.filter(r => !this.isDoubleRoom(r)).length;
+    },
+
+    getDoubleRoomCount(floor) {
+      if (!floor || !floor.rooms) return 0;
+      return floor.rooms.filter(r => this.isDoubleRoom(r)).length;
+    },
+
+    getSingleSeatCount(floor) {
+      if (!floor || !floor.rooms) return 0;
+      return floor.rooms.filter(r => !this.isDoubleRoom(r)).reduce((acc, r) => {
+        return acc + (r.seats && r.seats.length ? r.seats.length : 1);
+      }, 0);
+    },
+
+    getDoubleSeatCount(floor) {
+      if (!floor || !floor.rooms) return 0;
+      return floor.rooms.filter(r => this.isDoubleRoom(r)).reduce((acc, r) => {
+        return acc + (r.seats && r.seats.length ? r.seats.length : 2);
+      }, 0);
+    },
+
+    getAvailableSeatCount(floor) {
+      if (!floor || !floor.rooms) return 0;
+      let count = 0;
+      floor.rooms.forEach(r => {
+        if (r.seats && r.seats.length) {
+          r.seats.forEach(s => {
+            if (!s.booking_status || s.booking_status === 'available') count++;
+          });
+        } else {
+          if (!r.booking_status || r.booking_status === 'available') count++;
+        }
+      });
+      return count;
+    },
+
+    getProcessingSeatCount(floor) {
+      if (!floor || !floor.rooms) return 0;
+      let count = 0;
+      floor.rooms.forEach(r => {
+        if (r.seats && r.seats.length) {
+          r.seats.forEach(s => {
+            if (s.booking_status === 'processing') count++;
+          });
+        } else {
+          if (r.booking_status === 'processing') count++;
+        }
+      });
+      return count;
+    },
+
+    getConfirmedSeatCount(floor) {
+      if (!floor || !floor.rooms) return 0;
+      let count = 0;
+      floor.rooms.forEach(r => {
+        if (r.seats && r.seats.length) {
+          r.seats.forEach(s => {
+            if (s.booking_status === 'confirmed') count++;
+          });
+        } else {
+          if (r.booking_status === 'confirmed') count++;
+        }
+      });
+      return count;
+    },
+
+    getSeatStatusClass(item) {
+      const status = item ? item.booking_status : 'available';
+      if (status === 'confirmed') return 'room-status-confirmed';
+      if (status === 'processing') return 'room-status-processing';
+      return 'room-status-available';
+    },
+
+    getSeatTooltip(room, seat) {
+      const status = (seat && seat.booking_status) ? seat.booking_status : 'available';
+      const label = this.formatSeatLabel(room?.room_no, seat?.seat_no, room?.seats ? room.seats.length : 1, room);
+      const name = seat && seat.occupant_name ? ` | শিক্ষার্থী: ${seat.occupant_name}` : '';
+      const phone = seat && seat.occupant_phone ? ` | ফোন: ${seat.occupant_phone}` : '';
+
+      if (status === 'confirmed') {
+        return `[🔒 বুকিং কনফার্মড / অ্যাক্টিভ] ${label}${name}${phone}`;
+      }
+      if (status === 'processing') {
+        return `[⏳ বুকিং প্রসেসিং চলছে] ${label}${name}${phone}`;
+      }
+      return `[খালি (Available)] ${label}`;
+    },
+
+    showSeatBookingInfo(room, seat) {
+      const status = (seat && seat.booking_status) ? seat.booking_status : 'available';
+      const label = this.formatSeatLabel(room?.room_no, seat?.seat_no, room?.seats ? room.seats.length : 1, room);
+
+      if (status === 'available') {
+        Swal.fire({
+          icon: 'info',
+          title: `<span class="text-primary">${label}</span>`,
+          html: `
+            <div class="text-start p-2 border rounded-3 bg-light">
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted">স্ট্যাটাস:</span>
+                <span class="badge bg-label-success fw-bold">খালি (Available)</span>
+              </div>
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted">রুম নম্বর:</span>
+                <strong class="text-dark">${room.room_no}</strong>
+              </div>
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted">ব্লক / সিট:</span>
+                <strong class="text-primary">${seat.seat_no || 'Single'}</strong>
+              </div>
+              <div class="d-flex justify-content-between pt-1">
+                <span class="text-muted">মাসিক ভাড়া:</span>
+                <strong class="text-success">৳ ${seat.price || room.price || '0'}</strong>
+              </div>
+            </div>
+          `,
+          confirmButtonText: 'ঠিক আছে',
+        });
+      } else {
+        const isConfirmed = status === 'confirmed';
+        Swal.fire({
+          icon: isConfirmed ? 'success' : 'warning',
+          title: `<span class="${isConfirmed ? 'text-danger' : 'text-warning'}">${label}</span>`,
+          html: `
+            <div class="text-start p-2 border rounded-3 ${isConfirmed ? 'bg-danger-subtle' : 'bg-warning-subtle'}">
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted">বুকিং অবস্থা:</span>
+                <span class="badge ${isConfirmed ? 'bg-danger' : 'bg-warning text-dark'} fw-bold">
+                  ${isConfirmed ? '🔒 বুকিং কনফার্মড (Active)' : '⏳ বুকিং প্রসেসিং চলছে'}
+                </span>
+              </div>
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted">শিক্ষার্থীর নাম:</span>
+                <strong class="text-dark">${seat.occupant_name || 'N/A'}</strong>
+              </div>
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted">মোবাইল নম্বর:</span>
+                <a href="tel:${seat.occupant_phone}" class="text-primary fw-bold text-decoration-none">${seat.occupant_phone || 'N/A'}</a>
+              </div>
+              ${seat.check_in ? `
+              <div class="d-flex justify-content-between py-1 border-bottom">
+                <span class="text-muted">ভর্তির তারিখ:</span>
+                <strong class="text-dark">${seat.check_in}</strong>
+              </div>` : ''}
+              <div class="d-flex justify-content-between pt-1">
+                <span class="text-muted">মাসিক ভাড়া:</span>
+                <strong class="text-success">৳ ${seat.price || room.price || '0'}</strong>
+              </div>
+            </div>
+          `,
+          showCancelButton: true,
+          confirmButtonText: '<i class="ti ti-user-check me-1"></i> হিস্ট্রি পেজে যান',
+          cancelButtonText: 'বন্ধ করুন',
+          confirmButtonColor: isConfirmed ? '#d33' : '#f59e0b',
+        }).then((res) => {
+          if (res.isConfirmed) {
+            window.location.href = '/resident-history';
+          }
+        });
+      }
+    },
+
     syncBodyOverflow() {
       const anyOpen = this.showCreateModal || this.edit.open || this.del.open || this.roomModal.open;
       document.body.style.overflow = anyOpen ? "hidden" : "";
@@ -691,6 +953,164 @@ export default {
         this.savingDelete = false;
       }
     },
+
+    getSortedRooms(rooms) {
+      if (!rooms || !rooms.length) return [];
+      return [...rooms].sort((a, b) => {
+        const rNoA = String(a.room_no || '').trim();
+        const rNoB = String(b.room_no || '').trim();
+        const mA = rNoA.match(/^([A-Za-z]+)[\-_](\d+)$/);
+        const mB = rNoB.match(/^([A-Za-z]+)[\-_](\d+)$/);
+        const letterA = mA ? mA[1].toUpperCase() : '';
+        const letterB = mB ? mB[1].toUpperCase() : '';
+        const numA = mA ? parseInt(mA[2], 10) : 0;
+        const numB = mB ? parseInt(mB[2], 10) : 0;
+        if (letterA !== letterB) return letterA.localeCompare(letterB);
+        return numA - numB;
+      });
+    },
+
+    formatSeatLabel(roomNo, seatNo, roomSeatsCount, roomObj) {
+      if (!roomNo) return seatNo || '';
+      const rNo = String(roomNo).trim();
+      const sNo = seatNo ? String(seatNo).trim() : '';
+
+      let blockLetter = null;
+      let roomNum = null;
+
+      // 1. Match A-15 or B-15 or E-1
+      const m1 = rNo.match(/^([A-Za-z]+)[\-_](\d+)$/);
+      if (m1) {
+        blockLetter = m1[1].toUpperCase();
+        roomNum = parseInt(m1[2], 10);
+      }
+
+      // 2. Match 15-Block B or 15-Block-B or 1-Block E
+      if (!blockLetter) {
+        const m2 = rNo.match(/^(\d+)[\-_ ]*Block[\-_ ]*([A-Za-z]+)/i);
+        if (m2) {
+          roomNum = parseInt(m2[1], 10);
+          blockLetter = m2[2].toUpperCase();
+        }
+      }
+
+      // 3. Match Block B-15 or Block-B-15
+      if (!blockLetter) {
+        const m3 = rNo.match(/^Block[\-_ ]*([A-Za-z]+)[\-_ ]*(\d+)/i);
+        if (m3) {
+          blockLetter = m3[1].toUpperCase();
+          roomNum = parseInt(m3[2], 10);
+        }
+      }
+
+      // 4. Check if seatNo has block (e.g. Block A or Block B-1)
+      if (!blockLetter && sNo) {
+        const ms = sNo.match(/Block[\-_ ]*([A-Za-z]+)/i);
+        if (ms) {
+          blockLetter = ms[1].toUpperCase();
+        }
+      }
+
+      // 5. If no block letter was found:
+      if (!blockLetter) {
+        if (roomSeatsCount && roomSeatsCount > 1 && sNo) {
+          const sm = sNo.match(/(\d+)$/);
+          const seatSub = sm ? sm[1] : '';
+          if (seatSub && seatSub !== rNo) {
+            return `${rNo}-${seatSub}`;
+          }
+        }
+        return rNo;
+      }
+
+      // When block letter is present:
+      if (roomNum === null) {
+        const numMatch = rNo.match(/(\d+)/);
+        roomNum = numMatch ? parseInt(numMatch[1], 10) : rNo;
+      }
+
+      // Determine double from room_type first, then fallback to seat count
+      const rawType = (roomObj?.room_type || '').toLowerCase();
+      const isDouble = rawType.includes('double') || rawType.includes('doubel') || (roomSeatsCount && roomSeatsCount > 1);
+
+      if (!isDouble) {
+        // Single room — never show seat suffix
+        return `${roomNum}-Block ${blockLetter}`;
+      }
+
+      // Double room — determine seat number (1 or 2)
+      let seatSub = '1';
+      const sm = sNo.match(/(\d+)$/);
+      if (sm) {
+        seatSub = sm[1];
+      } else if (sNo.toLowerCase().includes('2') || sNo.toLowerCase().includes('b')) {
+        seatSub = '2';
+      }
+      return `${roomNum}-Block ${blockLetter}-${seatSub}`;
+    },
+
+    getSeatStatusClass(item) {
+      if (!item) return 'room-status-available';
+      if (item.booking_status === 'confirmed') return 'room-status-confirmed';
+      if (item.booking_status === 'processing') return 'room-status-processing';
+      return 'room-status-available';
+    },
+
+    getSeatTooltip(room, seat) {
+      const item = seat || room;
+      const label = this.formatSeatLabel(room?.room_no, seat?.seat_no, room?.seats ? room.seats.length : 1, room);
+      if (item?.booking_status === 'confirmed') {
+        return `${label} - বুকিং কনফার্মড (${item.occupant_name || 'Booked'})`;
+      }
+      if (item?.booking_status === 'processing') {
+        return `${label} - বুকিং প্রসেসিং চলছে (${item.occupant_name || 'Processing'})`;
+      }
+      return `${label} - খালি আছে (Available)`;
+    },
+
+    showSeatBookingInfo(room, seat) {
+      const item = seat || room;
+      const label = this.formatSeatLabel(room?.room_no, seat?.seat_no, room?.seats ? room.seats.length : 1, room);
+      if (item?.booking_status === 'confirmed') {
+        Swal.fire({
+          icon: 'info',
+          title: `<span style="color:#dc2626;">🔒 ${label} - বুকিং কনফার্মড</span>`,
+          html: `
+            <div style="text-align: left; padding: 10px; font-size: 14px; line-height: 1.8;">
+              <p><strong>বোর্ডার নাম:</strong> ${item.occupant_name || 'N/A'}</p>
+              <p><strong>মোবাইল নম্বর:</strong> ${item.occupant_phone || 'N/A'}</p>
+              <p><strong>চেক-ইন ডেট:</strong> ${item.check_in || 'N/A'}</p>
+              <p><strong>বুকিং স্ট্যাটাস:</strong> <span class="badge bg-success">Confirmed / Active</span></p>
+            </div>
+          `,
+          confirmButtonText: 'ঠিক আছে',
+          confirmButtonColor: '#0d6efd'
+        });
+      } else if (item?.booking_status === 'processing') {
+        Swal.fire({
+          icon: 'warning',
+          title: `<span style="color:#d97706;">⏳ ${label} - বুকিং প্রসেসিং চলছে</span>`,
+          html: `
+            <div style="text-align: left; padding: 10px; font-size: 14px; line-height: 1.8;">
+              <p><strong>আবেদনকারীর নাম:</strong> ${item.occupant_name || 'N/A'}</p>
+              <p><strong>মোবাইল নম্বর:</strong> ${item.occupant_phone || 'N/A'}</p>
+              <p><strong>চেক-ইন ডেট:</strong> ${item.check_in || 'N/A'}</p>
+              <p><strong>বুকিং স্ট্যাটাস:</strong> <span class="badge bg-warning text-dark">Processing</span></p>
+            </div>
+          `,
+          confirmButtonText: 'ঠিক আছে',
+          confirmButtonColor: '#f59e0b'
+        });
+      } else {
+        Swal.fire({
+          icon: 'success',
+          title: `<span style="color:#024080;">${label}</span>`,
+          text: 'এই সিট/রুমটি খালি আছে (Available for Booking)',
+          confirmButtonText: 'ঠিক আছে',
+          confirmButtonColor: '#0d6efd'
+        });
+      }
+    },
   },
 };
 </script>
@@ -770,16 +1190,119 @@ export default {
 .scroll-y::-webkit-scrollbar { width: 5px; }
 .scroll-y::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
 
-.room-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
-.room-box {
-  min-width: 90px;
+.floor-legend-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
   padding: 8px 14px;
-  text-align: center;
-  border: 1px solid #dcdfe6;
+}
+
+.status-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+.status-indicator.available {
+  background: #ffffff;
+  border: 1.5px solid #94a3b8;
+}
+.status-indicator.processing {
+  background: #fde047;
+  border: 1.5px solid #d97706;
+}
+.status-indicator.confirmed {
+  background: #f87171;
+  border: 1.5px solid #dc2626;
+}
+
+.floor-stats-strip {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
-  background: #fff;
+  padding: 6px 12px;
+}
+
+.room-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.room-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 10px;
+  border-radius: 7px;
+  font-size: 12px;
   font-weight: 600;
-  color: #4b5563;
+  letter-spacing: 0.1px;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 1. Available (খালি): Clean crisp slate card */
+.room-box.room-status-available {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #1e293b;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+.room-box.room-status-available:hover {
+  background: #f1f5f9;
+  border-color: #64748b;
+  color: #0f172a;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* 2. Processing (প্রসেসিং): Deeper vibrant amber */
+.room-box.room-status-processing {
+  background: #fef08a !important;
+  border: 1.5px solid #d97706 !important;
+  color: #78350f !important;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(217, 119, 6, 0.15);
+}
+.room-box.room-status-processing:hover {
+  background: #fde047 !important;
+  border-color: #b45309 !important;
+  color: #451a03 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(217, 119, 6, 0.25);
+}
+
+/* 3. Confirmed (বুকিং কনফার্মড): Deeper rich rose/red */
+.room-box.room-status-confirmed {
+  background: #fecaca !important;
+  border: 1.5px solid #dc2626 !important;
+  color: #991b1b !important;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(220, 38, 38, 0.15);
+}
+.room-box.room-status-confirmed:hover {
+  background: #fca5a5 !important;
+  border-color: #b91c1c !important;
+  color: #7f1d1d !important;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(220, 38, 38, 0.25);
+}
+
+/* Double seat subtle badge */
+.double-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 9.5px;
+  font-weight: 700;
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+  border-radius: 4px;
+  padding: 1px 4px;
+  margin-right: 5px;
+  line-height: 1.1;
 }
 
 .room-chip-area {

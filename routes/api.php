@@ -34,26 +34,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 
-    Route::resource('projectinformation',ProjectInformationController::class);
-
-    Route::resource('projectregistraion',ProjectRegistrationController::class);
-
-    Route::resource('client',ClientInformationController::class);
-
-
-    Route::resource('contact_person',ContractPersonController::class);
-
-
-
-    Route::resource('contaract_information',ContractInformationController::class);
-
-
-
-    Route::resource('electricity',ElectricityController::class);
-
-
-
-    Route::resource('othersutility',OtherUtilityController::class);
+    Route::apiResource('projectinformation', ProjectInformationController::class);
+    Route::apiResource('projectregistraion', ProjectRegistrationController::class);
+    Route::apiResource('client', ClientInformationController::class);
+    Route::apiResource('contact_person', ContractPersonController::class);
+    Route::apiResource('contaract_information', ContractInformationController::class);
+    Route::apiResource('electricity', ElectricityController::class);
+    Route::apiResource('othersutility', OtherUtilityController::class);
 
 
 

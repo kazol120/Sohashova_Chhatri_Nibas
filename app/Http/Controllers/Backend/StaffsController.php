@@ -72,189 +72,257 @@ class StaffsController extends Controller
 
 
     // ===== STORE =====
-
-public function store(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'employee_id'       => 'required|string|max:255|unique:staffs,employee_id',
-        'name'              => 'required|string|max:255',
-        'phone'             =>  ['required','string','max:20',
-    function ($attribute, $value, $fail) {
-        $existsStatus2 = \App\Models\User::where('phone', $value)
-                    ->where('status', 2)
-                    ->exists();
-                if ($existsStatus2) {
-                    $fail('This phone already exists for user.');
-                }
-            },
-        ],
-        'email' => [
-            'nullable',
-            'email',
-            'max:255',
-            function ($attribute, $value, $fail) {
-                $existsStatus2 = \App\Models\User::where('email', $value)
-                    ->where('status', 2)
-                    ->exists();
-                if ($existsStatus2) {
-                    $fail('This email already exists for  user.');
-                }
-            },
-        ],
-        'nid_passport'      => 'nullable|string|max:255',
-        'gender'            => 'nullable|string|max:20',
-        'date_of_birth'     => 'nullable|date',
-        'division_id'       => 'nullable|integer',
-        'district_id'       => 'nullable|integer',
-        'password'          => ['required', 'string'],
-        'thana_id'          => 'nullable|integer',
-        'permanent_address' => 'nullable|string',
-        'designation'       => 'nullable|string|max:255',
-        'department'        => 'nullable|string|max:255',
-        'salary'            => 'nullable|numeric',
-        'joining_date'      => 'nullable|date',
-        'shift_time'        => 'nullable|string|max:255',
-        'photo'             => 'nullable|file|mimes:jpg,jpeg,png,webp,gif,svg,jfif,heic,heif,avif,bmp|max:5120',
-    ]);
-    if ($validator->fails()) {
-        return response()->json([
-            'message' => 'Validation error',
-            'errors'  => $validator->errors(),
-        ], 422);
-    }
-    DB::beginTransaction();
-    try {
-        $staff = new Staffs();
-        $this->fillFields($staff, $request);
-
-        $staff->status   = 0;
-        $staff->password = $request->password;
-
-        if ($request->hasFile('photo')) {
-            $staff->photo = $this->savePhoto($request->file('photo'));
-        }
-        $staff->save();
-        $user = User::create([
-            'name'          => $request->name,
-            'email'         => $request->filled('email') ? $request->email : null,
-            'phone'         => $request->phone,
-            'password'      => bcrypt($request->password),
-            'status'        => 2,
-            'temp_password' => $request->password,
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'employee_id'       => 'required|string|max:255|unique:staffs,employee_id',
+            'name'              => 'required|string|max:255',
+            'phone'             => [
+                'required', 'string', 'max:20',
+                function ($attribute, $value, $fail) {
+                    $existsStatus2 = \App\Models\User::where('phone', $value)
+                        ->where('status', 2)
+                        ->exists();
+                    if ($existsStatus2) {
+                        $fail('This phone already exists for another staff user.');
+                    }
+                },
+            ],
+            'email' => [
+                'nullable', 'email', 'max:255',
+                function ($attribute, $value, $fail) {
+                    if (!empty($value)) {
+                        $existsStatus2 = \App\Models\User::where('email', $value)
+                            ->where('status', 2)
+                            ->exists();
+                        if ($existsStatus2) {
+                            $fail('This email already exists for another staff user.');
+                        }
+                    }
+                },
+            ],
+            'nid_passport'      => 'nullable|string|max:255',
+            'gender'            => 'nullable|string|max:20',
+            'date_of_birth'     => 'nullable|date',
+            'division_id'       => 'nullable|integer',
+            'district_id'       => 'nullable|integer',
+            'password'          => ['required', 'string'],
+            'thana_id'          => 'nullable|integer',
+            'permanent_address' => 'nullable|string',
+            'designation'       => 'nullable|string|max:255',
+            'department'        => 'nullable|string|max:255',
+            'salary'            => 'nullable|numeric',
+            'joining_date'      => 'nullable|date',
+            'shift_time'        => 'nullable|string|max:255',
+            'photo'             => 'nullable|file|mimes:jpg,jpeg,png,webp,gif,svg,jfif,heic,heif,avif,bmp|max:5120',
         ]);
 
-        $role = Role::firstOrCreate([
-            'name'       => 'staffs',
-            'guard_name' => 'web'
-        ]);
-        $user->assignRole($role);
-        DB::commit();
-        return response()->json([
-            'message' => 'Staff created successfully',
-            'data'    => $staff->load(['division', 'district', 'thana']),
-        ]);
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return response()->json([
-            'message' => 'Something went wrong',
-            'error'   => $e->getMessage(),
-        ], 500);
-    }
-}
-
-
-// ===== UPDATE =====
-public function update(Request $request, $id)
-{
-    $staff = Staffs::findOrFail($id);
-
-    $validator = Validator::make($request->all(), [
-        'employee_id'       => 'required|string|max:255|unique:staffs,employee_id,' . $staff->id,
-        'name'              => 'required|string|max:255',
-        'phone'             => 'required|string|max:20',
-        'email'             => 'nullable|email|max:255|unique:staffs,email,' . $staff->id,
-        'nid_passport'      => 'nullable|string|max:255',
-        'gender'            => 'nullable|string|max:20',
-        'date_of_birth'     => 'nullable|date',
-        'division_id'       => 'nullable|integer',
-        'district_id'       => 'nullable|integer',
-        'thana_id'          => 'nullable|integer',
-        'password'          => ['nullable', 'string'],
-        'permanent_address' => 'nullable|string',
-        'designation'       => 'nullable|string|max:255',
-        'department'        => 'nullable|string|max:255',
-        'salary'            => 'nullable|numeric',
-        'joining_date'      => 'nullable|date',
-        'shift_time'        => 'nullable|string|max:255',
-        'photo'             => 'nullable|file|mimes:jpg,jpeg,png,webp,gif,svg,jfif,heic,heif,avif,bmp|max:5120',
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json([
-            'message' => 'Validation error',
-            'errors'  => $validator->errors(),
-        ], 422);
-    }
-
-    DB::beginTransaction();
-
-    try {
-        $this->fillFields($staff, $request);
-
-        if ($request->filled('password')) {
-            $staff->password = $request->password; // plain text staffs এ
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors'  => $validator->errors(),
+            ], 422);
         }
 
-        if ($request->hasFile('photo')) {
-            $this->deletePhoto($staff->photo);
-            $staff->photo = $this->savePhoto($request->file('photo'));
-        }
+        DB::beginTransaction();
+        try {
+            $staff = new Staffs();
+            $this->fillFields($staff, $request);
 
-        $staff->save();
+            $staff->status   = 0;
+            $staff->password = $request->password;
 
-        // phone + status  user 
-        $user = User::where('phone', $staff->phone)
-                    ->where('status', 2)
-                    ->first();
+            if ($request->hasFile('photo')) {
+                $staff->photo = $this->savePhoto($request->file('photo'));
+            }
+            $staff->save();
 
-        if ($user) {
-            $userData = [
-                'name'  => $request->name,
-                'email' => $request->filled('email') ? $request->email : null,
-                'phone' => $request->phone,
-            ];
+            // Find or create in User table
+            $user = User::where('phone', $request->phone)
+                ->when($request->filled('email'), fn($q) => $q->orWhere('email', $request->email))
+                ->first();
 
-            if ($request->filled('password')) {
-                $userData['password']      = bcrypt($request->password);
-                $userData['temp_password'] = $request->password;
+            if (!$user) {
+                $user = new User();
             }
 
-            $user->update($userData);
+            $user->name          = $request->name;
+            $user->email         = $request->filled('email') ? $request->email : null;
+            $user->phone         = $request->phone;
+            $user->address       = $request->permanent_address;
+            $user->password      = bcrypt($request->password);
+            $user->temp_password = $request->password;
+            $user->status        = 2; // Staff status
+            if (!empty($staff->photo)) {
+                $user->user_image = $staff->photo;
+            }
+            $user->save();
+
+            // Assign proper role based on designation
+            $isManager = !empty($request->designation) && (
+                stripos($request->designation, 'Manager') !== false ||
+                stripos($request->designation, 'Super') !== false ||
+                stripos($request->designation, 'In-Charge') !== false ||
+                stripos($request->designation, 'Accountant') !== false
+            );
+
+            $staffRole = Role::firstOrCreate(['name' => 'staffs', 'guard_name' => 'web']);
+            $managerRole = Role::firstOrCreate(['name' => 'manager', 'guard_name' => 'web']);
+
+            if ($isManager) {
+                $user->assignRole($managerRole);
+                $user->assignRole($staffRole);
+            } else {
+                $user->assignRole($staffRole);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Staff created successfully and login account activated',
+                'data'    => $staff->load(['division', 'district', 'thana']),
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Something went wrong',
+                'error'   => $e->getMessage(),
+            ], 500);
         }
+    }
 
-        DB::commit();
 
-        return response()->json([
-            'message' => 'Staff updated successfully',
-            'data'    => $staff->load(['division', 'district', 'thana']),
+    // ===== UPDATE =====
+    public function update(Request $request, $id)
+    {
+        $staff = Staffs::findOrFail($id);
+        $oldPhone = $staff->phone;
+        $oldEmail = $staff->email;
+
+        $validator = Validator::make($request->all(), [
+            'employee_id'       => 'required|string|max:255|unique:staffs,employee_id,' . $staff->id,
+            'name'              => 'required|string|max:255',
+            'phone'             => 'required|string|max:20',
+            'email'             => 'nullable|email|max:255|unique:staffs,email,' . $staff->id,
+            'nid_passport'      => 'nullable|string|max:255',
+            'gender'            => 'nullable|string|max:20',
+            'date_of_birth'     => 'nullable|date',
+            'division_id'       => 'nullable|integer',
+            'district_id'       => 'nullable|integer',
+            'thana_id'          => 'nullable|integer',
+            'password'          => ['nullable', 'string'],
+            'permanent_address' => 'nullable|string',
+            'designation'       => 'nullable|string|max:255',
+            'department'        => 'nullable|string|max:255',
+            'salary'            => 'nullable|numeric',
+            'joining_date'      => 'nullable|date',
+            'shift_time'        => 'nullable|string|max:255',
+            'photo'             => 'nullable|file|mimes:jpg,jpeg,png,webp,gif,svg,jfif,heic,heif,avif,bmp|max:5120',
         ]);
 
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return response()->json([
-            'message' => 'Something went wrong',
-            'error'   => $e->getMessage(),
-        ], 500);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $this->fillFields($staff, $request);
+
+            if ($request->filled('password')) {
+                $staff->password = $request->password;
+            }
+
+            if ($request->hasFile('photo')) {
+                $this->deletePhoto($staff->photo);
+                $staff->photo = $this->savePhoto($request->file('photo'));
+            }
+
+            $staff->save();
+
+            // Sync with User table
+            $user = User::where('phone', $oldPhone)
+                ->orWhere('phone', $staff->phone)
+                ->when($oldEmail, fn($q) => $q->orWhere('email', $oldEmail))
+                ->first();
+
+            if (!$user) {
+                $user = new User();
+            }
+
+            $user->name          = $request->name;
+            $user->email         = $request->filled('email') ? $request->email : null;
+            $user->phone         = $request->phone;
+            $user->address       = $request->permanent_address;
+            $user->status        = 2;
+
+            if ($request->filled('password')) {
+                $user->password      = bcrypt($request->password);
+                $user->temp_password = $request->password;
+            }
+
+            if (!empty($staff->photo)) {
+                $user->user_image = $staff->photo;
+            }
+
+            $user->save();
+
+            // Role assignment based on designation
+            $isManager = !empty($request->designation) && (
+                stripos($request->designation, 'Manager') !== false ||
+                stripos($request->designation, 'Super') !== false ||
+                stripos($request->designation, 'In-Charge') !== false ||
+                stripos($request->designation, 'Accountant') !== false
+            );
+
+            $staffRole = Role::firstOrCreate(['name' => 'staffs', 'guard_name' => 'web']);
+            $managerRole = Role::firstOrCreate(['name' => 'manager', 'guard_name' => 'web']);
+
+            if ($isManager) {
+                $user->assignRole($managerRole);
+                $user->assignRole($staffRole);
+            } else {
+                $user->removeRole($managerRole);
+                $user->assignRole($staffRole);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Staff updated successfully',
+                'data'    => $staff->load(['division', 'district', 'thana']),
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Something went wrong',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
     }
-}
 
     public function destroy($id)
     {
-
         $staff = Staffs::findOrFail($id);
+
+        // Deactivate or clean associated login user
+        $user = User::where('phone', $staff->phone)
+            ->when($staff->email, fn($q) => $q->orWhere('email', $staff->email))
+            ->first();
+
+        if ($user) {
+            $user->status = 0; // Deactivated so they can no longer log in
+            $user->save();
+        }
+
         $this->deletePhoto($staff->photo);
         $staff->delete();
-        return response()->json(['message' => 'Staff deleted successfully']);
+
+        return response()->json(['message' => 'Staff deleted and login account deactivated successfully']);
     }
 
 

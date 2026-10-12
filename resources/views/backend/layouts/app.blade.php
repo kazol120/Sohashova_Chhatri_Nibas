@@ -139,6 +139,10 @@
               });
           </script>
       @endif
+
+    <!-- Language Translation Support (Google Translate API + Cookie Switcher) -->
+    @include('backend.layouts.partial.translation')
+
     @stack('script')
 
 </body>

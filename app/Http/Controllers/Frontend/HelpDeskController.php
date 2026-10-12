@@ -41,10 +41,22 @@ $data = [
     'created_time' => \Carbon\Carbon::now('Asia/Dhaka')->format('d M Y, h:i A'),
     'booking_info' => $bookingInfo,
 ];
-    Mail::send('emails.helpdesk', $data, function ($mail) use ($data) {
-        $mail->to('mr2798492@gmail.com')
-             ->subject('HelpDesk Request From Booking Guest - ' . $data['phone']);
-    });
+    $webSetting  = \App\Services\SettingService::getSettingContentBySlug('web_setting');
+    $adminEmails = array_values(array_filter(array_unique([
+        'mr2798492@gmail.com',
+        $webSetting['email'] ?? null,
+        config('mail.from.address')
+    ])));
+    $siteTitle   = $webSetting['title'] ?? 'Hostel';
+
+    foreach ($adminEmails as $aEmail) {
+        if (filter_var($aEmail, FILTER_VALIDATE_EMAIL)) {
+            Mail::send('emails.helpdesk', $data, function ($mail) use ($data, $aEmail, $siteTitle) {
+                $mail->to($aEmail)
+                     ->subject('HelpDesk Request From Booking Guest - ' . $data['phone'] . ' (' . $siteTitle . ')');
+            });
+        }
+    }
     return back()->with('success', 'Your request has been sent successfully!');
 }
 

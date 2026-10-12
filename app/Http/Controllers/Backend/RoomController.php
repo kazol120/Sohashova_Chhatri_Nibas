@@ -20,13 +20,18 @@ class RoomController extends Controller
 
     public function roomsByFloor(Floor $floor)
     {
+        // Only show rooms that have NOT been configured yet (room_type is null/empty)
+        // This prevents already-created rooms from showing in the "Room Select" dropdown
         $rooms = Room::where('floor_id', $floor->id)
-            ->whereNull('status')
-            ->select('id','floor_id','room_no','status')
+            ->whereNull('room_type')
+            ->select('id','floor_id','room_no','status','room_type')
             ->orderBy('room_no')
             ->get();
 
-        return response()->json(['data' => $rooms]);
+        // Deduplicate by room_no (in case of any duplicates)
+        $uniqueRooms = $rooms->unique('room_no')->values();
+
+        return response()->json(['data' => $uniqueRooms]);
     }
 
 
@@ -72,7 +77,11 @@ class RoomController extends Controller
             }
         }
         $expiredRoomNumbers = array_unique($expiredRoomNumbers);
-        $q = Room::query()->with(['floor:id,name', 'seats']);
+        $seatStatus = $request->get('seat_status', $request->get('status', 'all'));
+        $q = Room::query()->with([
+            'floor:id,name',
+            'seats'
+        ]);
 
         if ($search !== '') {
             $q->where(function ($qq) use ($search) {
@@ -82,6 +91,19 @@ class RoomController extends Controller
                    });
             });
         }
+
+        if ($seatStatus === '0' || $seatStatus === 0) {
+            $q->whereHas('seats', function ($st) {
+                $st->where('status', 0);
+            });
+        } elseif ($seatStatus === '1' || $seatStatus === 1) {
+            $q->whereHas('seats', function ($st) {
+                $st->where('status', 1);
+            });
+        } elseif ($seatStatus === 'with_seats' || $seatStatus === 'has_seats') {
+            $q->whereHas('seats');
+        }
+
         $rooms = $q->orderBy('id', 'desc')->paginate($perPage);
 
         $rooms->getCollection()->transform(function ($room) use ($expiredRoomNumbers) {
@@ -92,14 +114,18 @@ class RoomController extends Controller
                 $decoded = json_decode($raw, true);
                 $images = is_array($decoded) ? $decoded : [];
             }
-            $room->all_image_urls = array_map(
-                fn($img) => asset('room_image/' . $img),
-                $images
-            );
-            $room->can_active_show = (
-                (int) $room->status === 1 &&
-                in_array((string) $room->room_no, $expiredRoomNumbers)
-            );
+
+            $firstImage = count($images) > 0 ? $images[0] : null;
+
+            $room->image_url = $firstImage
+                ? asset('room_image/' . $firstImage)
+                : null;
+
+            $room->all_images = array_map(function ($img) {
+                return asset('room_image/' . $img);
+            }, $images);
+
+            $room->expired = in_array((string)$room->room_no, $expiredRoomNumbers);
 
             return $room;
         });
@@ -108,47 +134,69 @@ class RoomController extends Controller
 
 
     public function store(Request $request)
+    {
+        $data = $request->validate([
+            'floor_id'          => ['required', 'exists:floors,id'],
+            'room_id'           => ['required', 'exists:rooms,id'],
+            'acstatus'          => ['nullable'],
+            'price'             => ['required', 'numeric', 'min:0'],
+            'room_size'         => ['nullable', 'string', 'max:50'],
+            'max_people'        => ['nullable'],
+            'breakfast'         => ['nullable'],
+            'attached_bathroom' => ['nullable'],
+            'room_type'         => ['required', 'string', 'max:100'],
+            'ac_status'         => ['nullable'],
+            'windows'           => ['required', Rule::in(['yes','no'])],
+            'balcony'           => ['nullable'],
+            'images'            => ['required', 'array', 'min:1'],
+            'images.*'          => ['file', 'mimes:jpg,jpeg,png,webp,gif,svg,jfif,heic,heif,avif,bmp', 'max:9096'],
+        ]);
 
-        {
-            $data = $request->validate([
-                'floor_id'          => ['required', 'exists:floors,id'],
-                'room_id'           => ['required', 'exists:rooms,id'],
-                'acstatus'          => ['nullable'],
-                'price'             => ['required', 'numeric', 'min:0'],
-                'room_size'         => ['nullable', 'string', 'max:50'],
-                'max_people'        => ['nullable'],
-                'breakfast'         => ['nullable'],
-                'attached_bathroom' => ['nullable'],
-                'room_type'         => ['required', 'string', 'max:100'],
-                'ac_status'         => ['nullable'],
-                'windows'           => ['required', Rule::in(['yes','no'])],
-                'balcony'           => ['nullable'],
-                'images'            => ['required', 'array', 'min:1'],
-                'images.*'          => ['file', 'mimes:jpg,jpeg,png,webp,gif,svg,jfif,heic,heif,avif,bmp', 'max:9096'],
+        if ($request->filled('acstatus') && $request->filled('ac_status')) {
+            $expected = ((int)$request->acstatus === 1) ? 'Ac' : 'Non Ac';
+            if ($request->ac_status !== $expected) {
+                return response()->json([
+                    'message' => 'Room type mismatch',
+                    'errors'  => ['acstatus' => ['Invalid selection']],
+                ], 422);
+            }
+        }
+
+        $sourceRoom = Room::where('id', $data['room_id'])
+            ->where('floor_id', $data['floor_id'])
+            ->firstOrFail();
+
+        $imageNames = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $img) {
+                $name = time() . '_' . uniqid() . '.' . $img->getClientOriginalExtension();
+                $img->move(public_path('room_image'), $name);
+                $imageNames[] = $name;
+            }
+        }
+
+        // Check if sourceRoom is already configured (has room_type or configured status)
+        if (!empty($sourceRoom->room_type) || $sourceRoom->status !== null) {
+            // Create a new room record for this block configuration
+            $room = Room::create([
+                'floor_id'          => $data['floor_id'],
+                'room_no'           => $sourceRoom->room_no,
+                'price'             => $data['price'],
+                'room_size'         => $data['room_size'] ?? null,
+                'max_people'        => $data['max_people'] ?? null,
+                'breakfast'         => $data['breakfast'] ?? null,
+                'attached_bathroom' => $data['attached_bathroom'] ?? null,
+                'room_type'         => $data['room_type'],
+                'ac_status'         => $data['ac_status'] ?? null,
+                'windows'           => $data['windows'],
+                'balcony'           => $data['balcony'] ?? null,
+                'acstatus'          => $data['acstatus'] ?? null,
+                'image'             => $imageNames, 
+                'status'            => 0,
             ]);
-
-            if ($request->filled('acstatus') && $request->filled('ac_status')) {
-                $expected = ((int)$request->acstatus === 1) ? 'Ac' : 'Non Ac';
-                if ($request->ac_status !== $expected) {
-                    return response()->json([
-                        'message' => 'Room type mismatch',
-                        'errors'  => ['acstatus' => ['Invalid selection']],
-                    ], 422);
-                }
-            }
-
-            $room = Room::where('id', $data['room_id'])
-                ->where('floor_id', $data['floor_id'])
-                ->whereNull('status')
-                ->firstOrFail();
-            $imageNames = [];
-            if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $img) {
-                    $name = time() . '_' . uniqid() . '.' . $img->getClientOriginalExtension();
-                    $img->move(public_path('room_image'), $name);
-                    $imageNames[] = $name;
-                }
-            }
+        } else {
+            // First time configuring this placeholder room record
+            $room = $sourceRoom;
             $room->update([
                 'price'             => $data['price'],
                 'room_size'         => $data['room_size'] ?? null,
@@ -163,33 +211,34 @@ class RoomController extends Controller
                 'image'             => $imageNames, 
                 'status'            => 0,
             ]);
-
-            $seats = json_decode($request->input('seats', '[]'), true);
-            if (empty($seats)) {
-                $seats[] = [
-                    'seat_no' => 'Seat-A',
-                    'price' => $data['price'],
-                    'advance_price' => 0
-                ];
-            }
-
-            $keepIds = [];
-            foreach ($seats as $s) {
-                $seat = $room->seats()->updateOrCreate(
-                    ['id' => $s['id'] ?? null],
-                    [
-                        'seat_no' => $s['seat_no'] ?? 'Seat-A',
-                        'price' => $s['price'] ?? $data['price'],
-                        'advance_price' => $s['advance_price'] ?? 0,
-                    ]
-                );
-                $keepIds[] = $seat->id;
-            }
-            $room->seats()->whereNotIn('id', $keepIds)->delete();
-            Room::syncRoomStatus($room->id);
-
-            return response()->json(['message' => 'Room saved successfully']);
         }
+
+        $seats = json_decode($request->input('seats', '[]'), true);
+        if (empty($seats)) {
+            $seats[] = [
+                'seat_no' => 'Seat-A',
+                'price' => $data['price'],
+                'advance_price' => 0
+            ];
+        }
+
+        $keepIds = [];
+        foreach ($seats as $s) {
+            $seat = $room->seats()->updateOrCreate(
+                ['id' => $s['id'] ?? null],
+                [
+                    'seat_no' => $s['seat_no'] ?? 'Seat-A',
+                    'price' => $s['price'] ?? $data['price'],
+                    'advance_price' => $s['advance_price'] ?? 0,
+                ]
+            );
+            $keepIds[] = $seat->id;
+        }
+        $room->seats()->whereNotIn('id', $keepIds)->delete();
+        Room::syncRoomStatus($room->id);
+
+        return response()->json(['message' => 'Room saved successfully']);
+    }
 
    
     public function update(Request $request, Room $room)

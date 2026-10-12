@@ -137,19 +137,48 @@
                    <template v-if="expanded.includes(item.group_key)">
                     <tr v-for="(p, pi) in item.payments" :key="'p-' + pi" class="payment-detail-row">
                       <td class="text-muted small ps-4">↳</td>
+                      <td class="small text-muted">{{ item.staff ? item.staff.name : '—' }}</td>
+                      <td class="small fw-semibold">{{ item.month_label }}</td>
                       <td class="small text-muted">{{ p.payment_date }}</td>
-                      <td class="small">{{ item.month_label }}</td>
-                      <td class="small text-muted">{{ p.payment_date }}</td>  <!-- এখানে date -->
                       <td>
                         <span class="badge" :class="p.payment_type === 'advance'
                           ? 'bg-warning-subtle text-warning'
                           : p.payment_type === 'net_payable'
-                            ? 'bg-info-subtle text-info'
+                            ? 'bg-primary-subtle text-primary'
                             : 'bg-success-subtle text-success'">
-                          {{ p.payment_type === 'advance' ? 'Advance' : p.payment_type === 'net_payable' ? 'Net Payable' : 'Full' }}
+                          <i class="fa me-1" :class="p.payment_type === 'advance' ? 'fa-money-bill-wave' : 'fa-wallet'"></i>
+                          {{ p.payment_type === 'advance' ? 'Advance' : (p.payment_type === 'net_payable' ? 'Net Paid' : 'Full') }}
                         </span>
                       </td>
-                      <td class="fw-semibold">{{ formatAmount(p.amount) }}</td>
+                      <td>
+                        <!-- Advance Payment -->
+                        <template v-if="p.payment_type === 'advance'">
+                          <div v-if="p.advance_adjusted > 0">
+                            <span class="fw-bold text-danger">{{ formatAmount(p.remaining_amount) }}</span>
+                            <span class="badge bg-danger-subtle text-danger ms-1" style="font-size: 10px;">বকেয়া বাকি</span>
+                            <div class="text-muted" style="font-size: 11px;">
+                              মূল অগ্রিম: {{ formatAmount(p.original_amount) }}
+                              <span class="text-danger fw-semibold">(-{{ formatAmount(p.advance_adjusted) }} সমন্বয়)</span>
+                            </div>
+                          </div>
+                          <div v-else>
+                            <span class="fw-bold text-dark">{{ formatAmount(p.amount) }}</span>
+                            <span class="badge bg-warning-subtle text-dark ms-1" style="font-size: 10px;">সম্পূর্ণ বাকি</span>
+                          </div>
+                        </template>
+
+                        <!-- Salary Payment -->
+                        <template v-else>
+                          <div>
+                            <span class="fw-bold text-success">{{ formatAmount(p.amount) }}</span>
+                            <span class="badge bg-success-subtle text-success ms-1" style="font-size: 10px;">হাতে প্রাপ্ত নিট</span>
+                          </div>
+                          <div v-if="p.advance_deducted > 0" class="text-muted" style="font-size: 11px;">
+                            মূল বেতন: {{ formatAmount(p.gross_salary) }}
+                            <span class="text-danger fw-semibold">(-{{ formatAmount(p.advance_deducted) }} অগ্রিম কর্তন)</span>
+                          </div>
+                        </template>
+                      </td>
                       <td class="small text-muted">{{ p.created_by }}</td>
                       <td class="small text-muted">{{ p.note || '—' }}</td>
                     </tr>
@@ -354,17 +383,28 @@ printTable() {
         <td><strong>${this.formatAmount(item.total_amount)}</strong></td>
       </tr>
     `;
-    //  Detail rows (expanded payment  print show)
+    //  Detail rows (expanded payment print show)
     item.payments.forEach(p => {
       const pType = p.payment_type === 'advance' ? 'Advance'
         : p.payment_type === 'net_payable' ? 'Net Payable' : 'Full';
+      let amountDetail = this.formatAmount(p.amount);
+      if (p.payment_type === 'advance') {
+        if (p.advance_adjusted > 0) {
+          amountDetail = `${this.formatAmount(p.remaining_amount)} (বাকি) [মূল: ${this.formatAmount(p.original_amount)} - সমন্বয়: ${this.formatAmount(p.advance_adjusted)}]`;
+        }
+      } else {
+        if (p.advance_deducted > 0) {
+          amountDetail = `${this.formatAmount(p.amount)} (নিট) [মূল বেতন: ${this.formatAmount(p.gross_salary)} - অগ্রিম কর্তন: ${this.formatAmount(p.advance_deducted)}]`;
+        }
+      }
+
       html += `
         <tr style="background:#fafbff;">
           <td style="color:#aaa; padding-left:20px;">↳</td>
           <td style="color:#888; font-size:11px;">${p.payment_date || '—'}</td>
           <td style="font-size:11px;">${item.month_label}</td>
           <td><span style="background:#fff3e0;color:#e65100;padding:2px 8px;border-radius:4px;font-size:11px;">${pType}</span></td>
-          <td style="font-weight:600;">${this.formatAmount(p.amount)}</td>
+          <td style="font-weight:600;">${amountDetail}</td>
           <td style="color:#888;font-size:11px;">${p.created_by || '—'}</td>
           <td style="color:#888;font-size:11px;">${p.note || '—'}</td>
         </tr>
@@ -409,6 +449,11 @@ printTable() {
     </body>
     </html>
   `;
+    if (typeof window.printOrDownloadPdf === 'function') {
+      window.printOrDownloadPdf(html, 'Staff_Salary_Voucher');
+      return;
+    }
+
     const old = document.getElementById('print-iframe');
     if (old) old.remove();
     const iframe = document.createElement('iframe');

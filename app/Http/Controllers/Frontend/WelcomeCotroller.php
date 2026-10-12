@@ -7,23 +7,16 @@ use Illuminate\Http\Request;
 
 
 class WelcomeCotroller extends Controller
-
 {
-
    public function index(){
-
-    return view('Frontend.welcome');
-
+      return view('frontend.page.home');
    }
 
    public function bookingpage(){
-
-      return view('Frontend.bookingnow');
+      return view('frontend.page.bookingnow');
    }
 
    public function HelpDesk(){
-
-      return view('Frontend.helpdesk');
+      return view('frontend.page.helpdesk');
    }
-
 }

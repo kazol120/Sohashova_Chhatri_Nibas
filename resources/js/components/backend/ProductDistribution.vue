@@ -507,6 +507,11 @@ export default {
         </body>
         </html>
       `;
+      if (typeof window.printOrDownloadPdf === 'function') {
+        window.printOrDownloadPdf(html, 'Product_Distribution_Voucher');
+        return;
+      }
+
       const old = document.getElementById('print-iframe');
       if (old) old.remove();
       const iframe = document.createElement('iframe');

@@ -15,8 +15,8 @@ class UserService
 
     public function releaseList()
     {
-        // Released bookings phones
-        $releasedBookingPhones = \App\Models\Backend\RoomBookingHistory::where('status', 1)
+        // Released bookings phones (where today_check_out is not null)
+        $releasedBookingPhones = \App\Models\Backend\RoomBookingHistory::whereNotNull('today_check_out')
             ->pluck('phone')
             ->map(function($p) {
                 return substr(preg_replace('/[^0-9]/', '', $p), -10);
@@ -40,28 +40,68 @@ class UserService
 
     public function usersWithRole()
     {
-        // Active bookings phones
-        $activeBookingPhones = \App\Models\Backend\RoomBookingHistory::where('status', 0)
-            ->pluck('phone')
-            ->map(function($p) {
-                return substr(preg_replace('/[^0-9]/', '', $p), -10);
-            })
-            ->filter()
-            ->unique()
-            ->toArray();
+        // Active approved bookings (where today_check_out is null, status = 1, deleted_at is null)
+        $activeBookings = \App\Models\Backend\RoomBookingHistory::whereNull('today_check_out')
+            ->whereNull('deleted_at')
+            ->where('status', 1)
+            ->orderBy('id', 'asc')
+            ->get();
 
-        if (empty($activeBookingPhones)) {
-            return collect();
+        $usersCollection = collect();
+        $allUsers = \App\Models\User::all();
+
+        foreach ($activeBookings as $booking) {
+            $rawPhone = preg_replace('/[^0-9]/', '', $booking->phone ?? '');
+            $p10 = strlen($rawPhone) >= 10 ? substr($rawPhone, -10) : $rawPhone;
+
+            $user = null;
+            if (!empty($p10)) {
+                $user = $allUsers->first(function($u) use ($p10) {
+                    $uClean = preg_replace('/[^0-9]/', '', $u->phone ?? '');
+                    $u10 = strlen($uClean) >= 10 ? substr($uClean, -10) : $uClean;
+                    return !empty($u10) && $u10 === $p10;
+                });
+            }
+
+            if (!$user) {
+                $password = $booking->password ?: '123456';
+                $email = $booking->email;
+                if (!empty($email)) {
+                    $emailExists = $allUsers->contains(function($u) use ($email) {
+                        return !empty($u->email) && strtolower($u->email) === strtolower($email) && (int)$u->status === 1;
+                    });
+                    if ($emailExists) {
+                        $email = null;
+                    }
+                }
+
+                $user = \App\Models\User::create([
+                    'name'          => $booking->full_name ?? 'Resident',
+                    'email'         => $email,
+                    'phone'         => $booking->phone,
+                    'status'        => 1,
+                    'password'      => bcrypt($password),
+                    'temp_password' => $password,
+                    'user_image'    => $booking->image ?? null,
+                    'address'       => $booking->address ?? null,
+                ]);
+
+                try {
+                    if (class_exists(\Spatie\Permission\Models\Role::class)) {
+                        $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'User']);
+                        $user->assignRole($role);
+                    }
+                } catch (\Throwable $e) {}
+
+                $allUsers->push($user);
+            }
+
+            $uInstance = clone $user;
+            $uInstance->active_booking = $booking;
+            $usersCollection->push($uInstance);
         }
 
-        return User::whereDoesntHave('roles', function($q) { $q->whereIn('name', ['admin', 'staffs']); })
-            ->where('status', 1)
-            ->get()
-            ->filter(function($user) use ($activeBookingPhones) {
-                $normPhone = substr(preg_replace('/[^0-9]/', '', $user->phone), -10);
-                return in_array($normPhone, $activeBookingPhones);
-            })
-            ->values();
+        return $usersCollection;
     }
 
     public function usersWithoutRole()

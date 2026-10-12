@@ -112,7 +112,55 @@ class RoomBookingHistoryController extends Controller
             ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
             : ($row->floor_number_room_number_roomprice ?? []);
 
+        $items = array_map(function ($item) {
+            if (is_array($item)) {
+                $seatModel = null;
+                if (!empty($item['seat_id'])) {
+                    $seatModel = \App\Models\Backend\RoomSeat::with('room')->find($item['seat_id']);
+                }
+                if (!$seatModel && !empty($item['roomnumber'])) {
+                    $raw = trim($item['roomnumber']);
+                    $rNo = null; $sNo = null;
+                    if (preg_match('/^(\d+)[\-_ ]*Block[\-_ ]*([A-Za-z]+)(?:[\-_ ]*(\d+))?$/i', $raw, $m)) {
+                        $rNo = $m[1]; $sNo = $m[3] ?? null;
+                    } elseif (preg_match('/^([A-Za-z]+)[\-_](\d+)(?:[\-_](\d+))?$/i', $raw, $m)) {
+                        $rNo = $m[2]; $sNo = $m[3] ?? null;
+                    } elseif (preg_match('/^(\d+)[\-_]([A-Za-z]+)(?:[\-_](\d+))?$/i', $raw, $m)) {
+                        $rNo = $m[1]; $sNo = $m[3] ?? null;
+                    }
+                    if ($rNo) {
+                        $roomCand = \App\Models\Backend\Room::where('room_no', $rNo)->first();
+                        if ($roomCand) {
+                            if ($sNo) {
+                                $seatModel = \App\Models\Backend\RoomSeat::where('room_id', $roomCand->id)->where('seat_no', $sNo)->first();
+                            } else {
+                                $seatModel = \App\Models\Backend\RoomSeat::where('room_id', $roomCand->id)->first();
+                            }
+                        }
+                    }
+                }
+                if ($seatModel && $seatModel->room) {
+                    if (empty($item['room_type'])) {
+                        $item['room_type'] = $seatModel->room->room_type;
+                    }
+                    if (empty($item['seat_no']) && !empty($seatModel->seat_no)) {
+                        $item['seat_no'] = $seatModel->seat_no;
+                    }
+                }
+            }
+            return $item;
+        }, $items);
+
         $c = collect($items);
+        $cleanPhone = preg_replace('/[^0-9]/', '', $row->phone);
+        $uObj = null;
+        if (!empty($row->email)) {
+            $uObj = \App\Models\User::where('email', $row->email)->first();
+        }
+        if (!$uObj && !empty($cleanPhone)) {
+            $uObj = \App\Models\User::whereRaw("REGEXP_REPLACE(phone, '[^0-9]', '') = ?", [$cleanPhone])->first();
+        }
+
         return array_merge($row->only([
             'id',
             'image',
@@ -120,6 +168,7 @@ class RoomBookingHistoryController extends Controller
             'father_name',
             'mother_name',
             'email',
+            'blood_group',
             'phone',
             'nid',
             'mother_nid',
@@ -143,6 +192,7 @@ class RoomBookingHistoryController extends Controller
             'education_class',
             'workplace_name',
         ]), [
+            'user_status'   => ($row->status == 1 && $uObj && (int) $uObj->status == 1) ? 1 : 0,
             'development_fee' => (float) ($row->development_fee ?? 0),
             'group_key'     => 'booking_' . $row->id,
             'floornumber'   => $c->pluck('floornumber')->filter()->unique()->implode(', '),
@@ -215,6 +265,7 @@ public function store(Request $request)
         'full_name'   => 'required|string|max:150',
         'phone' => 'required|regex:/^01[3-9][0-9]{8}$/',
         'email'            => 'nullable|email|max:150',
+        'blood_group'      => 'nullable|string|max:20',
         'institution_name' => 'nullable|string|max:191',
         'education_level'  => 'nullable|string|max:191',
         'education_class'  => 'nullable|string|max:191',
@@ -249,21 +300,27 @@ public function store(Request $request)
         return back()->withErrors($validator)->withInput();
     }
     $cleanPhone = preg_replace('/[^0-9]/', '', $request->phone);
+    $cleanPhone10 = strlen($cleanPhone) >= 10 ? substr($cleanPhone, -10) : $cleanPhone;
     $existingUser = null;
-    if ($request->filled('email')) {
-
-        $existingUser = User::where('email', $request->email)
+    if (!empty($cleanPhone10)) {
+        $existingUser = User::where('status', 1)
+            ->where(function ($q) use ($request, $cleanPhone, $cleanPhone10) {
+                $q->where('phone', $request->phone)
+                  ->orWhere('phone', $cleanPhone)
+                  ->orWhereRaw("RIGHT(REGEXP_REPLACE(phone, '[^0-9]', ''), 10) = ?", [$cleanPhone10]);
+            })->first();
+    }
+    if (!$existingUser && $request->filled('email')) {
+        $userByEmail = User::where('email', $request->email)
             ->where('status', 1)
             ->first();
-    }
-    if (!$existingUser) {
-        $existingUser = User::where('status', 1)
-            ->where(function ($q) use ($request, $cleanPhone) {
-
-                $q->where('phone', $request->phone)
-                  ->orWhere('phone', $cleanPhone);
-
-            })->first();
+        if ($userByEmail) {
+            $uClean = preg_replace('/[^0-9]/', '', $userByEmail->phone ?? '');
+            $uClean10 = strlen($uClean) >= 10 ? substr($uClean, -10) : $uClean;
+            if (empty($uClean10) || $uClean10 === $cleanPhone10) {
+                $existingUser = $userByEmail;
+            }
+        }
     }
     $accountCreated = false;
     $tempPassword   = null;
@@ -353,25 +410,55 @@ public function store(Request $request)
         $totalAmount         = 0;
         $floorNames          = [];
         foreach ($request->rooms_list as $roomNumber) {
-            $parts = explode('-', $roomNumber, 2);
-            $roomNo = $parts[0] ?? '';
-            $seatNo = $parts[1] ?? '';
-
-            $room = Room::with('floor')
-                ->where('room_no', $roomNo)
-                ->first();
-
-            if (!$room) {
-                throw new \Exception("Room not found: {$roomNo}");
-            }
-
-            $seat = RoomSeat::where('room_id', $room->id)
-                ->where('seat_no', $seatNo)
+            $seat = RoomSeat::with(['room.floor'])
+                ->whereHas('room', function ($q) use ($roomNumber) {
+                    $q->whereRaw("CONCAT(room_no, '-', seat_no) = ?", [$roomNumber]);
+                })
                 ->lockForUpdate()
                 ->first();
 
+            $room = $seat ? $seat->room : null;
+
             if (!$seat) {
-                throw new \Exception("Seat not found: {$seatNo} in Room {$roomNo}");
+                $lastDashPos = strrpos($roomNumber, '-');
+                if ($lastDashPos !== false) {
+                    $rNo = substr($roomNumber, 0, $lastDashPos);
+                    $sNo = substr($roomNumber, $lastDashPos + 1);
+
+                    $roomCandidate = Room::with('floor')->where('room_no', $rNo)->first();
+                    if ($roomCandidate) {
+                        $seatCandidate = RoomSeat::where('room_id', $roomCandidate->id)
+                            ->where('seat_no', $sNo)
+                            ->lockForUpdate()
+                            ->first();
+                        if ($seatCandidate) {
+                            $seat = $seatCandidate;
+                            $room = $roomCandidate;
+                        }
+                    }
+                }
+            }
+
+            if (!$seat) {
+                $parts = explode('-', $roomNumber, 2);
+                $rNo = $parts[0] ?? '';
+                $sNo = $parts[1] ?? '';
+
+                $roomCandidate = Room::with('floor')->where('room_no', $rNo)->first();
+                if ($roomCandidate) {
+                    $seatCandidate = RoomSeat::where('room_id', $roomCandidate->id)
+                        ->where('seat_no', $sNo)
+                        ->lockForUpdate()
+                        ->first();
+                    if ($seatCandidate) {
+                        $seat = $seatCandidate;
+                        $room = $roomCandidate;
+                    }
+                }
+            }
+
+            if (!$room || !$seat) {
+                throw new \Exception("Room not found: {$roomNumber}");
             }
 
             if ((int) $seat->status === 1) {
@@ -382,16 +469,24 @@ public function store(Request $request)
         $singleAdvancePrice = (float) ($seat->advance_price ?? 0);  
         $floorName          = $room->floor->name ?? '';
 
-            $seat->update(['status' => 1]);
-
+            // Note: Seat status is kept 0 until Admin approves the booking
             $selectedRoomNumbers[] = $room->room_no;
             $selectedAcStatus[]    = $room->ac_status;
             $floorNames[]          = $floorName;
 
+            $cleanRoomStr = RoomBookingHistory::parseRoomSeatLabel($roomNumber, $room->room_type ?? null, $seat->id ?? null);
+            if (!$cleanRoomStr || $cleanRoomStr === '-') {
+                $cleanRoomStr = (string) $roomNumber;
+            }
+
             $roomJsonData[] = [
-                'floornumber' => (string) $floorName,
-                'roomnumber'  => (string) $roomNumber,
+                'floornumber'   => (string) $floorName,
+                'roomnumber'    => $cleanRoomStr,
+                'price'         => $singleRoomPrice,
+                'room_type'     => (string) ($room->room_type ?? ''),
                 'advance_price' => $singleAdvancePrice,
+                'room_id'       => $room->id,
+                'seat_id'       => $seat->id,
             ];
 
             $totalAmount += $singleRoomPrice; 
@@ -421,9 +516,13 @@ public function store(Request $request)
             $existingUser->syncRoles([$role]);
             $user = $existingUser;
         } else {
+            $emailToSave = $request->filled('email') ? $request->email : null;
+            if ($emailToSave && User::where('email', $emailToSave)->where('status', 1)->exists()) {
+                $emailToSave = null;
+            }
             $user = User::create([
                 'name'          => $request->full_name,
-                'email'         => $request->filled('email') ? $request->email : null,
+                'email'         => $emailToSave,
                 'phone'         => $request->phone,
                 'address'       => $request->address,
                 'password'      => bcrypt($tempPassword),
@@ -433,9 +532,16 @@ public function store(Request $request)
             ]);
             $user->syncRoles([$role]);
         }
+        $advanceTotal = 0;
+        foreach ($roomJsonData as $rItem) {
+            $advanceTotal += (float)($rItem['advance_price'] ?? 0);
+        }
+
         $appSettings = \App\Services\SettingService::getSettingContentBySlug('app_setting');
         $devFeeActive = ($appSettings['development_fee_status'] ?? '1') == '1';
-        $devFee = $devFeeActive ? (float) ($appSettings['development_fee'] ?? 3000) : 0.00;
+        $devFee = $request->filled('development_fee')
+            ? (float)$request->development_fee
+            : ($devFeeActive ? (float) ($appSettings['development_fee'] ?? 0) : 0.00);
 
         RoomBookingHistory::create([
             'image'                              => $imagePath,
@@ -447,6 +553,7 @@ public function store(Request $request)
             'education_class'                    => $request->education_class,
             'workplace_name'                     => $request->workplace_name,
             'email'                              => $request->filled('email') ? $request->email : null,
+            'blood_group'                        => $request->blood_group,
             'phone'                              => '+88' . ltrim($request->phone, '+88'),
             'nid'                                => (strtolower($request->user_type ?? 'student') === 'student') ? null : $request->nid,
             'mother_nid'                         => $request->mother_nid,
@@ -465,20 +572,24 @@ public function store(Request $request)
                                                     ? (($request->pay_method ?? 'Online') . ' | TRX: ' . ($request->trx ?? ''))
                                                     : null,
             'monthly_amount'                     => $totalAmount,
+            'advance_fee'                        => $advanceTotal,
             'development_fee'                    => $devFee,
             'check_in'                           => $request->check_in,
             'check_out'                          => null,
             'status'                             => 0,
         ]);
 
-        Auth::guard('web')->login($user);
-        $request->session()->regenerate();
         DB::commit();
         $divisionName    = optional(Division::find($request->division_id))->name ?? '-';
         $districtName    = optional(District::find($request->district_id))->name ?? '-';
         $thanaName       = optional(Thana::find($request->thana_id))->name ?? '-';
         $bookingDateTime = Carbon::now('Asia/Dhaka')->format('d/m/Y g:i A');
-        $adminEmail = 'mr2798492@gmail.com';
+        $webSetting      = \App\Services\SettingService::getSettingContentBySlug('web_setting');
+        $adminEmails     = array_values(array_filter(array_unique([
+            'mr2798492@gmail.com',
+            $webSetting['email'] ?? null,
+            config('mail.from.address')
+        ])));
         $imageName = null;
         if ($request->hasFile('image_file')) {
             $imageName = time() . '_' . uniqid() . '.' . $request->file('image_file')->getClientOriginalExtension();
@@ -487,21 +598,31 @@ public function store(Request $request)
         $mailData = [
             'full_name'        => $request->full_name,
             'email'            => $request->email,
+            'blood_group'      => $request->blood_group,
             'phone'            => $request->phone,
+            'temp_password'    => $tempPassword,
+            'password'         => $tempPassword,
             'user_type'        => $request->user_type,
             'institution_name' => $request->institution_name,
             'education_level'  => $request->education_level,
             'education_class'  => $request->education_class,
             'father_name'      => $request->father_name,
+            'father_phone'     => $request->father_phone,
             'mother_name'      => $request->mother_name,
+            'mother_phone'     => $request->mother_phone,
             'father_nid'       => $request->father_nid,
             'mother_nid'       => $request->mother_nid,
             'workplace_name'   => $request->workplace_name,
             'nid'              => $request->nid,
             'create_at'        => $bookingDateTime,
             'floor_name'       => implode(', ', array_unique(array_filter($floorNames))),
-            'room_json'        => $roomJsonData,  
+            'room_json'        => $roomJsonData,
             'total_amount'     => $totalAmount,
+            'monthly_amount'   => $totalAmount,
+            'advance_total'    => $advanceTotal,
+            'dev_fee'          => $devFee,
+            'development_fee'  => $devFee,
+            'booking_total'    => $advanceTotal + $devFee,
             'division_name'    => $divisionName,
             'district_name'    => $districtName,
             'thana_name'       => $thanaName,
@@ -512,21 +633,29 @@ public function store(Request $request)
         ];
 
         try {
-            Mail::to($adminEmail)->send(new RoomBookingMail($mailData));
-            if (!empty($request->email)) {
-                Mail::to($request->email)->send(new RoomBookingMail($mailData));
+            // ১. অ্যাডমিনদের ইমেইলে বুকিং নোটিফিকেশন পাঠানো
+            foreach ($adminEmails as $aEmail) {
+                if (filter_var($aEmail, FILTER_VALIDATE_EMAIL)) {
+                    Mail::to($aEmail)->send(new RoomBookingMail($mailData));
+                }
+            }
+            // ২. বুকিং প্রদানকারী ইউজারের ইমেইলে সরাসরি কনফার্মেশন ও লগইন বিবরণী পাঠানো
+            $guestEmail = trim($request->email ?? '');
+            if (!empty($guestEmail) && filter_var($guestEmail, FILTER_VALIDATE_EMAIL)) {
+                Mail::to($guestEmail)->send(new RoomBookingMail($mailData));
             }
         } catch (\Throwable $mailError) {
             \Log::error('Room booking email failed: ' . $mailError->getMessage());
         }
             if ($request->ajax()) {
                 return response()->json([
-                    'status'       => true,
-                    'message'      => 'Booking successfully!',
-                    'redirect_url' => url('/backend/dashboard'),
+                    'status'          => true,
+                    'booking_success' => true,
+                    'message'         => 'আপনার বুকিং আবেদনটি সফলভাবে জমা হয়েছে। অ্যাডমিন কনফার্ম ও একটিভ (Active) করলে আপনি ড্যাশবোর্ডে লগইন করতে পারবেন।',
+                    'redirect_url'    => null,
                 ], 200);
         }
-        return redirect('/backend/dashboard')->with('success', 'Booking successfully!');
+        return redirect('/login')->with('success', 'আপনার বুকিং আবেদনটি সফলভাবে জমা হয়েছে। অ্যাডমিন কনফার্ম ও একটিভ (Active) করলে আপনি ড্যাশবোর্ডে লগইন করতে পারবেন।');
 
     } catch (\Throwable $e) {
         DB::rollBack();
@@ -574,6 +703,7 @@ public function store(Request $request)
             'education_class'  => $guest ? $guest->education_class : null,
             'workplace_name'   => $guest ? $guest->workplace_name : null,
             'email'            => $guest ? $guest->email : ($user ? $user->email : null),
+            'blood_group'      => $guest ? $guest->blood_group : null,
             'nid'              => $guest ? $guest->nid : null,
             'mother_nid'       => $guest ? $guest->mother_nid : null,
             'father_nid'       => $guest ? $guest->father_nid : null,
@@ -603,7 +733,7 @@ public function getbookinghistory(Request $request)
 
     if ($user->hasRole('admin')) {
 
-        $query = RoomBookingHistory::with(['division', 'district', 'thana'])->where('status', 0);
+        $query = RoomBookingHistory::with(['division', 'district', 'thana'])->whereNull('today_check_out');
 
        if ($search !== '') {
     $query->where(function ($q) use ($search) {
@@ -635,7 +765,55 @@ public function getbookinghistory(Request $request)
                 ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
                 : ($row->floor_number_room_number_roomprice ?? []);
 
+            $items = array_map(function ($item) {
+                if (is_array($item)) {
+                    $seatModel = null;
+                    if (!empty($item['seat_id'])) {
+                        $seatModel = \App\Models\Backend\RoomSeat::with('room')->find($item['seat_id']);
+                    }
+                    if (!$seatModel && !empty($item['roomnumber'])) {
+                        $raw = trim($item['roomnumber']);
+                        $rNo = null; $sNo = null;
+                        if (preg_match('/^(\d+)[\-_ ]*Block[\-_ ]*([A-Za-z]+)(?:[\-_ ]*(\d+))?$/i', $raw, $m)) {
+                            $rNo = $m[1]; $sNo = $m[3] ?? null;
+                        } elseif (preg_match('/^([A-Za-z]+)[\-_](\d+)(?:[\-_](\d+))?$/i', $raw, $m)) {
+                            $rNo = $m[2]; $sNo = $m[3] ?? null;
+                        } elseif (preg_match('/^(\d+)[\-_]([A-Za-z]+)(?:[\-_](\d+))?$/i', $raw, $m)) {
+                            $rNo = $m[1]; $sNo = $m[3] ?? null;
+                        }
+                        if ($rNo) {
+                            $roomCand = \App\Models\Backend\Room::where('room_no', $rNo)->first();
+                            if ($roomCand) {
+                                if ($sNo) {
+                                    $seatModel = \App\Models\Backend\RoomSeat::where('room_id', $roomCand->id)->where('seat_no', $sNo)->first();
+                                } else {
+                                    $seatModel = \App\Models\Backend\RoomSeat::where('room_id', $roomCand->id)->first();
+                                }
+                            }
+                        }
+                    }
+                    if ($seatModel && $seatModel->room) {
+                        if (empty($item['room_type'])) {
+                            $item['room_type'] = $seatModel->room->room_type;
+                        }
+                        if (empty($item['seat_no']) && !empty($seatModel->seat_no)) {
+                            $item['seat_no'] = $seatModel->seat_no;
+                        }
+                    }
+                }
+                return $item;
+            }, $items);
+
             $c = collect($items);
+
+            $cleanPhone = preg_replace('/[^0-9]/', '', $row->phone);
+            $uObj = null;
+            if (!empty($row->email)) {
+                $uObj = \App\Models\User::where('email', $row->email)->first();
+            }
+            if (!$uObj && !empty($cleanPhone)) {
+                $uObj = \App\Models\User::whereRaw("REGEXP_REPLACE(phone, '[^0-9]', '') = ?", [$cleanPhone])->first();
+            }
 
             return array_merge($row->only([
                 'id',
@@ -650,6 +828,7 @@ public function getbookinghistory(Request $request)
                 'father_nid',
                 'father_phone',
                 'mother_phone',
+                'blood_group',
                 'room_number',
                 'monthly_amount',
                 'roomprice',
@@ -668,6 +847,7 @@ public function getbookinghistory(Request $request)
                 'workplace_name',
                 'address',
             ]), [
+                'user_status'   => $uObj ? (int) $uObj->status : (int) $row->status,
                 'development_fee' => (float) ($row->development_fee ?? 0),
                 'group_key'     => 'booking_' . $row->id,
                 'floornumber'   => $c->pluck('floornumber')->filter()->unique()->implode(', '),
@@ -725,6 +905,7 @@ public function getbookinghistory(Request $request)
                 'father_nid',
                 'father_phone',
                 'mother_phone',
+                'blood_group',
                 'room_number',
                 'monthly_amount',
                 'check_in',
@@ -792,7 +973,8 @@ public function getNameguet()
         $search        = trim($request->get('search', ''));
         $filter        = $request->get('filter', 'all'); // all, staying, leaving
 
-        $query = RoomBookingHistory::where('status', 0);
+        $query = RoomBookingHistory::whereNull('today_check_out')
+            ->where('status', 1);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -814,9 +996,49 @@ public function getNameguet()
 
             $c = collect($items);
 
-            $totalAdvance = collect($items)->sum(function($item) {
-                return (float) ($item['advance_price'] ?? 0);
+            $totalAdvance = collect($items)->sum(function($item) use ($row) {
+                $val = (float) ($item['original_advance_price'] ?? $item['advance_price'] ?? 0);
+                if ($val > 0) {
+                    return $val;
+                }
+                if (!empty($item['seat_id'])) {
+                    $seat = \App\Models\Backend\RoomSeat::find($item['seat_id']);
+                    if ($seat && (float)$seat->advance_price > 0) {
+                        return (float)$seat->advance_price;
+                    }
+                }
+                if (!empty($item['roomnumber'])) {
+                    $rn = $item['roomnumber'];
+                    $seat = \App\Models\Backend\RoomSeat::whereHas('room', function ($q) use ($rn) {
+                        $q->whereRaw("CONCAT(room_no, '-', seat_no) = ?", [$rn]);
+                    })->first();
+                    if ($seat && (float)$seat->advance_price > 0) {
+                        return (float)$seat->advance_price;
+                    }
+                }
+                return (float) ($row->advance_fee ?? 0);
             });
+
+            $cleanPhone = preg_replace('/[^0-9]/', '', $row->phone ?? '');
+            $uObj = null;
+            if (!empty($row->email)) {
+                $uObj = \App\Models\User::where('email', $row->email)->first();
+            }
+            if (!$uObj && !empty($cleanPhone)) {
+                $uClean10 = strlen($cleanPhone) >= 10 ? substr($cleanPhone, -10) : $cleanPhone;
+                $uObj = \App\Models\User::whereRaw("RIGHT(REGEXP_REPLACE(phone, '[^0-9]', ''), 10) = ?", [$uClean10])->first();
+            }
+
+            $mealDepositTotal = 0.0;
+            $mealCost = 0.0;
+            $mealDepositBalance = 0.0;
+
+            if ($uObj) {
+                $mealBal = app(\App\Services\MealService::class)->getUserMealDepositBalance($uObj->id);
+                $mealDepositTotal = (float)($mealBal['deposit_total'] ?? 0);
+                $mealCost = (float)($mealBal['meal_cost'] ?? 0);
+                $mealDepositBalance = (float)($mealBal['balance'] ?? 0);
+            }
 
             return array_merge($row->only([
                 'id',
@@ -841,12 +1063,16 @@ public function getNameguet()
                 'will_leave',
                 'notice_date'
             ]), [
+                'user_id'               => $uObj ? $uObj->id : null,
                 'group_key'             => 'booking_' . $row->id,
                 'floornumber'           => $c->pluck('floornumber')->filter()->unique()->implode(', '),
                 'roomnumber'            => $c->pluck('roomnumber')->filter()->implode(', '),
                 'price'                 => $c->pluck('price')->filter()->implode(', '),
                 'room_items'            => $items,
                 'total_advance_deposit' => $totalAdvance,
+                'meal_deposit_total'    => $mealDepositTotal,
+                'meal_cost'             => $mealCost,
+                'meal_deposit_balance'  => $mealDepositBalance,
                 'notice_date_formatted' => $row->notice_date ? \Carbon\Carbon::parse($row->notice_date)->format('Y-m-d') : null,
                 'notice_days_elapsed'   => $row->notice_date ? (int) \Carbon\Carbon::parse($row->notice_date)->diffInDays(now()) : 0,
                 'is_notice_fulfilled'   => $row->will_leave == 1 && $row->notice_date && \Carbon\Carbon::parse($row->notice_date)->diffInDays(now()) >= 60,
@@ -945,16 +1171,25 @@ public function getNameguet()
             foreach ($rawItems as $item) {
                 $rn = $item['roomnumber'] ?? $item['room_number'] ?? null;
                 if ($rn) {
-                    $parts = explode('-', $rn, 2);
-                    $roomNo = $parts[0] ?? '';
-                    $seatNo = $parts[1] ?? '';
+                    $seat = RoomSeat::whereHas('room', function ($q) use ($rn) {
+                        $q->whereRaw("CONCAT(room_no, '-', seat_no) = ?", [$rn]);
+                    })->first();
 
-                    $room = Room::where('room_no', $roomNo)->first();
-                    if ($room) {
-                        RoomSeat::where('room_id', $room->id)->where('seat_no', $seatNo)->update(['status' => 0]);
-                        Room::syncRoomStatus($room->id);
+                    if ($seat) {
+                        $seat->update(['status' => 0]);
+                        Room::syncRoomStatus($seat->room_id);
                     } else {
-                        Room::where('room_no', $rn)->update(['status' => 0]);
+                        $parts = explode('-', $rn, 2);
+                        $roomNo = $parts[0] ?? '';
+                        $seatNo = $parts[1] ?? '';
+
+                        $room = Room::where('room_no', $roomNo)->first();
+                        if ($room) {
+                            RoomSeat::where('room_id', $room->id)->where('seat_no', $seatNo)->update(['status' => 0]);
+                            Room::syncRoomStatus($room->id);
+                        } else {
+                            Room::where('room_no', $rn)->update(['status' => 0]);
+                        }
                     }
                 }
             }
@@ -983,8 +1218,8 @@ public function getNameguet()
         $page    = (int) $request->get('page', 1);
         $search  = trim($request->get('search', ''));
 
-        // status = 1 represents checked-out residents
-        $query = RoomBookingHistory::where('status', 1);
+        // Display only residents who have actually been checked-out / released
+        $query = RoomBookingHistory::whereNotNull('today_check_out');
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -1000,19 +1235,47 @@ public function getNameguet()
 
             $c = collect($items);
 
-            // Dynamically calculate the outstanding due from monthly payments
-            $dueAmount = \App\Models\Backend\MonthlyPayment::where('room_booking_history_id', $row->id)->sum('due_amount');
+            // Dynamically calculate monthly payment due & emergency checkout penalty due
+            $monthlyDue = (float) \App\Models\Backend\MonthlyPayment::where('room_booking_history_id', $row->id)->sum('due_amount');
 
             $noticeDate = $row->notice_date ? \Carbon\Carbon::parse($row->notice_date) : null;
             $checkoutDate = $row->today_check_out ? \Carbon\Carbon::parse($row->today_check_out) : ($row->check_out ? \Carbon\Carbon::parse($row->check_out) : now());
             $noticeDaysElapsed = $noticeDate ? (int) $noticeDate->diffInDays($checkoutDate) : 0;
             $isNoticeFulfilled = $row->will_leave == 1 && $noticeDaysElapsed >= 60;
             
-            $totalAdv = $c->sum(function($i) { 
-                return (float)($i['original_advance_price'] ?? $i['advance_price'] ?? 0); 
+            $totalAdv = $c->sum(function($item) use ($row) {
+                $val = (float) ($item['original_advance_price'] ?? $item['advance_price'] ?? 0);
+                if ($val > 0) return $val;
+                if (!empty($item['seat_id'])) {
+                    $seat = \App\Models\Backend\RoomSeat::find($item['seat_id']);
+                    if ($seat && (float)$seat->advance_price > 0) return (float)$seat->advance_price;
+                }
+                return (float) ($row->advance_fee ?? 0);
             });
-            if ($totalAdv == 0) {
-                $totalAdv = (float) ($row->monthly_amount ?? 0) * 2;
+
+            $penaltyFine = $isNoticeFulfilled ? 0.0 : ((float) ($row->monthly_amount ?? 0) * 2);
+            $uncoveredPenaltyDue = max(0.0, $penaltyFine - $totalAdv);
+            $totalResidentDue = $monthlyDue + $uncoveredPenaltyDue;
+
+            $cleanPhone = preg_replace('/[^0-9]/', '', $row->phone ?? '');
+            $uObj = null;
+            if (!empty($row->email)) {
+                $uObj = \App\Models\User::where('email', $row->email)->first();
+            }
+            if (!$uObj && !empty($cleanPhone)) {
+                $uClean10 = strlen($cleanPhone) >= 10 ? substr($cleanPhone, -10) : $cleanPhone;
+                $uObj = \App\Models\User::whereRaw("RIGHT(REGEXP_REPLACE(phone, '[^0-9]', ''), 10) = ?", [$uClean10])->first();
+            }
+
+            $mealDepositTotal = 0.0;
+            $mealCost = 0.0;
+            $mealDepositBalance = 0.0;
+
+            if ($uObj) {
+                $mealBal = app(\App\Services\MealService::class)->getUserMealDepositBalance($uObj->id);
+                $mealDepositTotal = (float)($mealBal['deposit_total'] ?? 0);
+                $mealCost = (float)($mealBal['meal_cost'] ?? 0);
+                $mealDepositBalance = (float)($mealBal['balance'] ?? 0);
             }
 
             return array_merge($row->only([
@@ -1033,16 +1296,22 @@ public function getNameguet()
                 'created_at',
                 'user_type'
             ]), [
+                'user_id'               => $uObj ? $uObj->id : null,
                 'floornumber'           => $c->pluck('floornumber')->filter()->unique()->implode(', '),
                 'roomnumber'            => $c->pluck('roomnumber')->filter()->implode(', '),
                 'price'                 => $c->pluck('price')->filter()->implode(', '),
                 'room_items'            => $items,
-                'due_amount'            => (float) $dueAmount,
+                'due_amount'            => (float) $totalResidentDue,
+                'monthly_due'           => (float) $monthlyDue,
+                'penalty_due'           => (float) $uncoveredPenaltyDue,
                 'will_leave'            => (int) $row->will_leave,
                 'notice_date'           => $row->notice_date,
                 'notice_days_elapsed'   => $noticeDaysElapsed,
                 'is_notice_fulfilled'   => $isNoticeFulfilled,
                 'total_advance_deposit' => $totalAdv,
+                'meal_deposit_total'    => $mealDepositTotal,
+                'meal_cost'             => $mealCost,
+                'meal_deposit_balance'  => $mealDepositBalance,
             ]);
         })->values();
 
@@ -1064,13 +1333,52 @@ public function getNameguet()
 
     public function getAvailableSeatsTree()
     {
-        $floors = Floor::with(['rooms' => function ($rq) {
-            $rq->with(['seats' => function ($sq) {
-                $sq->where('status', 0);
-            }]);
-        }])->get()->map(function ($floor) {
-            $rooms = $floor->rooms->map(function ($room) {
-                $availableSeats = $room->seats->map(function ($seat) {
+        // 1. Fetch all bookings that are active or in processing (today_check_out is NULL)
+        $activeBookings = RoomBookingHistory::whereNull('today_check_out')->get();
+
+        $unavailableSeatIds = [];
+        $unavailableSeatNames = [];
+
+        foreach ($activeBookings as $b) {
+            $items = is_string($b->floor_number_room_number_roomprice)
+                ? (json_decode($b->floor_number_room_number_roomprice, true) ?? [])
+                : ($b->floor_number_room_number_roomprice ?? []);
+
+            if (is_array($items)) {
+                foreach ($items as $item) {
+                    if (!empty($item['seat_id'])) {
+                        $unavailableSeatIds[] = (int) $item['seat_id'];
+                    }
+                    if (!empty($item['roomnumber'])) {
+                        $unavailableSeatNames[] = trim((string) $item['roomnumber']);
+                    }
+                    if (!empty($item['seat_no'])) {
+                        $unavailableSeatNames[] = trim((string) $item['seat_no']);
+                    }
+                }
+            }
+        }
+        $unavailableSeatIds = array_unique(array_filter($unavailableSeatIds));
+        $unavailableSeatNames = array_unique(array_filter($unavailableSeatNames));
+
+        $floors = Floor::with(['rooms.seats'])->get()->map(function ($floor) use ($unavailableSeatIds, $unavailableSeatNames) {
+            $rooms = $floor->rooms->map(function ($room) use ($unavailableSeatIds, $unavailableSeatNames) {
+                $availableSeats = $room->seats->filter(function ($seat) use ($room, $unavailableSeatIds, $unavailableSeatNames) {
+                    // Seat must be status 0
+                    if ((int) $seat->status === 1) {
+                        return false;
+                    }
+                    // Seat id must not be in unavailable seat ids
+                    if (in_array((int) $seat->id, $unavailableSeatIds, true)) {
+                        return false;
+                    }
+                    // Seat full name or seat_no must not be in unavailable seat names
+                    $fullSeatName = $room->room_no . '-' . $seat->seat_no;
+                    if (in_array($fullSeatName, $unavailableSeatNames, true) || in_array($seat->seat_no, $unavailableSeatNames, true)) {
+                        return false;
+                    }
+                    return true;
+                })->map(function ($seat) {
                     return [
                         'id'            => $seat->id,
                         'seat_no'       => $seat->seat_no,
@@ -1112,12 +1420,21 @@ public function getNameguet()
 
         DB::beginTransaction();
         try {
-            $booking = RoomBookingHistory::where('id', $id)->where('status', 0)->firstOrFail();
+            $booking = RoomBookingHistory::where('id', $id)->whereNull('today_check_out')->firstOrFail();
 
             $newSeat = RoomSeat::with('room.floor')->where('id', $request->new_seat_id)->lockForUpdate()->firstOrFail();
 
-            if ((int) $newSeat->status === 1) {
-                return response()->json(['success' => false, 'message' => 'The selected seat is already booked.'], 422);
+            $isOccupiedOrProcessing = RoomBookingHistory::whereNull('today_check_out')
+                ->where('id', '!=', $booking->id)
+                ->where(function($q) use ($newSeat) {
+                    $seatString = $newSeat->room->room_no . '-' . $newSeat->seat_no;
+                    $q->where('floor_number_room_number_roomprice', 'like', "%{$seatString}%")
+                      ->orWhere('floor_number_room_number_roomprice', 'like', "%\"seat_id\":{$newSeat->id}%")
+                      ->orWhere('floor_number_room_number_roomprice', 'like', "%\"seat_id\": \"{$newSeat->id}\"%");
+                })->exists();
+
+            if ((int) $newSeat->status === 1 || $isOccupiedOrProcessing) {
+                return response()->json(['success' => false, 'message' => 'The selected seat is already booked or processing.'], 422);
             }
 
             $items = is_string($booking->floor_number_room_number_roomprice)
@@ -1136,17 +1453,28 @@ public function getNameguet()
             // 1. Release old seat(s)
             foreach ($items as $item) {
                 $rawRoomNo = $item['roomnumber'] ?? '';
-                $parts = explode('-', $rawRoomNo, 2);
-                $oldRoomNo = $parts[0] ?? '';
-                $oldSeatNo = $parts[1] ?? '';
+                if ($rawRoomNo) {
+                    $oldSeat = RoomSeat::whereHas('room', function ($q) use ($rawRoomNo) {
+                        $q->whereRaw("CONCAT(room_no, '-', seat_no) = ?", [$rawRoomNo]);
+                    })->first();
 
-                if ($oldRoomNo && $oldSeatNo) {
-                    $oldRoom = Room::where('room_no', $oldRoomNo)->first();
-                    if ($oldRoom) {
-                        $oldSeat = RoomSeat::where('room_id', $oldRoom->id)->where('seat_no', $oldSeatNo)->first();
-                        if ($oldSeat) {
-                            $oldSeat->update(['status' => 0]);
-                            Room::syncRoomStatus($oldRoom->id);
+                    if ($oldSeat) {
+                        $oldSeat->update(['status' => 0]);
+                        Room::syncRoomStatus($oldSeat->room_id);
+                    } else {
+                        $parts = explode('-', $rawRoomNo, 2);
+                        $oldRoomNo = $parts[0] ?? '';
+                        $oldSeatNo = $parts[1] ?? '';
+
+                        if ($oldRoomNo && $oldSeatNo) {
+                            $oldRoom = Room::where('room_no', $oldRoomNo)->first();
+                            if ($oldRoom) {
+                                $s = RoomSeat::where('room_id', $oldRoom->id)->where('seat_no', $oldSeatNo)->first();
+                                if ($s) {
+                                    $s->update(['status' => 0]);
+                                    Room::syncRoomStatus($oldRoom->id);
+                                }
+                            }
                         }
                     }
                 }
@@ -1167,6 +1495,8 @@ public function getNameguet()
                     'roomnumber'    => (string) $newRoomNumberString,
                     'price'         => $newPrice,
                     'advance_price' => (float) ($newSeat->advance_price ?? 0),
+                    'room_id'       => $newRoom->id,
+                    'seat_id'       => $newSeat->id,
                 ]
             ];
 
@@ -1175,69 +1505,56 @@ public function getNameguet()
                 'monthly_amount'                     => $newPrice,
             ]);
 
-            // 3. Record or Update Room Change History & Fee per resident
+            // 3. Record NEW Room Change History & Fee for every change event
             $feeAmount = $request->filled('fee_amount') ? (float) $request->fee_amount : 500.00;
             $paymentMethod = $request->input('payment_method', 'Cash');
             $paymentStatus = $request->input('payment_status', 'paid');
             $remarks = $request->input('remarks', '');
 
-            $existingHistory = RoomChangeHistory::where('room_booking_history_id', $booking->id)->first();
-
-            if ($existingHistory) {
-                $existingHistory->update([
-                    'resident_name'      => $booking->full_name ?? $existingHistory->resident_name,
-                    'phone'              => $booking->phone ?? $existingHistory->phone,
-                    'old_floor'          => $oldFloorName,
-                    'old_room_seat'      => $oldRoomSeatString,
-                    'new_floor'          => (string) ($newFloor->name ?? ''),
-                    'new_room_seat'      => (string) $newRoomNumberString,
-                    'old_monthly_amount' => $oldMonthlyAmount,
-                    'new_monthly_amount' => $newPrice,
-                    'fee_amount'         => (float)$existingHistory->fee_amount + $feeAmount,
-                    'payment_method'     => $paymentMethod,
-                    'payment_status'     => $paymentStatus,
-                    'remarks'            => $remarks,
-                    'changed_by'         => Auth::id() ?? null,
-                ]);
-            } else {
-                RoomChangeHistory::create([
-                    'room_booking_history_id' => $booking->id,
-                    'resident_name'           => $booking->full_name ?? '',
-                    'phone'                   => $booking->phone ?? '',
-                    'old_floor'               => $oldFloorName,
-                    'old_room_seat'           => $oldRoomSeatString,
-                    'new_floor'               => (string) ($newFloor->name ?? ''),
-                    'new_room_seat'           => (string) $newRoomNumberString,
-                    'old_monthly_amount'      => $oldMonthlyAmount,
-                    'new_monthly_amount'      => $newPrice,
-                    'fee_amount'              => $feeAmount,
-                    'payment_method'          => $paymentMethod,
-                    'payment_status'          => $paymentStatus,
-                    'remarks'                 => $remarks,
-                    'changed_by'              => Auth::id() ?? null,
-                ]);
-            }
+            $history = RoomChangeHistory::create([
+                'room_booking_history_id' => $booking->id,
+                'resident_name'           => $booking->full_name ?? '',
+                'phone'                   => $booking->phone ?? '',
+                'old_floor'               => $oldFloorName,
+                'old_room_seat'           => $oldRoomSeatString,
+                'new_floor'               => (string) ($newFloor->name ?? ''),
+                'new_room_seat'           => (string) $newRoomNumberString,
+                'old_monthly_amount'      => $oldMonthlyAmount,
+                'new_monthly_amount'      => $newPrice,
+                'fee_amount'              => $feeAmount,
+                'payment_method'          => $paymentMethod,
+                'payment_status'          => $paymentStatus,
+                'remarks'                 => $remarks,
+                'changed_by'              => Auth::id() ?? null,
+            ]);
 
             DB::commit();
 
             return response()->json([
-                'success' => true,
-                'message' => 'Room & Seat changed successfully! Change Fee (৳ ' . number_format($feeAmount) . ') recorded.',
+                'success'        => true,
+                'message'        => 'রুম ও সিট সফলভাবে পরিবর্তন করা হয়েছে!',
+                'change_history' => $history,
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
+            \Log::error('Change Room Error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 
     public function roomChangeHistories(Request $request)
     {
-        // Group by resident to ensure only 1 unique row per resident showing their latest change
-        $latestIds = RoomChangeHistory::select(DB::raw('MAX(id) as max_id'))
-            ->groupBy(DB::raw('COALESCE(room_booking_history_id, resident_name)'))
-            ->pluck('max_id');
+        $query = RoomChangeHistory::orderBy('id', 'desc');
 
-        $query = RoomChangeHistory::whereIn('id', $latestIds)->orderBy('id', 'desc');
+        if ($request->filled('booking_id')) {
+            $query->where('room_booking_history_id', $request->booking_id);
+        }
+
+        if ($request->filled('phone')) {
+            $cleanPhone = preg_replace('/[^0-9]/', '', $request->phone);
+            $last10 = strlen($cleanPhone) >= 10 ? substr($cleanPhone, -10) : $cleanPhone;
+            $query->where('phone', 'like', "%{$last10}%");
+        }
 
         if ($request->filled('search')) {
             $s = $request->search;
@@ -1502,5 +1819,495 @@ public function getNameguet()
         }
 
         return redirect(url('/room-booking-history'));
+    }
+
+    public function activateBookingAccount($id)
+    {
+        try {
+            $booking = RoomBookingHistory::findOrFail($id);
+            $booking->update(['status' => 1]);
+
+            $rawPhone = $booking->phone;
+            $cleanPhone = preg_replace('/[^0-9]/', '', $rawPhone);
+            $last10Digits = strlen($cleanPhone) >= 10 ? substr($cleanPhone, -10) : $cleanPhone;
+
+            $user = null;
+            if (!empty($booking->email)) {
+                $user = User::where('email', $booking->email)->first();
+            }
+            if (!$user && !empty($last10Digits)) {
+                $user = User::where('phone', 'like', "%{$last10Digits}")->first();
+            }
+
+            if ($user) {
+                $user->update(['status' => 1]);
+            }
+
+            // Update associated booked room seat(s) to status 1 (Occupied/Disabled) upon Admin approval
+            $roomsJson = $booking->floor_number_room_number_roomprice;
+            $roomsArr  = is_string($roomsJson) ? json_decode($roomsJson, true) : $roomsJson;
+            if (is_array($roomsArr)) {
+                foreach ($roomsArr as $rItem) {
+                    $seatId     = $rItem['seat_id'] ?? null;
+                    $roomId     = $rItem['room_id'] ?? null;
+                    $seatString = $rItem['roomnumber'] ?? ($rItem['seat_no'] ?? null);
+
+                    $targetSeat = null;
+                    if ($seatId) {
+                        $targetSeat = RoomSeat::find($seatId);
+                    }
+                    if (!$targetSeat && $seatString) {
+                        $parts = explode('-', $seatString, 2);
+                        $rNo   = trim($parts[0] ?? '');
+                        $sNo   = trim($parts[1] ?? $seatString);
+
+                        $roomObj = Room::where('room_no', $rNo)->first();
+                        if ($roomObj) {
+                            $targetSeat = RoomSeat::where('room_id', $roomObj->id)
+                                ->where(function($q) use ($sNo, $seatString) {
+                                    $q->where('seat_no', $sNo)
+                                      ->orWhere('seat_no', $seatString);
+                                })->first();
+                        }
+                    }
+
+                    if ($targetSeat) {
+                        $targetSeat->update(['status' => 1]);
+                        Room::syncRoomStatus($targetSeat->room_id);
+                    }
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'শিক্ষার্থীর অ্যাকাউন্ট ও রুম সীট সফলভাবে একটিভ (Active & Booked) করা হয়েছে!',
+                'status'  => 1
+            ]);
+        } catch (\Throwable $e) {
+            \Log::error("Activate booking account error: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function deactivateBookingAccount($id)
+    {
+        DB::beginTransaction();
+        try {
+            $booking = RoomBookingHistory::findOrFail($id);
+            $booking->update(['status' => 0]);
+
+            $rawPhone = $booking->phone;
+            $cleanPhone = preg_replace('/[^0-9]/', '', $rawPhone);
+            $last10Digits = strlen($cleanPhone) >= 10 ? substr($cleanPhone, -10) : $cleanPhone;
+
+            $user = null;
+            if (!empty($booking->email)) {
+                $user = User::where('email', $booking->email)->first();
+            }
+            if (!$user && !empty($last10Digits)) {
+                $user = User::where('phone', 'like', "%{$last10Digits}")->first();
+            }
+
+            if ($user) {
+                $user->update(['status' => 0]);
+            }
+
+            // Free up the associated room seat(s) (status 0) unless another approved booking is occupying it
+            $roomsJson = $booking->floor_number_room_number_roomprice;
+            $roomsArr  = is_string($roomsJson) ? json_decode($roomsJson, true) : $roomsJson;
+            if (is_array($roomsArr)) {
+                foreach ($roomsArr as $rItem) {
+                    $seatId     = $rItem['seat_id'] ?? null;
+                    $roomId     = $rItem['room_id'] ?? null;
+                    $seatString = $rItem['roomnumber'] ?? ($rItem['seat_no'] ?? ($rItem['room_no'] ?? null));
+
+                    $targetSeat = null;
+                    if ($seatId) {
+                        $targetSeat = RoomSeat::find($seatId);
+                    }
+                    if (!$targetSeat && $roomId) {
+                        $parts = explode('-', (string)$seatString);
+                        $sNo   = trim(end($parts));
+                        $targetSeat = RoomSeat::where('room_id', $roomId)
+                            ->where(function($q) use ($sNo, $seatString) {
+                                $q->where('seat_no', $sNo)
+                                  ->orWhere('seat_no', $seatString);
+                            })->first();
+                    }
+                    if (!$targetSeat && $seatString) {
+                        $parts = explode('-', (string)$seatString, 2);
+                        $rNo   = trim($parts[0] ?? '');
+                        $sNo   = trim($parts[1] ?? $seatString);
+
+                        $roomObj = Room::where('room_no', $rNo)->first();
+                        if ($roomObj) {
+                            $targetSeat = RoomSeat::where('room_id', $roomObj->id)
+                                ->where(function($q) use ($sNo, $seatString) {
+                                    $q->where('seat_no', $sNo)
+                                      ->orWhere('seat_no', $seatString);
+                                })->first();
+                        }
+                    }
+
+                    if ($targetSeat) {
+                        $hasApprovedOther = RoomBookingHistory::where('id', '!=', $booking->id)
+                            ->where('status', 1)
+                            ->where('floor_number_room_number_roomprice', 'like', "%{$seatString}%")
+                            ->exists();
+
+                        if (!$hasApprovedOther) {
+                            $targetSeat->update(['status' => 0]);
+                            Room::syncRoomStatus($targetSeat->room_id);
+                        }
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'শিক্ষার্থীর অ্যাকাউন্ট সফলভাবে Deactive করা হয়েছে এবং সিট মুক্ত করা হয়েছে!',
+                'status'  => 0
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            \Log::error("Deactivate booking account error: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function destroyBooking($id)
+    {
+        DB::beginTransaction();
+        try {
+            $booking = RoomBookingHistory::findOrFail($id);
+
+            // 1. Check associated user from users table
+            $rawPhone = $booking->phone;
+            $cleanPhone = preg_replace('/[^0-9]/', '', $rawPhone);
+            $last10Digits = strlen($cleanPhone) >= 10 ? substr($cleanPhone, -10) : $cleanPhone;
+
+            $user = null;
+            if (!empty($booking->email)) {
+                $user = User::where('email', $booking->email)->first();
+            }
+            if (!$user && !empty($last10Digits)) {
+                $user = User::where('phone', 'like', "%{$last10Digits}")->first();
+            }
+
+            if ($user) {
+                // Deactivate user account while keeping original credentials intact
+                $user->update(['status' => 0]);
+            }
+
+            // 2. Reset room seat status to 0 ONLY if NO OTHER approved booking (status = 1) is occupying that seat
+            $roomsJson = $booking->floor_number_room_number_roomprice;
+            $roomsArr  = is_string($roomsJson) ? json_decode($roomsJson, true) : $roomsJson;
+
+            if (is_array($roomsArr)) {
+                foreach ($roomsArr as $rItem) {
+                    $seatId     = $rItem['seat_id'] ?? null;
+                    $roomId     = $rItem['room_id'] ?? null;
+                    $seatString = $rItem['roomnumber'] ?? ($rItem['seat_no'] ?? ($rItem['room_no'] ?? null));
+
+                    $targetSeat = null;
+
+                    if ($seatId) {
+                        $targetSeat = RoomSeat::find($seatId);
+                    }
+
+                    if (!$targetSeat && $roomId) {
+                        $parts = explode('-', $seatString);
+                        $sNo   = trim(end($parts));
+                        $targetSeat = RoomSeat::where('room_id', $roomId)
+                            ->where(function($q) use ($sNo, $seatString) {
+                                $q->where('seat_no', $sNo)
+                                  ->orWhere('seat_no', $seatString);
+                            })->first();
+                    }
+
+                    if (!$targetSeat && $seatString) {
+                        $parts = explode('-', $seatString, 2);
+                        $rNo   = trim($parts[0] ?? '');
+                        $sNo   = trim($parts[1] ?? $seatString);
+
+                        $roomObj = Room::where('room_no', $rNo)->first();
+                        if ($roomObj) {
+                            $targetSeat = RoomSeat::where('room_id', $roomObj->id)
+                                ->where(function($q) use ($sNo, $seatString) {
+                                    $q->where('seat_no', $sNo)
+                                      ->orWhere('seat_no', $seatString);
+                                })->first();
+                        }
+                    }
+
+                    if ($targetSeat) {
+                        // Check if another APPROVED booking (status = 1) exists for this seat
+                        $hasApprovedOther = RoomBookingHistory::where('id', '!=', $booking->id)
+                            ->where('status', 1)
+                            ->where('floor_number_room_number_roomprice', 'like', "%{$seatString}%")
+                            ->exists();
+
+                        if (!$hasApprovedOther) {
+                            $targetSeat->update(['status' => 0]);
+                            Room::syncRoomStatus($targetSeat->room_id);
+                        }
+                    }
+                }
+            }
+
+            // 3. Soft-delete ONLY this single specific RoomBookingHistory record
+            $booking->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'বুকিং রেকর্ডটি Deleted History-তে পাঠানো হয়েছে এবং সিট মুক্ত করা হয়েছে!'
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            \Log::error("Destroy booking error: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'মুছে ফেলতে ব্যর্থ হয়েছে: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function deletedHistoryIndex()
+    {
+        return view('backend.room.deleted_history');
+    }
+
+    public function getDeletedBookings(Request $request)
+    {
+        $perPage = (int) $request->get('per_page', 10);
+        $page    = (int) $request->get('page', 1);
+        $search  = trim($request->get('search', ''));
+
+        $query = RoomBookingHistory::onlyTrashed()->with(['division', 'district', 'thana']);
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('floor_number_room_number_roomprice', 'like', "%{$search}%");
+            });
+        }
+
+        $mapped = $query->orderByDesc('deleted_at')->get()->map(function ($row) {
+            $items = is_string($row->floor_number_room_number_roomprice)
+                ? (json_decode($row->floor_number_room_number_roomprice, true) ?? [])
+                : ($row->floor_number_room_number_roomprice ?? []);
+
+            $c = collect($items);
+
+            $sumAdvancePrice = $c->sum(function ($item) {
+                return (float) ($item['original_advance_price'] ?? $item['advance_price'] ?? 0);
+            });
+
+            $advanceFeeAmount = $sumAdvancePrice > 0
+                ? $sumAdvancePrice
+                : ((float) $row->advance_fee > 0 ? (float) $row->advance_fee : ((float) $row->monthly_amount ?: 0));
+
+            return array_merge($row->toArray(), [
+                'advance_fee'    => $advanceFeeAmount,
+                'floornumber'    => $c->pluck('floornumber')->filter()->unique()->implode(', '),
+                'roomnumber'     => $c->pluck('roomnumber')->filter()->implode(', '),
+                'room_items'     => $items,
+                'division_name'  => $row->division ? $row->division->name : null,
+                'district_name'  => $row->district ? $row->district->name : null,
+                'thana_name'     => $row->thana ? $row->thana->name : null,
+                'deleted_at_str' => $row->deleted_at ? $row->deleted_at->toDateTimeString() : null,
+            ]);
+        })->values();
+
+        $paginator = new LengthAwarePaginator(
+            $mapped->slice(($page - 1) * $perPage, $perPage)->values(),
+            $mapped->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return response()->json($paginator);
+    }
+
+    public function restoreBooking(Request $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            $booking = RoomBookingHistory::withTrashed()->findOrFail($id);
+
+            // If admin selected a new room & seat
+            if ($request->filled('seat_id')) {
+                $newSeat = RoomSeat::with('room.floor')->where('id', $request->seat_id)->lockForUpdate()->firstOrFail();
+
+                // Check seat availability
+                $isOccupied = RoomBookingHistory::whereNull('today_check_out')
+                    ->where(function($q) use ($newSeat) {
+                        $seatString = $newSeat->room->room_no . '-' . $newSeat->seat_no;
+                        $q->where('floor_number_room_number_roomprice', 'like', "%{$seatString}%")
+                          ->orWhere('floor_number_room_number_roomprice', 'like', "%\"seat_id\":{$newSeat->id}%")
+                          ->orWhere('floor_number_room_number_roomprice', 'like', "%\"seat_id\": \"{$newSeat->id}\"%");
+                    })->exists();
+
+                if ((int) $newSeat->status === 1 || $isOccupied) {
+                    return response()->json(['success' => false, 'message' => 'নির্বাচিত সিটটি ইতিমধ্যে বুক করা রয়েছে! অন্য সিট বাছাই করুন।'], 422);
+                }
+
+                $newRoom = $newSeat->room;
+                $newFloor = $newRoom->floor;
+                $newRoomNumberString = $newRoom->room_no . '-' . $newSeat->seat_no;
+                $newPrice = (float) ($newSeat->price ?? $newRoom->price ?? 0);
+                $newAdvPrice = (float) ($newSeat->advance_price ?? 0);
+
+                $newItems = [
+                    [
+                        'floornumber'   => (string) ($newFloor->name ?? ''),
+                        'roomnumber'    => (string) $newRoomNumberString,
+                        'price'         => $newPrice,
+                        'advance_price' => $newAdvPrice,
+                        'room_id'       => $newRoom->id,
+                        'seat_id'       => $newSeat->id,
+                    ]
+                ];
+
+                $booking->floor_number_room_number_roomprice = $newItems;
+                $booking->monthly_amount = $newPrice;
+                $booking->advance_fee = $newAdvPrice;
+
+                // Mark new seat as occupied (status 1)
+                $newSeat->update(['status' => 1]);
+                Room::syncRoomStatus($newRoom->id);
+            }
+
+            if ($request->filled('development_fee')) {
+                $booking->development_fee = (float) $request->development_fee;
+            }
+
+            $booking->status = 1; // Active
+            $booking->today_check_out = null;
+            $booking->save();
+            $booking->restore();
+
+            // Keep original email & password untouched, only reactivate status to 1
+            $rawPhone = $booking->phone;
+            $cleanPhone = preg_replace('/[^0-9]/', '', $rawPhone);
+            $last10Digits = strlen($cleanPhone) >= 10 ? substr($cleanPhone, -10) : $cleanPhone;
+
+            $user = null;
+            if (!empty($booking->email)) {
+                $user = User::where('email', $booking->email)->first();
+            }
+            if (!$user && !empty($last10Digits)) {
+                $user = User::where('phone', 'like', "%{$last10Digits}")->first();
+            }
+
+            if ($user) {
+                // Keep original email & password untouched, only reactivate status to 1
+                $user->update(['status' => 1]);
+            } else if (!empty($booking->phone)) {
+                try {
+                    $userTypeRole = 'student';
+                    if (!empty($booking->user_type)) {
+                        $uTypeLower = strtolower(trim($booking->user_type));
+                        if ($uTypeLower === 'working professional' || $uTypeLower === 'jobholder' || $uTypeLower === 'job_holder') {
+                            $userTypeRole = 'working_professional';
+                        }
+                    }
+                    $role = Role::firstOrCreate(['name' => $userTypeRole, 'guard_name' => 'web']);
+
+                    $rawPass = !empty($booking->password) ? $booking->password : '123456';
+                    $encPass = (strlen($rawPass) === 60 && str_starts_with($rawPass, '$2y$')) ? $rawPass : bcrypt($rawPass);
+
+                    $newUser = User::create([
+                        'name'          => $booking->full_name,
+                        'email'         => !empty($booking->email) ? $booking->email : null,
+                        'phone'         => $booking->phone,
+                        'address'       => $booking->address,
+                        'password'      => $encPass,
+                        'temp_password' => $rawPass,
+                        'user_image'    => $booking->image,
+                        'status'        => 1,
+                    ]);
+                    $newUser->syncRoles([$role]);
+                } catch (\Throwable $e) {
+                    \Log::warning("User re-creation warning: " . $e->getMessage());
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'গেস্ট বুকিং সফলভাবে Restore & Confirm করা হয়েছে!'
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            \Log::error("Restore booking error: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'রিস্টোর করতে সমস্যা হয়েছে: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function forceDeleteBooking($id)
+    {
+        DB::beginTransaction();
+        try {
+            $booking = RoomBookingHistory::onlyTrashed()->findOrFail($id);
+            $booking->forceDelete();
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'বুকিং রেকর্ডটি স্থায়ীভাবে (Permanently) মুছে ফেলা হয়েছে!'
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            \Log::error("Force delete booking error: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'স্থায়ীভাবে মুছতে ব্যর্থ হয়েছে: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function bookingButtonIndex()
+    {
+        $appSettingModel = \App\Models\Backend\Setting::where('slug', 'app_setting')->first();
+        $contents = $appSettingModel ? json_decode($appSettingModel->contents, true) : [];
+        $status = $contents['booking_button_status'] ?? '1';
+
+        return view('backend.booking_button.index', compact('status'));
+    }
+
+    public function updateBookingButtonStatus(Request $request)
+    {
+        $request->validate([
+            'booking_button_status' => 'required|in:0,1',
+        ]);
+
+        $appSettingModel = \App\Models\Backend\Setting::where('slug', 'app_setting')->first();
+        $contents = $appSettingModel ? json_decode($appSettingModel->contents, true) : [];
+        $contents['booking_button_status'] = (string) $request->booking_button_status;
+
+        if ($appSettingModel) {
+            $appSettingModel->update([
+                'contents' => json_encode($contents),
+            ]);
+        } else {
+            \App\Models\Backend\Setting::create([
+                'slug' => 'app_setting',
+                'contents' => json_encode($contents),
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Booking button status updated successfully!');
+    }
+
+    public function findGuestByPhone(Request $request)
+    {
+        $phone = $request->query('phone') ?? $request->input('phone');
+        if (!$phone) {
+            return response()->json(['found' => false, 'message' => 'Phone required'], 400);
+        }
+        return $this->getGuestByPhone($phone);
     }
 }

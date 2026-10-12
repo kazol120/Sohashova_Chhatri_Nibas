@@ -11,9 +11,21 @@
 @endphp
 <style>
   .layout-navbar .navbar-dropdown.dropdown-user .dropdown-menu {
+    position: absolute !important;
     right: 0 !important;
     left: auto !important;
     transform: none !important;
+  }
+  @media (max-width: 767.98px) {
+    .layout-navbar .navbar-dropdown.dropdown-user .dropdown-menu {
+      position: fixed !important;
+      top: 64px !important;
+      right: 16px !important;
+      left: auto !important;
+      width: 230px !important;
+      transform: none !important;
+      margin-top: 0 !important;
+    }
   }
 </style>
 
@@ -27,7 +39,20 @@
   <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
     <ul class="navbar-nav flex-row align-items-center ms-auto">
       
-      @role('admin|staffs')
+      <!-- Language Switcher (Google Translate & Cookie Toggle) -->
+      <li class="nav-item me-2 me-xl-3 notranslate">
+        <button type="button"
+                id="btn-language-toggle"
+                onclick="toggleAppLanguage()"
+                class="btn btn-sm btn-outline-primary rounded-pill d-inline-flex align-items-center gap-1 px-3 py-1 shadow-sm notranslate"
+                title="Change Language / ভাষা পরিবর্তন করুন"
+                style="cursor: pointer; font-weight: 600; font-size: 0.85rem; border-width: 1.5px;">
+          <i class="ti ti-language fs-5 notranslate"></i>
+          <span id="lang-toggle-label" class="notranslate">বাংলা</span>
+        </button>
+      </li>
+      
+      @role('admin|super-admin|staffs')
       <!-- Complaints Notification Bell -->
       @php
           $pendingComplaintsCount = \App\Models\Backend\Complaint::where('status', 0)->count();
@@ -89,15 +114,13 @@
       </li>
       @endrole
 
-      @role('admin|staffs')
+      @role('admin|super-admin|staffs')
       <!-- Meal Notification Bell -->
       @php
           $pendingMealRequestsCount = \App\Models\Backend\MealRequest::where('status', 0)->count();
           $latestMealRequests = \App\Models\Backend\MealRequest::with('user')->where('status', 0)->latest()->take(5)->get();
           $mealTypeLabels = [
-              'full'       => 'Full Meal',
-              'half_day'   => 'Day Half (দুপুর চালু / রাত বন্ধ)',
-              'half_night' => 'Night Half (রাত চালু / দুপুর বন্ধ)',
+              'full'       => 'Meal ON (মিল চালু)',
               'off'        => 'Meal OFF (মিল বন্ধ)',
           ];
       @endphp
@@ -159,7 +182,7 @@
       </li>
       @endrole
 
-      @role('admin|staffs')
+      @role('admin|super-admin|staffs')
       <!-- Room Booking Notification Bell -->
       @php
           $pendingBookingsCount = \App\Models\Backend\RoomBookingHistory::where('status', 0)->where('is_seen', 0)->count();
@@ -223,7 +246,84 @@
         </ul>
       </li>
 
+      <!-- Check In / Check Out Notification Bell -->
+      @php
+          $unseenCheckInOutCount = \App\Models\Backend\ResidentCheckInOut::where('is_seen_by_admin', false)->count();
+          $currentlyOutsideCount = \App\Models\Backend\ResidentCheckInOut::where('status', 0)->count();
+          $latestCheckInOuts = \App\Models\Backend\ResidentCheckInOut::latest('updated_at')->take(6)->get();
+      @endphp
+      <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-2 me-xl-1">
+        <a class="nav-link dropdown-toggle hide-arrow btn btn-text-secondary btn-icon rounded-pill position-relative d-inline-flex align-items-center justify-content-center"
+           href="javascript:void(0);"
+           data-bs-toggle="dropdown"
+           onclick="markCheckInOutNotificationsAsSeen()"
+           aria-expanded="false"
+           title="Check In / Check Out Updates"
+           style="position: relative; width: 40px; height: 40px; padding: 0;">
+          <i class="ti ti-door-exit ti-md text-warning"></i>
+          <span id="checkInOutBellBadge" class="badge bg-warning text-dark rounded-pill position-absolute" style="top: 2px; right: 2px; font-size: 0.65rem; padding: 2px 5px; line-height: 1; border: 1.5px solid #fff; {{ $unseenCheckInOutCount > 0 ? '' : 'display: none;' }}">
+              {{ $unseenCheckInOutCount }}
+          </span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end py-0 shadow-lg" style="width: 340px; right: 0 !important; left: auto !important;">
+          <li class="dropdown-menu-header border-bottom py-3 px-3 bg-label-warning rounded-top">
+            <div class="d-flex align-items-center justify-content-between">
+              <h6 class="mb-0 text-dark fw-bold"><i class="ti ti-door-exit me-2 text-warning"></i>Check In/Out (মুভমেন্ট)</h6>
+              <span id="checkInOutHeaderBadge" class="badge bg-warning text-dark rounded-pill">{{ $currentlyOutsideCount }} বাইরে আছেন</span>
+            </div>
+          </li>
+          <li class="dropdown-notifications-list scrollable-container" style="max-height: 320px; overflow-y: auto;">
+            <ul class="list-group list-group-flush" id="checkInOutListGroup">
+              @forelse($latestCheckInOuts as $cio)
+              <li class="list-group-item list-group-item-action dropdown-notifications-item p-3">
+                <a href="{{ route('check-in-out.index') }}" class="text-decoration-none text-dark d-block">
+                  <div class="d-flex align-items-start">
+                    <div class="flex-shrink-0 me-3">
+                      <div class="avatar avatar-sm">
+                        <span class="avatar-initial rounded-circle {{ $cio->status == 0 ? 'bg-label-warning text-warning' : 'bg-label-success text-success' }} fw-bold">
+                          {{ strtoupper(substr($cio->resident_name ?? 'R', 0, 1)) }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex align-items-center justify-content-between mb-1">
+                        <h6 class="mb-0 fw-bold fs-7">{{ $cio->resident_name }}</h6>
+                        @if($cio->status == 0)
+                          <span class="badge bg-label-warning px-1.5 py-0.5 font-monospace fs-9">বাইরে আছেন</span>
+                        @else
+                          <span class="badge bg-label-success px-1.5 py-0.5 font-monospace fs-9">ফিরে এসেছেন</span>
+                        @endif
+                      </div>
+                      <p class="mb-1 text-muted fs-8 text-truncate" style="max-width: 220px;">
+                        📌 {{ $cio->leave_reason ?: 'বাড়ি যাওয়া' }} ({{ $cio->floor_room_seat ?: 'হোস্টেল' }})
+                      </p>
+                      <div class="d-flex align-items-center justify-content-between text-muted fs-9">
+                        <span><i class="ti ti-clock me-1"></i>{{ $cio->check_out_date ? $cio->check_out_date->diffForHumans() : '' }}</span>
+                        @if($cio->expected_return_date && $cio->status == 0)
+                          <span class="text-primary fw-medium">ফিরবেন: {{ \Carbon\Carbon::parse($cio->expected_return_date)->format('d M') }}</span>
+                        @endif
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              @empty
+              <li class="list-group-item text-center py-4 text-muted fs-7">
+                কোনো নতুন চেক-আউট / চেক-ইন রেকর্ড নেই।
+              </li>
+              @endforelse
+            </ul>
+          </li>
+          <li class="dropdown-menu-footer border-top p-2 text-center bg-light rounded-bottom">
+            <a href="{{ route('check-in-out.index') }}" class="btn btn-warning btn-sm w-100 fw-bold text-dark">
+              View All Logs (সকল চেক ইন/আউট দেখুন)
+            </a>
+          </li>
+        </ul>
+      </li>
+
       @endrole
+
 
       <!-- User Dropdown -->
 
@@ -232,6 +332,7 @@
         <a class="nav-link dropdown-toggle hide-arrow p-0"
            href="javascript:void(0);"
            data-bs-toggle="dropdown"
+           data-bs-display="static"
            aria-expanded="false">
           <div class="avatar avatar-online">
             <img src="{{ $avatarUrl }}"
@@ -240,7 +341,7 @@
              style="width: 40px; height: 40px; object-fit: cover;" />
           </div>
         </a>
-        <ul class="dropdown-menu dropdown-menu-end" style="right: 0 !important; left: auto !important; margin-top: 8px;">
+        <ul class="dropdown-menu dropdown-menu-end" style="margin-top: 8px;">
           <li>
             <a class="dropdown-item mt-0" href="{{ route('profile') }}">
               <div class="d-flex align-items-center">
@@ -625,11 +726,136 @@ document.addEventListener('DOMContentLoaded', function () {
 
     }
 
+    var lastCheckInOutUnseenCount = {{ $unseenCheckInOutCount ?? 0 }};
+    var lastLatestCheckInOutId = {{ isset($latestCheckInOuts) && $latestCheckInOuts->count() ? ($latestCheckInOuts->first()->id ?? 0) : 0 }};
+    var isCheckInOutInit = true;
+
+    window.markCheckInOutNotificationsAsSeen = function() {
+        var bellBadge = document.getElementById('checkInOutBellBadge');
+        if (bellBadge) bellBadge.style.display = 'none';
+        fetch("{{ route('check-in-out.mark-seen') }}", {
+            method: "POST",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            }
+        }).catch(function(err) { console.log(err); });
+    };
+
+    function checkLiveCheckInOut() {
+        fetch("{{ route('check-in-out.check-pending') }}", {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (!data.success) return;
+            var bellBadge = document.getElementById('checkInOutBellBadge');
+            var headerBadge = document.getElementById('checkInOutHeaderBadge');
+            var listGroup = document.getElementById('checkInOutListGroup');
+
+            if (bellBadge) {
+                if (data.unseen_count > 0) {
+                    bellBadge.innerText = data.unseen_count;
+                    bellBadge.style.display = 'inline-block';
+                } else {
+                    bellBadge.style.display = 'none';
+                }
+            }
+
+            if (headerBadge) {
+                headerBadge.innerText = (data.currently_outside_count || 0) + ' বাইরে আছেন';
+            }
+
+            // Real-time Sound & Toast Alert when student checks in or checks out
+            if (data.recent_logs && data.recent_logs.length > 0) {
+                var newest = data.recent_logs[0];
+                if (!isCheckInOutInit && (data.unseen_count > lastCheckInOutUnseenCount || newest.id > lastLatestCheckInOutId)) {
+                    if (typeof playBookingChimeSound === 'function') {
+                        playBookingChimeSound();
+                    }
+                    if (typeof toastr !== 'undefined') {
+                        if (newest.status == 1) {
+                            toastr.success(newest.resident_name + ' হোস্টেলে ফিরে এসেছেন (Check In করেছেন)!', '🚪 নতুন চেক-ইন নোটিফিকেশন', {
+                                timeOut: 9000,
+                                closeButton: true,
+                                progressBar: true
+                            });
+                        } else {
+                            toastr.warning(newest.resident_name + ' বাড়ি যাওয়ার জন্য চেক-আউট করেছেন!', '🚪 নতুন চেক-আউট নোটিফিকেশন', {
+                                timeOut: 9000,
+                                closeButton: true,
+                                progressBar: true
+                            });
+                        }
+                    }
+
+                    // If Admin is currently on the check-in-out page, auto reload to update table & stats without manual refresh
+                    if (window.location.pathname.includes('check-in-out')) {
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 1200);
+                    }
+                }
+
+                lastLatestCheckInOutId = newest.id;
+            }
+
+            lastCheckInOutUnseenCount = data.unseen_count;
+            isCheckInOutInit = false;
+
+            if (listGroup && data.recent_logs) {
+                if (data.recent_logs.length === 0) {
+                    listGroup.innerHTML = '<li class="list-group-item text-center py-4 text-muted fs-7">কোনো নতুন চেক-আউট / চেক-ইন রেকর্ড নেই।</li>';
+                } else {
+                    var html = '';
+                    data.recent_logs.forEach(function(cio) {
+                        var statusBadge = cio.status == 0 
+                            ? '<span class="badge bg-label-warning px-1.5 py-0.5 font-monospace fs-9">বাইরে আছেন</span>'
+                            : '<span class="badge bg-label-success px-1.5 py-0.5 font-monospace fs-9">ফিরে এসেছেন</span>';
+                        var avatarClass = cio.status == 0 ? 'bg-label-warning text-warning' : 'bg-label-success text-success';
+                        var initial = (cio.resident_name || 'R').charAt(0).toUpperCase();
+                        var returnStr = (cio.expected_return_fmt && cio.status == 0)
+                            ? '<span class="text-primary fw-medium">ফিরবেন: ' + cio.expected_return_fmt + '</span>'
+                            : '';
+
+                        html += '<li class="list-group-item list-group-item-action dropdown-notifications-item p-3">' +
+                            '<a href="{{ route('check-in-out.index') }}" class="text-decoration-none text-dark d-block">' +
+                            '<div class="d-flex align-items-start">' +
+                            '<div class="flex-shrink-0 me-3">' +
+                            '<div class="avatar avatar-sm">' +
+                            '<span class="avatar-initial rounded-circle ' + avatarClass + ' fw-bold">' + initial + '</span>' +
+                            '</div></div>' +
+                            '<div class="flex-grow-1">' +
+                            '<div class="d-flex align-items-center justify-content-between mb-1">' +
+                            '<h6 class="mb-0 fw-bold fs-7">' + cio.resident_name + '</h6>' + statusBadge +
+                            '</div>' +
+                            '<p class="mb-1 text-muted fs-8 text-truncate" style="max-width: 220px;">' +
+                            '📌 ' + (cio.leave_reason || 'বাড়ি যাওয়া') + ' (' + cio.floor_room_seat + ')' +
+                            '</p>' +
+                            '<div class="d-flex align-items-center justify-content-between text-muted fs-9">' +
+                            '<span><i class="ti ti-clock me-1"></i>' + cio.check_out_date_human + '</span>' + returnStr +
+                            '</div>' +
+                            '</div></div></a></li>';
+                    });
+                    listGroup.innerHTML = html;
+                }
+            }
+        })
+        .catch(function(err) { console.log('Check in/out live polling error:', err); });
+    }
+
     checkLiveBookings();
     setInterval(checkLiveBookings, 5000);
+
+    checkLiveCheckInOut();
+    setInterval(checkLiveCheckInOut, 6000);
 });
 
 
 </script>
 @endif
+
 

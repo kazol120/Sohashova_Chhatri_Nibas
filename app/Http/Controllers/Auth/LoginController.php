@@ -21,6 +21,11 @@ class LoginController extends Controller
         $this->middleware('auth')->only('logout');
     }
 
+    public function showLoginForm()
+    {
+        return redirect()->to(url('/?login=1'));
+    }
+
     public function username()
     {
         return 'login';
@@ -79,7 +84,7 @@ protected function sendLoginResponse(Request $request)
 
         Auth::logout();
 
-        return redirect()->route('login')->with(
+        return redirect()->to(url('/?login=1'))->with(
             'warning',
             'Your account is temporarily deactivated. Please contact your admin.'
         );
@@ -100,17 +105,25 @@ protected function attemptLogin(Request $request)
     $login = trim($request->input('login'));
     $password = $request->input('password');
 
-    $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+    $cleanPhone = preg_replace('/[^0-9]/', '', $login);
+    $last10 = strlen($cleanPhone) >= 10 ? substr($cleanPhone, -10) : $cleanPhone;
 
-    $users = \App\Models\User::where($field, $login)
-        ->whereIn('status', [1, 2])
-        ->get();
+    $users = \App\Models\User::where(function ($q) use ($login, $cleanPhone, $last10) {
+        $q->where('email', $login)
+          ->orWhere('name', $login)
+          ->orWhere('phone', $login);
+        if (!empty($cleanPhone) && strlen($cleanPhone) >= 6) {
+            $q->orWhere('phone', 'like', "%{$last10}");
+            $q->orWhere('phone', '+88' . $cleanPhone);
+            $q->orWhere('phone', '88' . $cleanPhone);
+        }
+    })->where(function ($q) {
+        $q->whereIn('status', [1, 2])->orWhereNull('status');
+    })->get();
 
     foreach ($users as $user) {
         if (Hash::check($password, $user->password)) {
-
             Auth::login($user, $request->filled('remember'));
-
             return true;
         }
     }

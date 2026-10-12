@@ -13,6 +13,7 @@ class MonthlyPayment extends Model
         'room_booking_history_id',
         'payment_month',
         'amount',
+        'electricity_bill',
         'carried_forward_due',
         'paid_amount',
         'due_amount',

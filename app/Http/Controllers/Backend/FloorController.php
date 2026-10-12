@@ -41,8 +41,65 @@ public function floorget(Request $request)
     $perPage = (int) ($request->per_page ?? 10);
     $search  = trim((string) ($request->search ?? ''));
 
+    // Fetch all active booking histories to determine booking status (processing vs confirmed)
+    $activeBookings = DB::table('room_booking_histories')
+        ->whereNull('deleted_at')
+        ->whereNull('today_check_out')
+        ->select('id', 'full_name', 'phone', 'floor_number_room_number_roomprice', 'status', 'check_in')
+        ->get();
+
+    $seatBookingMap = [];
+    $roomBookingMap = [];
+
+    foreach ($activeBookings as $bk) {
+        $items = [];
+        $raw = $bk->floor_number_room_number_roomprice;
+        if (is_string($raw)) {
+            $decoded = json_decode($raw, true);
+            if (is_array($decoded)) {
+                $items = $decoded;
+            } elseif (is_string($decoded)) {
+                $decoded2 = json_decode($decoded, true);
+                if (is_array($decoded2)) {
+                    $items = $decoded2;
+                }
+            }
+        } elseif (is_array($raw)) {
+            $items = $raw;
+        }
+
+        if (!is_array($items)) {
+            $items = [];
+        }
+
+        $bStatus = ((int)$bk->status === 1) ? 'confirmed' : 'processing';
+
+        foreach ($items as $item) {
+            if (!is_array($item)) continue;
+            $info = [
+                'status'         => $bStatus,
+                'occupant_name'  => $bk->full_name,
+                'occupant_phone' => $bk->phone,
+                'check_in'       => $bk->check_in,
+                'booking_id'     => $bk->id,
+            ];
+
+            if (!empty($item['seat_id'])) {
+                $seatBookingMap[$item['seat_id']] = $info;
+            }
+            if (!empty($item['room_id'])) {
+                $roomBookingMap[$item['room_id']] = $info;
+            }
+            if (!empty($item['roomnumber'])) {
+                $seatBookingMap[$item['roomnumber']] = $info;
+            }
+        }
+    }
+
     $q = Floor::with(['rooms' => function ($query) {
-            $query->orderBy('room_no', 'asc');
+            $query->with(['seats' => function($sq) {
+                $sq->orderBy('seat_no', 'asc');
+            }])->orderBy('room_no', 'asc');
         }])
         ->orderByDesc('id');
 
@@ -52,8 +109,43 @@ public function floorget(Request $request)
 
     $floors = $q->paginate($perPage);
 
-    $floors->getCollection()->transform(function ($f) {
+    $floors->getCollection()->transform(function ($f) use ($seatBookingMap, $roomBookingMap) {
         $f->image_url = $this->imageUrl($f->image);
+
+        if ($f->rooms) {
+            foreach ($f->rooms as $room) {
+                if ($room->seats && count($room->seats)) {
+                    foreach ($room->seats as $seat) {
+                        $fullSeatKey = $room->room_no . '-' . $seat->seat_no;
+                        $booking = $seatBookingMap[$seat->id] ?? ($seatBookingMap[$fullSeatKey] ?? null);
+
+                        if ($booking) {
+                            $seat->booking_status = $booking['status'];
+                            $seat->occupant_name = $booking['occupant_name'];
+                            $seat->occupant_phone = $booking['occupant_phone'];
+                            $seat->check_in = $booking['check_in'];
+                            $seat->booking_id = $booking['booking_id'];
+                        } elseif ((int)$seat->status === 1) {
+                            $seat->booking_status = 'confirmed';
+                        } else {
+                            $seat->booking_status = 'available';
+                        }
+                    }
+                } else {
+                    $booking = $roomBookingMap[$room->id] ?? ($seatBookingMap[$room->room_no] ?? null);
+                    if ($booking) {
+                        $room->booking_status = $booking['status'];
+                        $room->occupant_name = $booking['occupant_name'];
+                        $room->occupant_phone = $booking['occupant_phone'];
+                    } elseif ((int)$room->status === 1) {
+                        $room->booking_status = 'confirmed';
+                    } else {
+                        $room->booking_status = 'available';
+                    }
+                }
+            }
+        }
+
         return $f;
     });
 

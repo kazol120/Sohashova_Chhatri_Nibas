@@ -61,6 +61,7 @@ class AppServiceProvider extends ServiceProvider
             return $targetPublicPath;
         });
     }
+    
 
     /**
      * Bootstrap any application services.
@@ -69,35 +70,68 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-         View::composer('Frontend.layouts.partials.booking-offcanvas', function ($view) {
-        $floors = Floor::with(['rooms' => function ($q) {
-            $q->orderBy('room_no', 'asc')->with('seats');
-        }])->get();
+        // Globally configure SMTP transport to bypass self-signed/proxy certificate mismatches on shared cPanel hosting
+        \Illuminate\Support\Facades\Mail::extend('smtp', function (array $config = []) {
+            $host = $config['host'] ?? env('MAIL_HOST', 'smtp.gmail.com');
+            $port = (int) ($config['port'] ?? env('MAIL_PORT', 465));
+            $encryption = strtolower($config['encryption'] ?? env('MAIL_ENCRYPTION', 'ssl'));
+            $isTls = ($port === 465 || $encryption === 'ssl' || $encryption === 'smtps') ? true : null;
 
-        $bookings = \App\Models\Backend\RoomBookingHistory::where('status', '!=', 2)
-            ->select('floor_number_room_number_roomprice', 'user_type')
-            ->get();
-        
-        $bookedSeatsUserTypes = [];
-        foreach ($bookings as $b) {
-            $items = is_string($b->floor_number_room_number_roomprice)
-                ? (json_decode($b->floor_number_room_number_roomprice, true) ?? [])
-                : ($b->floor_number_room_number_roomprice ?? []);
-            if (is_array($items)) {
-                foreach ($items as $item) {
-                    if (isset($item['roomnumber'])) {
-                        $bookedSeatsUserTypes[$item['roomnumber']] = $b->user_type ?? 'student';
+            $transport = new \Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport($host, $port, $isTls);
+
+            $username = $config['username'] ?? env('MAIL_USERNAME');
+            if (!empty($username)) {
+                $transport->setUsername($username);
+            }
+
+            $password = $config['password'] ?? env('MAIL_PASSWORD');
+            if (!empty($password)) {
+                $transport->setPassword($password);
+            }
+
+            $stream = $transport->getStream();
+            if ($stream instanceof \Symfony\Component\Mailer\Transport\Smtp\Stream\SocketStream) {
+                $stream->setStreamOptions([
+                    'ssl' => [
+                        'allow_self_signed' => true,
+                        'verify_peer' => false,
+                        'verify_peer_name' => false,
+                    ],
+                ]);
+            }
+
+            return $transport;
+        });
+
+        View::composer('Frontend.layouts.partials.booking-offcanvas', function ($view) {
+            $floors = Floor::with(['rooms' => function ($q) {
+                $q->orderBy('room_no', 'asc')->with('seats');
+            }])->get();
+
+            $bookings = \App\Models\Backend\RoomBookingHistory::where('status', '!=', 2)
+                ->whereNull('today_check_out')
+                ->select('floor_number_room_number_roomprice', 'user_type')
+                ->get();
+            
+            $bookedSeatsUserTypes = [];
+            foreach ($bookings as $b) {
+                $items = is_string($b->floor_number_room_number_roomprice)
+                    ? (json_decode($b->floor_number_room_number_roomprice, true) ?? [])
+                    : ($b->floor_number_room_number_roomprice ?? []);
+                if (is_array($items)) {
+                    foreach ($items as $item) {
+                        if (isset($item['roomnumber'])) {
+                            $bookedSeatsUserTypes[$item['roomnumber']] = $b->user_type ?? 'student';
+                        }
                     }
                 }
             }
-        }
 
-        $view->with([
-            'floors' => $floors,
-            'bookedSeatsUserTypes' => $bookedSeatsUserTypes,
-        ]);
-    });
-
+            $view->with([
+                'floors' => $floors,
+                'bookedSeatsUserTypes' => $bookedSeatsUserTypes,
+            ]);
+        });
     }
 
     

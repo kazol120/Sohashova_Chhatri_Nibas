@@ -153,6 +153,16 @@ class ProfileService {
         $user->temp_password = $request->new_password;
         $user->password = bcrypt($request->new_password);
         $user->save();
+
+        if ($user->phone) {
+            $raw = preg_replace('/[^0-9]/', '', (string)$user->phone);
+            $last10 = strlen($raw) >= 10 ? substr($raw, -10) : $raw;
+            $variants = array_unique([$user->phone, $raw, '0'.$last10, '+880'.$last10, '880'.$last10, '+88'.$last10, $last10]);
+            \App\Models\Backend\RoomBookingHistory::where(function($q) use ($variants) {
+                foreach ($variants as $v) { $q->orWhere('phone', $v); }
+            })->update(['password' => $request->new_password]);
+        }
+
         return $user;
     }
 }

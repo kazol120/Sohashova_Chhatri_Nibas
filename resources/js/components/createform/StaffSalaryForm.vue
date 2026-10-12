@@ -81,17 +81,29 @@
                     <div v-if="addedStaff" class="selected-staff-card mt-3">
                       <div class="staff-avatar lg">{{ firstChar(addedStaff.name) }}</div>
                       <div class="flex-grow-1">
-                        <div class="d-flex justify-content-between flex-wrap gap-2">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                           <div>
                             <div class="fw-bold text-primary fs-6">{{ addedStaff.name }}</div>
                             <span class="badge bg-success-subtle text-success">Selected</span>
                           </div>
-                          <div>
+                          
+                          <!-- Salary Month Selector -->
+                          <div class="d-flex align-items-center gap-2">
+                            <label class="form-label mb-0 fw-bold small text-muted text-nowrap">
+                              <i class="fa fa-calendar-alt me-1 text-primary"></i>বেতনের মাস:
+                            </label>
+                            <input
+                              type="month"
+                              class="form-control form-control-sm fw-bold border-primary"
+                              style="width: 170px;"
+                              v-model="selectedSalaryMonth"
+                              @change="onSalaryMonthChange"
+                            />
                             <span
-                              class="badge"
-                              :class="fullSummary.full_paid ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'"
+                              class="badge px-3 py-2 fs-7 fw-bold"
+                              :class="salarySummary.is_paid ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'"
                             >
-                              {{ fullSummary.full_paid ? 'Paid' : 'Unpaid' }}
+                              {{ currentMonthLabel }}: {{ salarySummary.is_paid ? 'Paid (পরিশোধিত)' : 'Unpaid (বকেয়া)' }}
                             </span>
                           </div>
                         </div>
@@ -111,17 +123,22 @@
                           </div>
 
                           <div class="col-md-3 text-dark">
-                            <strong>Monthly Salary:</strong> {{ formatAmount(advanceSummary.monthly_salary) }}
+                            <strong>Monthly Salary:</strong> {{ formatAmount(salarySummary.monthly_salary) }}
                           </div>
-                          <div class="col-md-3 text-warning">
-                            <strong>Total Advance:</strong>
-                            {{ fullSummary.full_paid ? formatAmount(advanceSummary.total_advance) : formatAmount(fullSummary.total_advance) }}
+                          <div class="col-md-3 text-danger">
+                            <strong>Total Advance Balance (মোট বাকি অগ্রিম):</strong>
+                            <span class="badge bg-danger-subtle text-danger fs-7 ms-1">
+                              {{ formatAmount(salarySummary.total_advance_balance) }}
+                            </span>
                           </div>
                           <div class="col-md-3 text-info">
-                            <strong>Advance Count:</strong> {{ advanceSummary.advance_count }} / 3
+                            <strong>Advance Count:</strong> {{ salarySummary.advance_count }} Times
                           </div>
                           <div class="col-md-3 text-success">
-                            <strong>Remaining Salary:</strong> {{ formatAmount(advanceSummary.remaining_salary) }}
+                            <strong>{{ salarySummary.is_paid ? 'Status:' : 'Net Payable Now:' }}</strong> 
+                            <span :class="salarySummary.is_paid ? 'badge bg-success-subtle text-success ms-1' : 'fw-bold text-success'">
+                              {{ salarySummary.is_paid ? 'Paid (পরিশোধিত)' : formatAmount(salarySummary.net_payable) }}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -131,25 +148,46 @@
 
                 <template v-if="addedStaff">
 
-                  <!--
-                    LOGIC:
-                    - fullSummary.full_paid = true  → Full salary already paid this month
-                        → Show ADVANCE section only (locked out from full payment)
-                    - fullSummary.full_paid = false → Full salary NOT yet paid
-                        → Show FULL SALARY section only (advance is locked until full paid)
-                  -->
+                  <!-- Mode Selection Tabs (when selected month is NOT yet paid) -->
+                  <div v-if="!salarySummary.is_paid" class="col-12">
+                    <div class="d-flex gap-2 p-1.5 bg-light rounded-3 border">
+                      <button
+                        type="button"
+                        class="btn flex-fill py-2 fw-bold d-flex align-items-center justify-content-center gap-2 transition"
+                        :class="activeMode === 'full' ? 'btn-primary shadow-sm' : 'btn-light text-muted'"
+                        @click="activeMode = 'full'"
+                      >
+                        <i class="fa fa-wallet"></i>
+                        <span>{{ currentMonthLabel }} বেতন পরিশোধ (Pay Salary)</span>
+                      </button>
+                      <button
+                        type="button"
+                        class="btn flex-fill py-2 fw-bold d-flex align-items-center justify-content-center gap-2 transition"
+                        :class="activeMode === 'advance' ? 'btn-warning shadow-sm text-dark' : 'btn-light text-muted'"
+                        @click="activeMode = 'advance'"
+                      >
+                        <i class="fa fa-money-bill-wave"></i>
+                        <span>অগ্রিম প্রদান (Pay Advance)</span>
+                      </button>
+                    </div>
+                  </div>
 
-                  <!-- ADVANCE SALARY — shown only when full salary IS already paid -->
-                  <div v-if="fullSummary.full_paid" class="col-12">
-                    <div class="section-card dt-card">
-                      <div class="dt-label text-success">
-                        <i class="fa fa-money-bill me-1"></i> Advance Salary Payment
-                        <small class="d-block text-muted mt-1">For {{ currentMonthLabel }}</small>
+                  <!-- ADVANCE SALARY CARD -->
+                  <div v-if="salarySummary.is_paid || activeMode === 'advance'" class="col-12">
+                    <div class="section-card dt-card border-success" style="background: #fcfdfd;">
+                      <div class="dt-label text-success d-flex justify-content-between align-items-center">
+                        <div>
+                          <i class="fa fa-money-bill-wave me-1"></i> Advance Salary Payment (অগ্রিম প্রদান)
+                          <small class="d-block text-muted mt-1">
+                            এই স্টাফের জন্য যেকোনো পরিমাণ অগ্রিম প্রদান করুন (এটি স্টাফের মোট অগ্রিম ব্যালেন্সে যুক্ত হবে)।
+                          </small>
+                        </div>
+                        <span class="badge bg-success-subtle text-success">Advance Mode</span>
                       </div>
 
                       <div class="row g-3">
                         <div class="col-md-6">
-                          <label class="form-label">Date <span class="req">*</span></label>
+                          <label class="form-label fw-semibold">Payment Date (টাকা দেওয়ার তারিখ) <span class="req">*</span></label>
                           <input
                             type="date"
                             class="form-control"
@@ -157,61 +195,67 @@
                           />
                         </div>
                         <div class="col-md-6">
-                          <label class="form-label">Amount <span class="req">*</span></label>
+                          <label class="form-label fw-semibold">Advance Amount (অগ্রিমের টাকা) <span class="req">*</span></label>
                           <input
                             type="number"
                             step="0.01"
-                            min="0"
-                            class="form-control"
+                            min="1"
+                            class="form-control fw-bold border-success"
                             v-model="advanceForm.amount"
-                            placeholder="Enter advance amount"
+                            placeholder="অগ্রিমের পরিমাণ লিখুন (যেমন: ৫০০০ বা ৯০০০)"
                           />
                         </div>
                         <div class="col-12">
-                          <label class="form-label">Note</label>
+                          <label class="form-label fw-semibold">Note / মন্তব্য</label>
                           <textarea
                             class="form-control"
                             rows="2"
                             v-model="advanceForm.note"
-                            placeholder="Optional note"
+                            placeholder="অগ্রিমের কারণ বা মন্তব্য (ঐচ্ছিক)"
                           ></textarea>
                         </div>
                       </div>
 
-                      <div class="salary-mini-info my-3">
-                        <div class="mini-line">
-                          <span>Advance Count</span>
-                          <strong>{{ advanceSummary.advance_count }} / 3</strong>
+                      <div class="salary-mini-info my-3 p-3 bg-light rounded-3 border">
+                        <div class="mini-line d-flex justify-content-between mb-1">
+                          <span class="text-muted">Current Advance Balance (বর্তমানে অপরিশোধিত অগ্রিম):</span>
+                          <strong class="text-danger">{{ formatAmount(salarySummary.total_advance_balance) }}</strong>
                         </div>
-                        <div class="mini-line">
-                          <span>Remaining Salary</span>
-                          <strong>{{ formatAmount(advanceSummary.remaining_salary) }}</strong>
+                        <div class="mini-line d-flex justify-content-between">
+                          <span class="text-muted">Total Advance After this Entry (নতুন অগ্রিম যোগ হওয়ার পর):</span>
+                          <strong class="text-warning">
+                            {{ formatAmount(parseFloat(salarySummary.total_advance_balance || 0) + parseFloat(advanceForm.amount || 0)) }}
+                          </strong>
                         </div>
                       </div>
 
                       <button
                         type="button"
-                        class="btn btn-success w-100"
+                        class="btn btn-success w-100 fw-bold py-2.5 shadow-sm fs-6"
                         @click="saveAdvance"
-                        :disabled="savingAdvance || advanceSummary.advance_count >= 3"
+                        :disabled="savingAdvance"
                       >
                         <span v-if="savingAdvance" class="spinner-border spinner-border-sm me-2"></span>
-                        {{ savingAdvance ? 'Saving...' : 'Save Advance' }}
+                        <i v-else class="fa fa-check me-1"></i>
+                        {{ savingAdvance ? 'Saving...' : `Save Advance (${formatAmount(advanceForm.amount || 0)})` }}
                       </button>
                     </div>
                   </div>
 
-                  <!-- FULL SALARY — shown only when full salary is NOT yet paid -->
-                  <div v-else class="col-12">
-                    <div class="section-card dt-card">
-                      <div class="dt-label text-primary">
-                        <i class="fa fa-wallet me-1"></i> Full Salary Payment
-                        <small class="d-block text-muted mt-1">For {{ previousMonthLabel }}</small>
+                  <!-- FULL / NET SALARY CARD -->
+                  <div v-else-if="!salarySummary.is_paid && activeMode === 'full'" class="col-12">
+                    <div class="section-card dt-card border-primary" style="background: #fcfdff;">
+                      <div class="dt-label text-primary d-flex justify-content-between align-items-center">
+                        <div>
+                          <i class="fa fa-wallet me-1"></i> Salary Payment (বেতন পরিশোধ)
+                          <small class="d-block text-muted mt-1">For <strong>{{ currentMonthLabel }}</strong></small>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary">Salary Mode</span>
                       </div>
 
                       <div class="row g-3">
                         <div class="col-md-6">
-                          <label class="form-label">Date <span class="req">*</span></label>
+                          <label class="form-label fw-semibold">Payment Date (পরিশোধের তারিখ) <span class="req">*</span></label>
                           <input
                             type="date"
                             class="form-control"
@@ -219,51 +263,87 @@
                           />
                         </div>
                         <div class="col-md-6">
-                          <label class="form-label">Monthly Salary</label>
-                          <input
-                            type="text"
-                            class="form-control"
-                            :value="formatAmount(fullSummary.monthly_salary)"
-                            readonly
-                          />
-                        </div>
-                        <div class="col-md-6">
-                          <label class="form-label">Total Advance</label>
-                          <input
-                            type="text"
-                            class="form-control"
-                            :value="formatAmount(fullSummary.total_advance)"
-                            readonly
-                          />
-                        </div>
-                        <div class="col-md-6">
-                          <label class="form-label">Net Payable Salary</label>
+                          <label class="form-label fw-semibold">Monthly Salary (মূল বেতন)</label>
                           <input
                             type="text"
                             class="form-control fw-bold"
-                            :value="formatAmount(fullSummary.net_payable)"
+                            :value="formatAmount(salarySummary.monthly_salary)"
                             readonly
                           />
                         </div>
+                        <div class="col-md-6">
+                          <label class="form-label fw-semibold text-danger">
+                            <i class="fa fa-exclamation-circle me-1"></i>মোট বকেয়া অগ্রিম (Total Advance Balance)
+                          </label>
+                          <input
+                            type="text"
+                            class="form-control text-danger fw-bold bg-danger-subtle"
+                            :value="formatAmount(salarySummary.total_advance_balance)"
+                            readonly
+                          />
+                        </div>
+                        <div class="col-md-6">
+                          <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label fw-bold text-primary mb-0">
+                              এই মাসে অগ্রিম কর্তন (Deduct Advance) <span class="req">*</span>
+                            </label>
+                            <small class="text-muted">Max: {{ formatAmount(maxDeductible) }}</small>
+                          </div>
+                          <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            :max="maxDeductible"
+                            class="form-control fw-bold border-primary shadow-sm"
+                            v-model="fullForm.advance_deduct_amount"
+                            placeholder="অগ্রিম কর্তনের পরিমাণ লিখুন"
+                          />
+                        </div>
+
+                        <!-- Live Calculation Cards -->
+                        <div class="col-md-6">
+                          <label class="form-label fw-bold text-success">
+                            <i class="fa fa-hand-holding-usd me-1"></i>হাতে প্রদেয় নিট বেতন (Net Payable to Staff)
+                          </label>
+                          <input
+                            type="text"
+                            class="form-control fw-bold text-success fs-5 bg-success-subtle border-success"
+                            :value="formatAmount(calculatedNetPayable)"
+                            readonly
+                          />
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label fw-bold text-warning">
+                            <i class="fa fa-hourglass-half me-1"></i>পরবর্তী মাসের জন্য বাকি অগ্রিম (Remaining Advance)
+                          </label>
+                          <input
+                            type="text"
+                            class="form-control fw-bold text-warning fs-5 bg-warning-subtle border-warning"
+                            :value="formatAmount(calculatedRemainingAdvance)"
+                            readonly
+                          />
+                        </div>
+
                         <div class="col-12">
-                          <label class="form-label">Note</label>
+                          <label class="form-label fw-semibold">Note / মন্তব্য</label>
                           <textarea
                             class="form-control"
                             rows="2"
                             v-model="fullForm.note"
-                            placeholder="Optional note"
+                            placeholder="বেতন সংক্রান্ত কোনো মন্তব্য থাকলে লিখুন (ঐচ্ছিক)"
                           ></textarea>
                         </div>
                       </div>
 
                       <button
                         type="button"
-                        class="btn btn-primary w-100 mt-3"
+                        class="btn btn-primary w-100 mt-3 fw-bold py-2.5 shadow-sm fs-6"
                         @click="saveFull"
                         :disabled="savingFull"
                       >
                         <span v-if="savingFull" class="spinner-border spinner-border-sm me-2"></span>
-                        {{ savingFull ? 'Paying...' : 'Pay Full Salary' }}
+                        <i v-else class="fa fa-check me-1"></i>
+                        {{ savingFull ? 'Paying...' : `Pay Salary for ${currentMonthLabel} (${formatAmount(calculatedNetPayable)})` }}
                       </button>
                     </div>
                   </div>
@@ -272,37 +352,68 @@
                   <div class="col-12">
                     <div class="section-card">
                       <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="fw-bold">Salary Payment History</div>
+                        <div class="fw-bold"><i class="fa fa-history me-1 text-primary"></i> Salary Payment History</div>
                         <small class="text-muted">
-                          Advance: {{ currentMonthLabel }} | Full: {{ previousMonthLabel }}
+                          Selected Month: <strong>{{ currentMonthLabel }}</strong>
                         </small>
                       </div>
 
                       <div class="table-responsive" v-if="history.length">
                         <table class="table table-sm align-middle mb-0">
-                          <thead>
+                          <thead class="table-light">
                             <tr>
                               <th>Date</th>
-                              <th>Salary For</th>
-                              <th>Type</th>
-                              <th>Amount</th>
+                              <th>Salary Month</th>
+                              <th>Payment Type</th>
+                              <th>Amount & Adjustment (টাকা ও অগ্রিম হিসাব)</th>
                               <th>Note</th>
                             </tr>
                           </thead>
                           <tbody>
                             <tr v-for="item in history" :key="item.id">
-                              <td>{{ item.payment_date }}</td>
-                              <td>{{ formatMonthYear(item.salary_month, item.salary_year) }}</td>
+                              <td class="text-nowrap text-muted">{{ item.payment_date }}</td>
+                              <td class="text-nowrap"><strong>{{ formatMonthYear(item.salary_month, item.salary_year) }}</strong></td>
                               <td>
                                 <span
                                   class="badge"
                                   :class="item.payment_type === 'advance'
                                     ? 'bg-warning-subtle text-warning'
-                                    : 'bg-success-subtle text-success'">
-                                  {{ item.payment_type }}
+                                    : item.payment_type === 'net_payable'
+                                      ? 'bg-primary-subtle text-primary'
+                                      : 'bg-success-subtle text-success'">
+                                  <i class="fa me-1" :class="item.payment_type === 'advance' ? 'fa-money-bill-wave' : 'fa-wallet'"></i>
+                                  {{ item.payment_type === 'advance' ? 'Advance (অগ্রিম)' : (item.payment_type === 'net_payable' ? 'Net Salary (বেতন)' : 'Full Salary') }}
                                 </span>
                               </td>
-                              <td>{{ formatAmount(item.amount) }}</td>
+                              <td>
+                                <!-- Advance Item -->
+                                <template v-if="item.payment_type === 'advance'">
+                                  <div v-if="item.advance_adjusted > 0">
+                                    <span class="fw-bold text-danger fs-6">{{ formatAmount(item.remaining_amount) }}</span>
+                                    <span class="badge bg-danger-subtle text-danger ms-1" style="font-size: 10px;">বকেয়া বাকি</span>
+                                    <div class="text-muted" style="font-size: 11.5px;">
+                                      মূল অগ্রিম: {{ formatAmount(item.original_amount) }}
+                                      <span class="text-danger fw-semibold">(-{{ formatAmount(item.advance_adjusted) }} সমন্বয় হয়েছে)</span>
+                                    </div>
+                                  </div>
+                                  <div v-else>
+                                    <span class="fw-bold text-dark fs-6">{{ formatAmount(item.amount) }}</span>
+                                    <span class="badge bg-warning-subtle text-dark ms-1" style="font-size: 10px;">সম্পূর্ণ বাকি</span>
+                                  </div>
+                                </template>
+
+                                <!-- Salary Item -->
+                                <template v-else>
+                                  <div>
+                                    <span class="fw-bold text-success fs-6">{{ formatAmount(item.amount) }}</span>
+                                    <span class="badge bg-success-subtle text-success ms-1" style="font-size: 10px;">হাতে প্রাপ্ত নিট বেতন</span>
+                                  </div>
+                                  <div v-if="item.advance_deducted > 0" class="text-muted" style="font-size: 11.5px;">
+                                    মূল বেতন: {{ formatAmount(item.gross_salary) }}
+                                    <span class="text-danger fw-semibold">(-{{ formatAmount(item.advance_deducted) }} অগ্রিম কর্তন)</span>
+                                  </div>
+                                </template>
+                              </td>
                               <td>{{ item.note || '-' }}</td>
                             </tr>
                           </tbody>
@@ -310,7 +421,7 @@
                       </div>
 
                       <div v-else class="text-muted small">
-                        No salary history found for this period.
+                        No salary history found for this staff.
                       </div>
                     </div>
                   </div>
@@ -355,20 +466,40 @@ export default {
       return this.$store.state.url;
     },
     currentMonthLabel() {
+      if (this.selectedSalaryMonth) {
+        const [year, month] = this.selectedSalaryMonth.split("-");
+        const d = new Date(parseInt(year), parseInt(month) - 1, 1);
+        return d.toLocaleString("en-US", { month: "long", year: "numeric" });
+      }
       const d = new Date();
       return d.toLocaleString("en-US", { month: "long", year: "numeric" });
     },
-    previousMonthLabel() {
-      const d = new Date();
-      d.setMonth(d.getMonth() - 1);
-      return d.toLocaleString("en-US", { month: "long", year: "numeric" });
+    maxDeductible() {
+      const salary = parseFloat(this.salarySummary?.monthly_salary || 0);
+      const totalAdv = parseFloat(this.salarySummary?.total_advance_balance || 0);
+      return Math.min(salary, totalAdv);
+    },
+    calculatedNetPayable() {
+      const salary = parseFloat(this.salarySummary?.monthly_salary || 0);
+      const deduct = parseFloat(this.fullForm?.advance_deduct_amount || 0);
+      return Math.max(0, salary - Math.min(salary, Math.max(0, deduct)));
+    },
+    calculatedRemainingAdvance() {
+      const totalAdv = parseFloat(this.salarySummary?.total_advance_balance || 0);
+      const deduct = parseFloat(this.fullForm?.advance_deduct_amount || 0);
+      return Math.max(0, totalAdv - Math.min(totalAdv, Math.max(0, deduct)));
     },
   },
 
   data() {
+    const today = new Date().toISOString().slice(0, 10);
+    const thisMonth = new Date().toISOString().slice(0, 7);
+
     return {
       savingAdvance: false,
       savingFull: false,
+      activeMode: "full", // 'full' or 'advance'
+      selectedSalaryMonth: thisMonth,
 
       staffSearch: "",
       searchResults: [],
@@ -376,39 +507,32 @@ export default {
       selectedStaff: null,
       addedStaff: null,
 
-      advanceSummary: {
+      salarySummary: {
+        salary_month: null,
+        salary_year: null,
         monthly_salary: 0,
-        total_advance: 0,
+        total_advance_balance: 0,
         advance_count: 0,
-        remaining_salary: 0,
-        salary_month: null,
-        salary_year: null,
-      },
-
-      fullSummary: {
-        monthly_salary: 0,
-        total_advance: 0,
         net_payable: 0,
-        full_paid: false,
-        salary_month: null,
-        salary_year: null,
+        is_paid: false,
+        default_deduct_amount: 0,
       },
 
       advanceForm: {
         staff_id: null,
-        payment_date: "",
+        payment_date: today,
         amount: "",
         note: "",
       },
 
       fullForm: {
         staff_id: null,
-        payment_date: "",
+        payment_date: today,
+        advance_deduct_amount: 0,
         note: "",
       },
 
       history: [],
-
       dropdownStyle: {},
     };
   },
@@ -446,7 +570,10 @@ export default {
 
     resetForm() {
       const today = new Date().toISOString().slice(0, 10);
+      const thisMonth = new Date().toISOString().slice(0, 7);
 
+      this.activeMode = "full";
+      this.selectedSalaryMonth = thisMonth;
       this.staffSearch = "";
       this.searchResults = [];
       this.showDropdown = false;
@@ -454,22 +581,15 @@ export default {
       this.addedStaff = null;
       this.history = [];
 
-      this.advanceSummary = {
+      this.salarySummary = {
+        salary_month: null,
+        salary_year: null,
         monthly_salary: 0,
-        total_advance: 0,
+        total_advance_balance: 0,
         advance_count: 0,
-        remaining_salary: 0,
-        salary_month: null,
-        salary_year: null,
-      };
-
-      this.fullSummary = {
-        monthly_salary: 0,
-        total_advance: 0,
         net_payable: 0,
-        full_paid: false,
-        salary_month: null,
-        salary_year: null,
+        is_paid: false,
+        default_deduct_amount: 0,
       };
 
       this.advanceForm = {
@@ -482,8 +602,15 @@ export default {
       this.fullForm = {
         staff_id: null,
         payment_date: today,
+        advance_deduct_amount: 0,
         note: "",
       };
+    },
+
+    onSalaryMonthChange() {
+      if (this.addedStaff) {
+        this.loadSummary();
+      }
     },
 
     onInputFocus() {
@@ -553,26 +680,33 @@ export default {
     async loadSummary() {
       if (!this.addedStaff) return;
 
+      const [yearStr, monthStr] = (this.selectedSalaryMonth || '').split('-');
+      const year = yearStr ? parseInt(yearStr) : new Date().getFullYear();
+      const month = monthStr ? parseInt(monthStr) : (new Date().getMonth() + 1);
+
       try {
-        const res = await axios.get(`${this.url}summary/${this.addedStaff.id}`);
+        const res = await axios.get(`${this.url}summary/${this.addedStaff.id}`, {
+          params: { month, year }
+        });
 
-        this.advanceSummary = res.data.advance_summary || {
+        this.salarySummary = res.data || {
+          salary_month: month,
+          salary_year: year,
           monthly_salary: 0,
-          total_advance: 0,
+          total_advance_balance: 0,
           advance_count: 0,
-          remaining_salary: 0,
-          salary_month: null,
-          salary_year: null,
+          net_payable: 0,
+          is_paid: false,
+          default_deduct_amount: 0,
         };
 
-        this.fullSummary = res.data.full_summary || {
-          monthly_salary: 0,
-          total_advance: 0,
-          net_payable: 0,
-          full_paid: false,
-          salary_month: null,
-          salary_year: null,
-        };
+        if (!this.salarySummary.is_paid) {
+          this.fullForm.advance_deduct_amount = this.salarySummary.default_deduct_amount || 0;
+        }
+
+        if (this.salarySummary.is_paid) {
+          this.activeMode = "advance";
+        }
       } catch (error) {
         console.error(error);
         this.toast("Failed to load salary summary", "error");
@@ -606,10 +740,20 @@ export default {
         return;
       }
 
+      const [yearStr, monthStr] = (this.selectedSalaryMonth || '').split('-');
+      const year = yearStr ? parseInt(yearStr) : new Date().getFullYear();
+      const month = monthStr ? parseInt(monthStr) : (new Date().getMonth() + 1);
+
       try {
         this.savingAdvance = true;
 
-        const res = await axios.post(`${this.url}advance`, this.advanceForm);
+        const payload = {
+          ...this.advanceForm,
+          salary_month: month,
+          salary_year: year,
+        };
+
+        const res = await axios.post(`${this.url}advance`, payload);
 
         this.toast(res.data.message || "Advance salary saved successfully");
         this.advanceForm.amount = "";
@@ -633,16 +777,27 @@ export default {
       }
 
       if (!this.fullForm.payment_date) {
-        this.toast("Full salary date is required", "error");
+        this.toast("Salary date is required", "error");
         return;
       }
+
+      const [yearStr, monthStr] = (this.selectedSalaryMonth || '').split('-');
+      const year = yearStr ? parseInt(yearStr) : new Date().getFullYear();
+      const month = monthStr ? parseInt(monthStr) : (new Date().getMonth() + 1);
 
       try {
         this.savingFull = true;
 
-        const res = await axios.post(`${this.url}full`, this.fullForm);
+        const payload = {
+          ...this.fullForm,
+          salary_month: month,
+          salary_year: year,
+          advance_deduct_amount: parseFloat(this.fullForm.advance_deduct_amount || 0),
+        };
 
-        this.toast(res.data.message || "Full salary paid successfully");
+        const res = await axios.post(`${this.url}full`, payload);
+
+        this.toast(res.data.message || "Salary paid successfully");
         this.fullForm.note = "";
 
         await this.loadSummary();
@@ -650,7 +805,7 @@ export default {
 
         this.$emit("created");
       } catch (error) {
-        this.toast(error?.response?.data?.message || "Failed to pay full salary", "error");
+        this.toast(error?.response?.data?.message || "Failed to pay salary", "error");
       } finally {
         this.savingFull = false;
       }

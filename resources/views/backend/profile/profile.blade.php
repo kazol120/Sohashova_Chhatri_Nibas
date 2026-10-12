@@ -88,32 +88,32 @@
                 <div class="card mb-4">
                     <h5 class="card-header">Profile Information Update</h5>
                     <div class="card-body">
-                        <form action="{{route('profile')}}" method="post" enctype="multipart/form-data">
+                        <form action="{{route('profile.update')}}" method="post" enctype="multipart/form-data">
                             @csrf
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name <code>*</code></label>
-                                <input type="text" class="form-control @error('name') is-invalid @enderror" required name="name" value="{{$user->name}}" id="name" placeholder="Name">
+                                <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{$user->name}}" id="name" placeholder="Name">
                             </div>
                             @error("name")
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                             <div class="mb-3">
                                 <label for="phone" class="form-label">Phone <code>*</code></label>
-                                <input type="text" class="form-control @error('phone') is-invalid @enderror" required name="phone" value="{{$user->phone}}" id="phone" placeholder="Phone">
+                                <input type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{$user->phone}}" id="phone" placeholder="Phone">
                             </div>
                             @error("phone")
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                             <div class="mb-3">
-                                <label for="email" class="form-label">Email <code>*</code></label>
-                                <input type="email" class="form-control @error('email') is-invalid @enderror" required name="email" value="{{$user->email}}" id="email" placeholder="Email">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{$user->email}}" id="email" placeholder="Email">
                             </div>
                             @error("email")
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                             <div class="mb-3">
-                                <label for="address" class="form-label">Address <code>*</code></label>
-                                <input type="text" class="form-control @error('address') is-invalid @enderror" required name="address" value="{{$user->address}}" id="address" placeholder="Address">
+                                <label for="address" class="form-label">Address</label>
+                                <input type="text" class="form-control @error('address') is-invalid @enderror" name="address" value="{{$user->address}}" id="address" placeholder="Address">
                             </div>
                             @error("address")
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -162,7 +162,7 @@
                     </div>
 
                     <div class="card-body pt-4">
-                        <form action="{{route('profile')}}" method="post" enctype="multipart/form-data" id="residentProfileForm">
+                        <form action="{{route('profile.update')}}" method="post" enctype="multipart/form-data" id="residentProfileForm">
                             @csrf
                             
                             <!-- STEP 1: Personal & Contact Details -->
@@ -172,19 +172,19 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label for="name" class="form-label fw-semibold">Full Name <code>*</code></label>
-                                        <input type="text" class="form-control @error('name') is-invalid @enderror" required name="name" value="{{ old('name', $user->name) }}" id="name" placeholder="Full Name">
+                                        <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name', $user->name) }}" id="name" placeholder="Full Name">
                                         @error("name") <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
 
                                     <div class="col-md-6">
                                         <label for="phone" class="form-label fw-semibold">Phone Number <code>*</code></label>
-                                        <input type="text" class="form-control @error('phone') is-invalid @enderror" required name="phone" value="{{ old('phone', $user->phone) }}" id="phone" placeholder="Phone Number">
+                                        <input type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone', $user->phone) }}" id="phone" placeholder="Phone Number">
                                         @error("phone") <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label for="email" class="form-label fw-semibold">Email Address <code>*</code></label>
-                                        <input type="email" class="form-control @error('email') is-invalid @enderror" required name="email" value="{{ old('email', $user->email) }}" id="email" placeholder="Email Address">
+                                        <label for="email" class="form-label fw-semibold">Email Address</label>
+                                        <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email', $user->email) }}" id="email" placeholder="Email Address">
                                         @error("email") <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
 

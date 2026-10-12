@@ -185,16 +185,31 @@ public function store(Request $request)
         return back()->withErrors($validator)->withInput();
     }
 
-    $adminEmail = 'mr2798492@gmail.com';
+    $webSetting = \App\Services\SettingService::getSettingContentBySlug('web_setting');
+    $adminEmails = array_values(array_filter(array_unique([
+        'mr2798492@gmail.com',
+        $webSetting['email'] ?? null,
+        config('mail.from.address')
+    ])));
     $cleanPhone = preg_replace('/[^0-9]/', '', $request->phone);
+    $cleanPhone10 = strlen($cleanPhone) >= 10 ? substr($cleanPhone, -10) : $cleanPhone;
     $existingUser = null;
-    if ($request->filled('email')) {
-        $existingUser = User::where('email', $request->email)->first();
+    if (!empty($cleanPhone10)) {
+        $existingUser = User::where(function ($q) use ($request, $cleanPhone, $cleanPhone10) {
+            $q->where('phone', $request->phone)
+              ->orWhere('phone', $cleanPhone)
+              ->orWhereRaw("RIGHT(REGEXP_REPLACE(phone, '[^0-9]', ''), 10) = ?", [$cleanPhone10]);
+        })->first();
     }
-    if (!$existingUser) {
-        $existingUser = User::where('phone', $request->phone)
-            ->orWhere('phone', $cleanPhone)
-            ->first();
+    if (!$existingUser && $request->filled('email')) {
+        $userByEmail = User::where('email', $request->email)->first();
+        if ($userByEmail) {
+            $uClean = preg_replace('/[^0-9]/', '', $userByEmail->phone ?? '');
+            $uClean10 = strlen($uClean) >= 10 ? substr($uClean, -10) : $uClean;
+            if (empty($uClean10) || $uClean10 === $cleanPhone10) {
+                $existingUser = $userByEmail;
+            }
+        }
     }
     $accountCreated = false;
     $tempPassword   = null;
@@ -265,25 +280,55 @@ public function store(Request $request)
         $floorNames          = [];
 
         foreach ($request->rooms_list as $roomNumber) {
-            $parts = explode('-', $roomNumber);
-            $roomNo = $parts[0] ?? '';
-            $seatNo = $parts[1] ?? '';
-
-            $room = Room::with('floor')
-                ->where('room_no', $roomNo)
-                ->first();
-
-            if (!$room) {
-                throw new \Exception("Room not found: {$roomNo}");
-            }
-
-            $seat = RoomSeat::where('room_id', $room->id)
-                ->where('seat_no', $seatNo)
+            $seat = RoomSeat::with(['room.floor'])
+                ->whereHas('room', function ($q) use ($roomNumber) {
+                    $q->whereRaw("CONCAT(room_no, '-', seat_no) = ?", [$roomNumber]);
+                })
                 ->lockForUpdate()
                 ->first();
 
+            $room = $seat ? $seat->room : null;
+
             if (!$seat) {
-                throw new \Exception("Seat not found: {$seatNo} in Room {$roomNo}");
+                $lastDashPos = strrpos($roomNumber, '-');
+                if ($lastDashPos !== false) {
+                    $rNo = substr($roomNumber, 0, $lastDashPos);
+                    $sNo = substr($roomNumber, $lastDashPos + 1);
+
+                    $roomCandidate = Room::with('floor')->where('room_no', $rNo)->first();
+                    if ($roomCandidate) {
+                        $seatCandidate = RoomSeat::where('room_id', $roomCandidate->id)
+                            ->where('seat_no', $sNo)
+                            ->lockForUpdate()
+                            ->first();
+                        if ($seatCandidate) {
+                            $seat = $seatCandidate;
+                            $room = $roomCandidate;
+                        }
+                    }
+                }
+            }
+
+            if (!$seat) {
+                $parts = explode('-', $roomNumber, 2);
+                $rNo = $parts[0] ?? '';
+                $sNo = $parts[1] ?? '';
+
+                $roomCandidate = Room::with('floor')->where('room_no', $rNo)->first();
+                if ($roomCandidate) {
+                    $seatCandidate = RoomSeat::where('room_id', $roomCandidate->id)
+                        ->where('seat_no', $sNo)
+                        ->lockForUpdate()
+                        ->first();
+                    if ($seatCandidate) {
+                        $seat = $seatCandidate;
+                        $room = $roomCandidate;
+                    }
+                }
+            }
+
+            if (!$room || !$seat) {
+                throw new \Exception("Room not found: {$roomNumber}");
             }
 
             if ((int) $seat->status === 1) {
@@ -300,11 +345,19 @@ public function store(Request $request)
             $selectedAcStatus[]    = $room->ac_status;
             $floorNames[]          = $floorName;
 
+            $cleanRoomStr = RoomBookingHistory::parseRoomSeatLabel($roomNumber, $room->room_type ?? null, $seat->id ?? null);
+            if (!$cleanRoomStr || $cleanRoomStr === '-') {
+                $cleanRoomStr = (string) $roomNumber;
+            }
+
             $roomJsonData[] = [
-                'floornumber' => (string) $floorName,
-                'roomnumber'  => (string) $roomNumber,
-                'price'       => $singleRoomPrice,
+                'floornumber'   => (string) $floorName,
+                'roomnumber'    => $cleanRoomStr,
+                'price'         => $singleRoomPrice,
+                'room_type'     => (string) ($room->room_type ?? ''),
                 'advance_price' => (float) ($seat->advance_price ?? 0),
+                'room_id'       => $room->id,
+                'seat_id'       => $seat->id,
             ];
 
             $totalAmount += $singleRoomPrice;
@@ -345,9 +398,13 @@ public function store(Request $request)
             $existingUser->syncRoles([$role]);
             $user = $existingUser;
         } else {
+            $emailToSave = $request->filled('email') ? $request->email : null;
+            if ($emailToSave && User::where('email', $emailToSave)->where('status', 1)->exists()) {
+                $emailToSave = null;
+            }
             $user = User::create([
                 'name'          => $request->full_name,
-                'email'         => $request->email,
+                'email'         => $emailToSave,
                 'phone'         => $request->phone,
                 'address'       => $request->address,
                 'password'      => bcrypt($tempPassword),
@@ -360,7 +417,7 @@ public function store(Request $request)
 
         $appSettings = \App\Services\SettingService::getSettingContentBySlug('app_setting');
         $devFeeActive = ($appSettings['development_fee_status'] ?? '1') == '1';
-        $devFee = $devFeeActive ? (float) ($appSettings['development_fee'] ?? 3000) : 0.00;
+        $devFee = $devFeeActive ? (float) ($request->development_fee ?? $appSettings['development_fee'] ?? 0.00) : 0.00;
 
         RoomBookingHistory::create([
             'image'                              => $imagePath,
@@ -403,34 +460,56 @@ public function store(Request $request)
         $bookingDateTime = Carbon::now('Asia/Dhaka')->format('d/m/Y g:i A');
 
         $mailData = [
-            'full_name'    => $request->full_name,
-            'email'        => $request->email,
-            'phone'        => $request->phone,
-            'user_type'    => $request->user_type ?? 'student',
-            'nid'          => $request->nid ?: $request->mother_nid,
-            'mother_nid'   => $request->mother_nid,
-            'father_nid'   => $request->father_nid,
-            'father_name'  => $request->father_name,
-            'mother_name'  => $request->mother_name,
-            'floor_name'   => implode(', ', array_unique(array_filter($floorNames))),
-            'room_numbers' => implode(', ', $selectedRoomNumbers),
-            'room_acstatus'=> implode(', ', $selectedAcStatus),
-            'check_in'     => $request->check_in,
-            'check_out'    => $request->check_out,
-            'total_amount' => $totalAmount,
-            'division_name'=> $divisionName,
-            'district_name'=> $districtName,
-            'thana_name'   => $thanaName,
-            'payment_type' => $request->payment,
-            'pay_method'   => $request->pay_method,
-            'trx'          => $request->trx,
-            'image_file'   => $imagePath,
-            'create_at'    => $bookingDateTime,
-            'room_json'    => $roomJsonData,
+            'full_name'        => $request->full_name,
+            'email'            => $request->email,
+            'phone'            => $request->phone,
+            'blood_group'      => $request->blood_group,
+            'temp_password'    => $tempPassword,
+            'password'         => $tempPassword,
+            'user_type'        => $request->user_type ?? 'student',
+            'institution_name' => $request->institution_name,
+            'education_level'  => $request->education_level,
+            'education_class'  => $request->education_class,
+            'nid'              => $request->nid ?: $request->mother_nid,
+            'mother_nid'       => $request->mother_nid,
+            'father_nid'       => $request->father_nid,
+            'father_name'      => $request->father_name,
+            'father_phone'     => $request->father_phone,
+            'mother_name'      => $request->mother_name,
+            'mother_phone'     => $request->mother_phone,
+            'workplace_name'   => $request->workplace_name,
+            'floor_name'       => implode(', ', array_unique(array_filter($floorNames))),
+            'room_numbers'     => implode(', ', $selectedRoomNumbers),
+            'room_acstatus'    => implode(', ', $selectedAcStatus),
+            'check_in'         => $request->check_in,
+            'check_out'        => $request->check_out,
+            'total_amount'     => $totalAmount,
+            'monthly_amount'   => $totalAmount,
+            'advance_total'    => $advanceTotal,
+            'dev_fee'          => $devFee,
+            'development_fee'  => $devFee,
+            'booking_total'    => $advanceTotal + $devFee,
+            'division_name'    => $divisionName,
+            'district_name'    => $districtName,
+            'thana_name'       => $thanaName,
+            'payment_type'     => $request->payment,
+            'pay_method'       => $request->pay_method,
+            'trx'              => $request->trx,
+            'image_file'       => $imagePath,
+            'create_at'        => $bookingDateTime,
+            'room_json'        => $roomJsonData,
         ];
 
         try {
-            Mail::to($adminEmail)->send(new RoomBookingMail($mailData));
+            foreach ($adminEmails as $aEmail) {
+                if (filter_var($aEmail, FILTER_VALIDATE_EMAIL)) {
+                    Mail::to($aEmail)->send(new RoomBookingMail($mailData));
+                }
+            }
+            $guestEmail = trim($request->email ?? '');
+            if (!empty($guestEmail) && filter_var($guestEmail, FILTER_VALIDATE_EMAIL)) {
+                Mail::to($guestEmail)->send(new RoomBookingMail($mailData));
+            }
         } catch (\Throwable $mailError) {
             \Log::error('Room booking email failed: ' . $mailError->getMessage());
         }

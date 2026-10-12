@@ -49,7 +49,7 @@ class ComplaintController extends Controller
 
             $cleanPhone = preg_replace('/[^0-9]/', '', $user->phone ?? '');
             $last11Digits = !empty($cleanPhone) ? substr($cleanPhone, -11) : '';
-            $data['userBooking'] = RoomBookingHistory::where('status', 0)
+            $data['userBooking'] = RoomBookingHistory::whereNull('today_check_out')
                 ->where(function ($q) use ($user, $last11Digits) {
                     if (!empty($user->email)) $q->orWhere('email', $user->email);
                     if (!empty($last11Digits)) $q->orWhere('phone', 'like', "%{$last11Digits}%");
@@ -69,7 +69,7 @@ class ComplaintController extends Controller
         $cleanPhone = preg_replace('/[^0-9]/', '', $user->phone ?? '');
         $last11Digits = !empty($cleanPhone) ? substr($cleanPhone, -11) : '';
 
-        $userBooking = RoomBookingHistory::where('status', 0)
+        $userBooking = RoomBookingHistory::whereNull('today_check_out')
             ->where(function ($q) use ($user, $last11Digits) {
                 if (!empty($user->email)) $q->orWhere('email', $user->email);
                 if (!empty($last11Digits)) $q->orWhere('phone', 'like', "%{$last11Digits}%");
@@ -118,6 +118,33 @@ class ComplaintController extends Controller
         return response()->json([
             'count' => $pendingCount,
             'complaints' => $latestComplaints,
+        ]);
+    }
+
+    public function checkUserComplaints()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['success' => false]);
+        }
+
+        $complaints = Complaint::where('user_id', $user->id)
+            ->latest()
+            ->get()
+            ->map(function ($c) {
+                return [
+                    'id' => $c->id,
+                    'complaint_text' => $c->complaint_text,
+                    'status' => (int) $c->status,
+                    'admin_note' => $c->admin_note ?? '',
+                    'date_formatted' => $c->created_at->timezone('Asia/Dhaka')->format('d M, Y'),
+                    'time_formatted' => $c->created_at->timezone('Asia/Dhaka')->format('h:i A'),
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'complaints' => $complaints,
         ]);
     }
 }

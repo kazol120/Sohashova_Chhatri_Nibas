@@ -74,4 +74,19 @@ class FineController extends Controller
         $this->fineService->fineDelete($id);
         return redirect()->back()->with('success', 'Fine deleted successfully');
     }
+
+    public function show($id)
+    {
+        return redirect()->route('fines.index');
+    }
+
+    public function edit($id)
+    {
+        return redirect()->route('fines.index');
+    }
+
+    public function update(Request $request, $id)
+    {
+        return redirect()->route('fines.index');
+    }
 }

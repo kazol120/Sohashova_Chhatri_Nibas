@@ -58,7 +58,7 @@ class ProfileController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'required|max:17',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'email' => 'nullable|email|unique:users,email,' . $user->id,
             'user_image' => 'nullable|file|mimes:jpg,png,jpeg,pdf,webp|max:4096',
             'cover_image' => 'nullable|file|mimes:jpg,png,jpeg,pdf,webp|max:4096',
             'user_type' => 'nullable|string|max:100',

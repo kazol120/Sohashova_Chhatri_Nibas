@@ -12,6 +12,10 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        'room-booking-history/store',
+        'csrf-token',
+        'api/*',
+        'api/resident-notices/*',
+        'logout',
     ];
 }

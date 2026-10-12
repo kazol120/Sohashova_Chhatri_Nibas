@@ -504,6 +504,11 @@ previousPage() {
   </body>
   </html>`;
 
+  if (typeof window.printOrDownloadPdf === 'function') {
+    window.printOrDownloadPdf(html, `Customer_Report_${guest.full_name || 'Guest'}`);
+    return;
+  }
+
   const win = window.open("", "_blank");
   win.document.write(html);
   win.document.close();
@@ -565,6 +570,12 @@ previousPage() {
         <\/script>
       </body>
       </html>`;
+
+      if (typeof window.printOrDownloadPdf === 'function') {
+        window.printOrDownloadPdf(html, 'All_Guest_Report', { orientation: 'landscape' });
+        return;
+      }
+
       const win = window.open("", "_blank");
       win.document.write(html);
       win.document.close();

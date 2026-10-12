@@ -44,6 +44,7 @@
                     <th style="width: 120px">Seat</th>
                     <th style="width: 180px">Booking Date & Time</th>
                     <th style="width: 150px">Monthly Amount</th>
+                    <th style="width: 150px">Advance Deposit</th>
                     <th style="width: 150px">Development Fee</th>
                     <th style="width: 180px">Email</th>
                     <th v-if="showFamilyColumns" style="width: 160px">Institution Name</th>
@@ -63,7 +64,7 @@
                     <th style="width: 120px">Thana</th>
                     <th style="width: 160px">Address</th>
                     <th style="width: 120px">Payment</th>
-                    <th style="width: 110px">Action</th>
+                    <th class="sticky-action-col text-center">Action</th>
                   </tr>
                 </thead>
 
@@ -110,7 +111,7 @@
                     <td>
                       <div v-if="r.room_items && r.room_items.length">
                         <div v-for="(item, i) in r.room_items" :key="'s-' + r.id + '-' + i" class="py-1">
-                          <span class="badge bg-danger font-monospace px-2 py-1 fs-6 fw-bold">{{ getSeatNo(item.roomnumber) }}</span>
+                          <span class="badge bg-danger font-monospace px-2 py-1 fs-6 fw-bold">{{ getSeatNo(item.roomnumber, item.room_type, item.seat_no) }}</span>
                         </div>
                       </div>
                       <span v-else>-</span>
@@ -122,6 +123,10 @@
 
                     <td>
                       <span class="fw-bold text-success">৳ {{ formatCurrency(r.monthly_amount) }}</span>
+                    </td>
+
+                    <td>
+                      <span class="fw-bold text-primary">৳ {{ formatCurrency(getAdvanceDepositAmount(r)) }}</span>
                     </td>
 
                     <td>
@@ -212,8 +217,36 @@
                       <div v-else>-</div>
                     </td>
 
-                    <td class="text-center">
-                      <div class="d-flex align-items-center justify-content-center gap-1">
+                    <td class="sticky-action-col text-center">
+                      <!-- Desktop view: 3 wide action buttons -->
+                      <div class="d-none d-md-flex align-items-center justify-content-center gap-1">
+                        <button
+                          v-if="!r.user_status || Number(r.user_status) === 0 || Number(r.status) === 0"
+                          type="button"
+                          class="btn btn-sm btn-warning text-dark fw-bold text-nowrap"
+                          @click="activateBookingAccount(r)"
+                          title="Approve Booking & Activate Account"
+                        >
+                          <i class="fa fa-check me-1"></i> Approve
+                        </button>
+                        <button
+                          v-else
+                          type="button"
+                          class="btn btn-sm btn-success text-white fw-bold text-nowrap me-1 shadow-sm"
+                          @click="deactivateBookingAccount(r)"
+                          title="Account is Active (Click to Deactivate)"
+                        >
+                          <i class="fa fa-check-circle me-1"></i> Active
+                        </button>
+
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-dark fw-bold text-nowrap"
+                          @click="openHistoryDetailsModal(r)"
+                          title="View History / Details"
+                        >
+                          <i class="fa fa-history me-1"></i> History
+                        </button>
                         <button
                           type="button"
                           class="btn btn-sm btn-primary fw-bold text-nowrap"
@@ -232,11 +265,31 @@
                         </button>
                         <button
                           type="button"
-                          class="btn btn-sm btn-success fw-bold text-nowrap"
+                          class="btn btn-sm btn-success fw-bold text-nowrap me-1"
                           @click="openBookingReceiptModal(r)"
                           title="Booking Money Receipt"
                         >
-                          <i class="ti ti-receipt me-1"></i> Booking Receipt
+                          <i class="ti ti-receipt me-1"></i> Receipt
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-danger fw-bold text-nowrap"
+                          @click="openDeleteBookingModal(r)"
+                          title="Delete Booking & User"
+                        >
+                          <i class="fa fa-trash me-1"></i> Delete
+                        </button>
+                      </div>
+
+                      <!-- Mobile view: Single compact 3-dot icon button opening mobile action modal -->
+                      <div class="d-flex d-md-none justify-content-center">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-primary mobile-action-toggle-btn shadow-sm d-flex align-items-center justify-content-center"
+                          @click="openMobileActionModal(r)"
+                          title="Actions"
+                        >
+                          <i class="fa fa-ellipsis-v"></i>
                         </button>
                       </div>
                     </td>
@@ -284,6 +337,110 @@
       </div>
     </div>
 
+    <!-- Mobile Action Sheet Modal (Compact & Sleek) -->
+    <div class="modal fade" id="mobileActionSheetModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 275px; margin: auto;">
+        <div class="modal-content shadow-lg border-0 rounded-3 overflow-hidden" v-if="selectedMobileActionBooking">
+          <div class="modal-header bg-primary text-white py-2 px-3">
+            <div class="d-flex align-items-center gap-2 text-truncate">
+              <i class="fa fa-user-circle fs-5"></i>
+              <div class="text-truncate">
+                <h6 class="modal-title text-white fw-bold mb-0 text-truncate" style="font-size: 0.88rem;">
+                  {{ selectedMobileActionBooking.full_name || 'Guest' }}
+                </h6>
+                <small class="text-white-50 d-block text-truncate" style="font-size: 0.68rem;">
+                  {{ selectedMobileActionBooking.phone || '-' }}
+                </small>
+              </div>
+            </div>
+            <button type="button" class="btn-close btn-close-white btn-sm" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body p-2">
+            <div class="d-grid gap-1">
+              <button
+                v-if="selectedMobileActionBooking && (!selectedMobileActionBooking.user_status || Number(selectedMobileActionBooking.user_status) === 0)"
+                type="button"
+                class="btn btn-outline-warning btn-sm d-flex align-items-center justify-content-start py-2 px-3 fw-bold text-start border-0 rounded-2"
+                style="background-color: #fffbeb;"
+                @click="handleMobileAction('activate')"
+              >
+                <i class="fa fa-check me-2 text-warning fs-6"></i>
+                <span class="text-dark">Approve Booking</span>
+              </button>
+
+              <button
+                v-else-if="selectedMobileActionBooking && Number(selectedMobileActionBooking.user_status) === 1"
+                type="button"
+                class="btn btn-outline-success btn-sm d-flex align-items-center justify-content-start py-2 px-3 fw-bold text-start border-0 rounded-2"
+                style="background-color: #f0fdf4;"
+                @click="handleMobileAction('deactivate')"
+              >
+                <i class="fa fa-check-circle me-2 text-success fs-6"></i>
+                <span class="text-success">Active (Click to Deactivate)</span>
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline-dark btn-sm d-flex align-items-center justify-content-start py-2 px-3 fw-bold text-start border-0 rounded-2"
+                style="background-color: #f8f9fa;"
+                @click="handleMobileAction('history')"
+              >
+                <i class="fa fa-history me-2 text-dark fs-6"></i>
+                <span class="text-dark">View Details (History)</span>
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-start py-2 px-3 fw-bold text-start border-0 rounded-2"
+                style="background-color: #f0f4ff;"
+                @click="handleMobileAction('document')"
+              >
+                <i class="fa fa-print me-2 text-primary fs-6"></i>
+                <span class="text-dark">Print Document</span>
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline-info btn-sm d-flex align-items-center justify-content-start py-2 px-3 fw-bold text-start border-0 rounded-2"
+                style="background-color: #f0faff;"
+                @click="handleMobileAction('idcard')"
+              >
+                <i class="fa fa-id-card me-2 text-info fs-6"></i>
+                <span class="text-dark">Print ID Card</span>
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline-success btn-sm d-flex align-items-center justify-content-start py-2 px-3 fw-bold text-start border-0 rounded-2"
+                style="background-color: #f0fdf4;"
+                @click="handleMobileAction('receipt')"
+              >
+                <i class="ti ti-receipt me-2 text-success fs-6"></i>
+                <span class="text-dark">Booking Receipt</span>
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-start py-2 px-3 fw-bold text-start border-0 rounded-2"
+                style="background-color: #fef2f2;"
+                @click="handleMobileAction('delete')"
+              >
+                <i class="fa fa-trash me-2 text-danger fs-6"></i>
+                <span class="text-danger">Delete Booking</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="modal-footer bg-light py-1 px-2 border-top-0 justify-content-center">
+            <button type="button" class="btn btn-xs btn-secondary w-100 fw-bold py-1" style="font-size: 0.75rem;" data-bs-dismiss="modal">
+              ✕ বন্ধ করুন (Close)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Booking Money Receipt Modal -->
     <div class="modal fade" id="bookingReceiptModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -324,17 +481,17 @@
                     <td class="fw-bold text-dark" style="width: 25%;">{{ selectedReceiptBooking.phone || '-' }}</td>
                   </tr>
                   <tr>
-                    <td class="bg-light fw-bold text-muted">প্রতিষ্ঠান/কর্মস্থল (Institution):</td>
+                    <td class="bg-light fw-bold text-muted">প্রতিষ্ঠান (Institution):</td>
                     <td colspan="3" class="fw-bold text-dark">{{ selectedReceiptBooking.institution_name || selectedReceiptBooking.workplace_name || '-' }}</td>
                   </tr>
                   <tr>
-                    <td class="bg-light fw-bold text-muted">ঠিকানা (Address):</td>
+                    <td class="bg-light fw-bold text-muted">স্থায়ী ঠিকানা (Permanent Address*):</td>
                     <td colspan="3" class="fw-semibold text-dark">
-                      {{ selectedReceiptBooking.address || '' }} {{ selectedReceiptBooking.thana_name ? ', ' + selectedReceiptBooking.thana_name : '' }} {{ selectedReceiptBooking.district_name ? ', ' + selectedReceiptBooking.district_name : '' }}
+                      {{ getFormattedPermanentAddress(selectedReceiptBooking) }}
                     </td>
                   </tr>
                   <tr class="table-info">
-                    <td class="fw-bold text-dark">তলা (Floor):</td>
+                    <td class="fw-bold text-dark">Floor:</td>
                     <td class="fw-bold text-dark">{{ getSelectedFloorNo(selectedReceiptBooking) }}</td>
                     <td class="fw-bold text-dark">রুম & সিট (Room & Seat):</td>
                     <td class="fw-bold text-dark">
@@ -368,7 +525,7 @@
             <div class="d-flex justify-content-between align-items-end pt-4 mt-2">
               <div class="text-center" style="width: 180px;">
                 <div class="border-bottom border-dark mb-1"></div>
-                <small class="fw-bold text-dark">বোর্ডারের স্বাক্ষর</small>
+                <small class="fw-bold text-dark">শিক্ষার্থীর স্বাক্ষর</small>
               </div>
               <div class="text-center" style="width: 180px;">
                 <div class="border-bottom border-dark mb-1"></div>
@@ -384,6 +541,285 @@
             </button>
             <button type="button" class="btn btn-success btn-sm fw-bold" @click="printBookingReceipt(selectedReceiptBooking)">
               <i class="ti ti-printer me-1"></i> প্রিন্ট করুন (Print Receipt)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resident Full History / Details Modal (Compact, Sleek & Professional) -->
+    <div class="modal fade" id="historyDetailsModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-xl" style="max-width: 980px; width: 95%;">
+        <div class="modal-content shadow-lg border-0 rounded-3 overflow-hidden">
+          <div class="modal-header text-white py-2 px-3" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+            <h6 class="modal-title text-white fw-bold d-flex align-items-center gap-2 mb-0" style="font-size: 0.95rem;">
+              <i class="fa fa-history text-warning"></i>
+              <span>বুকিং ও শিক্ষার্থীর বিবরণ (Booking & Student Details)</span>
+            </h6>
+            <button type="button" class="btn-close btn-close-white btn-sm" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body p-2 p-md-3" v-if="selectedHistoryBooking" style="max-height: 82vh; overflow-y: auto;">
+            <!-- Top Profile Compact Banner -->
+            <div class="card border-0 bg-white p-2 mb-2 rounded-3 shadow-sm border">
+              <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <div class="d-flex align-items-center gap-2.5">
+                  <div class="position-relative flex-shrink-0">
+                    <img
+                      v-if="selectedHistoryBooking.image"
+                      :src="imageSrc(selectedHistoryBooking.image)"
+                      class="rounded-circle border border-2 border-primary shadow-sm"
+                      style="width: 50px; height: 50px; object-fit: cover;"
+                      alt="Profile Image"
+                    />
+                    <div v-else class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 50px; height: 50px; font-size: 20px;">
+                      {{ (selectedHistoryBooking.full_name || 'B').charAt(0).toUpperCase() }}
+                    </div>
+                  </div>
+                  <div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                      <h5 class="fw-bold mb-0 text-dark" style="font-size: 1.05rem;">{{ selectedHistoryBooking.full_name || '-' }}</h5>
+                      <span class="badge bg-primary text-capitalize px-2 py-0.5" style="font-size: 0.72rem;">
+                        {{ selectedHistoryBooking.user_type || 'Student' }}
+                      </span>
+                      <span v-if="selectedHistoryBooking.pay_online" class="badge bg-success px-2 py-0.5" style="font-size: 0.72rem;">
+                        Online Paid: {{ selectedHistoryBooking.pay_online }}
+                      </span>
+                      <span v-else-if="selectedHistoryBooking.pay_cash_in" class="badge bg-info px-2 py-0.5" style="font-size: 0.72rem;">
+                        Cash In: {{ selectedHistoryBooking.pay_cash_in }}
+                      </span>
+                    </div>
+                    <div class="d-flex flex-wrap align-items-center gap-3 text-muted" style="font-size: 0.8rem; margin-top: 2px;">
+                      <span><i class="fa fa-phone me-1 text-primary"></i> <strong>{{ selectedHistoryBooking.phone || '-' }}</strong></span>
+                      <span v-if="selectedHistoryBooking.email"><i class="fa fa-envelope me-1 text-danger"></i> {{ selectedHistoryBooking.email }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="text-end ps-2 border-start d-none d-sm-block">
+                  <div class="text-dark small fw-semibold">
+                    <i class="fa fa-calendar me-1 text-warning"></i> বুকিং তারিখ:
+                  </div>
+                  <div class="fw-bold text-primary small">{{ formatDateTime(selectedHistoryBooking.created_at) }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Detail Compact Grids -->
+            <div class="row g-2">
+              <!-- Room & Booking Information Card -->
+              <div class="col-12 col-md-6">
+                <div class="card h-100 border-0 shadow-sm" style="background-color: #f8faff; border-left: 3px solid #0d6efd !important;">
+                  <div class="card-body p-2.5">
+                    <h6 class="fw-bold text-primary mb-2 pb-1 border-bottom d-flex align-items-center gap-1.5" style="font-size: 0.88rem;">
+                      <i class="fa fa-bed"></i> রুম ও সিট বুকিং বিবরণ
+                    </h6>
+                    <table class="table table-sm table-borderless mb-0" style="font-size: 0.82rem;">
+                      <tbody>
+                        <tr>
+                          <td class="text-muted py-1" style="width: 42%;">ফ্লোর (Floor):</td>
+                          <td class="fw-bold text-dark py-1">{{ getSelectedFloorNo(selectedHistoryBooking) }}</td>
+                        </tr>
+                        <tr>
+                          <td class="text-muted py-1">রুম (Room No):</td>
+                          <td class="py-1">
+                            <span class="badge bg-primary font-monospace" style="font-size: 0.75rem;">{{ getSelectedRoomNo(selectedHistoryBooking) }}</span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="text-muted py-1">সিট (Seat No):</td>
+                          <td class="py-1">
+                            <span class="badge bg-danger font-monospace" style="font-size: 0.75rem;">{{ getSelectedSeatNo(selectedHistoryBooking) }}</span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="text-muted py-1">মাসিক ভাড়া:</td>
+                          <td class="fw-bold text-success py-1">৳ {{ formatCurrency(selectedHistoryBooking.monthly_amount) }}</td>
+                        </tr>
+                        <tr>
+                          <td class="text-muted py-1">এডভান্স ডিপোজিট:</td>
+                          <td class="fw-bold text-primary py-1">৳ {{ formatCurrency(getAdvanceDepositAmount(selectedHistoryBooking)) }}</td>
+                        </tr>
+                        <tr>
+                          <td class="text-muted py-1">ডেভেলপমেন্ট ফি:</td>
+                          <td class="fw-bold text-warning py-1">
+                            {{ selectedHistoryBooking.development_fee ? '৳ ' + formatCurrency(selectedHistoryBooking.development_fee) : '-' }}
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="text-muted py-1">পেমেন্ট মেথড:</td>
+                          <td class="fw-bold text-dark py-1">
+                            {{ selectedHistoryBooking.pay_online || selectedHistoryBooking.pay_cash_in || '-' }}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Personal / Academic / Career Info Card -->
+              <div class="col-12 col-md-6">
+                <div class="card h-100 border-0 shadow-sm" style="background-color: #fcf8ff; border-left: 3px solid #6f42c1 !important;">
+                  <div class="card-body p-2.5">
+                    <h6 class="fw-bold mb-2 pb-1 border-bottom d-flex align-items-center gap-1.5" style="color: #6f42c1; font-size: 0.88rem;">
+                      <i class="fa fa-graduation-cap"></i> ব্যক্তিগত ও প্রতিষ্ঠান/কর্মস্থল
+                    </h6>
+                    <table class="table table-sm table-borderless mb-0" style="font-size: 0.82rem;">
+                      <tbody>
+                        <template v-if="isStudent(selectedHistoryBooking)">
+                          <tr>
+                            <td class="text-muted py-1" style="width: 42%;">প্রতিষ্ঠান:</td>
+                            <td class="fw-bold text-dark py-1">{{ selectedHistoryBooking.institution_name || '-' }}</td>
+                          </tr>
+                          <tr>
+                            <td class="text-muted py-1">শিক্ষা ব্যবস্থা:</td>
+                            <td class="fw-bold text-dark py-1">{{ selectedHistoryBooking.education_level || '-' }}</td>
+                          </tr>
+                          <tr>
+                            <td class="text-muted py-1">শ্রেণী / সেমিস্টার:</td>
+                            <td class="fw-bold text-dark py-1">{{ selectedHistoryBooking.education_class || '-' }}</td>
+                          </tr>
+                        </template>
+                        <template v-else>
+                          <tr>
+                            <td class="text-muted py-1" style="width: 42%;">কর্মস্থল:</td>
+                            <td class="fw-bold text-dark py-1">{{ selectedHistoryBooking.workplace_name || '-' }}</td>
+                          </tr>
+                          <tr>
+                            <td class="text-muted py-1">NID নম্বর:</td>
+                            <td class="fw-bold text-dark py-1">{{ selectedHistoryBooking.nid || '-' }}</td>
+                          </tr>
+                        </template>
+                        <tr>
+                          <td class="text-muted py-1">ইমেইল:</td>
+                          <td class="fw-bold text-dark py-1">{{ selectedHistoryBooking.email || '-' }}</td>
+                        </tr>
+                        <tr>
+                          <td class="text-muted py-1">রক্তের গ্রুপ:</td>
+                          <td class="fw-bold text-danger py-1">{{ selectedHistoryBooking.blood_group || '-' }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Guardian & Family Info Card -->
+              <div class="col-12 col-md-6">
+                <div class="card h-100 border-0 shadow-sm" style="background-color: #fffdf5; border-left: 3px solid #ffc107 !important;">
+                  <div class="card-body p-2.5">
+                    <h6 class="fw-bold mb-2 pb-1 border-bottom d-flex align-items-center gap-1.5" style="color: #b45309; font-size: 0.88rem;">
+                      <i class="fa fa-users"></i> পিতা ও মাতার তথ্য (Guardian Info)
+                    </h6>
+                    <table class="table table-sm table-borderless mb-0" style="font-size: 0.82rem;">
+                      <tbody>
+                        <tr>
+                          <td class="text-muted py-1" style="width: 42%;">পিতার নাম:</td>
+                          <td class="fw-bold text-dark py-1">{{ selectedHistoryBooking.father_name || '-' }}</td>
+                        </tr>
+                        <tr>
+                          <td class="text-muted py-1">পিতার মোবাইল:</td>
+                          <td class="fw-bold text-dark py-1">{{ selectedHistoryBooking.father_phone || '-' }}</td>
+                        </tr>
+                        <tr>
+                          <td class="text-muted py-1">পিতার NID:</td>
+                          <td class="fw-bold text-dark py-1">{{ selectedHistoryBooking.father_nid || '-' }}</td>
+                        </tr>
+                        <tr>
+                          <td class="text-muted py-1">মাতার নাম:</td>
+                          <td class="fw-bold text-dark py-1">{{ selectedHistoryBooking.mother_name || '-' }}</td>
+                        </tr>
+                        <tr>
+                          <td class="text-muted py-1">মাতার মোবাইল:</td>
+                          <td class="fw-bold text-dark py-1">{{ selectedHistoryBooking.mother_phone || '-' }}</td>
+                        </tr>
+                        <tr>
+                          <td class="text-muted py-1">NID / মাতার NID:</td>
+                          <td class="fw-bold text-dark py-1">{{ selectedHistoryBooking.mother_nid || '-' }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Address Card -->
+              <div class="col-12 col-md-6">
+                <div class="card h-100 border-0 shadow-sm" style="background-color: #f4fdf8; border-left: 3px solid #198754 !important;">
+                  <div class="card-body p-2.5">
+                    <h6 class="fw-bold text-success mb-2 pb-1 border-bottom d-flex align-items-center gap-1.5" style="font-size: 0.88rem;">
+                      <i class="fa fa-map-marker-alt"></i> ঠিকানা (Address Details)
+                    </h6>
+                    <table class="table table-sm table-borderless mb-0" style="font-size: 0.82rem;">
+                      <tbody>
+                        <tr>
+                          <td class="text-muted py-1" style="width: 42%;">বিভাগ (Division):</td>
+                          <td class="fw-bold text-dark py-1">{{ selectedHistoryBooking.division_name || '-' }}</td>
+                        </tr>
+                        <tr>
+                          <td class="text-muted py-1">জেলা (District):</td>
+                          <td class="fw-bold text-dark py-1">{{ selectedHistoryBooking.district_name || '-' }}</td>
+                        </tr>
+                        <tr>
+                          <td class="text-muted py-1">থানা (Thana):</td>
+                          <td class="fw-bold text-dark py-1">{{ selectedHistoryBooking.thana_name || '-' }}</td>
+                        </tr>
+                        <tr>
+                          <td class="text-muted py-1">গ্রাম/ঠিকানা:</td>
+                          <td class="fw-bold text-dark py-1">{{ selectedHistoryBooking.address || '-' }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="modal-footer bg-light py-1.5 px-3 justify-content-end">
+            <button type="button" class="btn btn-secondary btn-sm fw-bold px-3" data-bs-dismiss="modal">
+              ✕ বন্ধ করুন (Close)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Booking Confirmation Modal -->
+    <div class="modal fade" id="deleteBookingModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+          <div class="modal-header bg-danger text-white py-3 px-4">
+            <h5 class="modal-title text-white fw-bold d-flex align-items-center gap-2 mb-0" style="font-size: 1.05rem;">
+              <i class="fa fa-exclamation-triangle"></i>
+              <span>বুকিং মুছে ফেলার নিশ্চিতকরণ</span>
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body p-4 text-center" v-if="selectedDeleteBooking">
+            <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; background-color: #fee2e2;">
+              <i class="fa fa-trash fs-3 text-danger"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-2">আপনি কি নিশ্চিতভাবে এই বুকিং ডিলিট করতে চান?</h5>
+            <p class="text-muted small mb-3">
+              শিক্ষার্থী: <strong class="text-dark">{{ selectedDeleteBooking.full_name }}</strong> ({{ selectedDeleteBooking.phone }})
+            </p>
+            <div class="alert alert-warning py-2 px-3 mb-0 text-start small border-0" style="background-color: #fffbeb; color: #b45309; border-radius: 8px;">
+              <i class="fa fa-info-circle me-1"></i>
+              <strong>মনোযোগ দিন:</strong> ডিলিট করলে ইউজার অ্যাকাউন্ট স্থায়ীভাবে মুছে যাবে এবং বরাদ্দকৃত সিটটি ফাঁকা (Available) হয়ে যাবে।
+            </div>
+          </div>
+
+          <div class="modal-footer bg-light py-2 px-4 border-top-0 justify-content-between">
+            <button type="button" class="btn btn-secondary btn-sm px-3 fw-bold" data-bs-dismiss="modal">
+              ✕ বাতিল (Cancel)
+            </button>
+            <button type="button" class="btn btn-danger btn-sm px-4 fw-bold shadow-sm" @click="confirmDeleteBooking">
+              <i class="fa fa-trash me-1"></i> হ্যাঁ, ডিলিট করুন
             </button>
           </div>
         </div>
@@ -425,6 +861,9 @@ export default {
       selectedGuest: "",
       guestNames: [],
       selectedReceiptBooking: null,
+      selectedMobileActionBooking: null,
+      selectedHistoryBooking: null,
+      selectedDeleteBooking: null,
     };
   },
 
@@ -440,7 +879,7 @@ export default {
       return this.rooms.some(r => this.isStudent(r)) || !this.rooms.some(r => this.isProfessional(r));
     },
     totalColumns() {
-      let count = 17; // base columns
+      let count = 18; // base columns (+1 for Advance Deposit)
       if (this.showFamilyColumns) count += 9;
       if (this.showNidColumn) count += 2;
       return count;
@@ -470,6 +909,191 @@ watch: {
   },
 
   methods: {
+    openMobileActionModal(r) {
+      this.selectedMobileActionBooking = r;
+      const modalEl = document.getElementById("mobileActionSheetModal");
+      if (modalEl) {
+        const bsModal = new bootstrap.Modal(modalEl);
+        bsModal.show();
+      }
+    },
+
+    handleMobileAction(type) {
+      const modalEl = document.getElementById("mobileActionSheetModal");
+      if (modalEl) {
+        const bsModal = bootstrap.Modal.getInstance(modalEl);
+        if (bsModal) bsModal.hide();
+      }
+      const r = this.selectedMobileActionBooking;
+      if (!r) return;
+
+      if (type === 'activate') {
+        this.activateBookingAccount(r);
+      } else if (type === 'deactivate') {
+        this.deactivateBookingAccount(r);
+      } else if (type === 'history') {
+        this.openHistoryDetailsModal(r);
+      } else if (type === 'document') {
+        this.printResidentForm(r);
+      } else if (type === 'idcard') {
+        this.printResidentIdCard(r);
+      } else if (type === 'receipt') {
+        this.openBookingReceiptModal(r);
+      } else if (type === 'delete') {
+        this.openDeleteBookingModal(r);
+      }
+    },
+
+    openDeleteBookingModal(r) {
+      this.selectedDeleteBooking = r;
+      const modalEl = document.getElementById("deleteBookingModal");
+      if (modalEl) {
+        const bsModal = new bootstrap.Modal(modalEl);
+        bsModal.show();
+      }
+    },
+
+    confirmDeleteBooking() {
+      const r = this.selectedDeleteBooking;
+      if (!r) return;
+
+      const requestUrl = `/bookings/${r.id}`;
+
+      axios.delete(requestUrl)
+        .then(res => {
+          const modalEl = document.getElementById("deleteBookingModal");
+          if (modalEl) {
+            const bsModal = bootstrap.Modal.getInstance(modalEl);
+            if (bsModal) bsModal.hide();
+          }
+          if (res.data && res.data.success) {
+            Toastify({
+              text: res.data.message || "বুকিং সফলভাবে মুছে ফেলা হয়েছে!",
+              duration: 3500,
+              gravity: "top",
+              position: "right",
+              style: { background: "#198754" }
+            }).showToast();
+
+            this.fetchRooms(this.currentPage || 1);
+          } else {
+            Toastify({
+              text: (res.data && res.data.message) ? res.data.message : "ডিলিট করতে ব্যর্থ হয়েছে!",
+              duration: 3500,
+              gravity: "top",
+              position: "right",
+              style: { background: "#dc3545" }
+            }).showToast();
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          const msg = (err.response && err.response.data && err.response.data.message)
+            ? err.response.data.message
+            : "ডিলিট করতে ব্যর্থ হয়েছে!";
+          Toastify({
+            text: msg,
+            duration: 3500,
+            gravity: "top",
+            position: "right",
+            style: { background: "#dc3545" }
+          }).showToast();
+        });
+    },
+
+    activateBookingAccount(r) {
+      if (!r) return;
+
+      const requestUrl = `/bookings/${r.id}/activate-account`;
+
+      axios.post(requestUrl)
+        .then(res => {
+          if (res.data && res.data.success) {
+            r.user_status = 1;
+            r.status = 1;
+            Toastify({
+              text: res.data.message || "বুকিং সফলভাবে Approve এবং অ্যাকাউন্ট Active করা হয়েছে!",
+              duration: 3500,
+              gravity: "top",
+              position: "right",
+              style: { background: "#198754" }
+            }).showToast();
+          } else {
+            Toastify({
+              text: (res.data && res.data.message) ? res.data.message : "বুকিং Approve করতে ব্যর্থ হয়েছে!",
+              duration: 3500,
+              gravity: "top",
+              position: "right",
+              style: { background: "#dc3545" }
+            }).showToast();
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          const msg = (err.response && err.response.data && err.response.data.message) 
+            ? err.response.data.message 
+            : "বুকিং Approve করতে ব্যর্থ হয়েছে!";
+            Toastify({
+            text: msg,
+            duration: 3500,
+            gravity: "top",
+            position: "right",
+            style: { background: "#dc3545" }
+          }).showToast();
+        });
+    },
+
+    deactivateBookingAccount(r) {
+      if (!r) return;
+
+      const requestUrl = `/bookings/${r.id}/deactivate-account`;
+
+      axios.post(requestUrl)
+        .then(res => {
+          if (res.data && res.data.success) {
+            r.user_status = 0;
+            r.status = 0;
+            Toastify({
+              text: res.data.message || "শিক্ষার্থীর অ্যাকাউন্ট সফলভাবে Deactive করা হয়েছে!",
+              duration: 3500,
+              gravity: "top",
+              position: "right",
+              style: { background: "#dc3545" }
+            }).showToast();
+          } else {
+            Toastify({
+              text: (res.data && res.data.message) ? res.data.message : "Deactive করতে ব্যর্থ হয়েছে!",
+              duration: 3500,
+              gravity: "top",
+              position: "right",
+              style: { background: "#dc3545" }
+            }).showToast();
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          const msg = (err.response && err.response.data && err.response.data.message) 
+            ? err.response.data.message 
+            : "Deactive করতে ব্যর্থ হয়েছে!";
+          Toastify({
+            text: msg,
+            duration: 3500,
+            gravity: "top",
+            position: "right",
+            style: { background: "#dc3545" }
+          }).showToast();
+        });
+    },
+
+    openHistoryDetailsModal(r) {
+      this.selectedHistoryBooking = r;
+      const modalEl = document.getElementById("historyDetailsModal");
+      if (modalEl) {
+        const bsModal = new bootstrap.Modal(modalEl);
+        bsModal.show();
+      }
+    },
+
     openBookingReceiptModal(r) {
       this.selectedReceiptBooking = r;
       const modalEl = document.getElementById("bookingReceiptModal");
@@ -530,9 +1154,27 @@ watch: {
     getSelectedSeatNo(r) {
       if (!r) return '-';
       if (r.room_items && r.room_items.length) {
-        return r.room_items.map(i => this.getSeatNo(i.roomnumber)).join(', ');
+        return r.room_items.map(i => this.getSeatNo(i)).join(', ');
       }
-      return this.getSeatNo(r.roomnumber) || '-';
+      return this.getSeatNo(r) || '-';
+    },
+
+    getFormattedPermanentAddress(r) {
+      if (!r) return '-';
+      const parts = [];
+      if (r.division_name && String(r.division_name).trim()) {
+        parts.push(`Division: ${String(r.division_name).trim()}`);
+      }
+      if (r.district_name && String(r.district_name).trim()) {
+        parts.push(`District: ${String(r.district_name).trim()}`);
+      }
+      if (r.thana_name && String(r.thana_name).trim()) {
+        parts.push(`Thana: ${String(r.thana_name).trim()}`);
+      }
+      if (r.address && String(r.address).trim()) {
+        parts.push(`Village/Address: ${String(r.address).trim()}`);
+      }
+      return parts.length > 0 ? parts.join(', ') : '-';
     },
 
     printBookingReceipt(r) {
@@ -542,7 +1184,7 @@ watch: {
       const floorNo = this.getSelectedFloorNo(r);
       const fullName = r.full_name || '-';
       const phone = r.phone || '-';
-      const address = (r.address || '') + (r.thana_name ? ', ' + r.thana_name : '') + (r.district_name ? ', ' + r.district_name : '');
+      const address = this.getFormattedPermanentAddress(r);
       const institution = r.institution_name || r.workplace_name || '-';
       const bookingDate = this.formatDateTime(r.created_at);
       const advance = this.getAdvanceDepositAmount(r);
@@ -600,15 +1242,15 @@ watch: {
                   <td style="font-weight: 600; width: 25%;">${phone}</td>
                 </tr>
                 <tr>
-                  <td style="background: #f8f9fa; font-weight: bold;">প্রতিষ্ঠান/কর্মস্থল:</td>
+                  <td style="background: #f8f9fa; font-weight: bold;">প্রতিষ্ঠান:</td>
                   <td colspan="3" style="font-weight: 600;">${institution}</td>
                 </tr>
                 <tr>
-                  <td style="background: #f8f9fa; font-weight: bold;">ঠিকানা:</td>
+                  <td style="background: #f8f9fa; font-weight: bold;">স্থায়ী ঠিকানা (Permanent Address*):</td>
                   <td colspan="3">${address || '-'}</td>
                 </tr>
                 <tr style="background-color: #e8f5e9;">
-                  <td style="font-weight: bold;">তলা (Floor):</td>
+                  <td style="font-weight: bold;">Floor:</td>
                   <td style="font-weight: bold;">${floorNo}</td>
                   <td style="font-weight: bold;">রুম & সিট:</td>
                   <td style="font-weight: bold;">Room: ${roomNo} | Seat: ${seatNo}</td>
@@ -630,7 +1272,7 @@ watch: {
             </div>
 
             <div class="sig-box">
-              <div class="sig-line">বোর্ডারের স্বাক্ষর</div>
+              <div class="sig-line">শিক্ষার্থীর স্বাক্ষর</div>
               <div class="sig-line">কর্তৃপক্ষের স্বাক্ষর</div>
             </div>
           </div>
@@ -638,9 +1280,27 @@ watch: {
         </html>
       `;
 
-      const win = window.open('', '_blank', 'width=850,height=900');
-      win.document.write(printHtml);
-      win.document.close();
+      const win = window.open('', '_blank');
+      if (win) {
+        win.document.write(printHtml);
+        win.document.close();
+        setTimeout(() => {
+          win.focus();
+          win.print();
+        }, 400);
+      }
+    },
+
+    printDocument(htmlContent, title = 'Document') {
+      const win = window.open('', '_blank');
+      if (win) {
+        win.document.write(htmlContent);
+        win.document.close();
+        setTimeout(() => {
+          win.focus();
+          win.print();
+        }, 400);
+      }
     },
 
     formatCurrency(val) {
@@ -651,17 +1311,86 @@ watch: {
 
     getRoomNo(str) {
       if (!str) return '-';
-      const parts = String(str).split('-');
-      return parts[0] || str;
+      const s = String(str).trim();
+      // Match patterns: A-4, 4-Block-A, 4-A, Block A 4
+      const m1 = s.match(/^([A-Za-z]+)[\-_](\d+)/);        // A-4 or Block-A-4
+      if (m1) return parseInt(m1[2], 10) || m1[2];
+      const m2 = s.match(/^(\d+)[\-_ ]*(?:Block)?[\-_ ]*[A-Za-z]/i); // 4-Block-A or 4-A
+      if (m2) return parseInt(m2[1], 10) || m2[1];
+      return s.split('-')[0] || s;
     },
 
-    getSeatNo(str) {
-      if (!str) return '-';
-      const parts = String(str).split('-');
-      if (parts.length > 1) {
-        return parts.slice(1).join('-');
+    getSeatNo(r, roomType, seatNo) {
+      if (!r) return '-';
+
+      let str = r;
+      let rType = roomType || '';
+      let sNo = seatNo;
+
+      if (typeof r === 'object' && r !== null) {
+        let items = r.room_items || [];
+        if (!items.length && r.floor_number_room_number_roomprice) {
+          try {
+            items = typeof r.floor_number_room_number_roomprice === 'string'
+              ? JSON.parse(r.floor_number_room_number_roomprice)
+              : r.floor_number_room_number_roomprice;
+          } catch(e) {}
+        }
+        if (items && items.length) {
+          return items.map(i => this.parseSeatItem(i)).join(', ');
+        }
+        str = r.roomnumber || r.room_number || '';
+        rType = r.room_type || roomType || '';
+        sNo = r.seat_no || seatNo;
       }
-      return '-';
+
+      return this.parseSeatItem({ roomnumber: str, room_type: rType, seat_no: sNo });
+    },
+
+    parseSeatItem(i) {
+      if (!i) return '-';
+      const rStr = String(i.roomnumber || i.room_number || '').trim();
+      const rType = String(i.room_type || '').toLowerCase();
+
+      const isSingle = rType.includes('single') || rType.includes('singel');
+      const isDouble = rType.includes('double') || rType.includes('doubel');
+
+      let block = null;
+      let seatSub = (i.seat_no !== null && i.seat_no !== undefined && String(i.seat_no).trim() !== '') ? String(i.seat_no).trim() : null;
+
+      let m = rStr.match(/^([A-Za-z]+)[\-_]\d+[\-_]Block[\-_](\d+)/i);
+      if (m) {
+        block = m[1].toUpperCase();
+        if (!seatSub) seatSub = m[2];
+      }
+
+      if (!block) {
+        m = rStr.match(/^\d+[\-_]Block[\-_]([A-Za-z]+)(?:[\-_](\d+))?/i);
+        if (m) {
+          block = m[1].toUpperCase();
+          if (!seatSub && m[2]) seatSub = m[2];
+        }
+      }
+
+      if (!block) {
+        m = rStr.match(/^([A-Za-z]+)[\-_]\d+(?:[\-_](\d+))?/i);
+        if (m) {
+          block = m[1].toUpperCase();
+          if (!seatSub && m[2]) seatSub = m[2];
+        }
+      }
+
+      if (!block) return rStr || '-';
+
+      if (isSingle) {
+        return `Block ${block}`;
+      }
+
+      if (seatSub) {
+        return `Block ${block}-${seatSub}`;
+      }
+
+      return `Block ${block}`;
     },
 
     isStudent(r) {
@@ -818,8 +1547,8 @@ watch: {
         ? r.room_items.map(i => this.getRoomNo(i.roomnumber)).join(', ')
         : (this.getRoomNo(r.roomnumber) || r.room_number || '-');
       const seatNo = (r.room_items && r.room_items.length)
-        ? r.room_items.map(i => this.getSeatNo(i.roomnumber)).join(', ')
-        : (this.getSeatNo(r.roomnumber) || '-');
+        ? r.room_items.map(i => this.getSeatNo(i)).join(', ')
+        : (this.getSeatNo(r) || '-');
       const floorNo = (r.room_items && r.room_items.length)
         ? [...new Set(r.room_items.map(i => i.floornumber))].filter(Boolean).join(', ')
         : (r.floornumber || '-');
@@ -868,7 +1597,7 @@ watch: {
 
       const docTitle = isProf ? 'কর্মজীবীর তথ্য - টি এস এস ভিলা' : 'শিক্ষার্থীর তথ্য - টি এস এস ভিলা';
       const sectionTitleText = isProf ? 'কর্মজীবীর তথ্য' : 'শিক্ষার্থীর তথ্য';
-      const signatureLabelText = isProf ? 'বোর্ডারের স্বাক্ষর' : 'শিক্ষার্থীর স্বাক্ষর';
+      const signatureLabelText = isProf ? 'কর্মজীবীর স্বাক্ষর' : 'শিক্ষার্থীর স্বাক্ষর';
 
       const institutionName = r.institution_name || '-';
       const fatherName = r.father_name || '-';
@@ -1297,6 +2026,11 @@ watch: {
         </html>
       `;
 
+      if (typeof window.printOrDownloadPdf === 'function') {
+        window.printOrDownloadPdf(html, 'Resident_Document');
+        return;
+      }
+
       let iframe = document.getElementById("print-resident-iframe");
       if (!iframe) {
         iframe = document.createElement("iframe");
@@ -1325,8 +2059,8 @@ watch: {
     ? r.room_items.map(i => this.getRoomNo(i.roomnumber)).join(', ')
     : (this.getRoomNo(r.roomnumber) || r.room_number || '-');
   const seatNo = (r.room_items && r.room_items.length)
-    ? r.room_items.map(i => this.getSeatNo(i.roomnumber)).join(', ')
-    : (this.getSeatNo(r.roomnumber) || '-');
+    ? r.room_items.map(i => this.getSeatNo(i)).join(', ')
+    : (this.getSeatNo(r) || '-');
   const floorNo = (r.room_items && r.room_items.length)
     ? [...new Set(r.room_items.map(i => i.floornumber))].filter(Boolean).join(', ')
     : (r.floornumber || '-');
@@ -1747,7 +2481,7 @@ watch: {
         this.toast("এক্সপোর্ট করার মতো কোনো ডাটা পাওয়া যায়নি", "warning");
         return;
       }
-      const headers = ["SL", "Full Name", "Phone", "Email", "NID", "User Type", "Room No", "Seat No", "Floor No", "Monthly Rent", "Check In", "Check Out", "Address", "District", "Thana"];
+      const headers = ["SL", "Full Name", "Phone", "Email", "NID", "User Type", "Room No", "Seat No", "Floor No", "Monthly Rent", "Advance Deposit", "Development Fee", "Check In", "Check Out", "Address", "District", "Thana"];
       const rows = this.rooms.map((r, index) => [
         index + 1,
         r.full_name || '',
@@ -1756,9 +2490,11 @@ watch: {
         r.nid || '',
         r.user_type || 'Student',
         (r.room_items && r.room_items.length) ? r.room_items.map(i => this.getRoomNo(i.roomnumber)).join(', ') : (this.getRoomNo(r.roomnumber) || r.room_number || ''),
-        (r.room_items && r.room_items.length) ? r.room_items.map(i => this.getSeatNo(i.roomnumber)).join(', ') : (this.getSeatNo(r.roomnumber) || ''),
+        (r.room_items && r.room_items.length) ? r.room_items.map(i => this.getSeatNo(i)).join(', ') : (this.getSeatNo(r) || ''),
         (r.room_items && r.room_items.length) ? [...new Set(r.room_items.map(i => i.floornumber))].filter(Boolean).join(', ') : (r.floornumber || ''),
         r.monthly_amount || 0,
+        this.getAdvanceDepositAmount(r),
+        r.development_fee || 0,
         r.check_in || '',
         r.check_out || '',
         r.address || '',
@@ -1993,6 +2729,90 @@ watch: {
   .booking-total {
     font-size: 14px;
     padding: 10px 14px;
+  }
+}
+
+/* Sticky Action Column */
+.sticky-action-col {
+  position: sticky !important;
+  right: 0 !important;
+  background-color: #ffffff !important;
+  z-index: 5;
+  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.08);
+  min-width: 360px;
+}
+thead th.sticky-action-col {
+  background-color: #f5f6f8 !important;
+  z-index: 6;
+}
+tr:hover td.sticky-action-col {
+  background-color: #f0f2f5 !important;
+}
+
+/* Mobile Action Dropdown Popup */
+.mobile-action-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  min-width: 185px;
+  z-index: 99999 !important;
+  text-align: left;
+  animation: fadeInMenu 0.15s ease-in-out;
+}
+
+@keyframes fadeInMenu {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Comprehensive Multi-Device Responsiveness */
+@media (max-width: 991px) {
+  .sticky-action-col {
+    min-width: 340px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sticky-action-col {
+    min-width: 55px !important;
+    width: 55px !important;
+    max-width: 55px !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+  }
+  thead th.sticky-action-col {
+    width: 55px !important;
+    min-width: 55px !important;
+    font-size: 11px !important;
+  }
+  .mobile-action-toggle-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    padding: 0 !important;
+  }
+  .table-responsive {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 576px) {
+  .card-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .card-header input {
+    width: 100% !important;
+  }
+  .modal-dialog {
+    margin: 0.5rem;
+  }
+  .modal-body {
+    padding: 1rem !important;
+  }
+  .modal-footer button {
+    font-size: 0.78rem !important;
+    padding: 0.35rem 0.6rem !important;
   }
 }
 </style>

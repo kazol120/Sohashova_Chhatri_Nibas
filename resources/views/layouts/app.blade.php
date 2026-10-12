@@ -132,6 +132,9 @@ $baseurl = url('/');
               });
           });
       </script>
-  @endif
+      @endif
+
+  <!-- Language Translation Support -->
+  @include('backend.layouts.partial.translation')
 </body>
 </html>

@@ -1,3 +1,109 @@
+<style>
+/* =========================================================
+   PROFESSIONAL SIDEBAR MENU STYLING
+   ========================================================= */
+.bg-menu-theme {
+    background-color: #ffffff !important;
+}
+
+/* Section Header Labels */
+.bg-menu-theme .menu-header .menu-header-text {
+    color: #475569 !important;
+    font-weight: 800 !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+}
+
+/* Top-level menu link (normal state) */
+.bg-menu-theme .menu-inner > .menu-item > .menu-link {
+    color: #1e293b !important;
+    font-weight: 600 !important;
+    font-size: 0.93rem !important;
+    border-radius: 0.5rem !important;
+    margin: 2px 0.75rem !important;
+    padding: 0.65rem 1rem !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+/* Top-level menu link hover state */
+.bg-menu-theme .menu-inner > .menu-item:not(.active) > .menu-link:hover {
+    background-color: #f1f5f9 !important;
+    color: #4f46e5 !important;
+}
+
+.bg-menu-theme .menu-inner > .menu-item:not(.active) > .menu-link:hover .menu-icon {
+    color: #4f46e5 !important;
+}
+
+/* Top-level active parent menu item (e.g. Room Management open) */
+.bg-menu-theme .menu-inner > .menu-item.active > .menu-link,
+.bg-menu-theme .menu-inner > .menu-item.open > .menu-link.menu-toggle {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    border-radius: 0.5rem !important;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35) !important;
+}
+
+.bg-menu-theme .menu-inner > .menu-item.active > .menu-link .menu-icon,
+.bg-menu-theme .menu-inner > .menu-item.active > .menu-link i,
+.bg-menu-theme .menu-inner > .menu-item.active > .menu-link div,
+.bg-menu-theme .menu-inner > .menu-item.open > .menu-link.menu-toggle .menu-icon,
+.bg-menu-theme .menu-inner > .menu-item.open > .menu-link.menu-toggle i,
+.bg-menu-theme .menu-inner > .menu-item.open > .menu-link.menu-toggle div {
+    color: #ffffff !important;
+}
+
+/* Submenu container */
+.bg-menu-theme .menu-sub {
+    padding-left: 0.5rem !important;
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+}
+
+/* Submenu normal link */
+.bg-menu-theme .menu-sub .menu-item .menu-link {
+    color: #334155 !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    padding: 0.55rem 1rem 0.55rem 2.2rem !important;
+    margin: 2px 0.75rem !important;
+    border-radius: 0.4rem !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+/* Submenu hover state */
+.bg-menu-theme .menu-sub .menu-item:not(.active) .menu-link:hover {
+    background-color: #e0e7ff !important;
+    color: #3730a3 !important;
+    font-weight: 700 !important;
+}
+
+/* Submenu ACTIVE state (Solves the white text on light background issue!) */
+.bg-menu-theme .menu-sub .menu-item.active > .menu-link {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35) !important;
+}
+
+.bg-menu-theme .menu-sub .menu-item.active > .menu-link div,
+.bg-menu-theme .menu-sub .menu-item.active > .menu-link span,
+.bg-menu-theme .menu-sub .menu-item.active > .menu-link i {
+    color: #ffffff !important;
+}
+
+/* Bullet icon for submenu */
+.bg-menu-theme .menu-sub .menu-item .menu-link::before {
+    background-color: #94a3b8 !important;
+}
+.bg-menu-theme .menu-sub .menu-item.active .menu-link::before {
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5) !important;
+}
+</style>
+
           <ul class="menu-inner py-2">
             <!-- SECTION 1: DASHBOARD -->
             <li class="menu-header small text-uppercase">
@@ -11,17 +117,29 @@
             </li>
 
             <!-- Resident My Payments & Meals -->
-            @unlessrole('admin|staffs')
+            @unlessrole('admin|super-admin|staffs|manager')
             <li class="menu-item {{ Route::currentRouteNamed('dashboard.my-payments') ? 'active' : '' }}">
                 <a href="{{ route('dashboard.my-payments') }}" class="menu-link">
                     <i class="menu-icon tf-icons ti ti-wallet"></i>
                     <div data-i18n="My Payments" class="fs-5">My Payments</div>
                 </a>
             </li>
+            <li class="menu-item {{ Route::currentRouteNamed('dashboard.my-electricity-bills') ? 'active' : '' }}">
+                <a href="{{ route('dashboard.my-electricity-bills') }}" class="menu-link text-warning fw-semibold">
+                    <i class="menu-icon tf-icons ti ti-bolt text-warning"></i>
+                    <div data-i18n="Electricity Bills" class="fs-5 text-warning">Electricity Bills</div>
+                </a>
+            </li>
             <li class="menu-item {{ Route::currentRouteNamed('dashboard.my-meals') ? 'active' : '' }}">
                 <a href="{{ route('dashboard.my-meals') }}" class="menu-link">
                     <i class="menu-icon tf-icons ti ti-salad"></i>
                     <div data-i18n="My Meal History" class="fs-5">My Meal History</div>
+                </a>
+            </li>
+            <li class="menu-item {{ Route::currentRouteNamed('guest-meals.*') ? 'active' : '' }}">
+                <a href="{{ route('guest-meals.index') }}" class="menu-link text-primary fw-semibold">
+                    <i class="menu-icon tf-icons ti ti-users text-primary"></i>
+                    <div data-i18n="Guest Meals" class="fs-5">Guest Meals</div>
                 </a>
             </li>
             <li class="menu-item {{ Route::currentRouteNamed('meals.create') ? 'active' : '' }}">
@@ -36,11 +154,17 @@
                     <div data-i18n="My Complaints" class="fs-5 text-danger fw-semibold">My Complaints</div>
                 </a>
             </li>
+            <li class="menu-item {{ Route::currentRouteNamed('check-in-out.index') ? 'active' : '' }}">
+                <a href="{{ route('check-in-out.index') }}" class="menu-link text-warning fw-semibold">
+                    <i class="menu-icon tf-icons ti ti-door-exit text-warning"></i>
+                    <div data-i18n="Check In / Out" class="fs-5 text-warning">Check In / Out</div>
+                </a>
+            </li>
             @endunlessrole
 
 
             <!-- SECTION 2: CORE MANAGEMENT -->
-            @role('admin|staffs')
+            @role('admin|super-admin|staffs|manager')
             <li class="menu-header small text-uppercase mt-3">
                 <span class="menu-header-text fw-bold text-primary" style="letter-spacing: 0.8px; font-size: 0.72rem;">CORE MANAGEMENT</span>
             </li>
@@ -61,7 +185,7 @@
             </li>
 
             {{-- Room --}}
-            <li class="menu-item {{ Route::currentRouteNamed('room-list.index') || Request::is('room-booking-history') || Route::currentRouteNamed('room-release.index') || Route::currentRouteNamed('room-release.history') || Route::currentRouteNamed('room-change.index') ? 'active open' : '' }}">
+            <li class="menu-item {{ Route::currentRouteNamed('room-list.index') || Request::is('room-booking-history') || Route::currentRouteNamed('room-release.index') || Route::currentRouteNamed('room-release.history') || Route::currentRouteNamed('room-deleted.history') || Route::currentRouteNamed('room-change.index') ? 'active open' : '' }}">
               <a href="javascript:void(0)" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ti ti-bed"></i>
                 <div data-i18n="Room" class="fs-5">Room Management</div>
@@ -92,27 +216,61 @@
                     <div class="fs-5">Release History</div>
                   </a>
                 </li>
+                @role('admin|super-admin')
+                <li class="menu-item {{ Route::currentRouteNamed('room-deleted.history') ? 'active' : '' }}">
+                  <a href="{{ route('room-deleted.history') }}" class="menu-link">
+                    <div class="fs-5">Deleted History</div>
+                  </a>
+                </li>
+                @endrole
               </ul>
             </li>
 
-            {{-- Development Fee --}}
-            <li class="menu-item {{ Route::currentRouteNamed('development-fee.index') ? 'active' : '' }}">
-              <a href="{{ route('development-fee.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons ti ti-coin"></i>
-                <div class="fs-5">Development Fee</div>
+            {{-- Resident Passwords & Email Credentials (Admin Only) --}}
+            @role('admin|super-admin')
+            <li class="menu-item {{ Route::currentRouteNamed('resident-credentials.index') ? 'active' : '' }}">
+              <a href="{{ route('resident-credentials.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-key"></i>
+                <div class="fs-5">Resident Passwords</div>
+              </a>
+            </li>
+            @endrole
+
+            {{-- Resident 360 Lifetime History --}}
+            <li class="menu-item {{ Route::currentRouteNamed('resident-history.index') ? 'active' : '' }}">
+              <a href="{{ route('resident-history.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-id-badge-2"></i>
+                <div class="fs-5">Resident Full History</div>
               </a>
             </li>
 
-            {{-- Advance Fee --}}
-            <li class="menu-item {{ Route::currentRouteNamed('advance-fee.index') ? 'active' : '' }}">
-              <a href="{{ route('advance-fee.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons ti ti-wallet"></i>
-                <div class="fs-5">Advance Fee</div>
+            {{-- Check In / Check Out --}}
+            <li class="menu-item {{ Route::currentRouteNamed('check-in-out.index') ? 'active' : '' }}">
+              <a href="{{ route('check-in-out.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-door-exit text-warning"></i>
+                <div class="fs-5 d-flex align-items-center justify-content-between w-100">
+                    <span>Check In / Out</span>
+                    @php $currentlyOutsideCount = \App\Models\Backend\ResidentCheckInOut::where('status', 0)->count(); @endphp
+                    @if($currentlyOutsideCount > 0)
+                        <span class="badge bg-warning text-dark rounded-pill px-2 py-0.5 ms-2" style="font-size: 0.75rem;">{{ $currentlyOutsideCount }}</span>
+                    @endif
+                </div>
               </a>
             </li>
 
-            {{-- Monthly Payments --}}
-            <li class="menu-item {{ Route::currentRouteNamed('monthly-payments.index') ? 'active open' : '' }}">
+
+            {{-- Booking Room Button Status (Admin Only) --}}
+            @role('admin|super-admin')
+            <li class="menu-item {{ Route::currentRouteNamed('booking-button.index') ? 'active' : '' }}">
+              <a href="{{ route('booking-button.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-toggle-right text-primary"></i>
+                <div class="fs-5">Booking Room Button Status</div>
+              </a>
+            </li>
+            @endrole
+
+            {{-- Monthly Payments & Electricity Bills --}}
+            <li class="menu-item {{ Route::currentRouteNamed('monthly-payments.index') || Route::currentRouteNamed('electricity-bills.index') ? 'active open' : '' }}">
               <a href="javascript:void(0)" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ti ti-cash-banknote"></i>
                 <div data-i18n="Monthly Payments" class="fs-5">Monthly Payments</div>
@@ -120,7 +278,12 @@
               <ul class="menu-sub">
                 <li class="menu-item {{ Route::currentRouteNamed('monthly-payments.index') ? 'active' : '' }}">
                   <a href="{{ route('monthly-payments.index') }}" class="menu-link">
-                    <div class="fs-5">Payments</div>
+                    <div class="fs-5">Payments Collection</div>
+                  </a>
+                </li>
+                <li class="menu-item {{ Route::currentRouteNamed('electricity-bills.index') ? 'active' : '' }}">
+                  <a href="{{ route('electricity-bills.index') }}" class="menu-link text-warning fw-semibold">
+                    <div class="fs-5"><i class="ti ti-bolt me-1 text-warning"></i>Electricity Bills</div>
                   </a>
                 </li>
               </ul>
@@ -128,7 +291,7 @@
             @endrole
 
             <!-- SECTION 3: OPERATIONS -->
-            @role('admin|staffs')
+            @role('admin|super-admin|staffs|manager')
             <li class="menu-header small text-uppercase mt-3">
                 <span class="menu-header-text fw-bold text-primary" style="letter-spacing: 0.8px; font-size: 0.72rem;">OPERATIONS</span>
             </li>
@@ -150,7 +313,7 @@
 
 
             {{-- Meal Management --}}
-            <li class="menu-item {{ Route::currentRouteNamed('meals.index') || Route::currentRouteNamed('meals.create') || Route::currentRouteNamed('meal-history') || Route::currentRouteNamed('deposits.index') || Route::currentRouteNamed('deposits.create') || Route::currentRouteNamed('fines.index') || Route::currentRouteNamed('fines.create') ? 'active open' : '' }}">
+            <li class="menu-item {{ Route::currentRouteNamed('meals.index') || Route::currentRouteNamed('meals.create') || Route::currentRouteNamed('meal-history') || Route::currentRouteNamed('deposits.index') || Route::currentRouteNamed('deposits.create') || Route::currentRouteNamed('deposit-refunds.*') || Route::currentRouteNamed('guest-meals.*') || (Route::currentRouteNamed('setting.index') && request()->slug === 'meal_setting') ? 'active open' : '' }}">
               <a href="javascript:void(0)" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ti ti-soup"></i>
                 <div class="fs-5">Meal Management</div>
@@ -166,6 +329,11 @@
                     <div class="fs-5">Daily Meal List</div>
                   </a>
                 </li>
+                <li class="menu-item {{ Route::currentRouteNamed('guest-meals.index') || Route::currentRouteNamed('guest-meals.create') || Route::currentRouteNamed('guest-meals.edit') ? 'active' : '' }}">
+                  <a href="{{ route('guest-meals.index') }}" class="menu-link text-primary fw-semibold">
+                    <div class="fs-5"><i class="ti ti-users me-1"></i>Guest Meal</div>
+                  </a>
+                </li>
                 <li class="menu-item {{ Route::currentRouteNamed('meal-history') ? 'active' : '' }}">
                   <a href="{{ route('meal-history') }}" class="menu-link">
                     <div class="fs-5">Meal History</div>
@@ -176,16 +344,23 @@
                     <div class="fs-5">Meal Deposits</div>
                   </a>
                 </li>
+                <li class="menu-item {{ Route::currentRouteNamed('deposit-refunds.*') ? 'active' : '' }}">
+                  <a href="{{ route('deposit-refunds.index') }}" class="menu-link text-danger fw-semibold">
+                    <div class="fs-5"><i class="ti ti-cash-refund me-1 text-danger"></i>Deposit Refund (ফেরত)</div>
+                  </a>
+                </li>
                 <li class="menu-item {{ Route::currentRouteNamed('meal-requests.index') ? 'active' : '' }}">
                   <a href="{{ route('meal-requests.index') }}" class="menu-link">
-                    <div class="fs-5">Meal Requests (অনুরোধ)</div>
+                    <div class="fs-5">Meal Requests</div>
                   </a>
                 </li>
-                <li class="menu-item {{ Route::currentRouteNamed('fines.index') || Route::currentRouteNamed('fines.create') ? 'active' : '' }}">
-                  <a href="{{ route('fines.index') }}" class="menu-link">
-                    <div class="fs-5">Meal Fines</div>
+                @role('admin|super-admin')
+                <li class="menu-item {{ Route::currentRouteNamed('setting.index') && request()->slug === 'meal_setting' ? 'active' : '' }}">
+                  <a href="{{ route('setting.index', 'meal_setting') }}" class="menu-link">
+                    <div class="fs-5">Meal Rate Setting</div>
                   </a>
                 </li>
+                @endrole
               </ul>
             </li>
 
@@ -241,7 +416,7 @@
             @endrole
 
             <!-- SECTION 4: HR & REPORTS -->
-            @role('admin|staffs')
+            @role('admin|super-admin|staffs|manager')
             <li class="menu-header small text-uppercase mt-3">
                 <span class="menu-header-text fw-bold text-primary" style="letter-spacing: 0.8px; font-size: 0.72rem;">HR & REPORTS</span>
             </li>
@@ -253,7 +428,7 @@
                 <div data-i18n="Staffs" class="fs-5">Staffs</div>
               </a>
               <ul class="menu-sub">
-                @role('admin')
+                @role('admin|super-admin')
                 <li class="menu-item {{ Route::currentRouteNamed('staffs.index') ? 'active' : '' }}">
                   <a href="{{ route('staffs.index') }}" class="menu-link">
                     <div class="fs-5">Staffs List</div>
@@ -265,7 +440,7 @@
                     <div class="fs-5">Staff Attendance</div>
                   </a>
                 </li>
-                @role('admin')
+                @role('admin|super-admin')
                 <li class="menu-item {{ Route::currentRouteNamed('staff-salary.index') ? 'active' : '' }}">
                   <a href="{{ route('staff-salary.index') }}" class="menu-link">
                     <div class="fs-5">Staff Salary</div>
@@ -293,8 +468,16 @@
                 </ul>
             </li>
 
+            {{-- Emergency Notice (Outside Frontend) --}}
+            <li class="menu-item {{ Route::currentRouteNamed('resident-notices.index') ? 'active' : '' }}">
+                <a href="{{ route('resident-notices.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-bell-ringing"></i>
+                    <div data-i18n="Emergency Notice" class="fs-5">Emergency Notice</div>
+                </a>
+            </li>
+
             {{-- Frontend --}}
-            <li class="menu-item {{ Route::currentRouteNamed('notice.index') || Route::currentRouteNamed('residence-overview.index') || Route::currentRouteNamed('gallery.index') ? 'active open' : '' }}">
+            <li class="menu-item {{ Route::currentRouteNamed('notice.index') || Route::currentRouteNamed('residence-overview.index') || Route::currentRouteNamed('gallery.index') || Route::currentRouteNamed('slider.index') || Route::currentRouteNamed('hostel-rules.index') ? 'active open' : '' }}">
                 <a href="javascript:void(0)" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-world"></i>
                     <div data-i18n="Frontend" class="fs-5">Frontend</div>
@@ -302,7 +485,7 @@
                 <ul class="menu-sub">
                     <li class="menu-item {{ Route::currentRouteNamed('notice.index') ? 'active' : '' }}">
                         <a href="{{ route('notice.index') }}" class="menu-link">
-                            <div class="fs-5">Notice</div>
+                            <div class="fs-5">Notice (Marquee)</div>
                         </a>
                     </li>
                     <li class="menu-item {{ Route::currentRouteNamed('residence-overview.index') ? 'active' : '' }}">
@@ -313,6 +496,16 @@
                     <li class="menu-item {{ Route::currentRouteNamed('gallery.index') ? 'active' : '' }}">
                         <a href="{{ route('gallery.index') }}" class="menu-link">
                             <div class="fs-5">Your Gallery</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::currentRouteNamed('slider.index') ? 'active' : '' }}">
+                        <a href="{{ route('slider.index') }}" class="menu-link">
+                            <div class="fs-5">Manage Sliders</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ Route::currentRouteNamed('hostel-rules.index') ? 'active' : '' }}">
+                        <a href="{{ route('hostel-rules.index') }}" class="menu-link">
+                            <div class="fs-5">নিয়মাবলী (Hostel Rules)</div>
                         </a>
                     </li>
                 </ul>

@@ -4,19 +4,29 @@
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
   <!-- Month Filter Header -->
-  <div class="card mb-4">
+  <div class="card mb-4 shadow-sm border-0">
     <div class="card-body py-3">
-      <form method="GET" action="{{ route('dashboard.my-meals') }}" class="row g-3 align-items-center">
-        <div class="col-auto">
-          <label class="col-form-label fw-bold"><i class="ti ti-calendar me-1"></i> Select Month:</label>
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <form method="GET" action="{{ route('dashboard.my-meals') }}" class="row g-2 align-items-center">
+          <div class="col-auto">
+            <label class="col-form-label fw-bold text-dark"><i class="ti ti-calendar me-1 text-primary"></i> Select Month:</label>
+          </div>
+          <div class="col-auto">
+            <input type="month" name="month" value="{{ $selectedMonth }}" class="form-control fw-bold" onchange="this.form.submit()">
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary fw-bold"><i class="ti ti-filter me-1"></i> Filter</button>
+          </div>
+        </form>
+
+        <div>
+          <a href="{{ route('meal-history.resident-detail', $user->id) }}?month={{ $selectedMonth }}" 
+             target="_blank" 
+             class="btn btn-dark fw-bold shadow-sm">
+            <i class="ti ti-printer me-1"></i> প্রিন্ট / PDF রিপোর্ট সেভ করুন
+          </a>
         </div>
-        <div class="col-auto">
-          <input type="month" name="month" value="{{ $selectedMonth }}" class="form-control" onchange="this.form.submit()">
-        </div>
-        <div class="col-auto">
-          <button type="submit" class="btn btn-primary"><i class="ti ti-filter me-1"></i> Filter</button>
-        </div>
-      </form>
+      </div>
     </div>
   </div>
 
@@ -40,15 +50,20 @@
   <div class="row g-4 mb-4">
     <!-- Total Meals -->
     <div class="col-sm-6 col-xl-3">
-      <div class="card">
+      <div class="card border-0 shadow-sm h-100">
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
               <span class="text-heading fw-semibold">Total Meals</span>
               <div class="d-flex align-items-center my-1">
-                <h3 class="mb-0 me-2 text-dark fw-bold">{{ $mealSummary->total_meal }}</h3>
+                <h3 class="mb-0 me-2 text-dark fw-bold">
+                  {{ (float)$mealSummary->total_meal == (int)$mealSummary->total_meal ? (int)$mealSummary->total_meal : number_format($mealSummary->total_meal, 1) }}
+                </h3>
               </div>
               <small class="text-muted">{{ \Carbon\Carbon::parse($selectedMonth . '-01')->format('F Y') }}</small>
+              @if(($totalHalfCount ?? 0) > 0)
+                <small class="text-muted d-block font-normal">({{ $totalFullCount ?? 0 }} Full, {{ $totalHalfCount ?? 0 }} Half)</small>
+              @endif
             </div>
             <div class="avatar">
               <span class="avatar-initial rounded bg-label-info">
@@ -62,13 +77,13 @@
 
     <!-- Meal Cost -->
     <div class="col-sm-6 col-xl-3">
-      <div class="card">
+      <div class="card border-0 shadow-sm h-100">
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
               <span class="text-heading fw-semibold">Meal Cost</span>
               <div class="d-flex align-items-center my-1">
-                <h3 class="mb-0 me-2 text-danger fw-bold">৳{{ number_format($mealSummary->meal_cost, 2) }}</h3>
+                <h3 class="mb-0 me-2 text-danger fw-bold">৳ {{ number_format($mealSummary->meal_cost, 2) }}</h3>
               </div>
               <small class="text-muted">Total meal charges</small>
             </div>
@@ -84,13 +99,13 @@
 
     <!-- Meal Deposit -->
     <div class="col-sm-6 col-xl-3">
-      <div class="card">
+      <div class="card border-0 shadow-sm h-100">
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
               <span class="text-heading fw-semibold">Meal Deposit</span>
               <div class="d-flex align-items-center my-1">
-                <h3 class="mb-0 me-2 text-success fw-bold">৳{{ number_format($mealSummary->deposit_total, 2) }}</h3>
+                <h3 class="mb-0 me-2 text-success fw-bold">৳ {{ number_format($mealSummary->deposit_total, 2) }}</h3>
               </div>
               <small class="text-muted">Deposited amount</small>
             </div>
@@ -106,14 +121,14 @@
 
     <!-- Meal Balance -->
     <div class="col-sm-6 col-xl-3">
-      <div class="card">
+      <div class="card border-0 shadow-sm h-100">
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
             <div class="content-left">
               <span class="text-heading fw-semibold">Outstanding Balance</span>
               <div class="d-flex align-items-center my-1">
                 <h3 class="mb-0 me-2 {{ $mealSummary->balance < 0 ? 'text-danger' : 'text-success' }} fw-bold">
-                  ৳{{ number_format($mealSummary->balance, 2) }}
+                  ৳ {{ number_format($mealSummary->balance, 2) }}
                 </h3>
               </div>
               <small class="text-muted">{{ $mealSummary->balance < 0 ? 'Due Amount' : 'Surplus Advance' }}</small>
@@ -129,110 +144,190 @@
     </div>
   </div>
 
-  <!-- Detailed Meal History Table -->
-  <div class="card">
-    <div class="card-header border-bottom py-3 d-flex align-items-center justify-content-between">
+  <!-- Detailed Monthly Meal History Table (1 to 30/31 Days) -->
+  <div class="card border-0 shadow-sm">
+    <div class="card-header border-bottom py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
       <h5 class="card-title mb-0 fw-bold text-dark">
-        <i class="ti ti-history me-2 text-primary"></i>Meal Breakdown ({{ \Carbon\Carbon::parse($selectedMonth . '-01')->format('F Y') }})
+        <i class="ti ti-history me-2 text-primary"></i>মাসের প্রতিদিনের মিলের বিবরণী — {{ \Carbon\Carbon::parse($selectedMonth . '-01')->format('F Y') }}
       </h5>
+      <div class="d-flex gap-2">
+        <span class="badge bg-label-primary px-3 py-2 fs-7 fw-semibold">
+          ফুল মিল রেট: ৳ {{ number_format($fullRate ?? 30, 2) }}
+        </span>
+        <span class="badge bg-label-warning px-3 py-2 fs-7 fw-semibold">
+          হাফ মিল রেট: ৳ {{ number_format($halfRate ?? 15, 2) }}
+        </span>
+      </div>
     </div>
     <div class="table-responsive text-nowrap">
       <table class="table table-hover align-middle mb-0">
         <thead class="table-light">
           <tr class="text-muted small fw-bold text-uppercase">
-            <th class="ps-4">Date</th>
-            <th class="text-center">Meal Status (মিল স্ট্যাটাস)</th>
-            <th class="text-center">Half Meal</th>
-            <th class="text-center">Full Meal</th>
-            <th>Note</th>
-            <th class="text-center">Action</th>
+            <th style="width: 60px;" class="text-center">#</th>
+            <th>তারিখ (Date)</th>
+            <th>বার (Day)</th>
+            <th class="text-center">মিল স্ট্যাটাস</th>
+            <th class="text-center">মিলের সংখ্যা</th>
+            <th class="text-end pe-4">দৈনিক খরচ</th>
+            <th>নোট / স্পেশাল মিলের বিবরণ</th>
           </tr>
         </thead>
         <tbody>
-          @forelse($mealsList as $meal)
-            <tr class="{{ $meal->is_off ? 'table-light text-muted' : '' }}">
-              <td class="ps-4 fw-semibold">{{ \Carbon\Carbon::parse($meal->date)->format('d M Y (D)') }}</td>
-              <td class="text-center">
-                @if($meal->is_off)
-                  <span class="badge bg-danger px-3 py-1 fs-7">🚫 Meal OFF (মিল বন্ধ)</span>
-                @else
-                  <span class="badge bg-success px-3 py-1 fs-7">✅ Meal ON (চালু)</span>
+          @php
+            $todayDate = now()->format('Y-m-d');
+          @endphp
+          @forelse($days as $index => $d)
+            @php
+              $isFuture = $d->date > $todayDate;
+            @endphp
+            <tr class="{{ $d->is_off ? 'table-light text-muted' : '' }} {{ $d->date == $todayDate ? 'table-info fw-semibold' : '' }}">
+              <td class="text-center font-monospace text-muted">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</td>
+              <td class="fw-semibold text-dark">
+                {{ $d->date_formatted }}
+                @if($d->date == $todayDate)
+                  <span class="badge bg-primary text-white ms-1" style="font-size: 0.65rem;">আজ (Today)</span>
                 @endif
               </td>
+              <td>{{ $d->day_name }}</td>
               <td class="text-center">
-                @if($meal->half_meal && !$meal->is_off)
-                  <span class="badge bg-label-info">{{ $meal->note == 'day' ? '☀️ Day' : '🌙 Night' }}</span>
+                @if($d->is_off)
+                  @php
+                    $dNoteLower = strtolower($d->note ?? '');
+                  @endphp
+                  @if(str_contains($dNoteLower, 'checked in') || str_contains($dNoteLower, 'resumes tomorrow') || (str_contains($dNoteLower, 'check') && str_contains($dNoteLower, 'in')) || str_contains($dNoteLower, 'চেক-ইন'))
+                    <span class="badge bg-success px-2.5 py-1 fs-7">🟢 চেক-ইন (কাল চালু)</span>
+                  @elseif(str_contains($dNoteLower, 'leave') || str_contains($dNoteLower, 'checked out') || str_contains($dNoteLower, 'check') || str_contains($dNoteLower, 'চেক-আউট'))
+                    <span class="badge bg-danger px-2.5 py-1 fs-7">🚫 চেক-আউট (মিল বন্ধ)</span>
+                  @elseif(str_contains($dNoteLower, 'zero deposit') || str_contains($dNoteLower, 'নো ডিপোজিট'))
+                    <span class="badge bg-danger px-2.5 py-1 fs-7">🚫 নো ডিপোজিট (OFF)</span>
+                  @else
+                    <span class="badge bg-danger px-3 py-1 fs-7">🚫 অফ (OFF)</span>
+                  @endif
+                @elseif($d->meal_type === 'half_day')
+                  <span class="badge bg-warning text-dark px-3 py-1 fs-7">☀️ হাফ (দিন)</span>
+                @elseif($d->meal_type === 'half_night')
+                  <span class="badge bg-info text-white px-3 py-1 fs-7">🌙 হাফ (রাত)</span>
+                @elseif($d->meal_type === 'full' || $d->is_meal_on)
+                  <span class="badge bg-success px-3 py-1 fs-7">✅ চালু (ON)</span>
+                @else
+                  <span class="badge bg-danger px-3 py-1 fs-7">🚫 অফ (OFF)</span>
+                @endif
+              </td>
+              <td class="text-center fw-bold text-dark">
+                @if($d->meal_count == 0.5)
+                  <span class="badge bg-label-warning text-dark">0.5 (হাফ)</span>
+                @elseif($d->meal_count == 1)
+                  <span>1</span>
+                @else
+                  <span class="text-muted">0</span>
+                @endif
+              </td>
+              <td class="text-end pe-4 fw-bold {{ $d->day_cost > 0 ? 'text-danger' : 'text-muted' }}">
+                ৳ {{ number_format($d->day_cost, 2) }}
+              </td>
+              <td>
+                @if($d->note)
+                  @php
+                    $badgeClass = 'bg-label-secondary text-secondary';
+                    if (str_contains($d->note, 'চেক-ইন')) {
+                        $badgeClass = 'bg-label-success text-success';
+                    } elseif (str_contains($d->note, 'চেক-আউট') || str_contains($d->note, 'নো ডিপোজিট')) {
+                        $badgeClass = 'bg-label-danger text-danger';
+                    } elseif (str_contains($d->note, 'Special') || str_contains($d->note, '⭐')) {
+                        $badgeClass = 'bg-label-warning text-dark';
+                    } elseif (str_contains($d->note, 'Full')) {
+                        $badgeClass = 'bg-label-success text-success';
+                    }
+                  @endphp
+                  <span class="badge {{ $badgeClass }} fw-bold">{{ $d->note }}</span>
                 @else
                   <span class="text-muted">—</span>
                 @endif
-              </td>
-              <td class="text-center">
-                @if($meal->full_meal && !$meal->is_off)
-                  <span class="badge bg-label-success">Yes</span>
-                @else
-                  <span class="text-muted">—</span>
-                @endif
-              </td>
-              <td>{{ $meal->note ?: '—' }}</td>
-              <td class="text-center">
-                <div class="dropdown">
-                  <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle waves-effect" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="ti ti-settings me-1"></i> Change Status
-                  </button>
-                  <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                      <form action="{{ route('meals.update-status') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="date" value="{{ $meal->date }}">
-                        <input type="hidden" name="meal_type" value="full">
-                        <button type="submit" class="dropdown-item text-success fw-semibold">
-                          <i class="ti ti-check me-2"></i> 🟢 Full Meal (ফুল মিল)
-                        </button>
-                      </form>
-                    </li>
-                    <li>
-                      <form action="{{ route('meals.update-status') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="date" value="{{ $meal->date }}">
-                        <input type="hidden" name="meal_type" value="half_day">
-                        <button type="submit" class="dropdown-item text-info fw-semibold">
-                          <i class="ti ti-sun me-2"></i> ☀️ Half Day (দিনের হাফ)
-                        </button>
-                      </form>
-                    </li>
-                    <li>
-                      <form action="{{ route('meals.update-status') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="date" value="{{ $meal->date }}">
-                        <input type="hidden" name="meal_type" value="half_night">
-                        <button type="submit" class="dropdown-item text-primary fw-semibold">
-                          <i class="ti ti-moon me-2"></i> 🌙 Half Night (রাতের হাফ)
-                        </button>
-                      </form>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                      <form action="{{ route('meals.update-status') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="date" value="{{ $meal->date }}">
-                        <input type="hidden" name="meal_type" value="off">
-                        <button type="submit" class="dropdown-item text-danger fw-bold">
-                          <i class="ti ti-ban me-2"></i> 🚫 Meal OFF (মিল বন্ধ)
-                        </button>
-                      </form>
-                    </li>
-                  </ul>
-                </div>
               </td>
             </tr>
           @empty
             <tr>
-              <td colspan="6" class="text-center py-4 text-muted">No meals recorded for this month.</td>
+              <td colspan="7" class="text-center py-4 text-muted">এই মাসের কোনো তথ্য পাওয়া যায়নি।</td>
             </tr>
           @endforelse
         </tbody>
+        <tfoot class="table-light">
+          <tr class="fw-bold">
+            <td colspan="4" class="text-end">নিয়মিত মিলের মোট (Regular Meal Total):</td>
+            <td class="text-center text-primary fs-6">
+              @php
+                $regTotal = ($totalFullCount ?? 0) + (($totalHalfCount ?? 0) * 0.5);
+              @endphp
+              {{ (float)$regTotal == (int)$regTotal ? (int)$regTotal : number_format($regTotal, 1) }} টি
+              @if(($totalHalfCount ?? 0) > 0)
+                <div class="small text-muted fw-normal">({{ $totalFullCount }} Full, {{ $totalHalfCount }} Half)</div>
+              @endif
+            </td>
+            <td class="text-end pe-4 text-danger fs-6">৳ {{ number_format($totalCost, 2) }}</td>
+            <td></td>
+          </tr>
+        </tfoot>
       </table>
     </div>
   </div>
+
+  @if(isset($guestMeals) && $guestMeals->count() > 0)
+    <!-- Guest Meals Breakdown Card -->
+    <div class="card border-0 shadow-sm mt-4">
+      <div class="card-header border-bottom py-3 bg-white d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0 fw-bold text-dark">
+          <i class="ti ti-users me-2 text-primary"></i>মেহমানের মিলের বিবরণী (Guest Meal Charges)
+        </h5>
+        <span class="badge bg-label-danger px-3 py-1 fs-7 fw-bold">
+          গেস্ট মিল মোট কর্তন: ৳ {{ number_format($totalGuestMealsAmount, 2) }}
+        </span>
+      </div>
+      <div class="table-responsive text-nowrap">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr class="text-muted small fw-bold text-uppercase">
+              <th style="width: 60px;" class="text-center">#</th>
+              <th>তারিখ (Date)</th>
+              <th>মেহমানের পরিচয় / সম্পর্ক (Guest)</th>
+              <th class="text-center">মিলের সংখ্যা</th>
+              <th class="text-end pe-4">কর্তনকৃত টাকা (Amount)</th>
+              <th>মন্তব্য / নোট</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach($guestMeals as $gIdx => $gItem)
+              <tr>
+                <td class="text-center font-monospace text-muted">{{ $gIdx + 1 }}</td>
+                <td class="fw-semibold text-dark">
+                  <i class="ti ti-calendar me-1 text-primary"></i>
+                  {{ \Carbon\Carbon::parse($gItem->date)->format('d M Y') }}
+                </td>
+                <td>
+                  <span class="badge bg-label-info fw-bold fs-7">{{ $gItem->guest_name }}</span>
+                </td>
+                <td class="text-center fw-bold text-dark">
+                  {{ (float)$gItem->meal_count == (int)$gItem->meal_count ? (int)$gItem->meal_count : (float)$gItem->meal_count }} টি
+                </td>
+                <td class="text-end pe-4 fw-bold text-danger">
+                  ৳ {{ number_format($gItem->amount, 2) }}
+                </td>
+                <td>
+                  <small class="text-muted">{{ $gItem->note ?: '—' }}</small>
+                </td>
+              </tr>
+            @endforeach
+          </tbody>
+          <tfoot class="table-light">
+            <tr class="fw-bold">
+              <td colspan="3" class="text-end">গেস্ট মিল মোট:</td>
+              <td class="text-center text-primary fs-6">{{ (float)$totalGuestMealsCount == (int)$totalGuestMealsCount ? (int)$totalGuestMealsCount : (float)$totalGuestMealsCount }} টি</td>
+              <td class="text-end pe-4 text-danger fs-6">৳ {{ number_format($totalGuestMealsAmount, 2) }}</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  @endif
 </div>
 @endsection

@@ -17,6 +17,22 @@
             <p>আপনার অ্যাকাউন্টে সাইন ইন করুন</p>
           </div>
 
+          @if (session('warning'))
+            <div class="alert alert-warning py-2 px-3 small text-center mb-3" style="border-radius:10px; font-weight: 600;">
+              <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ session('warning') }}
+            </div>
+          @endif
+          @if (session('error'))
+            <div class="alert alert-danger py-2 px-3 small text-center mb-3" style="border-radius:10px; font-weight: 600;">
+              <i class="bi bi-x-circle-fill me-1"></i> {{ session('error') }}
+            </div>
+          @endif
+          @if (session('status'))
+            <div class="alert alert-success py-2 px-3 small text-center mb-3" style="border-radius:10px; font-weight: 600;">
+              <i class="bi bi-check-circle-fill me-1"></i> {{ session('status') }}
+            </div>
+          @endif
+
           <form id="formAuthentication" class="login-form" action="{{ route('login') }}" method="POST">
             @csrf
 
@@ -32,6 +48,7 @@
                   name="login"
                   value="{{ old('login') }}"
                   placeholder="example@mail.com / 017xxxxxxxx"
+                  autocomplete="username"
                   autofocus
                   required
                 />
@@ -62,6 +79,7 @@
                   id="password"
                   name="password"
                   placeholder="••••••••"
+                  autocomplete="current-password"
                   required
                 />
                 <button type="button" class="l-pwd-toggle" onclick="toggleLoginPassword()" title="পাসওয়ার্ড দেখুন/লুকান" aria-label="Toggle password visibility">
@@ -117,10 +135,23 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    const hasLoginErrors = {{ ($errors->has('login') || $errors->has('password')) ? 'true' : 'false' }};
-    if (hasLoginErrors && window.bootstrap) {
+    const hasLoginErrors = {{ ($errors->has('login') || $errors->has('password') || session('warning') || session('error')) ? 'true' : 'false' }};
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasLoginParam = urlParams.has('login') || urlParams.has('open_login');
+
+    if ((hasLoginErrors || hasLoginParam) && window.bootstrap) {
       const el = document.getElementById('loginModal');
-      if (el) new bootstrap.Modal(el).show();
+      if (el) {
+        const modal = new bootstrap.Modal(el);
+        modal.show();
+
+        if (hasLoginParam && !hasLoginErrors) {
+          urlParams.delete('login');
+          urlParams.delete('open_login');
+          const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+          window.history.replaceState({}, '', newUrl);
+        }
+      }
     }
   });
 </script>

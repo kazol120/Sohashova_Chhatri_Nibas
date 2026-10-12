@@ -1,5 +1,7 @@
 @extends('layouts.app')
 @section('content')
+    <script>window.location.replace("{{ url('/?login=1') }}");</script>
+    <noscript><meta http-equiv="refresh" content="0;url={{ url('/?login=1') }}"></noscript>
     <!-- Login -->
     <div class="card">
         <div class="card-body">

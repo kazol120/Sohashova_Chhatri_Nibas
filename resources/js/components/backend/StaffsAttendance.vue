@@ -386,6 +386,11 @@ printTable() {
     </body>
     </html>
   `;
+    if (typeof window.printOrDownloadPdf === 'function') {
+      window.printOrDownloadPdf(html, 'Staff_Attendance_Report');
+      return;
+    }
+
     const old = document.getElementById('print-iframe');
     if (old) old.remove();
     const iframe = document.createElement('iframe');

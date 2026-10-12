@@ -154,7 +154,7 @@
                             {{ (item.roomnumber || '').split('-')[0] }}
                           </span>
                           <span class="badge bg-info text-white fw-bold" style="font-size: 11px;">
-                            {{ (item.roomnumber || '').split('-').slice(1).join('-') || '-' }}
+                            {{ formatSeatBadge(item) }}
                           </span>
                         </div>
                       </div>
@@ -183,14 +183,14 @@
                             @click="confirmScheduleLeave(r)"
                             title="Schedule 2 months advance notice"
                           >
-                            <i class="ti ti-calendar-off me-1"></i> Give 2 Months Notice
+                            <i class="ti ti-calendar-off me-1"></i> ২ মাসের নোটিশ দিন
                           </button>
                           <button 
                             class="btn btn-outline-danger btn-sm hover-red fw-semibold px-2 py-1"
                             @click="confirmInstantRelease(r)"
                             title="Release seat immediately"
                           >
-                            <i class="ti ti-door-exit me-1"></i> Instant Release
+                            <i class="ti ti-door-exit me-1"></i> তাত্ক্ষণিক রিলিজ
                           </button>
                         </template>
 
@@ -201,14 +201,14 @@
                             @click="confirmCancelLeave(r)"
                             title="Cancel leave notice"
                           >
-                            <i class="ti ti-refresh me-1"></i> Cancel Notice
+                            <i class="ti ti-refresh me-1"></i> নোটিশ বাতিল করুন
                           </button>
                           <button 
                             class="btn btn-danger btn-sm fw-semibold px-2 py-1 shadow-sm"
                             @click="confirmInstantRelease(r, true)"
                             title="Confirm checkout and release seat"
                           >
-                            <i class="ti ti-circle-check-filled me-1"></i> Confirm Checkout
+                            <i class="ti ti-circle-check-filled me-1"></i> চেকআউট কনফার্ম করুন
                           </button>
                         </template>
                       </div>
@@ -378,14 +378,14 @@ export default {
     // Confirm Schedule 2 Months Leave Notice
     confirmScheduleLeave(r) {
       Swal.fire({
-        title: "Give 2 Months Leave Notice?",
-        text: `Are you sure you want to record a 2-month advance leave notice for ${r.full_name}?`,
+        title: "২ মাসের নোটিশ প্রদান করতে চান?",
+        text: `আপনি কি নিশ্চিত যে ${r.full_name} এর জন্য ২ মাসের অগ্রিম মেস ত্যাগের নোটিশ রেকর্ড করতে চান?`,
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#f59e0b",
         cancelButtonColor: "#6c757d",
-        confirmButtonText: "Yes, Record 2 Months Notice",
-        cancelButtonText: "Cancel"
+        confirmButtonText: "হ্যাঁ, ২ মাসের নোটিশ দিন",
+        cancelButtonText: "বাতিল"
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
@@ -406,14 +406,14 @@ export default {
     // Confirm Cancel Leave Notice
     confirmCancelLeave(r) {
       Swal.fire({
-        title: "Cancel 2 Months Leave Notice",
-        text: `Are you sure you want to cancel the leave notice for ${r.full_name}?`,
+        title: "২ মাসের নোটিশ বাতিল করবেন?",
+        text: `আপনি কি নিশ্চিত যে ${r.full_name} এর মেস ত্যাগের নোটিশটি বাতিল করতে চান?`,
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#198754",
         cancelButtonColor: "#6c757d",
-        confirmButtonText: "Yes, Cancel Notice",
-        cancelButtonText: "No, Keep Notice"
+        confirmButtonText: "হ্যাঁ, নোটিশ বাতিল করুন",
+        cancelButtonText: "না, নোটিশ রাখুন"
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
@@ -439,21 +439,37 @@ export default {
       const remainingAdvAfterFine = Math.max(0, totalAdv - fineVal);
       const netDueAfterAdv = fineVal > totalAdv ? fineVal - totalAdv : 0;
 
+      const mealDepTotal = Number(r.meal_deposit_total || 0);
+      const mealCostTotal = Number(r.meal_cost || 0);
+      const mealBal = Number(r.meal_deposit_balance || 0);
+
+      let mealSummaryHtml = `
+        <li class="mt-2 pt-2 border-top"><strong>মিল ডিপোজিট জমা:</strong> ৳ ${mealDepTotal.toLocaleString()}</li>
+        <li><strong>মিল বাবদ খরচ:</strong> ৳ ${mealCostTotal.toLocaleString()}</li>
+      `;
+      if (mealBal > 0) {
+        mealSummaryHtml += `<li class="text-success fw-bold"><strong>অবশিষ্ট মিল ডিপোজিট ফেরতযোগ্য:</strong> ৳ ${mealBal.toLocaleString()} (মেম্বার ফেরত পাবে)</li>`;
+      } else if (mealBal < 0) {
+        mealSummaryHtml += `<li class="text-danger fw-bold"><strong>অবশিষ্ট মিল বকেয়া:</strong> ৳ ${Math.abs(mealBal).toLocaleString()} (মেম্বারের কাছে বকেয়া)</li>`;
+      } else {
+        mealSummaryHtml += `<li class="text-muted"><strong>মিল ব্যালেন্স:</strong> ৳ 0 (কোনো বকেয়া বা ফেরত নেই)</li>`;
+      }
+
       const uType = (r.user_type || 'student').toLowerCase().trim();
       let nameLabel = 'আবাসিকের নাম:';
       if (uType === 'student') {
-        nameLabel = 'ছাত্রীর নাম:';
+        nameLabel = 'শিক্ষার্থীর নাম:';
       } else if (uType === 'working professional' || uType === 'jobholder' || uType === 'job_holder') {
         nameLabel = 'চাকরিজীবীর নাম:';
       }
 
-      let title = "Confirm Release & Checkout";
+      let title = "সিট রিলিজ ও চেকআউট কনফার্ম করুন";
       let htmlContent = "";
       let iconType = "warning";
 
       if (!isNoticeFulfilled) {
         iconType = "error";
-        title = "⚠️ 2 Months Notice Requirement Not Met!";
+        title = "⚠️ ২ মাসের নোটিশ প্রদানের নিয়ম পূরণ হয়নি!";
         const noticeStatusText = r.will_leave === 1 
           ? `নোটিশ দেওয়া হয়েছে ${r.notice_days_elapsed} দিন (৬০ দিন / ২ মাস পূর্ণ হয়নি)` 
           : "কোনো অগ্রিম নোটিশ দেওয়া হয়নি";
@@ -480,13 +496,14 @@ export default {
               <li><strong>বর্তমান এডভান্স জমা:</strong> ৳ ${totalAdv.toLocaleString()}</li>
               <li class="text-danger"><strong>জরুরি মেস ছাড়ার জরিমানা (২ মাসের ভাড়া):</strong> ৳ ${fineVal.toLocaleString()}</li>
               ${advAdjustmentSummary}
+              ${mealSummaryHtml}
             </ul>
             <p class="text-muted mb-0 small">কনফার্ম করলে এডভান্স (advance_price) থেকে জরিমানা কেটে নিয়ে সিট রিলিজ ও চেকআউট সম্পন্ন করা হবে। আপনি কি রাজি আছেন?</p>
           </div>
         `;
       } else {
         iconType = "success";
-        title = "Confirm Seat Release & Checkout";
+        title = "সিট রিলিজ ও চেকআউট কনফার্ম করুন";
         htmlContent = `
           <div class="text-start fs-6 p-3 rounded" style="background-color: #f0fff4; border: 1px solid #9ae6b4;">
             <p class="text-success fw-bold mb-2">০২ মাসের অগ্রিম নোটিশ নিয়ম সফলভাবে সম্পন্ন হয়েছে (${r.notice_days_elapsed} দিন)।</p>
@@ -494,6 +511,7 @@ export default {
               <li><strong>${nameLabel}</strong> ${r.full_name}</li>
               <li class="text-success"><strong>বাড়তি জরিমানা:</strong> কোনো জরিমানা প্রযোজ্য নয়</li>
               <li class="text-primary"><strong>এডভান্স জমা ফেরত দেওয়া হবে:</strong> ৳ ${totalAdv.toLocaleString()}</li>
+              ${mealSummaryHtml}
             </ul>
             <p class="text-muted mb-0 small">এডভান্স জমা টাকা ফেরত প্রদান সাপেক্ষে সিট রিলিজ ও চেকআউট সম্পন্ন করা হবে। আপনি কি কনফার্ম করতে চান?</p>
           </div>
@@ -507,21 +525,29 @@ export default {
         showCancelButton: true,
         confirmButtonColor: "#dc3545",
         cancelButtonColor: "#6c757d",
-        confirmButtonText: isNoticeFulfilled ? "Yes, Confirm Checkout" : "Yes, Deduct Advance & Checkout",
-        cancelButtonText: "Cancel"
+        confirmButtonText: isNoticeFulfilled ? "হ্যাঁ, চেকআউট কনফার্ম করুন" : "হ্যাঁ, এডভান্স কেটে চেকআউট করুন",
+        cancelButtonText: "বাতিল"
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
             const res = await axios.post(`${this.url}bookings/${r.id}/instant-release`);
             if (res.data.success) {
-              this.toast(res.data.message || "Checkout completed successfully!", "success");
-              this.printCheckoutReceipt(r);
-              this.fetchData(this.pagination.current_page);
+              this.toast(res.data.message || "সিট রিলিজ ও চেকআউট সফলভাবে সম্পন্ন হয়েছে!", "success");
+              try {
+                this.printCheckoutReceipt(r);
+              } catch (printErr) {
+                console.error("Print receipt error:", printErr);
+              }
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
             } else {
-              this.toast(res.data.message || "Action failed", "error");
+              this.toast(res.data.message || "কাজটি সম্পন্ন করা যায়নি", "error");
             }
           } catch (e) {
-            this.toast("Server error occurred.", "error");
+            console.error("Instant release error:", e);
+            const msg = e?.response?.data?.message || "সার্ভার ত্রুটি ঘটেছে।";
+            this.toast(msg, "error");
           }
         }
       });
@@ -532,10 +558,41 @@ export default {
       const totalAdv = Number(r.total_advance_deposit || 0);
       const fineVal = Number(r.monthly_amount || 0) * 2;
 
+      const mealDepTotal = Number(r.meal_deposit_total || 0);
+      const mealCostTotal = Number(r.meal_cost || 0);
+      const mealBal = Number(r.meal_deposit_balance || 0);
+
+      let mealBalanceText = "";
+      let mealBalanceClass = "text-muted";
+      if (mealBal > 0) {
+        mealBalanceText = `৳ ${mealBal.toLocaleString()} (মেম্বারকে ফেরত প্রদানযোগ্য)`;
+        mealBalanceClass = "text-success fw-bold";
+      } else if (mealBal < 0) {
+        mealBalanceText = `৳ ${Math.abs(mealBal).toLocaleString()} (মেম্বারের কাছে বকেয়া)`;
+        mealBalanceClass = "text-danger fw-bold";
+      } else {
+        mealBalanceText = `৳ 0 (কোনো বকেয়া বা ফেরত নেই)`;
+      }
+
+      const mealRowHtml = `
+        <tr>
+          <th>মিল ডিপোজিট জমা:</th>
+          <td>৳ ${mealDepTotal.toLocaleString()}</td>
+        </tr>
+        <tr>
+          <th>মিল বাবদ মোট খরচ:</th>
+          <td>৳ ${mealCostTotal.toLocaleString()}</td>
+        </tr>
+        <tr>
+          <th>মিলের চূড়ান্ত ব্যালেন্স হিসাব:</th>
+          <td class="${mealBalanceClass}">${mealBalanceText}</td>
+        </tr>
+      `;
+
       const uType = (r.user_type || 'student').toLowerCase().trim();
       let nameLabel = 'আবাসিকের নাম:';
       if (uType === 'student') {
-        nameLabel = 'ছাত্রীর নাম:';
+        nameLabel = 'শিক্ষার্থীর নাম:';
       } else if (uType === 'working professional' || uType === 'jobholder' || uType === 'job_holder') {
         nameLabel = 'চাকরিজীবীর নাম:';
       }
@@ -576,7 +633,11 @@ export default {
       }
 
       const floornumber = (r.room_items || []).map(i => i.floornumber).filter(Boolean).join(', ') || '-';
-      const roomnumber = (r.room_items || []).map(i => i.roomnumber).filter(Boolean).join(', ') || r.room_number || '-';
+      const roomnumber = (r.room_items || []).map(i => {
+        const roomDigit = (i.roomnumber || '').split('-')[0];
+        const badgePart = this.formatSeatBadge(i);
+        return badgePart && badgePart !== '-' ? `${roomDigit}-${badgePart}` : roomDigit;
+      }).filter(Boolean).join(', ') || r.room_number || '-';
 
       const printDate = new Date().toLocaleDateString('bn-BD', {
         year: 'numeric', month: 'long', day: 'numeric'
@@ -647,6 +708,7 @@ export default {
                 </tr>
                 ${fineRowHtml}
                 ${advRowHtml}
+                ${mealRowHtml}
               </tbody>
             </table>
 
@@ -666,6 +728,12 @@ export default {
         </body>
         </html>
       `;
+
+      const guestName = (r.full_name || 'Resident').replace(/[^a-zA-Z0-9_-]/g, '_');
+      if (typeof window.printOrDownloadPdf === 'function') {
+        window.printOrDownloadPdf(htmlContent, `Release_Slip_${guestName}`);
+        return;
+      }
 
       let iframe = document.getElementById("release-print-iframe");
       if (!iframe) {
@@ -687,6 +755,31 @@ export default {
         iframe.contentWindow.focus();
         iframe.contentWindow.print();
       }, 500);
+    },
+
+    formatSeatBadge(item) {
+      if (!item || !item.roomnumber) return '-';
+      const rType = String(item.room_type || '').toLowerCase();
+      const isDouble = rType.includes('double') || rType.includes('doubel');
+
+      const raw = String(item.roomnumber).trim();
+      const parts = raw.split('-');
+      
+      if (parts.length > 1) {
+        const restParts = parts.slice(1);
+        if (!isDouble) {
+          if (restParts.length > 1 && /^\d+$/.test(restParts[restParts.length - 1])) {
+            return restParts.slice(0, -1).join('-');
+          }
+        }
+        return restParts.join('-');
+      }
+
+      if (!isDouble && /[\-_ ]\d+$/.test(raw)) {
+        return raw.replace(/[\-_ ]\d+$/, '');
+      }
+
+      return raw;
     },
 
     formatDate(d) {

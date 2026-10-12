@@ -98,4 +98,14 @@ class DepositController extends Controller
         $this->depositService->depositDelete($id);
         return redirect()->back()->with('success', 'Deposit deleted successfully');
     }
+
+    public function edit($id)
+    {
+        return redirect()->route('deposits.index');
+    }
+
+    public function update(Request $request, $id)
+    {
+        return redirect()->route('deposits.index');
+    }
 }
