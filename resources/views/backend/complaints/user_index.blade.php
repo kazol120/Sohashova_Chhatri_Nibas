@@ -48,40 +48,40 @@
         {{-- Desktop Table View --}}
         <div class="d-none d-md-block table-responsive text-nowrap">
             <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th style="width: 50px;">SL</th>
-                        <th>Complaint Text (অভিযোগের বিবরণ)</th>
-                        <th>Submitted Date (তারিখ)</th>
-                        <th>Status (অবস্থা)</th>
-                        <th>Admin Response / Note (এডমিন ফিডব্যাক)</th>
+                <thead style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: #ffffff;">
+                    <tr class="small text-white fw-bold text-uppercase">
+                        <th style="width: 50px;" class="text-white">SL</th>
+                        <th class="text-white">Complaint Text (অভিযোগের বিবরণ)</th>
+                        <th class="text-white">Submitted Date (তারিখ)</th>
+                        <th class="text-white">Status (অবস্থা)</th>
+                        <th class="text-white">Admin Response / Note (এডমিন ফিডব্যাক)</th>
                     </tr>
                 </thead>
-                <tbody class="table-border-bottom-0" id="userComplaintsTableBody">
+                <tbody class="bg-white" id="userComplaintsTableBody">
                     @forelse($complaints as $key => $complaint)
                     <tr>
-                        <td>{{ $complaints->firstItem() + $key }}</td>
+                        <td class="text-dark fw-bold">{{ $complaints->firstItem() + $key }}</td>
                         <td style="white-space: normal; min-width: 250px;">
-                            <div class="p-2 bg-light rounded border text-wrap fs-7 text-dark fw-medium">
+                            <div class="p-2.5 rounded-3 border text-wrap fs-7 text-dark fw-medium" style="background: #f8fafc; border-color: #cbd5e1 !important;">
                                 {{ $complaint->complaint_text }}
                             </div>
                         </td>
                         <td>
-                            <small class="text-dark fw-medium">{{ $complaint->created_at->format('d M, Y') }}</small><br>
-                            <small class="text-muted">{{ $complaint->created_at->format('h:i A') }}</small>
+                            <div class="fw-bold text-dark">{{ $complaint->created_at->format('d M, Y') }}</div>
+                            <small class="text-secondary">{{ $complaint->created_at->format('h:i A') }}</small>
                         </td>
                         <td>
                             @if($complaint->status == 1)
-                                <span class="badge bg-label-success rounded-pill px-3 py-2 fs-7"><i class="fa fa-check-circle me-1"></i> Accepted & Resolved</span>
+                                <span class="badge px-3 py-2 rounded-pill fw-bold" style="background: #dcfce7; color: #166534; border: 1px solid #86efac;"><i class="fa fa-check-circle me-1"></i> Accepted & Resolved</span>
                             @else
-                                <span class="badge bg-label-warning rounded-pill px-3 py-2 fs-7"><i class="fa fa-clock me-1"></i> Pending Review</span>
+                                <span class="badge px-3 py-2 rounded-pill fw-bold" style="background: #fef9c3; color: #854d0e; border: 1px solid #fde047;"><i class="fa fa-clock me-1"></i> Pending Review</span>
                             @endif
                         </td>
                         <td>
                             @if($complaint->admin_note)
-                                <span class="text-success fw-semibold fs-7"><i class="fa fa-comment-dots me-1"></i> {{ $complaint->admin_note }}</span>
+                                <div class="p-2 rounded-2 fw-semibold fs-7" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;"><i class="fa fa-comment-dots me-1"></i> {{ $complaint->admin_note }}</div>
                             @else
-                                <span class="text-muted fs-8">Awaiting Admin Response</span>
+                                <span class="text-secondary small fw-medium">Awaiting Admin Response</span>
                             @endif
                         </td>
                     </tr>
@@ -97,44 +97,44 @@
             </table>
         </div>
 
-        {{-- Mobile Card View (No Horizontal Scroll) --}}
-        <div class="d-md-none p-2 p-sm-3" id="userComplaintsMobileList">
+        {{-- Mobile Card View (Distinct Div Blocks with High-Contrast Colors) --}}
+        <div class="d-md-none p-2 p-sm-3" id="userComplaintsMobileList" style="background: #f1f5f9;">
             @forelse($complaints as $key => $complaint)
-            <div class="card border shadow-sm mb-3 rounded-3 overflow-hidden">
-                <div class="card-header bg-light py-2 px-3 d-flex justify-content-between align-items-center">
+            <div class="card shadow-sm mb-3 rounded-4 overflow-hidden border-0" style="box-shadow: 0 4px 12px rgba(0,0,0,0.07) !important;">
+                <div class="py-2.5 px-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
                     <div class="d-flex align-items-center gap-2">
-                        <span class="badge bg-label-secondary rounded-circle" style="width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">{{ $complaints->firstItem() + $key }}</span>
-                        <span class="small text-muted fw-semibold">
+                        <span class="badge bg-primary text-white rounded-circle fw-bold" style="width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">{{ $complaints->firstItem() + $key }}</span>
+                        <span class="small text-white fw-bold">
                             {{ $complaint->created_at->format('d M, Y h:i A') }}
                         </span>
                     </div>
                     <div>
                         @if($complaint->status == 1)
-                            <span class="badge bg-label-success rounded-pill px-2.5 py-1 fs-8"><i class="fa fa-check-circle me-1"></i> Resolved</span>
+                            <span class="badge px-2.5 py-1 rounded-pill fw-bold" style="background: #22c55e; color: #ffffff;"><i class="fa fa-check-circle me-1"></i> Resolved</span>
                         @else
-                            <span class="badge bg-label-warning rounded-pill px-2.5 py-1 fs-8"><i class="fa fa-clock me-1"></i> Pending</span>
+                            <span class="badge px-2.5 py-1 rounded-pill fw-bold" style="background: #eab308; color: #000000;"><i class="fa fa-clock me-1"></i> Pending</span>
                         @endif
                     </div>
                 </div>
-                <div class="card-body p-3">
-                    <div class="p-2.5 bg-light rounded-2 border text-dark fs-7 fw-medium mb-2">
+                <div class="card-body p-3 bg-white">
+                    <div class="p-3 rounded-3 border text-dark fs-7 fw-medium mb-2.5" style="background: #f8fafc; border-color: #cbd5e1 !important; line-height: 1.5;">
                         {{ $complaint->complaint_text }}
                     </div>
 
                     @if($complaint->admin_note)
-                    <div class="p-2 bg-label-success rounded-2 text-success small border border-success">
-                        <strong class="d-block mb-0.5"><i class="fa fa-comment-dots me-1"></i> এডমিন উত্তর:</strong>
-                        {{ $complaint->admin_note }}
+                    <div class="p-2.5 rounded-3 small border" style="background: #ecfdf5; border-color: #a7f3d0; color: #065f46;">
+                        <strong class="d-block mb-1" style="color: #047857;"><i class="fa fa-comment-dots me-1"></i> এডমিন উত্তর:</strong>
+                        <span class="fw-semibold">{{ $complaint->admin_note }}</span>
                     </div>
                     @else
-                    <div class="small text-muted">
-                        <i class="fa fa-hourglass-start me-1"></i> Awaiting Admin Response
+                    <div class="small text-secondary fw-semibold">
+                        <i class="fa fa-hourglass-start me-1"></i> এডমিন পর্যালোচনার অপেক্ষায়...
                     </div>
                     @endif
                 </div>
             </div>
             @empty
-            <div class="text-center py-5 text-muted">
+            <div class="text-center py-5 text-muted bg-white rounded-3">
                 <i class="fa fa-inbox fs-1 d-block mb-2 text-secondary"></i>
                 আপনি কোনো অভিযোগ জমা দেননি।
             </div>
@@ -160,32 +160,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 data.complaints.forEach((c, index) => {
                     const statusBadgeDesktop = c.status === 1 
-                        ? `<span class="badge bg-label-success rounded-pill px-3 py-2 fs-7"><i class="fa fa-check-circle me-1"></i> Accepted & Resolved</span>`
-                        : `<span class="badge bg-label-warning rounded-pill px-3 py-2 fs-7"><i class="fa fa-clock me-1"></i> Pending Review</span>`;
+                        ? `<span class="badge px-3 py-2 rounded-pill fw-bold" style="background: #dcfce7; color: #166534; border: 1px solid #86efac;"><i class="fa fa-check-circle me-1"></i> Accepted & Resolved</span>`
+                        : `<span class="badge px-3 py-2 rounded-pill fw-bold" style="background: #fef9c3; color: #854d0e; border: 1px solid #fde047;"><i class="fa fa-clock me-1"></i> Pending Review</span>`;
 
                     const statusBadgeMobile = c.status === 1 
-                        ? `<span class="badge bg-label-success rounded-pill px-2.5 py-1 fs-8"><i class="fa fa-check-circle me-1"></i> Resolved</span>`
-                        : `<span class="badge bg-label-warning rounded-pill px-2.5 py-1 fs-8"><i class="fa fa-clock me-1"></i> Pending</span>`;
+                        ? `<span class="badge px-2.5 py-1 rounded-pill fw-bold" style="background: #22c55e; color: #ffffff;"><i class="fa fa-check-circle me-1"></i> Resolved</span>`
+                        : `<span class="badge px-2.5 py-1 rounded-pill fw-bold" style="background: #eab308; color: #000000;"><i class="fa fa-clock me-1"></i> Pending</span>`;
 
                     const adminNoteDesktop = c.admin_note 
-                        ? `<span class="text-success fw-semibold fs-7"><i class="fa fa-comment-dots me-1"></i> ${c.admin_note}</span>`
-                        : `<span class="text-muted fs-8">Awaiting Admin Response</span>`;
+                        ? `<div class="p-2 rounded-2 fw-semibold fs-7" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;"><i class="fa fa-comment-dots me-1"></i> ${c.admin_note}</div>`
+                        : `<span class="text-secondary small fw-medium">Awaiting Admin Response</span>`;
 
                     const adminNoteMobile = c.admin_note
-                        ? `<div class="p-2 bg-label-success rounded-2 text-success small border border-success"><strong class="d-block mb-0.5"><i class="fa fa-comment-dots me-1"></i> এডমিন উত্তর:</strong>${c.admin_note}</div>`
-                        : `<div class="small text-muted"><i class="fa fa-hourglass-start me-1"></i> Awaiting Admin Response</div>`;
+                        ? `<div class="p-2.5 rounded-3 small border" style="background: #ecfdf5; border-color: #a7f3d0; color: #065f46;"><strong class="d-block mb-1" style="color: #047857;"><i class="fa fa-comment-dots me-1"></i> এডমিন উত্তর:</strong><span class="fw-semibold">${c.admin_note}</span></div>`
+                        : `<div class="small text-secondary fw-semibold"><i class="fa fa-hourglass-start me-1"></i> এডমিন পর্যালোচনার অপেক্ষায়...</div>`;
 
                     tbodyHtml += `
                         <tr>
-                            <td>${index + 1}</td>
+                            <td class="text-dark fw-bold">${index + 1}</td>
                             <td style="white-space: normal; min-width: 250px;">
-                                <div class="p-2 bg-light rounded border text-wrap fs-7 text-dark fw-medium">
+                                <div class="p-2.5 rounded-3 border text-wrap fs-7 text-dark fw-medium" style="background: #f8fafc; border-color: #cbd5e1 !important;">
                                     ${c.complaint_text}
                                 </div>
                             </td>
                             <td>
-                                <small class="text-dark fw-medium">${c.date_formatted}</small><br>
-                                <small class="text-muted">${c.time_formatted}</small>
+                                <div class="fw-bold text-dark">${c.date_formatted}</div>
+                                <small class="text-secondary">${c.time_formatted}</small>
                             </td>
                             <td>${statusBadgeDesktop}</td>
                             <td>${adminNoteDesktop}</td>
@@ -193,16 +193,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
 
                     mobileHtml += `
-                        <div class="card border shadow-sm mb-3 rounded-3 overflow-hidden">
-                            <div class="card-header bg-light py-2 px-3 d-flex justify-content-between align-items-center">
+                        <div class="card shadow-sm mb-3 rounded-4 overflow-hidden border-0" style="box-shadow: 0 4px 12px rgba(0,0,0,0.07) !important;">
+                            <div class="py-2.5 px-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
                                 <div class="d-flex align-items-center gap-2">
-                                    <span class="badge bg-label-secondary rounded-circle" style="width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">${index + 1}</span>
-                                    <span class="small text-muted fw-semibold">${c.date_formatted} ${c.time_formatted}</span>
+                                    <span class="badge bg-primary text-white rounded-circle fw-bold" style="width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">${index + 1}</span>
+                                    <span class="small text-white fw-bold">${c.date_formatted} ${c.time_formatted}</span>
                                 </div>
                                 <div>${statusBadgeMobile}</div>
                             </div>
-                            <div class="card-body p-3">
-                                <div class="p-2.5 bg-light rounded-2 border text-dark fs-7 fw-medium mb-2">
+                            <div class="card-body p-3 bg-white">
+                                <div class="p-3 rounded-3 border text-dark fs-7 fw-medium mb-2.5" style="background: #f8fafc; border-color: #cbd5e1 !important; line-height: 1.5;">
                                     ${c.complaint_text}
                                 </div>
                                 ${adminNoteMobile}

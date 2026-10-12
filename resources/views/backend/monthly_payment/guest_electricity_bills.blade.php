@@ -202,19 +202,19 @@
     {{-- Desktop Table View --}}
     <div class="d-none d-md-block table-responsive text-nowrap">
       <table class="table table-hover align-middle mb-0">
-        <thead class="table-light">
-          <tr class="small text-muted fw-bold text-uppercase">
-            <th class="ps-4" style="width: 60px;">#</th>
-            <th>বিলের মাস (MONTH & YEAR)</th>
-            <th class="text-center">বিদ্যুৎ বিল (ELECTRICITY BILL)</th>
-            <th>পেমেন্ট তারিখ (PAYMENT DATE)</th>
-            <th class="text-center">স্ট্যাটাস (STATUS)</th>
+        <thead style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: #ffffff;">
+          <tr class="small text-white fw-bold text-uppercase">
+            <th class="ps-4 text-white" style="width: 60px;">#</th>
+            <th class="text-white">বিলের মাস (MONTH & YEAR)</th>
+            <th class="text-center text-warning">বিদ্যুৎ বিল (ELECTRICITY BILL)</th>
+            <th class="text-white">পেমেন্ট তারিখ (PAYMENT DATE)</th>
+            <th class="text-center text-white">স্ট্যাটাস (STATUS)</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="bg-white">
           @forelse($monthlyLedger as $idx => $item)
           <tr style="{{ $item['is_current_month'] ? 'background-color: #f0fdf4;' : ($item['has_bill'] ? 'background-color: #fffdf5;' : '') }}">
-            <td class="ps-4 text-muted fw-bold">{{ $idx + 1 }}</td>
+            <td class="ps-4 text-dark fw-bold">{{ $idx + 1 }}</td>
             
             <td class="fw-bold text-dark">
               {{ $item['month_year_label'] }}
@@ -227,29 +227,29 @@
 
             <td class="text-center">
               @if($item['electricity_bill'] > 0)
-                <span class="badge bg-warning text-dark px-3 py-1.5 fs-7 fw-bold shadow-xs border border-warning">
+                <span class="badge px-3 py-1.5 fs-7 fw-bold shadow-xs" style="background: #fffbeb; color: #b45309; border: 1.5px solid #fde68a;">
                   ⚡ ৳ {{ number_format($item['electricity_bill'], 2) }}
                 </span>
               @else
-                <span class="text-muted small">৳ 0.00</span>
+                <span class="text-secondary fw-medium small">৳ 0.00</span>
               @endif
             </td>
 
-            <td class="text-muted">
+            <td class="text-dark fw-medium">
               {{ $item['payment_date'] }}
             </td>
 
             <td class="text-center">
               @if($item['status'] === 'paid')
-                <span class="badge bg-label-success px-3 py-1.5 rounded-pill fw-bold">
+                <span class="badge px-3 py-1.5 rounded-pill fw-bold" style="background: #dcfce7; color: #166534; border: 1px solid #86efac;">
                   ✅ Paid
                 </span>
               @elseif($item['status'] === 'partial')
-                <span class="badge bg-label-warning text-dark px-3 py-1.5 rounded-pill fw-bold">
+                <span class="badge px-3 py-1.5 rounded-pill fw-bold" style="background: #fef9c3; color: #854d0e; border: 1px solid #fde047;">
                   ⏳ Partial
                 </span>
               @elseif($item['status'] === 'pending')
-                <span class="badge bg-label-danger px-3 py-1.5 rounded-pill fw-bold">
+                <span class="badge px-3 py-1.5 rounded-pill fw-bold" style="background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;">
                   ❌ Pending
                 </span>
               @else
@@ -268,16 +268,16 @@
 
         @if(count($monthlyLedger) > 0)
         <tfoot>
-          <tr class="table-warning fw-bold" style="border-top: 2px solid #f59e0b;">
-            <td colspan="2" class="ps-4 text-dark fs-6">
+          <tr style="background: #fef3c7; border-top: 2px solid #f59e0b;">
+            <td colspan="2" class="ps-4 text-dark fs-6 fw-bold">
               <i class="ti ti-calculator me-1 text-warning"></i> সর্বমোট বিদ্যুৎ বিল (Total Electricity Bill - {{ $rangeLabel }}):
             </td>
             <td class="text-center py-3">
-              <span class="badge bg-warning text-dark px-3.5 py-2 fs-6 fw-bolder shadow-sm border border-dark">
+              <span class="badge px-3.5 py-2 fs-6 fw-bolder shadow-sm" style="background: #f59e0b; color: #ffffff;">
                 ⚡ ৳ {{ number_format($totalElectricity, 2) }}
               </span>
             </td>
-            <td colspan="2" class="text-muted small text-end pe-4">
+            <td colspan="2" class="text-secondary small text-end pe-4 fw-semibold">
               Electricity Bill Summary Statement
             </td>
           </tr>
@@ -286,66 +286,73 @@
       </table>
     </div>
 
-    {{-- Mobile Card View (No Horizontal Scroll) --}}
-    <div class="d-md-none p-2 p-sm-3">
+    {{-- Mobile Card View (Distinct Div Blocks with High-Contrast Colors) --}}
+    <div class="d-md-none p-2 p-sm-3" style="background: #f1f5f9;">
       @forelse($monthlyLedger as $idx => $item)
-      <div class="card border shadow-sm mb-3 rounded-3 overflow-hidden" style="{{ $item['is_current_month'] ? 'border-left: 4px solid #10b981 !important;' : ($item['has_bill'] ? 'border-left: 4px solid #f59e0b !important;' : '') }}">
-        <div class="card-header bg-light py-2 px-3 d-flex justify-content-between align-items-center">
+      <div class="card shadow-sm mb-3.5 rounded-4 overflow-hidden border-0" style="box-shadow: 0 4px 14px rgba(0,0,0,0.08) !important;">
+        
+        {{-- Header Div --}}
+        <div class="py-2.5 px-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
           <div class="d-flex align-items-center gap-2">
-            <span class="badge bg-label-secondary rounded-circle" style="width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">{{ $idx + 1 }}</span>
-            <span class="fw-bold text-dark fs-6">{{ $item['month_year_label'] }}</span>
+            <span class="badge bg-warning text-dark rounded-circle fw-bold" style="width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">{{ $idx + 1 }}</span>
+            <span class="fw-bold text-white fs-6">{{ $item['month_year_label'] }}</span>
           </div>
           <div>
             @if($item['status'] === 'paid')
-              <span class="badge bg-label-success px-2.5 py-1 rounded-pill fw-bold">Paid</span>
+              <span class="badge px-2.5 py-1 rounded-pill fw-bold" style="background: #22c55e; color: #ffffff;">✅ Paid</span>
             @elseif($item['status'] === 'partial')
-              <span class="badge bg-label-warning text-dark px-2.5 py-1 rounded-pill fw-bold">Partial</span>
+              <span class="badge px-2.5 py-1 rounded-pill fw-bold" style="background: #eab308; color: #000000;">⏳ Partial</span>
             @elseif($item['status'] === 'pending')
-              <span class="badge bg-label-danger px-2.5 py-1 rounded-pill fw-bold">Pending</span>
+              <span class="badge px-2.5 py-1 rounded-pill fw-bold" style="background: #ef4444; color: #ffffff;">❌ Pending</span>
             @else
-              <span class="text-muted small">—</span>
+              <span class="badge px-2.5 py-1 rounded-pill fw-bold" style="background: #64748b; color: #ffffff;">—</span>
             @endif
           </div>
         </div>
 
-        <div class="card-body p-3">
+        <div class="card-body p-3 bg-white">
           @if($item['is_current_month'])
           <div class="mb-2">
-            <span class="badge bg-success text-white px-2 py-0.5 rounded-pill shadow-xs" style="font-size: 0.72rem; font-weight: 600;">
-              <i class="ti ti-circle-filled text-white me-1" style="font-size: 6px;"></i>Active Month
+            <span class="badge bg-success text-white px-2.5 py-1 rounded-pill shadow-xs" style="font-size: 0.72rem; font-weight: 600;">
+              <i class="ti ti-circle-filled text-white me-1" style="font-size: 6px;"></i>চলতি মাস (Active Month)
             </span>
           </div>
           @endif
 
-          <div class="d-flex justify-content-between align-items-center p-2.5 bg-light rounded-2 mb-2">
-            <span class="text-muted small fw-bold">বিদ্যুৎ বিল:</span>
+          {{-- Electricity Bill Div --}}
+          <div class="p-3 rounded-3 mb-2.5 d-flex justify-content-between align-items-center" style="background: #fffbeb; border: 2px solid #fde68a;">
             <div>
+              <span class="d-block fw-bold" style="color: #92400e; font-size: 13px;">বিদ্যুৎ বিল (Bill):</span>
+              <small style="color: #b45309; font-size: 11px;">নির্ধারিত বিলের পরিমাণ</small>
+            </div>
+            <div class="text-end">
               @if($item['electricity_bill'] > 0)
-                <span class="badge bg-warning text-dark px-3 py-1.5 fs-7 fw-bold shadow-xs border border-warning">
+                <span class="fw-bolder fs-4" style="color: #b45309;">
                   ⚡ ৳ {{ number_format($item['electricity_bill'], 2) }}
                 </span>
               @else
-                <span class="text-muted fw-bold">৳ 0.00</span>
+                <span class="fw-bold text-secondary fs-5">৳ 0.00</span>
               @endif
             </div>
           </div>
 
-          <div class="d-flex justify-content-between align-items-center small text-muted px-1">
-            <span>পেমেন্ট তারিখ:</span>
-            <span class="fw-medium text-dark">{{ $item['payment_date'] }}</span>
+          {{-- Payment Date Div --}}
+          <div class="p-2.5 rounded-3 d-flex justify-content-between align-items-center" style="background: #f8fafc; border: 1.5px solid #e2e8f0;">
+            <span class="text-secondary small fw-bold">পেমেন্ট তারিখ:</span>
+            <span class="fw-bold text-dark fs-7">{{ $item['payment_date'] }}</span>
           </div>
         </div>
       </div>
       @empty
-      <div class="text-center py-4 text-muted">
+      <div class="text-center py-5 text-muted bg-white rounded-3">
         কোনো বিল রেকর্ড পাওয়া যায়নি।
       </div>
       @endforelse
 
       @if(count($monthlyLedger) > 0)
-      <div class="card bg-label-warning border border-warning rounded-3 p-3 text-center mt-3">
-        <small class="text-dark fw-bold d-block mb-1">সর্বমোট বিদ্যুৎ বিল ({{ $rangeLabel }}):</small>
-        <h4 class="mb-0 fw-bolder text-dark">⚡ ৳ {{ number_format($totalElectricity, 2) }}</h4>
+      <div class="card rounded-4 p-3.5 text-center mt-3 border-0 shadow-sm" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #f59e0b !important;">
+        <span class="fw-bold d-block mb-1" style="color: #78350f; font-size: 13px;">সর্বমোট বিদ্যুৎ বিল ({{ $rangeLabel }}):</span>
+        <h3 class="mb-0 fw-bolder" style="color: #92400e;">⚡ ৳ {{ number_format($totalElectricity, 2) }}</h3>
       </div>
       @endif
     </div>

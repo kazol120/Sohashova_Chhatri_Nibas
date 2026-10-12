@@ -144,23 +144,23 @@
         {{-- Desktop Table View --}}
         <div class="d-none d-md-block table-responsive text-nowrap">
             <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th style="width: 50px;">SL</th>
-                        <th>Check-Out Date</th>
-                        <th>Expected Return</th>
-                        <th>Check-In Date</th>
-                        <th>Reason</th>
-                        <th>Emergency Contact</th>
-                        <th>Status</th>
+                <thead style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: #ffffff;">
+                    <tr class="small text-white fw-bold text-uppercase">
+                        <th style="width: 50px;" class="text-white">SL</th>
+                        <th class="text-white">Check-Out Date</th>
+                        <th class="text-white">Expected Return</th>
+                        <th class="text-white">Check-In Date</th>
+                        <th class="text-white">Reason</th>
+                        <th class="text-white">Emergency Contact</th>
+                        <th class="text-white text-center">Status</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="bg-white">
                     @forelse($myLogs as $idx => $log)
                     <tr>
-                        <td>{{ $myLogs->firstItem() + $idx }}</td>
+                        <td class="text-dark fw-bold">{{ $myLogs->firstItem() + $idx }}</td>
                         <td>
-                            <div class="fw-semibold text-dark">
+                            <div class="fw-bold text-dark">
                                 {{ $log->check_out_date ? $log->check_out_date->format('d M, Y') : '-' }}
                             </div>
                         </td>
@@ -177,11 +177,11 @@
 
                         <td>
                             @if($log->check_in_date)
-                                <div class="fw-semibold text-success">
+                                <div class="fw-bold text-success">
                                     {{ $log->check_in_date->format('d M, Y') }}
                                 </div>
                             @else
-                                <span class="badge bg-label-warning text-warning px-2 py-1">Not Returned Yet</span>
+                                <span class="badge px-2.5 py-1 fw-bold" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a;">Not Returned Yet</span>
                             @endif
                         </td>
 
@@ -190,25 +190,25 @@
                         </td>
 
                         <td>
-                            <span class="text-muted small fw-semibold">{{ $log->emergency_contact ?: '-' }}</span>
+                            <span class="text-dark small fw-semibold">{{ $log->emergency_contact ?: '-' }}</span>
                         </td>
 
-                        <td>
+                        <td class="text-center">
                             @if($log->status == 0)
                                 @php
                                     $isLogFuture = \Carbon\Carbon::parse($log->check_out_date)->startOfDay()->gt(\Carbon\Carbon::today());
                                 @endphp
                                 @if($isLogFuture)
-                                    <span class="badge bg-label-info text-info px-2.5 py-1 rounded-pill fw-semibold">
+                                    <span class="badge px-3 py-1.5 rounded-pill fw-bold" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;">
                                         <i class="ti ti-calendar-time me-1"></i> Upcoming
                                     </span>
                                 @else
-                                    <span class="badge bg-warning text-dark px-2.5 py-1 rounded-pill">
+                                    <span class="badge px-3 py-1.5 rounded-pill fw-bold" style="background: #fef9c3; color: #854d0e; border: 1px solid #fde047;">
                                         <i class="ti ti-walking me-1"></i> Checked Out
                                     </span>
                                 @endif
                             @else
-                                <span class="badge bg-success text-white px-2.5 py-1 rounded-pill">
+                                <span class="badge px-3 py-1.5 rounded-pill fw-bold" style="background: #dcfce7; color: #166534; border: 1px solid #86efac;">
                                     <i class="ti ti-check me-1"></i> Checked In
                                 </span>
                             @endif
@@ -227,14 +227,14 @@
             </table>
         </div>
 
-        {{-- Mobile Card View (No Horizontal Scroll) --}}
-        <div class="d-md-none p-2 p-sm-3">
+        {{-- Mobile Card View (Distinct Div Blocks with High-Contrast Colors) --}}
+        <div class="d-md-none p-2 p-sm-3" style="background: #f1f5f9;">
             @forelse($myLogs as $idx => $log)
-            <div class="card border shadow-sm mb-3 rounded-3 overflow-hidden">
-                <div class="card-header bg-light py-2 px-3 d-flex justify-content-between align-items-center">
+            <div class="card shadow-sm mb-3.5 rounded-4 overflow-hidden border-0" style="box-shadow: 0 4px 12px rgba(0,0,0,0.07) !important;">
+                <div class="py-2.5 px-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
                     <div class="d-flex align-items-center gap-2">
-                        <span class="badge bg-label-secondary rounded-circle" style="width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">{{ $myLogs->firstItem() + $idx }}</span>
-                        <span class="fw-bold text-dark fs-7">
+                        <span class="badge bg-primary text-white rounded-circle fw-bold" style="width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">{{ $myLogs->firstItem() + $idx }}</span>
+                        <span class="fw-bold text-white fs-7">
                             <i class="ti ti-door-exit me-1 text-warning"></i>
                             {{ $log->check_out_date ? $log->check_out_date->format('d M, Y') : '-' }}
                         </span>
@@ -245,46 +245,46 @@
                                 $isLogFuture = \Carbon\Carbon::parse($log->check_out_date)->startOfDay()->gt(\Carbon\Carbon::today());
                             @endphp
                             @if($isLogFuture)
-                                <span class="badge bg-label-info text-info px-2 py-0.5 rounded-pill fw-semibold" style="font-size:0.7rem;">Upcoming</span>
+                                <span class="badge px-2.5 py-1 rounded-pill fw-bold" style="background: #38bdf8; color: #0f172a; font-size:0.72rem;">Upcoming</span>
                             @else
-                                <span class="badge bg-warning text-dark px-2 py-0.5 rounded-pill fw-bold" style="font-size:0.7rem;">Checked Out</span>
+                                <span class="badge px-2.5 py-1 rounded-pill fw-bold" style="background: #eab308; color: #000000; font-size:0.72rem;">Checked Out</span>
                             @endif
                         @else
-                            <span class="badge bg-success text-white px-2 py-0.5 rounded-pill fw-bold" style="font-size:0.7rem;">Checked In</span>
+                            <span class="badge px-2.5 py-1 rounded-pill fw-bold" style="background: #22c55e; color: #ffffff; font-size:0.72rem;">Checked In</span>
                         @endif
                     </div>
                 </div>
 
-                <div class="card-body p-3">
+                <div class="card-body p-3 bg-white">
                     <div class="row g-2 mb-2 text-start">
                         <div class="col-6">
-                            <div class="p-2 bg-light rounded-2">
-                                <small class="text-muted d-block">প্রত্যাশিত ফেরা:</small>
-                                <span class="fw-semibold text-dark fs-7">
+                            <div class="p-2.5 rounded-3 h-100" style="background: #eff6ff; border: 1.5px solid #bfdbfe;">
+                                <span class="d-block fw-bold" style="color: #1e40af; font-size: 11px;">প্রত্যাশিত ফেরা:</span>
+                                <span class="fw-bold text-dark fs-7 mt-1 d-block">
                                     {{ $log->expected_return_date ? \Carbon\Carbon::parse($log->expected_return_date)->format('d M, Y') : '-' }}
                                 </span>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="p-2 bg-light rounded-2">
-                                <small class="text-muted d-block">আসল চেক-ইন:</small>
-                                <span class="fw-semibold text-success fs-7">
+                            <div class="p-2.5 rounded-3 h-100" style="background: #f0fdf4; border: 1.5px solid #bbf7d0;">
+                                <span class="d-block fw-bold" style="color: #15803d; font-size: 11px;">আসল চেক-ইন:</span>
+                                <span class="fw-bold text-dark fs-7 mt-1 d-block">
                                     {{ $log->check_in_date ? $log->check_in_date->format('d M, Y') : 'Not Yet' }}
                                 </span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center small text-muted pt-2 border-top">
-                        <span>কারণ: <strong class="text-dark">{{ $log->leave_reason ?: 'Going Home' }}</strong></span>
+                    <div class="p-2.5 rounded-3 mt-2.5" style="background: #f8fafc; border: 1.5px solid #e2e8f0;">
+                        <div class="text-dark small"><strong class="text-secondary">ছুটির কারণ:</strong> {{ $log->leave_reason ?: 'Going Home' }}</div>
                         @if($log->emergency_contact)
-                            <span>জরুরি: <strong class="text-dark">{{ $log->emergency_contact }}</strong></span>
+                            <div class="text-dark small mt-1"><strong class="text-secondary">জরুরি যোগাযোগ:</strong> {{ $log->emergency_contact }}</div>
                         @endif
                     </div>
                 </div>
             </div>
             @empty
-            <div class="text-center py-5 text-muted">
+            <div class="text-center py-5 text-muted bg-white rounded-3">
                 <i class="ti ti-door-off fs-1 text-muted opacity-50 d-block mb-2"></i>
                 <h6>No check-out records found</h6>
                 <p class="small mb-0">Click the "Check Out" button above when going on leave.</p>

@@ -184,27 +184,27 @@
     {{-- Desktop Table View --}}
     <div class="d-none d-md-block table-responsive text-nowrap">
       <table class="table table-hover align-middle mb-0">
-        <thead class="table-light">
-          <tr>
-            <th class="text-center" style="width: 50px;">#</th>
-            <th>Date</th>
+        <thead style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: #ffffff;">
+          <tr class="small text-white fw-bold text-uppercase">
+            <th class="text-center text-white" style="width: 50px;">#</th>
+            <th class="text-white">Date</th>
             @if($isAdmin)
-              <th>Resident</th>
+              <th class="text-white">Resident</th>
             @endif
-            <th>Guest Name / Relation</th>
-            <th class="text-center">Meal Count</th>
-            <th class="text-end">Amount (BDT)</th>
-            <th>Notes</th>
+            <th class="text-white">Guest Name / Relation</th>
+            <th class="text-center text-white">Meal Count</th>
+            <th class="text-end text-warning">Amount (BDT)</th>
+            <th class="text-white">Notes</th>
             @if($isAdmin)
-              <th>Entry By</th>
+              <th class="text-white">Entry By</th>
             @endif
-            <th class="text-center" style="width: 120px;">Actions</th>
+            <th class="text-center text-white" style="width: 120px;">Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="bg-white">
           @forelse($guestMeals as $index => $meal)
             <tr>
-              <td class="text-center text-muted fw-bold">
+              <td class="text-center text-dark fw-bold">
                 {{ $guestMeals->firstItem() + $index }}
               </td>
               <td>
@@ -217,29 +217,29 @@
                 <td>
                   <div class="d-flex flex-column">
                     <span class="fw-bold text-primary fs-6">{{ $meal->user->name ?? 'N/A' }}</span>
-                    <small class="text-muted">
+                    <small class="text-secondary fw-semibold">
                       <i class="ti ti-phone me-1"></i>{{ $meal->user->phone ?? '-' }}
                     </small>
                   </div>
                 </td>
               @endif
               <td>
-                <span class="badge bg-label-info fw-bold fs-7 px-3 py-1">
+                <span class="badge px-3 py-1.5 fw-bold fs-7" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;">
                   <i class="ti ti-user me-1"></i>{{ $meal->guest_name }}
                 </span>
               </td>
               <td class="text-center">
-                <span class="badge bg-label-dark fw-bold fs-6">
+                <span class="fw-bolder text-dark fs-6">
                   {{ (float)$meal->meal_count == (int)$meal->meal_count ? (int)$meal->meal_count : number_format($meal->meal_count, 1) }}
                 </span>
               </td>
               <td class="text-end">
-                <span class="fw-bold text-danger fs-6">
+                <span class="fw-bolder text-danger fs-6">
                   ৳ {{ number_format($meal->amount, 2) }}
                 </span>
               </td>
               <td>
-                <span class="text-muted small">
+                <span class="text-dark fw-medium small">
                   {{ $meal->note ?: '-' }}
                 </span>
               </td>
@@ -278,64 +278,64 @@
       </table>
     </div>
 
-    {{-- Mobile Card View (No Horizontal Scroll) --}}
-    <div class="d-md-none p-2 p-sm-3">
+    {{-- Mobile Card View (Distinct Div Blocks with High-Contrast Colors) --}}
+    <div class="d-md-none p-2 p-sm-3" style="background: #f1f5f9;">
       @forelse($guestMeals as $index => $meal)
-      <div class="card border shadow-sm mb-3 rounded-3 overflow-hidden">
-        <div class="card-header bg-light py-2 px-3 d-flex justify-content-between align-items-center">
+      <div class="card shadow-sm mb-3.5 rounded-4 overflow-hidden border-0" style="box-shadow: 0 4px 12px rgba(0,0,0,0.07) !important;">
+        <div class="py-2.5 px-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff;">
           <div class="d-flex align-items-center gap-2">
-            <span class="badge bg-label-secondary rounded-circle" style="width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">{{ $guestMeals->firstItem() + $index }}</span>
-            <span class="fw-bold text-dark fs-7">
-              <i class="ti ti-calendar me-1 text-primary"></i>
+            <span class="badge bg-primary text-white rounded-circle fw-bold" style="width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">{{ $guestMeals->firstItem() + $index }}</span>
+            <span class="fw-bold text-white fs-7">
+              <i class="ti ti-calendar me-1 text-info"></i>
               {{ Carbon\Carbon::parse($meal->date)->format('d M, Y') }}
             </span>
           </div>
-          <span class="badge bg-label-info fw-bold fs-8">
+          <span class="badge px-2.5 py-1 fw-bold fs-8" style="background: #38bdf8; color: #0f172a;">
             <i class="ti ti-user me-1"></i>{{ $meal->guest_name }}
           </span>
         </div>
 
-        <div class="card-body p-3">
+        <div class="card-body p-3 bg-white">
           @if($isAdmin)
-          <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
-            <small class="text-muted">Resident:</small>
+          <div class="d-flex justify-content-between align-items-center p-2 rounded-2 mb-2.5" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+            <small class="text-secondary fw-bold">Resident:</small>
             <span class="fw-bold text-primary">{{ $meal->user->name ?? 'N/A' }} ({{ $meal->user->phone ?? '-' }})</span>
           </div>
           @endif
 
           <div class="row g-2 text-start">
             <div class="col-6">
-              <div class="p-2 bg-light rounded-2 text-center">
-                <small class="text-muted d-block">মিলের সংখ্যা</small>
-                <span class="fw-bold text-dark fs-6">{{ (float)$meal->meal_count == (int)$meal->meal_count ? (int)$meal->meal_count : number_format($meal->meal_count, 1) }} টি</span>
+              <div class="p-2.5 rounded-3 h-100 text-center" style="background: #eff6ff; border: 1.5px solid #bfdbfe;">
+                <span class="d-block fw-bold" style="color: #1e40af; font-size: 11px;">মিলের সংখ্যা</span>
+                <span class="fw-bolder text-dark fs-6">{{ (float)$meal->meal_count == (int)$meal->meal_count ? (int)$meal->meal_count : number_format($meal->meal_count, 1) }} টি</span>
               </div>
             </div>
             <div class="col-6">
-              <div class="p-2 bg-light rounded-2 text-center">
-                <small class="text-muted d-block">খরচ (Amount)</small>
-                <span class="fw-bold text-danger fs-6">৳ {{ number_format($meal->amount, 2) }}</span>
+              <div class="p-2.5 rounded-3 h-100 text-center" style="background: #fef2f2; border: 1.5px solid #fecaca;">
+                <span class="d-block fw-bold" style="color: #991b1b; font-size: 11px;">খরচ (Amount)</span>
+                <span class="fw-bolder fs-6" style="color: #dc2626;">৳ {{ number_format($meal->amount, 2) }}</span>
               </div>
             </div>
           </div>
 
           @if($meal->note)
-          <div class="mt-2 pt-2 border-top small text-muted">
-            <strong>নোট:</strong> {{ $meal->note }}
+          <div class="mt-2.5 p-2 rounded-2" style="background: #f8fafc; border: 1px dashed #cbd5e1;">
+            <strong class="text-secondary small">নোট:</strong> <span class="text-dark fw-medium small">{{ $meal->note }}</span>
           </div>
           @endif
 
           <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
-            <small class="text-muted">
+            <small class="text-secondary fw-semibold">
               @if($isAdmin) By: {{ $meal->creator->name ?? 'System' }} @endif
             </small>
-            <div class="d-inline-flex gap-1">
-              <a href="{{ route('guest-meals.edit', $meal->id) }}" class="btn btn-sm btn-label-primary px-3" title="Edit">
+            <div class="d-inline-flex gap-1.5">
+              <a href="{{ route('guest-meals.edit', $meal->id) }}" class="btn btn-sm btn-outline-primary px-3 fw-bold" title="Edit">
                 <i class="ti ti-edit me-1"></i>Edit
               </a>
               <form action="{{ route('guest-meals.destroy', $meal->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this guest meal record?');" style="display:inline-block;">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn btn-sm btn-label-danger px-3" title="Delete">
+                <button type="submit" class="btn btn-sm btn-outline-danger px-3 fw-bold" title="Delete">
                   <i class="ti ti-trash me-1"></i>Delete
                 </button>
               </form>
@@ -344,7 +344,7 @@
         </div>
       </div>
       @empty
-      <div class="text-center py-5 text-muted">
+      <div class="text-center py-5 text-muted bg-white rounded-3">
         <i class="ti ti-receipt-off fs-1 text-secondary mb-2 d-block"></i>
         <h6 class="fw-bold text-secondary mb-1">No guest meal records found</h6>
         <p class="small text-muted mb-0">No records available for the selected month or search filter.</p>
