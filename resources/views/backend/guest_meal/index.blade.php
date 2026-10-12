@@ -255,6 +255,7 @@
                   <a href="{{ route('guest-meals.edit', $meal->id) }}" class="btn btn-sm btn-icon btn-label-primary" title="Edit">
                     <i class="ti ti-edit"></i>
                   </a>
+                  @if($isAdmin)
                   <form action="{{ route('guest-meals.destroy', $meal->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this guest meal record?');" style="display:inline-block;">
                     @csrf
                     @method('DELETE')
@@ -262,6 +263,7 @@
                       <i class="ti ti-trash"></i>
                     </button>
                   </form>
+                  @endif
                 </div>
               </td>
             </tr>
@@ -332,13 +334,6 @@
               <a href="{{ route('guest-meals.edit', $meal->id) }}" class="btn btn-sm btn-outline-primary px-3 fw-bold" title="Edit">
                 <i class="ti ti-edit me-1"></i>Edit
               </a>
-              <form action="{{ route('guest-meals.destroy', $meal->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this guest meal record?');" style="display:inline-block;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-sm btn-outline-danger px-3 fw-bold" title="Delete">
-                  <i class="ti ti-trash me-1"></i>Delete
-                </button>
-              </form>
             </div>
           </div>
         </div>
