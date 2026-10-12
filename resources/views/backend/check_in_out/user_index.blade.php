@@ -141,7 +141,8 @@
                 <span>Leave & Check In/Out History (Total: {{ $myLogs->total() }})</span>
             </h6>
         </div>
-        <div class="table-responsive text-nowrap">
+        {{-- Desktop Table View --}}
+        <div class="d-none d-md-block table-responsive text-nowrap">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
@@ -224,6 +225,71 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+
+        {{-- Mobile Card View (No Horizontal Scroll) --}}
+        <div class="d-md-none p-2 p-sm-3">
+            @forelse($myLogs as $idx => $log)
+            <div class="card border shadow-sm mb-3 rounded-3 overflow-hidden">
+                <div class="card-header bg-light py-2 px-3 d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-label-secondary rounded-circle" style="width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">{{ $myLogs->firstItem() + $idx }}</span>
+                        <span class="fw-bold text-dark fs-7">
+                            <i class="ti ti-door-exit me-1 text-warning"></i>
+                            {{ $log->check_out_date ? $log->check_out_date->format('d M, Y') : '-' }}
+                        </span>
+                    </div>
+                    <div>
+                        @if($log->status == 0)
+                            @php
+                                $isLogFuture = \Carbon\Carbon::parse($log->check_out_date)->startOfDay()->gt(\Carbon\Carbon::today());
+                            @endphp
+                            @if($isLogFuture)
+                                <span class="badge bg-label-info text-info px-2 py-0.5 rounded-pill fw-semibold" style="font-size:0.7rem;">Upcoming</span>
+                            @else
+                                <span class="badge bg-warning text-dark px-2 py-0.5 rounded-pill fw-bold" style="font-size:0.7rem;">Checked Out</span>
+                            @endif
+                        @else
+                            <span class="badge bg-success text-white px-2 py-0.5 rounded-pill fw-bold" style="font-size:0.7rem;">Checked In</span>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="card-body p-3">
+                    <div class="row g-2 mb-2 text-start">
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded-2">
+                                <small class="text-muted d-block">প্রত্যাশিত ফেরা:</small>
+                                <span class="fw-semibold text-dark fs-7">
+                                    {{ $log->expected_return_date ? \Carbon\Carbon::parse($log->expected_return_date)->format('d M, Y') : '-' }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded-2">
+                                <small class="text-muted d-block">আসল চেক-ইন:</small>
+                                <span class="fw-semibold text-success fs-7">
+                                    {{ $log->check_in_date ? $log->check_in_date->format('d M, Y') : 'Not Yet' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center small text-muted pt-2 border-top">
+                        <span>কারণ: <strong class="text-dark">{{ $log->leave_reason ?: 'Going Home' }}</strong></span>
+                        @if($log->emergency_contact)
+                            <span>জরুরি: <strong class="text-dark">{{ $log->emergency_contact }}</strong></span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @empty
+            <div class="text-center py-5 text-muted">
+                <i class="ti ti-door-off fs-1 text-muted opacity-50 d-block mb-2"></i>
+                <h6>No check-out records found</h6>
+                <p class="small mb-0">Click the "Check Out" button above when going on leave.</p>
+            </div>
+            @endforelse
         </div>
 
         @if($myLogs->hasPages())

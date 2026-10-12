@@ -157,7 +157,8 @@
         <p class="text-muted">No monthly rent bills have been generated for your booking yet.</p>
       </div>
     @else
-      <div class="table-responsive text-nowrap">
+      {{-- Desktop Table View --}}
+      <div class="d-none d-md-block table-responsive text-nowrap">
         <table class="table table-hover align-middle mb-0">
           <thead class="table-light">
             <tr class="text-muted small fw-bold text-uppercase">
@@ -241,6 +242,90 @@
             @endforeach
           </tbody>
         </table>
+      </div>
+
+      {{-- Mobile Card View (No Horizontal Scroll) --}}
+      <div class="d-md-none p-2 p-sm-3">
+        @foreach($payments as $idx => $pay)
+        <div class="card border shadow-sm mb-3 rounded-3 overflow-hidden">
+          <div class="card-header bg-light py-2 px-3 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-primary rounded-circle" style="width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">{{ $idx + 1 }}</span>
+              <span class="fw-bold text-dark fs-6">{{ \Carbon\Carbon::parse($pay['payment_month'] . '-01')->format('F Y') }}</span>
+            </div>
+            <div>
+              @if($pay['status'] === 'paid')
+                <span class="badge bg-label-success px-2.5 py-1 rounded-pill fw-bold">Paid</span>
+              @elseif($pay['status'] === 'partial')
+                <span class="badge bg-label-warning px-2.5 py-1 rounded-pill fw-bold">Partial</span>
+              @elseif($pay['status'] === 'overdue')
+                <span class="badge bg-label-danger px-2.5 py-1 rounded-pill fw-bold">Overdue</span>
+              @else
+                <span class="badge bg-label-secondary px-2.5 py-1 rounded-pill fw-bold">Pending</span>
+              @endif
+            </div>
+          </div>
+          <div class="card-body p-3">
+            <div class="d-flex align-items-center justify-content-between text-muted small pb-2 mb-2 border-bottom">
+              <span><i class="ti ti-door me-1"></i><strong>{{ $pay['roomnumber'] ?: '—' }}</strong></span>
+              <span><i class="ti ti-building me-1"></i>{{ $pay['floornumber'] }}</span>
+            </div>
+
+            <div class="row g-2 text-start">
+              <div class="col-6">
+                <div class="p-2 bg-light rounded-2">
+                  <small class="text-muted d-block">Monthly Rent</small>
+                  <span class="fw-bold text-dark">৳{{ number_format($pay['amount'], 2) }}</span>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="p-2 bg-light rounded-2">
+                  <small class="text-muted d-block">Electricity Bill</small>
+                  @if($pay['electricity_bill'] > 0)
+                    <span class="fw-bold text-warning">⚡ ৳{{ number_format($pay['electricity_bill'], 2) }}</span>
+                  @else
+                    <span class="text-muted">৳0.00</span>
+                  @endif
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="p-2 bg-light rounded-2">
+                  <small class="text-muted d-block">Prev. Due (জের)</small>
+                  @if(isset($pay['carried_forward_due']) && $pay['carried_forward_due'] > 0)
+                    <span class="fw-bold text-danger">+৳{{ number_format($pay['carried_forward_due'], 2) }}</span>
+                  @else
+                    <span class="text-muted">৳0.00</span>
+                  @endif
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="p-2 bg-light rounded-2">
+                  <small class="text-muted d-block">Paid Amount</small>
+                  <span class="fw-bold text-success">৳{{ number_format($pay['paid_amount'], 2) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+              <span class="fw-bold text-dark">Net Due (বকেয়া):</span>
+              <span class="fw-bolder fs-5 {{ $pay['status'] === 'paid' ? 'text-success' : 'text-danger' }}">
+                {{ $pay['status'] === 'paid' ? '৳0.00' : '৳' . number_format($pay['due_amount'], 2) }}
+              </span>
+            </div>
+
+            @if($pay['note'] || $pay['received_by'])
+            <div class="mt-2 pt-2 border-top small text-muted">
+              @if($pay['note'])
+                <div><i class="ti ti-notes me-1"></i> {{ collect(explode("\n", $pay['note']))->last() }}</div>
+              @endif
+              @if($pay['received_by'])
+                <div class="mt-1"><i class="ti ti-user-check me-1 text-success"></i> Received by: {{ $pay['received_by'] }}</div>
+              @endif
+            </div>
+            @endif
+          </div>
+        </div>
+        @endforeach
       </div>
     @endif
     <div class="card-footer bg-light border-top text-center py-3">

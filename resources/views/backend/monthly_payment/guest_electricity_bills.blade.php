@@ -199,7 +199,8 @@
       </span>
     </div>
 
-    <div class="table-responsive text-nowrap">
+    {{-- Desktop Table View --}}
+    <div class="d-none d-md-block table-responsive text-nowrap">
       <table class="table table-hover align-middle mb-0">
         <thead class="table-light">
           <tr class="small text-muted fw-bold text-uppercase">
@@ -283,6 +284,70 @@
         </tfoot>
         @endif
       </table>
+    </div>
+
+    {{-- Mobile Card View (No Horizontal Scroll) --}}
+    <div class="d-md-none p-2 p-sm-3">
+      @forelse($monthlyLedger as $idx => $item)
+      <div class="card border shadow-sm mb-3 rounded-3 overflow-hidden" style="{{ $item['is_current_month'] ? 'border-left: 4px solid #10b981 !important;' : ($item['has_bill'] ? 'border-left: 4px solid #f59e0b !important;' : '') }}">
+        <div class="card-header bg-light py-2 px-3 d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-label-secondary rounded-circle" style="width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:11px;">{{ $idx + 1 }}</span>
+            <span class="fw-bold text-dark fs-6">{{ $item['month_year_label'] }}</span>
+          </div>
+          <div>
+            @if($item['status'] === 'paid')
+              <span class="badge bg-label-success px-2.5 py-1 rounded-pill fw-bold">Paid</span>
+            @elseif($item['status'] === 'partial')
+              <span class="badge bg-label-warning text-dark px-2.5 py-1 rounded-pill fw-bold">Partial</span>
+            @elseif($item['status'] === 'pending')
+              <span class="badge bg-label-danger px-2.5 py-1 rounded-pill fw-bold">Pending</span>
+            @else
+              <span class="text-muted small">—</span>
+            @endif
+          </div>
+        </div>
+
+        <div class="card-body p-3">
+          @if($item['is_current_month'])
+          <div class="mb-2">
+            <span class="badge bg-success text-white px-2 py-0.5 rounded-pill shadow-xs" style="font-size: 0.72rem; font-weight: 600;">
+              <i class="ti ti-circle-filled text-white me-1" style="font-size: 6px;"></i>Active Month
+            </span>
+          </div>
+          @endif
+
+          <div class="d-flex justify-content-between align-items-center p-2.5 bg-light rounded-2 mb-2">
+            <span class="text-muted small fw-bold">বিদ্যুৎ বিল:</span>
+            <div>
+              @if($item['electricity_bill'] > 0)
+                <span class="badge bg-warning text-dark px-3 py-1.5 fs-7 fw-bold shadow-xs border border-warning">
+                  ⚡ ৳ {{ number_format($item['electricity_bill'], 2) }}
+                </span>
+              @else
+                <span class="text-muted fw-bold">৳ 0.00</span>
+              @endif
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center small text-muted px-1">
+            <span>পেমেন্ট তারিখ:</span>
+            <span class="fw-medium text-dark">{{ $item['payment_date'] }}</span>
+          </div>
+        </div>
+      </div>
+      @empty
+      <div class="text-center py-4 text-muted">
+        কোনো বিল রেকর্ড পাওয়া যায়নি।
+      </div>
+      @endforelse
+
+      @if(count($monthlyLedger) > 0)
+      <div class="card bg-label-warning border border-warning rounded-3 p-3 text-center mt-3">
+        <small class="text-dark fw-bold d-block mb-1">সর্বমোট বিদ্যুৎ বিল ({{ $rangeLabel }}):</small>
+        <h4 class="mb-0 fw-bolder text-dark">⚡ ৳ {{ number_format($totalElectricity, 2) }}</h4>
+      </div>
+      @endif
     </div>
 
     <div class="card-footer bg-light border-top d-flex justify-content-between align-items-center py-3 px-4">

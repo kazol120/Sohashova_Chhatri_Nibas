@@ -181,7 +181,8 @@
       <span class="badge bg-label-primary fs-7 fw-bold">{{ $guestMeals->total() }} Records</span>
     </div>
 
-    <div class="table-responsive text-nowrap">
+    {{-- Desktop Table View --}}
+    <div class="d-none d-md-block table-responsive text-nowrap">
       <table class="table table-hover align-middle mb-0">
         <thead class="table-light">
           <tr>
@@ -275,6 +276,80 @@
           @endforelse
         </tbody>
       </table>
+    </div>
+
+    {{-- Mobile Card View (No Horizontal Scroll) --}}
+    <div class="d-md-none p-2 p-sm-3">
+      @forelse($guestMeals as $index => $meal)
+      <div class="card border shadow-sm mb-3 rounded-3 overflow-hidden">
+        <div class="card-header bg-light py-2 px-3 d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-label-secondary rounded-circle" style="width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">{{ $guestMeals->firstItem() + $index }}</span>
+            <span class="fw-bold text-dark fs-7">
+              <i class="ti ti-calendar me-1 text-primary"></i>
+              {{ Carbon\Carbon::parse($meal->date)->format('d M, Y') }}
+            </span>
+          </div>
+          <span class="badge bg-label-info fw-bold fs-8">
+            <i class="ti ti-user me-1"></i>{{ $meal->guest_name }}
+          </span>
+        </div>
+
+        <div class="card-body p-3">
+          @if($isAdmin)
+          <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+            <small class="text-muted">Resident:</small>
+            <span class="fw-bold text-primary">{{ $meal->user->name ?? 'N/A' }} ({{ $meal->user->phone ?? '-' }})</span>
+          </div>
+          @endif
+
+          <div class="row g-2 text-start">
+            <div class="col-6">
+              <div class="p-2 bg-light rounded-2 text-center">
+                <small class="text-muted d-block">মিলের সংখ্যা</small>
+                <span class="fw-bold text-dark fs-6">{{ (float)$meal->meal_count == (int)$meal->meal_count ? (int)$meal->meal_count : number_format($meal->meal_count, 1) }} টি</span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-2 bg-light rounded-2 text-center">
+                <small class="text-muted d-block">খরচ (Amount)</small>
+                <span class="fw-bold text-danger fs-6">৳ {{ number_format($meal->amount, 2) }}</span>
+              </div>
+            </div>
+          </div>
+
+          @if($meal->note)
+          <div class="mt-2 pt-2 border-top small text-muted">
+            <strong>নোট:</strong> {{ $meal->note }}
+          </div>
+          @endif
+
+          <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+            <small class="text-muted">
+              @if($isAdmin) By: {{ $meal->creator->name ?? 'System' }} @endif
+            </small>
+            <div class="d-inline-flex gap-1">
+              <a href="{{ route('guest-meals.edit', $meal->id) }}" class="btn btn-sm btn-label-primary px-3" title="Edit">
+                <i class="ti ti-edit me-1"></i>Edit
+              </a>
+              <form action="{{ route('guest-meals.destroy', $meal->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this guest meal record?');" style="display:inline-block;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-sm btn-label-danger px-3" title="Delete">
+                  <i class="ti ti-trash me-1"></i>Delete
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      @empty
+      <div class="text-center py-5 text-muted">
+        <i class="ti ti-receipt-off fs-1 text-secondary mb-2 d-block"></i>
+        <h6 class="fw-bold text-secondary mb-1">No guest meal records found</h6>
+        <p class="small text-muted mb-0">No records available for the selected month or search filter.</p>
+      </div>
+      @endforelse
     </div>
 
     @if($guestMeals->hasPages())

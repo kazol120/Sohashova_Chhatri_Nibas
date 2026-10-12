@@ -159,7 +159,8 @@
         </span>
       </div>
     </div>
-    <div class="table-responsive text-nowrap">
+    {{-- Desktop Table View --}}
+    <div class="d-none d-md-block table-responsive text-nowrap">
       <table class="table table-hover align-middle mb-0">
         <thead class="table-light">
           <tr class="text-muted small fw-bold text-uppercase">
@@ -269,6 +270,90 @@
         </tfoot>
       </table>
     </div>
+
+    {{-- Mobile Daily Meal Card View (No Horizontal Scroll) --}}
+    <div class="d-md-none p-2 p-sm-3">
+      @forelse($days as $index => $d)
+      <div class="card border shadow-sm mb-2.5 rounded-3 overflow-hidden {{ $d->date == $todayDate ? 'border-primary' : '' }}">
+        <div class="card-header py-2 px-3 d-flex justify-content-between align-items-center {{ $d->date == $todayDate ? 'bg-primary text-white' : 'bg-light' }}">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge {{ $d->date == $todayDate ? 'bg-white text-primary' : 'bg-label-secondary' }} rounded-circle" style="width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">{{ $index + 1 }}</span>
+            <span class="fw-bold fs-7 {{ $d->date == $todayDate ? 'text-white' : 'text-dark' }}">{{ $d->date_formatted }} ({{ $d->day_name }})</span>
+            @if($d->date == $todayDate)
+              <span class="badge bg-warning text-dark px-1.5 py-0.5 rounded-pill" style="font-size: 0.65rem;">আজ</span>
+            @endif
+          </div>
+          <div>
+            @if($d->is_off)
+              @php
+                $dNoteLower = strtolower($d->note ?? '');
+              @endphp
+              @if(str_contains($dNoteLower, 'checked in') || str_contains($dNoteLower, 'resumes tomorrow') || (str_contains($dNoteLower, 'check') && str_contains($dNoteLower, 'in')) || str_contains($dNoteLower, 'চেক-ইন'))
+                <span class="badge bg-success px-2 py-0.5 fs-8">🟢 চেক-ইন</span>
+              @elseif(str_contains($dNoteLower, 'leave') || str_contains($dNoteLower, 'checked out') || str_contains($dNoteLower, 'check') || str_contains($dNoteLower, 'চেক-আউট'))
+                <span class="badge bg-danger px-2 py-0.5 fs-8">🚫 চেক-আউট</span>
+              @else
+                <span class="badge bg-danger px-2 py-0.5 fs-8">🚫 অফ</span>
+              @endif
+            @elseif($d->meal_type === 'half_day')
+              <span class="badge bg-warning text-dark px-2 py-0.5 fs-8">☀️ হাফ(দিন)</span>
+            @elseif($d->meal_type === 'half_night')
+              <span class="badge bg-info text-white px-2 py-0.5 fs-8">🌙 হাফ(রাত)</span>
+            @elseif($d->meal_type === 'full' || $d->is_meal_on)
+              <span class="badge bg-success px-2 py-0.5 fs-8">✅ চালু</span>
+            @else
+              <span class="badge bg-danger px-2 py-0.5 fs-8">🚫 অফ</span>
+            @endif
+          </div>
+        </div>
+
+        <div class="card-body p-2.5">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <small class="text-muted d-block">মিলের সংখ্যা:</small>
+              <span class="fw-bold text-dark fs-7">
+                @if($d->meal_count == 0.5)
+                  0.5 (হাফ মিল)
+                @elseif($d->meal_count == 1)
+                  1 টি
+                @else
+                  0
+                @endif
+              </span>
+            </div>
+            <div class="text-end">
+              <small class="text-muted d-block">দৈনিক খরচ:</small>
+              <span class="fw-bold {{ $d->day_cost > 0 ? 'text-danger' : 'text-muted' }} fs-7">
+                ৳ {{ number_format($d->day_cost, 2) }}
+              </span>
+            </div>
+          </div>
+
+          @if($d->note)
+          <div class="mt-2 pt-2 border-top">
+            <small class="text-muted d-block">নোট:</small>
+            <span class="badge bg-label-secondary text-dark fw-normal text-wrap text-start mt-0.5">{{ $d->note }}</span>
+          </div>
+          @endif
+        </div>
+      </div>
+      @empty
+      <div class="text-center py-4 text-muted">এই মাসের কোনো তথ্য পাওয়া যায়নি।</div>
+      @endforelse
+
+      @if(count($days) > 0)
+      <div class="card bg-label-primary border border-primary rounded-3 p-3 mt-3">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="text-dark small fw-bold">নিয়মিত মিল মোট:</span>
+          <span class="fw-bold text-primary">{{ (float)$regTotal == (int)$regTotal ? (int)$regTotal : number_format($regTotal, 1) }} টি</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="text-dark small fw-bold">নিয়মিত মোট খরচ:</span>
+          <span class="fw-bolder text-danger fs-6">৳ {{ number_format($totalCost, 2) }}</span>
+        </div>
+      </div>
+      @endif
+    </div>
   </div>
 
   @if(isset($guestMeals) && $guestMeals->count() > 0)
@@ -282,7 +367,9 @@
           গেস্ট মিল মোট কর্তন: ৳ {{ number_format($totalGuestMealsAmount, 2) }}
         </span>
       </div>
-      <div class="table-responsive text-nowrap">
+
+      {{-- Desktop Table View --}}
+      <div class="d-none d-md-block table-responsive text-nowrap">
         <table class="table table-hover align-middle mb-0">
           <thead class="table-light">
             <tr class="text-muted small fw-bold text-uppercase">
@@ -326,6 +413,52 @@
             </tr>
           </tfoot>
         </table>
+      </div>
+
+      {{-- Mobile Card View (No Horizontal Scroll) --}}
+      <div class="d-md-none p-2 p-sm-3">
+        @foreach($guestMeals as $gIdx => $gItem)
+        <div class="card border shadow-sm mb-2.5 rounded-3 overflow-hidden">
+          <div class="card-header bg-light py-2 px-3 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-label-secondary rounded-circle" style="width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">{{ $gIdx + 1 }}</span>
+              <span class="fw-bold text-dark fs-7">
+                <i class="ti ti-calendar me-1 text-primary"></i>
+                {{ \Carbon\Carbon::parse($gItem->date)->format('d M Y') }}
+              </span>
+            </div>
+            <span class="badge bg-label-info fw-bold fs-8">{{ $gItem->guest_name }}</span>
+          </div>
+          <div class="card-body p-2.5">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <small class="text-muted d-block">মিলের সংখ্যা:</small>
+                <span class="fw-bold text-dark fs-7">{{ (float)$gItem->meal_count == (int)$gItem->meal_count ? (int)$gItem->meal_count : (float)$gItem->meal_count }} টি</span>
+              </div>
+              <div class="text-end">
+                <small class="text-muted d-block">কর্তনকৃত টাকা:</small>
+                <span class="fw-bold text-danger fs-7">৳ {{ number_format($gItem->amount, 2) }}</span>
+              </div>
+            </div>
+            @if($gItem->note)
+            <div class="mt-2 pt-2 border-top small text-muted">
+              <strong>নোট:</strong> {{ $gItem->note }}
+            </div>
+            @endif
+          </div>
+        </div>
+        @endforeach
+
+        <div class="card bg-label-danger border border-danger rounded-3 p-3 mt-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="text-dark small fw-bold">গেস্ট মিল মোট:</span>
+            <span class="fw-bold text-primary">{{ (float)$totalGuestMealsCount == (int)$totalGuestMealsCount ? (int)$totalGuestMealsCount : (float)$totalGuestMealsCount }} টি</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="text-dark small fw-bold">গেস্ট মিল মোট কর্তন:</span>
+            <span class="fw-bolder text-danger fs-6">৳ {{ number_format($totalGuestMealsAmount, 2) }}</span>
+          </div>
+        </div>
       </div>
     </div>
   @endif

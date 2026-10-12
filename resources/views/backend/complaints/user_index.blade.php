@@ -45,7 +45,8 @@
         <div class="card-header py-3 bg-light">
             <h5 class="mb-0 fw-bold text-dark"><i class="fa fa-list-ul me-2 text-primary"></i>My Submitted Complaints History (প্রেরিত অভিযোগের তালিকা)</h5>
         </div>
-        <div class="table-responsive text-nowrap">
+        {{-- Desktop Table View --}}
+        <div class="d-none d-md-block table-responsive text-nowrap">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
@@ -95,6 +96,51 @@
                 </tbody>
             </table>
         </div>
+
+        {{-- Mobile Card View (No Horizontal Scroll) --}}
+        <div class="d-md-none p-2 p-sm-3" id="userComplaintsMobileList">
+            @forelse($complaints as $key => $complaint)
+            <div class="card border shadow-sm mb-3 rounded-3 overflow-hidden">
+                <div class="card-header bg-light py-2 px-3 d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-label-secondary rounded-circle" style="width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">{{ $complaints->firstItem() + $key }}</span>
+                        <span class="small text-muted fw-semibold">
+                            {{ $complaint->created_at->format('d M, Y h:i A') }}
+                        </span>
+                    </div>
+                    <div>
+                        @if($complaint->status == 1)
+                            <span class="badge bg-label-success rounded-pill px-2.5 py-1 fs-8"><i class="fa fa-check-circle me-1"></i> Resolved</span>
+                        @else
+                            <span class="badge bg-label-warning rounded-pill px-2.5 py-1 fs-8"><i class="fa fa-clock me-1"></i> Pending</span>
+                        @endif
+                    </div>
+                </div>
+                <div class="card-body p-3">
+                    <div class="p-2.5 bg-light rounded-2 border text-dark fs-7 fw-medium mb-2">
+                        {{ $complaint->complaint_text }}
+                    </div>
+
+                    @if($complaint->admin_note)
+                    <div class="p-2 bg-label-success rounded-2 text-success small border border-success">
+                        <strong class="d-block mb-0.5"><i class="fa fa-comment-dots me-1"></i> এডমিন উত্তর:</strong>
+                        {{ $complaint->admin_note }}
+                    </div>
+                    @else
+                    <div class="small text-muted">
+                        <i class="fa fa-hourglass-start me-1"></i> Awaiting Admin Response
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @empty
+            <div class="text-center py-5 text-muted">
+                <i class="fa fa-inbox fs-1 d-block mb-2 text-secondary"></i>
+                আপনি কোনো অভিযোগ জমা দেননি।
+            </div>
+            @endforelse
+        </div>
+
         <div class="card-footer py-3">
             {{ $complaints->links() }}
         </div>
@@ -110,14 +156,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!data.success || !data.complaints) return;
 
                 let tbodyHtml = '';
+                let mobileHtml = '';
+
                 data.complaints.forEach((c, index) => {
-                    const statusBadge = c.status === 1 
+                    const statusBadgeDesktop = c.status === 1 
                         ? `<span class="badge bg-label-success rounded-pill px-3 py-2 fs-7"><i class="fa fa-check-circle me-1"></i> Accepted & Resolved</span>`
                         : `<span class="badge bg-label-warning rounded-pill px-3 py-2 fs-7"><i class="fa fa-clock me-1"></i> Pending Review</span>`;
 
-                    const adminNoteHtml = c.admin_note 
+                    const statusBadgeMobile = c.status === 1 
+                        ? `<span class="badge bg-label-success rounded-pill px-2.5 py-1 fs-8"><i class="fa fa-check-circle me-1"></i> Resolved</span>`
+                        : `<span class="badge bg-label-warning rounded-pill px-2.5 py-1 fs-8"><i class="fa fa-clock me-1"></i> Pending</span>`;
+
+                    const adminNoteDesktop = c.admin_note 
                         ? `<span class="text-success fw-semibold fs-7"><i class="fa fa-comment-dots me-1"></i> ${c.admin_note}</span>`
                         : `<span class="text-muted fs-8">Awaiting Admin Response</span>`;
+
+                    const adminNoteMobile = c.admin_note
+                        ? `<div class="p-2 bg-label-success rounded-2 text-success small border border-success"><strong class="d-block mb-0.5"><i class="fa fa-comment-dots me-1"></i> এডমিন উত্তর:</strong>${c.admin_note}</div>`
+                        : `<div class="small text-muted"><i class="fa fa-hourglass-start me-1"></i> Awaiting Admin Response</div>`;
 
                     tbodyHtml += `
                         <tr>
@@ -131,15 +187,38 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <small class="text-dark fw-medium">${c.date_formatted}</small><br>
                                 <small class="text-muted">${c.time_formatted}</small>
                             </td>
-                            <td>${statusBadge}</td>
-                            <td>${adminNoteHtml}</td>
+                            <td>${statusBadgeDesktop}</td>
+                            <td>${adminNoteDesktop}</td>
                         </tr>
+                    `;
+
+                    mobileHtml += `
+                        <div class="card border shadow-sm mb-3 rounded-3 overflow-hidden">
+                            <div class="card-header bg-light py-2 px-3 d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-label-secondary rounded-circle" style="width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:10px;">${index + 1}</span>
+                                    <span class="small text-muted fw-semibold">${c.date_formatted} ${c.time_formatted}</span>
+                                </div>
+                                <div>${statusBadgeMobile}</div>
+                            </div>
+                            <div class="card-body p-3">
+                                <div class="p-2.5 bg-light rounded-2 border text-dark fs-7 fw-medium mb-2">
+                                    ${c.complaint_text}
+                                </div>
+                                ${adminNoteMobile}
+                            </div>
+                        </div>
                     `;
                 });
 
                 const tbody = document.getElementById('userComplaintsTableBody');
                 if (tbody && tbodyHtml) {
                     tbody.innerHTML = tbodyHtml;
+                }
+
+                const mobileContainer = document.getElementById('userComplaintsMobileList');
+                if (mobileContainer && mobileHtml) {
+                    mobileContainer.innerHTML = mobileHtml;
                 }
             })
             .catch(err => console.error('Complaints live poll error:', err));
